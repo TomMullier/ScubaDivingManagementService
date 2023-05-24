@@ -24,28 +24,18 @@ const keycloak = new Keycloak({ store: memoryStore });
 
 app.use(bodyParser.json());
 
-// 3
-app.use(
-    keycloak.middleware()
-);
+app.use(keycloak.middleware());
 
 
 app.get('/', function (req, res) {
     res.json({ message: 'This is home' });
 });
 
-app.get('/api/unsecured', function (req, res) {
-    res.json({ message: 'This is an unsecured endpoint payload' });
-});
-// 4
-app.get('/api/pn', keycloak.protect('realm:app_pn'), function (req, res) {
-    res.json({ message: 'This is an PN endpoint payload' });
-});
-app.get('/api/dp', keycloak.protect('realm:app_dp'), function (req, res) {
-    res.json({ message: 'This is an DP endpoint payload' });
+app.get('/login', keycloak.protect(), function (req, res) {
+    res.json({ message: 'connected' });
 });
 
-http.listen(port,hostname, (err) => {
+http.listen(port, hostname, (err) => {
     if (err) {
         console.error(err);
     }

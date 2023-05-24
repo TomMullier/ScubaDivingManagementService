@@ -1,53 +1,55 @@
-const express = require("express");
+const express = require('express');
 const bodyParser = require("body-parser");
-// 1
-const Keycloak = require("keycloak-connect");
-
-const app = express();
-
-// 2
 const session = require("express-session");
+const Keycloak = require("keycloak-connect");
+const app = express();
+const http = require("http").Server(app);
+
 const memoryStore = new session.MemoryStore();
+
+const hostname = "10.224.1.186";
+const port = 3000;
+
+
 app.use(
     session({
-        secret: "secreeeeeet",
-        resave: true,
-        saveUninitialized: true, //false sur l'exemple
-        store: memoryStore,
-        cookie: {
-            maxAge: 2 * 60 * 60 * 1000,
-            secure: false,
-        },
+        secret: 'mySecret',
+        resave: false,
+        saveUninitialized: true,
+        store: memoryStore
     })
 );
 
-// 3
-const keycloak = new Keycloak({
-    store: memoryStore,
-});
+const keycloak = new Keycloak({ store: memoryStore });
+
 app.use(bodyParser.json());
 
+// 3
 app.use(
-    keycloak.middleware({
-        logout: "/logout",
-        admin: "/",
-    })
+    keycloak.middleware()
 );
 
-app.get("/api/unsecured", function (req, res) {
-    res.json({ message: "This is an unsecured endpoint payload" });
+
+app.get('/', function (req, res) {
+    res.json({ message: 'This is home' });
 });
 
+app.get('/api/unsecured', function (req, res) {
+    res.json({ message: 'This is an unsecured endpoint payload' });
+});
 // 4
-app.get("/api/user", keycloak.protect("realm:user"), function (req, res) {
-    res.json({ message: "This is an USER endpoint payload" });
+app.get('/api/pn', keycloak.protect('realm:app_pn'), function (req, res) {
+    res.json({ message: 'This is an PN endpoint payload' });
+});
+app.get('/api/dp', keycloak.protect('realm:app_dp'), function (req, res) {
+    res.json({ message: 'This is an DP endpoint payload' });
 });
 
-app.get("/api/admin", keycloak.protect("realm:admin"), function (req, res) {
-    res.json({ message: "This is an ADMIN endpoint payload" });
-});
-
-app.listen(4200, (err) => {
-    if (err) console.error(err);
-    else console.log(`APP Listen to port : 4200`);
+http.listen(port,hostname, (err) => {
+    if (err) {
+        console.error(err);
+    }
+    {
+        console.log(`Server running at http://${hostname}:${port}`);
+    }
 });

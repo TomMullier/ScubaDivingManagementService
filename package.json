@@ -18,9 +18,17 @@
   },
   "homepage": "https://github.com/TomMullier/ScubaDivingManagementService_JUNIA#readme",
   "dependencies": {
+<<<<<<< HEAD
     "body-parser": "^1.20.2",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
+=======
+    "@keycloak/keycloak-admin-client": "^21.1.1",
+    "body-parser": "^1.20.2",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "http": "^0.0.1-security",
+>>>>>>> b5b0229aa8bc2f90869168df1b4447310645492e
     "keycloak-connect": "^21.1.1",
     "nodemon": "^2.0.22"
   }

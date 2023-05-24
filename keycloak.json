@@ -1,0 +1,14 @@
+{
+    "realm": "SDMS",
+    "auth-server-url": "http://localhost:8080/",
+    "ssl-required": "external",
+    "resource": "myclient",
+    "verify-token-audience": true,
+    "credentials": {
+      "secret": "OmqSohUJw8dyo0kb1i4HzearZtUc7trr"
+    },
+    "confidential-port": 0,
+    "policy-enforcer": {
+      "credentials": {}
+    }
+}

@@ -1,12 +1,14 @@
-const data = {
+require('dotenv').config()
+
+let data = {
     grant_type: 'password',
-    client_id: '',
-    client_secret: "",
-    username: '',
-    password: ''
+    client_id: process.env.CLIENT_ID,
+    client_secret: process.env.PROCESS_SECRET,
+    username: "",
+    password: ""
 }
 function getAcessToken() {
-    fetch("", {
+    fetch(process.env.URL_GET_TOKEN, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

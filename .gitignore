@@ -1,5 +1,6 @@
 package-lock.json
 keycloak.json
+.env
 
 # Logs
 logs

@@ -5,13 +5,15 @@ const Keycloak = require("keycloak-connect");
 const app = express();
 const http = require("http").Server(app);
 const path = require("path");
+const { BDD } = require('./model/BDD/bdd');
+const Database = new BDD;
 
 const Keycloak_module = require("./model/Keycloak/keycloak");
 
 const memoryStore = new session.MemoryStore();
 const keycloak = new Keycloak({ store: memoryStore });
 
-const hostname = "10.224.1.186";
+const hostname = process.env.HOSTNAME;
 const port = 3000;
 
 app.use(bodyParser.json());
@@ -125,6 +127,12 @@ app.get('/auth/club/club_members', keycloak.protect(), function (req, res) {
     else res.redirect('/auth/dashboard');
 })
 
+app.get('/auth/club/locations', keycloak.protect(), function (req, res) {
+    if (checkUser(req, "CLUB")) {
+        res.sendFile(__dirname + "/vue/html/club/locations.html", { headers: { 'userType': 'club' } });
+    }
+    else res.redirect('/auth/dashboard');
+})
 
 http.listen(port, hostname, (err) => {
     if (err) console.error(err);

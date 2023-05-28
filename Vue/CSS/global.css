@@ -1,0 +1,357 @@
+html {
+  background: #fff;
+  color: #333;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.42857143;
+  padding: 0;
+  margin: 0;
+}
+body {
+  padding: 0;
+  margin: 0;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #333;
+  background-color: #fff;
+}
+@font-face {
+  font-family: 'Jolley';
+  src: url('Vue/fonts/jolley/jolley.woff') format('woff');
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/montserrat/v25/JTUFjIg1_i6t8kCHKm459Wx7xQYXK0vOoz6jq6R9aX8.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/montserrat/v25/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCtr6Ew-.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/montserrat/v25/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCtZ6Ew-.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/montserrat/v25/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCu170w-.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/montserrat/v25/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCuM70w-.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Rubik';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/rubik/v26/iJWbBXyIfDnIV7nEt3KSJbVDV49rz8tdE0Uw.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Rubik';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/rubik/v26/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-B4i1UA.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Rubik';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/rubik/v26/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-NYi1UA.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Rubik';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/rubik/v26/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-2Y-1UA.ttf) format('truetype');
+}
+#emergencyButton {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background-color: #f2574a;
+  z-index: 9999;
+  padding: 0;
+  outline: none;
+  cursor: pointer;
+  border: none;
+}
+#emergencyButton i {
+  color: white;
+  font-size: 30px;
+  border: white 2px solid;
+  width: 0px;
+  height: 0px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto auto;
+  background-color: white;
+  transition: 0.2s;
+}
+#emergencyButton:hover i {
+  color: #f2574a;
+  background-color: #fff;
+  width: 60px;
+  height: 60px;
+  transition: 0.2s;
+}
+#emergencyModal {
+  background-color: #f2584aec;
+}
+#emergencyModal .modal-wrapper {
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  border-radius: 0;
+  flex-direction: column;
+  box-shadow: none;
+  width: auto;
+  height: auto;
+  overflow-y: visible;
+}
+#emergencyModal .modal-wrapper .top {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+#emergencyModal .modal-wrapper .top .title {
+  color: #120B8F;
+  font-size: 50px;
+  text-transform: uppercase;
+  font-family: 'Montserrat', sans-serif;
+  line-height: 0;
+}
+#emergencyModal .modal-wrapper .top h3 {
+  color: #120B8F;
+  font-size: 15px;
+  text-transform: uppercase;
+  font-family: 'Montserrat', sans-serif;
+  line-height: 0;
+}
+#emergencyModal .modal-wrapper #txt_descr {
+  margin-top: 50px;
+}
+#emergencyModal .modal-wrapper #txt_descr #callButton {
+  background-color: #f2574a;
+  border: white 2px solid;
+  outline: none;
+  padding: 50px;
+  border-radius: 50%;
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 100px;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: 0.2s;
+  animation: Blink 1s both infinite;
+}
+#emergencyModal .modal-wrapper #txt_descr #callButton:hover {
+  background-color: white;
+  color: #f2574a;
+}
+@keyframes Blink {
+  0% {
+    background-color: white;
+    color: #f2574a;
+  }
+  50% {
+    background-color: #f2574a;
+    color: white;
+  }
+  100% {
+    background-color: white;
+    color: #f2574a;
+  }
+}
+.message_add {
+  width: 80%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: #f2574a 2px solid;
+  background-color: #f2574a;
+  border-radius: 10px;
+  padding: 0 20px;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  transition: 0.2s;
+  color: white;
+}
+.message_add h1 {
+  text-transform: uppercase;
+  font-size: 15px;
+  font-family: 'Montserrat', sans-serif;
+}
+.message_add:hover {
+  background-color: white;
+  color: #f2574a;
+  cursor: pointer;
+}
+#importantMessageModal .modal-wrapper {
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  z-index: 9999;
+  flex-direction: column;
+  box-shadow: none;
+  width: auto;
+  height: auto;
+  overflow-y: visible;
+  padding: 50px;
+}
+#importantMessageModal .modal-wrapper .top {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+#importantMessageModal .modal-wrapper .top .title {
+  color: #120B8F;
+  font-size: 20px;
+  text-transform: uppercase;
+  font-family: 'Montserrat', sans-serif;
+  line-height: 0;
+  margin-top: 20px;
+}
+#importantMessageModal .modal-wrapper #txt_descr {
+  margin-top: 10px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#importantMessageModal .modal-wrapper #txt_descr textarea {
+  width: 100%;
+  height: 100px;
+  border: solid 2px #120B8F;
+  outline: none;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  padding: 10px;
+  resize: none;
+  border-radius: 10px;
+}
+#importantMessageModal .modal-wrapper .validate_message {
+  width: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  color: #f2574a;
+  border: #f2574a 2px solid;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: 0.2s;
+  font-weight: bold;
+}
+#importantMessageModal .modal-wrapper .validate_message:hover {
+  background-color: #f2574a;
+  color: white;
+}
+.menu_button_container {
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  background-color: transparent;
+  position: absolute;
+  margin-left: 35px;
+  margin-top: 5px;
+}
+.menu_button_container .toggle {
+  z-index: 100000;
+}
+@keyframes SlideLeft {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+@keyframes SlideRight {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+#menuModal[aria-hidden="true"] .modal-wrapper {
+  animation: SlideRight 0.4s both;
+}
+#menuModal[aria-hidden="true"] {
+  animation: fadeOut 0.4s both;
+}
+#menuModal .modal-wrapper {
+  background-color: white;
+  width: 100%;
+  height: 100%;
+  padding: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  align-items: left;
+  border-radius: 10px;
+  animation: SlideLeft 0.4s both;
+}
+#menuModal .menu_content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: left;
+  width: 100%;
+  margin: auto 0;
+}
+#menuModal .menu_content a {
+  color: #818181;
+  font-size: 20px;
+  font-family: 'Montserrat', sans-serif;
+  margin-bottom: 20px;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+#menuModal .menu_content .active {
+  font-weight: bold;
+  color: #f2574a;
+}
+#menuModal .menu_content a:hover {
+  color: #f2574a;
+}
+#menuModal .menu_content a:hover:before {
+  content: "> ";
+}

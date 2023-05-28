@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../CSS/global.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css">
+    <link rel="stylesheet" href="../CSS/modal.css" />
+    <link rel="stylesheet" href="../CSS/reservation.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.7/index.global.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typescript/4.0.5/typescript.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.js"></script>
+    <script type=module src="../JS/@fullcalendar/core/locales/fr.js"></script>
+    <script type=module src='https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@6.1.7/index.global.min.js'></script>
+    <script src="https://kit.fontawesome.com/b89837f3ad.js" crossorigin="anonymous"></script>
+
+    <title>Réservation</title>
+</head>
+
+<body>
+    <div class="menu_button_container">
+        <div class="toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+    <div id="menutoggle"></div>
+    <button id="emergencyButton"><i class="fa-solid fa-truck-medical"></i></button>
+    <div class="title_container">
+        <h1>Réservations de créneaux</h1>
+    </div>
+    <div class="instructions_container">
+        <h2><span class="orange">Joe</span>, cliquez sur un évènement pour en avoir toutes les informations :</h2>
+    </div>
+
+    <div class="top_bar_container">
+        <div class="filter_container">
+            <!-- Filters by level, duration and price max -->
+            <div class="filter_level">
+                <p><i class="fa-solid fa-star"></i>Filtrer par niveau requis minimum : </i></p>
+                <div class="level">
+                    <p class="level-item active">1</p>
+                    <p class="level-item active">2</p>
+                    <p class="level-item active">3</p>
+                    <p class="level-item active">4</p>
+                    <p class="level-item active">5</p>
+                </div>
+            </div>
+            <div class="filter_duration">
+                <p><i class="fa-solid fa-clock"></i>Filtrer par durée maximum : </i></p>
+                <input type="range" min="0" max="150" step="30" value="150" class="slider" id="timeSlider">
+                <label for="timeSlider" id="timeLabel">Illimité</label>
+            </div>
+            <div class="filter_price">
+                <p><i class="fa-solid fa-euro-sign"></i>Filtrer par prix maximum : </i></p>
+                <input type="range" min="0" max="150" step="10" value="150" class="slider" id="priceSlider">
+                <label for="priceSlider" id="priceLabel">Illimité</label>
+
+            </div>
+        </div>
+        <div class="switch_container">
+            <p class="switch_title">Basculer sur la vue Liste</p>
+            <input id='checkbox_list' class="apple-switch" type="checkbox">
+        </div>
+    </div>
+
+    <div id="calendar"></div>
+    <div class="legend_container">
+        <div class="legend">
+            <div class="legend_item green_border">
+                <div class="legend_color green_full"></div>
+                <p>Créneau disponible</p>
+            </div>
+            <div class="legend_item orange_border">
+                <div class="legend_color orange_full"></div>
+                <p>Créneau réservé</p>
+            </div>
+            <div class="legend_item blue_border">
+                <div class="legend_color blue_full"></div>
+                <p>Créneau en cours</p>
+            </div>
+            <div class="legend_item grey_border">
+                <div class="legend_color grey_full"></div>
+                <p>Créneau passé</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="modals" style="display:flex;">
+
+        <modal id="menuModal">
+            <div class="menu_content">
+                <a class=active href="">Tableau de Bord</a>
+                <a href="">Plannification</a>
+                <a href="">Statistiques</a>
+                <a href="">Rapport de Plongée</a>
+                <a href="">Mes Informations</a>
+            </div>
+        </modal>
+
+        <modal id="eventModal">
+            <!-- TITRE -->
+            <h2 id="eventTitle"></h2>
+            <div class="global">
+                <div class="left" id="left_bar">
+                    <div class="timeline_bar"></div>
+                    <div class="start_container">
+                        <div class="orange_circle"></div>
+                        <p id="eventStart"></p>
+                    </div>
+                    <div class="end_container">
+                        <div class="orange_circle"></div>
+                        <p id="eventEnd"></p>
+                    </div>
+
+                </div>
+                <div class="right">
+                    <a href="" target=”_blank” id="eventLocation"> <i class="fa-solid fa-location-dot"></i> Junia
+                        ISEN Lille<br>41 Boulevard
+                        Vauban<br>59000 Lille</a>
+                    <p id="eventDuration"><i class="fa-solid fa-clock"></i>Durée estimée : <span
+                            class="event_duration"></span></p>
+                    <div id="eventLevel">
+                        <p><i class="fa-solid fa-star"></i>Niveau requis minimum : </i></p>
+                        <div class="level">
+                            <p class="active">1</p>
+                            <p class="active">2</p>
+                            <p class="active">3</p>
+                            <p class="active">4</p>
+                            <p class="not-active">5</p>
+                        </div>
+                    </div>
+                    <p id="eventPrice">Prix : 30,00 €</p>
+                    <p id="eventWeather">Météo prévue : Ensoleillé <i class="fa-solid fa-sun"></i></p>
+                    <div id="reserveButton">S'inscrire</div>
+                    <!-- <div id="dereserveButton">Se désinscrire</div> -->
+                </div>
+            </div>
+
+        </modal>
+
+
+
+        <modal id="emergencyModal">
+
+            <div class="top">
+                <h1 id="txt_title" class="title">APPEL SOS</h1>
+                <h3>Appuyez une nouvelle fois pour demander du secours</h3>
+                <h3>Tap once again to call for emergency help</h3>
+            </div>
+            <div id="txt_descr" class="fields-container">
+                <h3>
+                    <a id="callButton"><i class="fa-solid fa-truck-medical"></i></a>
+                </h3>
+            </div>
+        </modal>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="../JS/modal.js"></script>
+    <script type=module src="../JS/reservation.js"></script>
+</body>
+
+</html>

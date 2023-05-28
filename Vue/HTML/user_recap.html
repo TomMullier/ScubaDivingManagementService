@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../CSS/global.css">
+        <link rel="stylesheet" href="../CSS/user_recap.css">
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css">
+        <link rel="stylesheet" href="../CSS/modal.css" />
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.7/index.global.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/typescript/4.0.5/typescript.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.js"></script>
+        <script type=module src="../JS/@fullcalendar/core/locales/fr.js"></script>
+        <!-- <script type=module src="../JS/@fullcalendar/core"></script> -->
+        <script type=module src='https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@6.1.7/index.global.min.js'>
+        </script>
+        <script src="https://kit.fontawesome.com/b89837f3ad.js" crossorigin="anonymous"></script>
+
+
+
+
+
+        <title>Tableau de bord</title>
+</head>
+
+<body>
+        <div class="menu_button_container">
+                <div class="toggle">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                </div>
+        </div>
+        <div id="menutoggle"></div>
+        <button id="emergencyButton"><i class="fa-solid fa-truck-medical"></i></button>
+
+
+
+        <div class='profil_container'>
+
+                <div class="left">
+                        <div>
+                                <h1>Mon Profil</h1>
+                                <div class="separator"></div>
+                                <div class="photo_container">
+                                        <img src="../img/2.jpg" alt="profil picture"></img>
+                                </div>
+                        </div>
+                        <div class="profil_infos">
+                                <p class="name"><b>Nom : </b>John Doe</p>
+                                <p class="birth"><b>Date de naissance : </b>07/01/2003</p>
+                                <p class="email"><b>Mail : </b>john.doe@outlook.fr</p>
+                                <p class="phone"><b>Téléphone :</b> 06 12 34 56 78</p>
+                                <p class="level_text">Niveau</p>
+                                <div class="level">
+                                        <p class="active">1</p>
+                                        <p class="active">2</p>
+                                        <p class="active">3</p>
+                                        <p class="active">4</p>
+                                        <p class="not-active">5</p>
+                                </div>
+                                <p class="total">Temps total de plongée : 2h44min</p>
+                        </div>
+                </div>
+                <div class="right">
+                        <h1>Bienvenue <br><span class="name">John</span> <br>sur votre espace personnel</h1>
+                </div>
+        </div>
+
+
+        <div class="message">
+                <h1>Message important</h1>
+                <div class="separator"></div>
+                <p id="important_text">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Blanditiis possimus ex
+                        nobis exercitationem distinctio atque illo laudantium saepe quae perferendis, sapiente beatae
+                        incidunt et molestias consectetur fugit qui quidem doloribus!</p>
+        </div>
+        <div class="message_add">
+                <h1>AFFICHER UN MESSAGE IMPORTANT POUR TOUS LES UTILISATEURS</h1>
+        </div>
+
+        <div class='planning'>
+                <div id="calendar"></div>
+                <div class="event_list" id="planning">
+                        <h1>Évènements à venir</h1>
+                        <div class="separator"></div>
+                        <div id="event-container">
+                                <div class="event">
+                                        <p class="date">12/12/2021</p>
+                                        <p class="hour">De 12h à 12h30</p>
+                                        <p class="name">Plongée à la carrière</p>
+                                </div>
+                        </div>
+                </div>
+        </div>
+
+
+        <div id="modals" style="display:flex;">
+                <modal id="menuModal">
+
+                        <div class="menu_content">
+                                <a class=active href="">Tableau de Bord</a>
+                                <a href="">Plannification</a>
+                                <a href="">Statistiques</a>
+                                <a href="">Rapport de Plongée</a>
+                                <a href="">Mes Informations</a>
+                        </div>
+                </modal>
+                <modal id="emergencyModal">
+
+                        <div class="top">
+                                <h1 id="txt_title" class="title">APPEL SOS</h1>
+                                <h3>Appuyez une nouvelle fois pour demander du secours</h3>
+                                <h3>Tap once again to call for emergency help</h3>
+                        </div>
+                        <div id="txt_descr" class="fields-container">
+                                <h3>
+                                        <a id="callButton"><i class="fa-solid fa-truck-medical"></i></a>
+                                </h3>
+                        </div>
+                </modal>
+                <modal id="importantMessageModal">
+                        <div class="top">
+                                <h1 id="txt_title" class="title">Message important pour les utilisateurs :</h1>
+                        </div>
+                        <div id="txt_descr" class="fields-container">
+                                <textarea id="textarea_important" rows="" cols=""
+                                        placeholder="Ecrivez votre message ici"></textarea>
+                        </div>
+                        <div class="validate_message">
+                                Valider
+                        </div>
+                </modal>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="../JS/modal.js"></script>
+        <script type=module src="../JS/user_recap.js"></script>
+</body>
+
+</html>

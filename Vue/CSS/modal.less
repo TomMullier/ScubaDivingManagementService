@@ -1,0 +1,86 @@
+.modal {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.305);
+        animation: fadeIn .2s both;
+        z-index: 10000;
+
+}
+
+.slider {
+        background-color: rgba(0, 0, 0, 0.212);
+        height: 3px;
+        width: 100px;
+        margin: 10px auto 10px auto;
+}
+
+.modal .modal-wrapper {
+        width: 100%;
+        padding: 0 20px;
+        background-color: #fff;
+        color: #000;
+        animation: slideIn .4s both;
+        overflow-y: auto;
+        bottom: 0;
+        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+}
+
+.modal .modal-wrapper::-webkit-scrollbar {
+        display: none;
+}
+
+.modal[aria-hidden="true"] {
+        animation-name: fadeOut;
+}
+
+.modal[aria-hidden="true"] .modal-wrapper {
+        animation-name: slideOut;
+}
+
+@keyframes fadeIn {
+        from {
+                opacity: 0;
+        }
+
+        to {
+                opacity: 1;
+        }
+}
+
+@keyframes fadeOut {
+        from {
+                opacity: 1;
+        }
+
+        to {
+                opacity: 0;
+        }
+}
+
+@keyframes slideIn {
+        from {
+                transform: translateY(100vw);
+        }
+
+        to {
+                transform: translateY(0vw);
+        }
+}
+
+@keyframes slideOut {
+        from {
+                transform: translateY(0px);
+        }
+
+        to {
+                transform: translateY(100vw);
+        }
+}

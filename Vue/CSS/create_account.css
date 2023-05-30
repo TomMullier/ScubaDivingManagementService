@@ -414,6 +414,305 @@ body {
   padding: 20px;
   justify-content: space-evenly;
 }
+.title_container h1 {
+  color: #120B8F;
+  font-size: 30px;
+  margin-bottom: 20px;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  text-transform: uppercase;
+}
+.form_container form {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.form_container form .container {
+  display: flex;
+  flex-direction: row;
+}
+.form_container form #btn-submit {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: auto;
+  height: auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 10px 10px;
+  width: 200px;
+  background-color: #f2574a;
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  text-align: center;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  border-radius: 20px;
+  border: none;
+  overflow-x: hidden;
+}
+.form_container form #btn-submit:hover {
+  cursor: pointer;
+  background-color: #ef2b1a;
+  box-shadow: 0 0px 20px rgba(0, 0, 0, 0.08);
+}
+.form_container form #btn-submit i {
+  font-size: 20px;
+}
+.form_container form #btn-submit .loading_gif {
+  width: 20px;
+  height: 20px;
+}
+.qualifications_container {
+  margin-left: 50px;
+}
+.name_container,
+.qualifications_container {
+  display: flex;
+  margin-top: 50px;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  font-family: 'Montserrat', sans-serif;
+  width: 48%;
+  height: auto;
+  margin-bottom: 50px;
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+}
+.name_container h2,
+.qualifications_container h2 {
+  color: #f2574a;
+  font-size: 20px;
+  margin-bottom: 30px;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  text-transform: uppercase;
+}
+.name_container div,
+.qualifications_container div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  margin-bottom: 20px;
+}
+.name_container div input,
+.qualifications_container div input {
+  width: 200px;
+  height: 30px;
+  border-radius: 0px;
+  border: 1px solid transparent;
+  border-bottom: 1px solid #120B8F;
+  padding: 0 10px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.2s;
+}
+.name_container div input:focus,
+.qualifications_container div input:focus {
+  border: 1px solid #f2574a;
+  border-radius: 10px;
+}
+.name_container div label,
+.qualifications_container div label {
+  color: #120B8F;
+  font-size: 15px;
+  font-family: 'Montserrat', sans-serif;
+  margin-right: 10px;
+  width: 50%;
+}
+#confirmation_creation .modal-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: auto;
+  height: auto;
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+}
+#confirmation_creation .modal-wrapper .top {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  height: auto;
+  margin-bottom: 20px;
+}
+#confirmation_creation .modal-wrapper .top h1 {
+  color: #f2574a;
+  font-size: 20px;
+  margin-bottom: 30px;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  text-transform: uppercase;
+}
+#confirmation_creation .modal-wrapper .top h3 {
+  color: #120B8F;
+  font-size: 15px;
+  margin: 0%;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+}
+#confirmation_creation .modal-wrapper .fields-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  height: auto;
+}
+#confirmation_creation .modal-wrapper .fields-container input {
+  width: 200px;
+  height: 30px;
+  border-radius: 0px;
+  border: none;
+  border-bottom: 1px solid #120B8F;
+  padding: 0 10px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.2s;
+}
+#confirmation_creation .modal-wrapper .fields-container input:focus {
+  border: 1px solid #f2574a;
+  border-radius: 10px;
+}
+#confirmation_creation .modal-wrapper .bottom {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  width: 100%;
+  height: auto;
+  margin-bottom: 20px;
+}
+#confirmation_creation .modal-wrapper .bottom #validateButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: auto;
+  height: auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 10px 10px;
+  width: 200px;
+  background-color: #f2574a;
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  text-align: center;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  border-radius: 20px;
+  border: none;
+}
+#confirmation_creation .modal-wrapper .bottom #validateButton:hover {
+  cursor: pointer;
+  background-color: #ef2b1a;
+  box-shadow: 0 0px 20px rgba(0, 0, 0, 0.08);
+}
+#confirmation_creation .modal-wrapper .bottom #validateButton i {
+  font-size: 20px;
+}
+#confirmation_creation .modal-wrapper .bottom #validateButton .loading_gif {
+  width: 20px;
+  height: 20px;
+}
+#confirmation_creation .modal-wrapper .bottom #cancelButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: auto;
+  height: auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 10px 10px;
+  width: 200px;
+  background-color: white;
+  color: #f2574a;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  text-align: center;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  border-radius: 20px;
+  border: none;
+  border: 1px solid #f2574a;
+  margin-left: 20px;
+}
+#confirmation_creation .modal-wrapper .bottom #cancelButton:hover {
+  cursor: pointer;
+  background-color: #e6e6e6;
+  box-shadow: 0 0px 20px rgba(0, 0, 0, 0.08);
+}
+#confirmation_creation .modal-wrapper .bottom #cancelButton i {
+  font-size: 20px;
+}
+#confirmation_creation .modal-wrapper .bottom #cancelButton .loading_gif {
+  width: 20px;
+  height: 20px;
+}
+#user_created {
+  align-items: flex-start;
+}
+#user_created .modal-wrapper {
+  width: 70vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: auto;
+  background-color: #008300;
+  top: 0;
+  margin-top: 20px;
+  border-radius: 10px;
+  padding: 20px;
+  animation: topSlideIn 0.3s both;
+}
+#user_created .modal-wrapper .top {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: auto;
+  top: 0;
+  width: calc(100% - 20px);
+  height: calc(100% - 40px);
+  border-radius: 10px;
+  border: 3px solid white;
+  padding: 10px;
+}
+#user_created .modal-wrapper .save_title {
+  font-size: 20px;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  text-transform: uppercase;
+  margin: 0;
+  color: white;
+  margin-bottom: 10px;
+}
+#user_created .modal-wrapper h3 {
+  font-size: 15px;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  text-transform: uppercase;
+  margin: 0;
+  color: white;
+  margin-bottom: 0px;
+}
 @keyframes topSlideIn {
   0% {
     transform: translateY(-100%);

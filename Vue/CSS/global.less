@@ -1,21 +1,21 @@
 html {
-        background: #fff;
-        color: #333;
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        font-size: 16px;
-        line-height: 1.42857143;
-        padding: 0;
-        margin: 0;
+    background: #fff;
+    color: #333;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.42857143;
+    padding: 0;
+    margin: 0;
 }
 
 body {
-        padding: 0;
-        margin: 0;
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        font-size: 14px;
-        line-height: 1.42857143;
-        color: #333;
-        background-color: #fff;
+    padding: 0;
+    margin: 0;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #333;
+    background-color: #fff;
 }
 
 // Total Blue Palette
@@ -24,17 +24,18 @@ body {
 @light_blue: #8BCFF1;
 @lightest_blue: #B1DFE6;
 @blue: #5087F7;
-@grey:#BDC7D7;
-@orange:#f2574a;
-@dark_orange:#c44236;
+@grey: #BDC7D7;
+@orange: #f2574a;
+@dark_orange: #c44236;
 
 
 
 
 @font-face {
-        font-family: 'Jolley';
-        src: url('Vue/fonts/jolley/jolley.woff') format('woff');
+    font-family: 'Jolley';
+    src: url('Vue/fonts/jolley/jolley.woff') format('woff');
 }
+
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,400;0,500;0,600;1,400&display=swap');
 @title_font: 'Jolley', sans-serif;
@@ -43,314 +44,327 @@ body {
 
 
 #emergencyButton {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 70px;
-        height: 70px;
-        border-radius: 50%;
-        background-color: @orange;
-        z-index: 9999;
-        padding: 0;
-        outline: none;
-        cursor: pointer;
-        border: none;
-    
-        i {
-            color: white;
-            font-size: 30px;
-            border: white 2px solid;
-            width: 0px;
-            height: 0px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: auto auto;
-            background-color: white;
-            transition: 0.2s;
-        }
-    
-        &:hover {
-            i {
-                color: @orange;
-                background-color: #fff;
-                width: 60px;
-                height: 60px;
-                transition: 0.2s;
-            }
-        }
-    }
-    
-    
-    #emergencyModal {
-        .modal-wrapper {
-            background-color: transparent;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            border-radius: 0;
-            flex-direction: column;
-            box-shadow: none;
-            width:auto;
-            height: auto;
-            overflow-y: visible;
-            
-            .top{
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                flex-direction: column;
-                .title{
-                    color: @dark_blue;
-                    font-size: 50px;
-                    text-transform: uppercase;
-                    font-family: @body_font;
-                    line-height: 0;
-                }
-                h3{
-                    color: @dark_blue;
-                    font-size: 15px;
-                    text-transform: uppercase;
-                    font-family: @body_font;
-                    line-height: 0;
-                }
-            }
-            #txt_descr{
-                margin-top: 50px;
-                #callButton {
-                    background-color: @orange;
-                    border: white 2px solid;
-                    outline: none;
-                    padding: 50px;
-                    border-radius: 50%;
-                    color: white;
-                    font-family: @body_font;
-                    font-size: 100px;
-                    text-transform: uppercase;
-                    cursor: pointer;
-                    margin-top: 20px;
-                    transition: 0.2s;
-                    animation: Blink 1s both infinite;
-                    &:hover {
-                        background-color: white;
-                        color: @orange;
-                    }
-                }
-            }
-    
-        }
-    
-        background-color: #f2584aec;
-    }
-    
-    @keyframes Blink {
-        0% {
-            background-color: white;
-                        color: @orange;
-        }
-    
-        50% {
-            background-color: @orange;
-                        color: white;
-        }
-    
-        100% {
-            background-color: white;
-                        color: @orange;
-        }
-    }
-    
-    
-    .message_add{
-        width: 80%;
-        margin: 0 auto;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        border: @orange 2px solid;
-        background-color: @orange;
-        border-radius: 10px;
-        padding: 0 20px;
-        margin-bottom: 20px;
-        margin-top: 20px;
-        transition: 0.2s;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: @orange;
+    z-index: 9999;
+    padding: 0;
+    outline: none;
+    cursor: pointer;
+    border: none;
+
+    i {
         color: white;
-        h1{
-            text-transform: uppercase;
-            font-size: 15px;
-            font-family: @body_font;
-        }
-        &:hover{
-            background-color: white;
-            color: @orange;
-            cursor: pointer;
-        }
-    }
-    
-    #importantMessageModal{
-        .modal-wrapper {
-            background-color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 10px;
-            z-index: 9999;
-            flex-direction: column;
-            box-shadow: none;
-            width:auto;
-            height: auto;
-            overflow-y: visible;
-            padding:50px;
-            
-            .top{
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                flex-direction: column;
-                .title{
-                    color: @dark_blue;
-                    font-size: 20px;
-                    text-transform: uppercase;
-                    font-family: @body_font;
-                    line-height: 0;
-                    margin-top:20px;
-                }
-                
-            }
-            #txt_descr{
-                margin-top: 10px;
-                width: 100%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                textarea{
-                    width: 100%;
-                    height: 100px;
-                    border: solid 2px @dark_blue;
-                    outline: none;
-                    font-family: @body_font;
-                    font-size: 15px;
-                    padding: 10px;
-                    resize: none;
-                    border-radius: 10px;
-                }
-            }
-            .validate_message{
-                width: auto;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                margin-top: 20px;
-                color: @orange;
-                border: @orange 2px solid;
-                padding:10px 20px;
-                border-radius: 10px;
-                font-size: 15px;
-                font-family: @body_font;
-                text-transform: uppercase;
-                cursor: pointer;
-                transition: 0.2s;
-                font-weight: bold;
-                &:hover{
-                    background-color: @orange;
-                    color: white;
-                }
-            }
-    
-        }
+        font-size: 30px;
+        border: white 2px solid;
+        width: 0px;
+        height: 0px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: auto auto;
+        background-color: white;
+        transition: 0.2s;
     }
 
-    .menu_button_container {
-        display: flex;
-        flex-direction: row;
-        justify-content: left;
+    &:hover {
+        i {
+            color: @orange;
+            background-color: #fff;
+            width: 60px;
+            height: 60px;
+            transition: 0.2s;
+        }
+    }
+}
+
+
+#emergencyModal {
+    .modal-wrapper {
         background-color: transparent;
-        position: absolute;
-        margin-left: 35px;
-        margin-top: 5px;
-    
-        .toggle {
-            z-index: 100000;
-        }
-    }
-    // Animation SlideLeft from left to right
-    @keyframes SlideLeft {
-        0% {
-            transform: translateX(-100%);
-        }
-    
-        100% {
-            transform: translateX(0%);
-        }
-    }
-    
-    // Animation SlideRight from right to left
-    @keyframes SlideRight {
-        0% {
-            transform: translateX(0%);
-        }
-    
-        100% {
-            transform: translateX(-100%);
-        }
-    }
-    
-    #menuModal {
-        &[aria-hidden="true"] .modal-wrapper {
-            animation: SlideRight 0.4s both;
-        }
-    
-        &[aria-hidden="true"] {
-            animation: fadeOut 0.4s both;
-        }
-    
-        .modal-wrapper {
-            background-color: white;
-            width: 100%;
-            height: 100%;
-            padding: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        border-radius: 0;
+        flex-direction: column;
+        box-shadow: none;
+        width: auto;
+        height: auto;
+        overflow-y: visible;
+
+        .top {
             display: flex;
-            flex-direction: column;
-            justify-content: left;
-            align-items: left;
-            border-radius: 10px;
-            animation: SlideLeft 0.4s both;
-    
-        }
-    
-        .menu_content {
-            display: flex;
-            flex-direction: column;
             justify-content: center;
-            align-items: left;
-            width: 100%;
-            margin: auto 0;
-    
-            a {
-                color: rgb(129, 129, 129);
-                font-size: 20px;
-                font-family: @body_font;
-                margin-bottom: 20px;
-                text-decoration: none;
+            align-items: center;
+            flex-direction: column;
+
+            .title {
+                color: @dark_blue;
+                font-size: 50px;
                 text-transform: uppercase;
+                font-family: @body_font;
+                line-height: 0;
             }
-    
-            .active {
-                font-weight: bold;
-                color: @orange;
+
+            h3 {
+                color: @dark_blue;
+                font-size: 15px;
+                text-transform: uppercase;
+                font-family: @body_font;
+                line-height: 0;
             }
-    
-            a:hover {
-                color: @orange;
-            }
-    
-            a:hover:before {
-                content: "> ";
-            }
-    
-    
         }
+
+        #txt_descr {
+            margin-top: 50px;
+
+            #callButton {
+                background-color: @orange;
+                border: white 2px solid;
+                outline: none;
+                padding: 50px;
+                border-radius: 50%;
+                color: white;
+                font-family: @body_font;
+                font-size: 100px;
+                text-transform: uppercase;
+                cursor: pointer;
+                margin-top: 20px;
+                transition: 0.2s;
+                animation: Blink 1s both infinite;
+
+                &:hover {
+                    background-color: white;
+                    color: @orange;
+                }
+            }
+        }
+
     }
+
+    background-color: #f2584aec;
+}
+
+@keyframes Blink {
+    0% {
+        background-color: white;
+        color: @orange;
+    }
+
+    50% {
+        background-color: @orange;
+        color: white;
+    }
+
+    100% {
+        background-color: white;
+        color: @orange;
+    }
+}
+
+
+.message_add {
+    width: 80%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: @orange 2px solid;
+    background-color: @orange;
+    border-radius: 10px;
+    padding: 0 20px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    transition: 0.2s;
+    color: white;
+
+    h1 {
+        text-transform: uppercase;
+        font-size: 15px;
+        font-family: @body_font;
+    }
+
+    &:hover {
+        background-color: white;
+        color: @orange;
+        cursor: pointer;
+    }
+}
+
+#importantMessageModal {
+    .modal-wrapper {
+        background-color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 10px;
+        z-index: 9999;
+        flex-direction: column;
+        box-shadow: none;
+        width: auto;
+        height: auto;
+        overflow-y: visible;
+        padding: 50px;
+
+        .top {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+
+            .title {
+                color: @dark_blue;
+                font-size: 20px;
+                text-transform: uppercase;
+                font-family: @body_font;
+                line-height: 0;
+                margin-top: 20px;
+            }
+
+        }
+
+        #txt_descr {
+            margin-top: 10px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            textarea {
+                width: 100%;
+                height: 100px;
+                border: solid 2px @dark_blue;
+                outline: none;
+                font-family: @body_font;
+                font-size: 15px;
+                padding: 10px;
+                resize: none;
+                border-radius: 10px;
+            }
+        }
+
+        .validate_message {
+            width: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            color: @orange;
+            border: @orange 2px solid;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: @body_font;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: bold;
+
+            &:hover {
+                background-color: @orange;
+                color: white;
+            }
+        }
+
+    }
+}
+
+.menu_button_container {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    background-color: transparent;
+    position: absolute;
+    margin-left: 35px;
+    margin-top: 5px;
+
+    .toggle {
+        z-index: 100000;
+    }
+}
+
+// Animation SlideLeft from left to right
+@keyframes SlideLeft {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(0%);
+    }
+}
+
+// Animation SlideRight from right to left
+@keyframes SlideRight {
+    0% {
+        transform: translateX(0%);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+#menuModal {
+    &[aria-hidden="true"] .modal-wrapper {
+        animation: SlideRight 0.4s both;
+    }
+
+    &[aria-hidden="true"] {
+        animation: fadeOut 0.4s both;
+    }
+
+    .modal-wrapper {
+        background-color: white;
+        width: 100%;
+        height: 100%;
+        padding: 50px;
+        display: flex;
+        flex-direction: column;
+        justify-content: left;
+        align-items: left;
+        border-radius: 10px;
+        animation: SlideLeft 0.4s both;
+
+    }
+
+    .menu_content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: left;
+        width: 100%;
+        margin: auto 0;
+
+        a {
+            color: rgb(129, 129, 129);
+            font-size: 20px;
+            font-family: @body_font;
+            margin-bottom: 20px;
+            text-decoration: none;
+            text-transform: uppercase;
+        }
+
+        .active {
+            font-weight: bold;
+            color: @orange;
+        }
+
+        a:hover {
+            color: @orange;
+        }
+
+        a:hover:before {
+            content: "> ";
+        }
+
+
+    }
+}

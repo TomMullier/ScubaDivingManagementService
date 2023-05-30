@@ -1021,3 +1021,401 @@ body {
   left: 20px;
   box-shadow: -2px 4px 3px rgba(0, 0, 0, 0.05);
 }
+.edit_rapport {
+  width: auto;
+  height: auto;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin-bottom: 20px;
+  margin-right: 30px;
+  display: flex;
+  flex-direction: row;
+  align-items: right;
+  justify-content: right;
+}
+.edit_rapport i {
+  color: #120B8F;
+  font-size: 30px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+#dive_rapport .user_legend_container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: auto;
+  margin-top: 20px;
+}
+#dive_rapport .user_legend_container .legend {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: auto;
+  margin-right: 20px;
+}
+#dive_rapport .user_legend_container .legend .legend_item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: auto;
+  margin-right: 10px;
+  border-radius: 13px;
+  padding-right: 10px;
+  border: 2px solid;
+}
+#dive_rapport .user_legend_container .legend p {
+  margin: 0;
+  padding: 0;
+  margin-left: 10px;
+  font-size: 13px;
+  font-family: 'Montserrat', sans-serif;
+  color: #120B8F;
+}
+#dive_rapport .user_legend_container .legend .legend_color {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+#dive_rapport .user_legend_container .legend .green_border {
+  border-color: #4CAF50;
+}
+#dive_rapport .user_legend_container .legend .orange_border {
+  border-color: #f2574a;
+}
+#dive_rapport .user_legend_container .legend .blue_border {
+  border-color: #120B8F;
+}
+#dive_rapport .user_legend_container .legend .grey_border {
+  border-color: #BDC7D7;
+}
+#dive_rapport .user_legend_container .legend .green_full {
+  background-color: #4CAF50;
+}
+#dive_rapport .user_legend_container .legend .orange_full {
+  background-color: #f2574a;
+}
+#dive_rapport .user_legend_container .legend .blue_full {
+  background-color: #120B8F;
+}
+#dive_rapport .user_legend_container .legend .grey_full {
+  background-color: #BDC7D7;
+}
+#dive_rapport .legend_item {
+  cursor: move;
+}
+#dive_rapport .column {
+  display: inline-block;
+  width: 30%;
+  height: 200px;
+  border: 1px solid #ccc;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+#dive_rapport .column.dragover {
+  background-color: #f0f0f0;
+}
+#dive_rapport .table-container {
+  display: flex;
+  justify-content: space-between;
+}
+#dive_rapport .next_button_infos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: auto;
+  height: auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 10px 10px;
+  width: 200px;
+  background-color: #f2574a;
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  text-align: center;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  border-radius: 20px;
+  border: none;
+  overflow-x: hidden;
+}
+#dive_rapport .next_button_infos:hover {
+  cursor: pointer;
+  background-color: #ef2b1a;
+  box-shadow: 0 0px 20px rgba(0, 0, 0, 0.08);
+}
+#dive_rapport .next_button_infos i {
+  font-size: 20px;
+}
+#dive_rapport .next_button_infos .loading_gif {
+  width: 20px;
+  height: 20px;
+}
+#dive_rapport .modal-wrapper {
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  border-radius: 0px;
+}
+#dive_rapport .modal-wrapper .general_plannification_container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
+}
+#dive_rapport .modal-wrapper .general_plannification_container h1 {
+  color: #f2574a;
+  font-size: 20px;
+  margin-bottom: 20px;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  text-transform: uppercase;
+}
+#dive_rapport .modal-wrapper .general_plannification_container .date_container,
+#dive_rapport .modal-wrapper .general_plannification_container .time_container,
+#dive_rapport .modal-wrapper .general_plannification_container .location_container,
+#dive_rapport .modal-wrapper .general_plannification_container .plongueurs,
+#dive_rapport .modal-wrapper .general_plannification_container .nombre_plongeurs {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 30%;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 0;
+  margin: 0;
+}
+#dive_rapport .modal-wrapper .general_plannification_container .date_container h3,
+#dive_rapport .modal-wrapper .general_plannification_container .time_container h3,
+#dive_rapport .modal-wrapper .general_plannification_container .location_container h3,
+#dive_rapport .modal-wrapper .general_plannification_container .plongueurs h3,
+#dive_rapport .modal-wrapper .general_plannification_container .nombre_plongeurs h3 {
+  color: #120B8F;
+  font-size: 15px;
+  margin-bottom: 20px;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  text-transform: uppercase;
+  margin-right: 20px;
+}
+#dive_rapport .modal-wrapper .general_plannification_container .date_container input,
+#dive_rapport .modal-wrapper .general_plannification_container .time_container input,
+#dive_rapport .modal-wrapper .general_plannification_container .location_container input,
+#dive_rapport .modal-wrapper .general_plannification_container .plongueurs input,
+#dive_rapport .modal-wrapper .general_plannification_container .nombre_plongeurs input {
+  width: 200px;
+  height: 30px;
+  border-radius: 5px;
+  border: 1px solid #120B8F;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  text-align: center;
+  text-transform: uppercase;
+  margin-right: 0;
+  padding: 0;
+  padding: 0 10px;
+}
+#dive_rapport .modal-wrapper .general_plannification_container .map_dive {
+  width: 30%;
+  height: 200px;
+  border-radius: 5px;
+  border: 2px solid #f2574a;
+  font-family: 'Montserrat', sans-serif;
+  background-color: #BDC7D7;
+  font-size: 15px;
+  text-align: center;
+  text-transform: uppercase;
+  margin-right: 0;
+  padding: 0;
+  margin-bottom: 20px;
+}
+#dive_rapport .modal-wrapper .general_plannification_container .next_button_infos {
+  margin-bottom: 50px;
+}
+#dive_rapport .modal-wrapper .plongeurs_container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
+}
+#dive_rapport .modal-wrapper .plongeurs_container h1 {
+  color: #f2574a;
+  font-size: 20px;
+  margin-bottom: 20px;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  text-transform: uppercase;
+}
+#dive_rapport .modal-wrapper .plongeurs_container .plongueurs,
+#dive_rapport .modal-wrapper .plongeurs_container .nombre_plongeurs {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 30%;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 0;
+  margin: 0;
+}
+#dive_rapport .modal-wrapper .plongeurs_container .plongueurs h3,
+#dive_rapport .modal-wrapper .plongeurs_container .nombre_plongeurs h3 {
+  color: #120B8F;
+  font-size: 15px;
+  margin-bottom: 20px;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  text-transform: uppercase;
+  margin-right: 20px;
+}
+#dive_rapport .modal-wrapper .plongeurs_container .plongueurs input,
+#dive_rapport .modal-wrapper .plongeurs_container .nombre_plongeurs input {
+  width: 200px;
+  height: 30px;
+  border-radius: 5px;
+  border: 1px solid #120B8F;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  text-align: center;
+  text-transform: uppercase;
+  margin-right: 0;
+  padding: 0;
+  padding: 0 10px;
+}
+#dive_rapport .modal-wrapper .plongeurs_container .plongueurs .next_button_infos,
+#dive_rapport .modal-wrapper .plongeurs_container .nombre_plongeurs .next_button_infos {
+  margin-bottom: 50px;
+}
+#dive_rapport .modal-wrapper .parametres-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
+}
+#dive_rapport .modal-wrapper .parametres-container h1 {
+  color: #f2574a;
+  font-size: 20px;
+  margin-bottom: 20px;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  text-transform: uppercase;
+}
+#dive_rapport .modal-wrapper .parametres-container .metres-prevus,
+#dive_rapport .modal-wrapper .parametres-container .metres-realises,
+#dive_rapport .modal-wrapper .parametres-container .temps-prevu,
+#dive_rapport .modal-wrapper .parametres-container .temps-realise {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 30%;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 0;
+  margin: 0;
+}
+#dive_rapport .modal-wrapper .parametres-container .metres-prevus h3,
+#dive_rapport .modal-wrapper .parametres-container .metres-realises h3,
+#dive_rapport .modal-wrapper .parametres-container .temps-prevu h3,
+#dive_rapport .modal-wrapper .parametres-container .temps-realise h3 {
+  color: #120B8F;
+  font-size: 15px;
+  margin-bottom: 20px;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  text-transform: uppercase;
+  margin-right: 20px;
+}
+#dive_rapport .modal-wrapper .parametres-container .metres-prevus input,
+#dive_rapport .modal-wrapper .parametres-container .metres-realises input,
+#dive_rapport .modal-wrapper .parametres-container .temps-prevu input,
+#dive_rapport .modal-wrapper .parametres-container .temps-realise input {
+  width: 200px;
+  height: 30px;
+  border-radius: 5px;
+  border: 1px solid #120B8F;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  text-align: center;
+  text-transform: uppercase;
+  margin-right: 0;
+  padding: 0;
+  padding: 0 10px;
+}
+#dive_rapport .modal-wrapper .parametres-container .metres-prevus .next_button_infos,
+#dive_rapport .modal-wrapper .parametres-container .metres-realises .next_button_infos,
+#dive_rapport .modal-wrapper .parametres-container .temps-prevu .next_button_infos,
+#dive_rapport .modal-wrapper .parametres-container .temps-realise .next_button_infos {
+  margin-bottom: 50px;
+}
+#dive_rapport .modal-wrapper .info-palanquee {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
+}
+#dive_rapport .modal-wrapper .info-palanquee h1 {
+  color: #f2574a;
+  font-size: 20px;
+  margin-bottom: 20px;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  text-transform: uppercase;
+}
+#dive_rapport .modal-wrapper .info-palanquee .plongeur-fonction,
+#dive_rapport .modal-wrapper .info-palanquee .niveau-plongeur,
+#dive_rapport .modal-wrapper .info-palanquee .tech-explo,
+#dive_rapport .modal-wrapper .info-palanquee .nitrox {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 30%;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 0;
+  margin: 0;
+}
+#dive_rapport .modal-wrapper .info-palanquee .plongeur-fonction h3,
+#dive_rapport .modal-wrapper .info-palanquee .niveau-plongeur h3,
+#dive_rapport .modal-wrapper .info-palanquee .tech-explo h3,
+#dive_rapport .modal-wrapper .info-palanquee .nitrox h3 {
+  color: #120B8F;
+  font-size: 15px;
+  margin-bottom: 20px;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  text-transform: uppercase;
+  margin-right: 20px;
+}
+#dive_rapport .modal-wrapper .info-palanquee .plongeur-fonction input,
+#dive_rapport .modal-wrapper .info-palanquee .niveau-plongeur input,
+#dive_rapport .modal-wrapper .info-palanquee .tech-explo input,
+#dive_rapport .modal-wrapper .info-palanquee .nitrox input {
+  width: 200px;
+  height: 30px;
+  border-radius: 5px;
+  border: 1px solid #120B8F;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  text-align: center;
+  text-transform: uppercase;
+  margin-right: 0;
+  padding: 0;
+  padding: 0 10px;
+}
+#dive_rapport .modal-wrapper .info-palanquee .plongeur-fonction .next_button_infos,
+#dive_rapport .modal-wrapper .info-palanquee .niveau-plongeur .next_button_infos,
+#dive_rapport .modal-wrapper .info-palanquee .tech-explo .next_button_infos,
+#dive_rapport .modal-wrapper .info-palanquee .nitrox .next_button_infos {
+  margin-bottom: 50px;
+}

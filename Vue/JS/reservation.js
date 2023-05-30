@@ -2,6 +2,7 @@ import {
   frLocale
 } from './@fullcalendar/core/locales/fr.js';
 let calendar;
+let eventClicked;
 document.addEventListener('DOMContentLoaded', function () {
 
 
@@ -41,6 +42,8 @@ document.addEventListener('DOMContentLoaded', function () {
     eventClick: function (info) {
       // Element HTML -> info.el
       // Evénement -> info.event
+
+      eventClicked = info.event;
       modals.show("eventModal", function () {
         menutoggle.classList.remove('active');
       });
@@ -92,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   });
   events.forEach(function (event) {
-    if(event.reserved) {
+    if (event.reserved) {
       event.backgroundColor = "#f2574a";
     } else {
       event.backgroundColor = "#4CAF50";
@@ -206,13 +209,13 @@ var events = [{
     title: 'Événement 3',
     start: '2023-05-26T12:00:00',
     end: '2023-05-26T13:30:00',
-    reserved:true,
+    reserved: true,
   },
   {
     title: 'Événement 6',
     start: '2023-05-26T15:00:00',
     end: '2023-05-26T16:30:00',
-    reserved:true,
+    reserved: true,
   },
   {
     title: 'Événement 4',
@@ -251,3 +254,65 @@ var events = [{
     reserved: false
   }
 ]
+
+
+let rapport_button = document.querySelector(".edit_rapport");
+rapport_button.addEventListener("click", function () {
+  modals.closeCurrent();
+
+  
+  console.log(eventClicked);
+  setTimeout(function () {
+
+    modals.show("dive_rapport", function () {
+      menutoggle.classList.remove('active');
+    });
+    menutoggle.classList.toggle('active');
+    menutoggle.classList.toggle('close-modal');
+  }, 500);
+
+  // GMT +2
+
+  document.querySelector(".title_rapport_plannif").innerHTML = "Plannification "+eventClicked.title;
+
+
+
+});
+
+const legendItems = document.querySelectorAll('.legend_item');
+const columns = document.querySelectorAll('.column');
+
+let draggedItem = null;
+
+// Gestionnaires d'événements pour le glisser-déposer des éléments de la légende
+legendItems.forEach(item => {
+  item.addEventListener('dragstart', () => {
+    draggedItem = item;
+    item.classList.add('dragged');
+  });
+
+  item.addEventListener('dragend', () => {
+    draggedItem = null;
+    item.classList.remove('dragged');
+  });
+});
+
+// Gestionnaires d'événements pour le glisser-déposer des colonnes du tableau
+columns.forEach(column => {
+  column.addEventListener('dragover', e => {
+    e.preventDefault();
+    column.classList.add('dragover');
+  });
+
+  column.addEventListener('dragleave', () => {
+    column.classList.remove('dragover');
+  });
+
+  column.addEventListener('drop', () => {
+    column.appendChild(draggedItem);
+    draggedItem.classList.remove('dragged');
+    draggedItem.classList.add('in-table');
+    column.classList.remove('dragover');
+  });
+});
+

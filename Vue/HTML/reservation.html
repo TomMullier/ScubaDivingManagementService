@@ -95,10 +95,151 @@
 
     <div id="modals" style="display:flex;">
 
+        <modal id="dive_rapport">
+            <div class="general_plannification_container">
+                <h1 class="title_rapport_plannif">Plannification</h1>
+                <div class="date_container">
+                    <h3>Date de la plongée </h3>
+                    <input type="date" id="date" name="date" value="">
+                </div>
+                <div class="time_container">
+                    <h3>Heure de la plongée </h3>
+                    <input type="time" id="time" name="time" value="">
+                </div>
+                <div class="location_container">
+                    <h3>Lieu de la plongée </h3>
+                    <input type="text" id="location" name="location" value="">
+                </div>
+                <div class="map_dive"></div>
+
+                <div class="next_button_infos">
+                    Suivant
+                </div>
+
+            </div>
+
+
+            <div class="plongeurs_container">
+                <h1>Plongeurs</h1>
+                <div class="nombre_plongeurs">
+                    <h3>Nombre de plongeurs</h3>
+                    <input type="number" id="number" min="0" max="50" name="number" value="">
+                </div>
+                <div class="plongueurs">
+                    <h3>Plongeurs</h3>
+                    <select name="plongeurs" id="select-plongeur">
+                        <option value="">--Please choose an option--</option>
+                    </select>
+                </div>
+
+
+                <div id="user_legend"></div>
+                    <div class="user_legend_container">
+                            <div class="legend">
+                                <div class="legend_item green_border" draggable="true">
+                                    <div class="legend_color green_full"></div>
+                                    <p>michel</p>
+                                </div>
+                                <div class="legend_item orange_border" draggable="true">
+                                    <div class="legend_color orange_full"></div>
+                                    <p>pierre</p>
+                                </div>
+                                    <div class="legend_item blue_border" draggable="true">
+                                        <div class="legend_color blue_full"></div>
+                                        <p>paul</p>
+                                </div>
+                                <div class="legend_item grey_border" draggable="true">
+                                    <div class="legend_color grey_full"></div>
+                                        <p>jacques</p>
+                                    </div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <div class="column" id="column1"></div>
+                    <div class="column" id="column2"></div>
+                    <div class="column" id="column3"></div>
+                  </div>
+                  
+
+                <div class="next_button_infos">
+                    Suivant
+                </div>
+            </div>
+
+
+
+
+            <div class="palanque">
+                <div class="parametres-container">
+                    <h1>Palanquée 1</h1>
+                    <h2>Paramètres</h2>
+                    <div class="metres-prevus">
+                        <h3>Profondeur prévue</h3>
+                        <select name="metres-prevus" id="metres-prevus">
+                            <option value="">--Please choose an option--</option>
+                            <option value="20">20m</option>
+                            <option value="20">40m</option>
+                            <option value="20">60m</option>
+                            <option value="20">80m</option>
+                        </select>
+                    </div>
+                    <div class="metres-realises">
+                        <h3>Profondeur réalisée</h3>
+                        <input type="number" id="metres" name="metres" value="">
+                    </div>
+                    <div class="temps-prevu">
+                        <h3>Temps prévu</h3>
+                        <input type="time" id="duree-prevu" name="duree-prevu" step="1">
+                    </div>
+                    <div class="temps-realise">
+                        <h3>Temps réalisé</h3>
+                        <input type="time" id="duree-realise" name="duree-realise" step="1">
+                    </div>
+                </div>
+                <div class="info-palanquee">
+                    <h1>Joh Doe</h1>
+                    <div class="plongeur-fonction">
+                        <h3>Fonction</h3>
+                        <select name="plongeurs" id="select-plongeur">
+                            <option value="">--Please choose an option--</option>
+                            <option value="guide">Guide</option>
+                            <option value="plongeur">Plongeur</option>
+                            <option value="serre-fils">Serre-fils</option>
+                        </select>
+                    </div>
+                    <div class="niveau-plongeur">
+                        <h3>Niveau</h3>
+                        <select name="niveau-plongeur" id="niveau-plongeur">
+                            <option value="">--Please choose an option--</option>
+                            <option value="E1">E1</option>
+                            <option value="E2">E2</option>
+                            <option value="E3">E3</option>
+                        </select>
+                    </div>
+                    <div class="tech-explo">
+                        <h3>Tech-Explo</h3>
+                        <select name="tech-explo" id="tech-explo">
+                            <option value="">--Please choose an option--</option>
+                            <option value="tech">Tech</option>
+                            <option value="explo">Explo</option>
+                        </select>
+                    </div>
+                    <div class="nitrox">
+                        <h3>Nitrox %</h3>
+                        <input type="number" id="number" min="0" max="100" name="number" value="">
+                    </div>
+                </div>
+            </div>
+        </modal>
+
+
+
+
         <modal id="menuModal">
             <div class="menu_content">
-                <a class=active href="">Tableau de Bord</a>
-                <a href="">Plannification</a>
+                <a href="">Tableau de Bord</a>
+                <a class=active href="">Plannification</a>
                 <a href="">Statistiques</a>
                 <a href="">Rapport de Plongée</a>
                 <a href="">Mes Informations</a>
@@ -140,6 +281,9 @@
                     <p id="eventPrice">Prix : 30,00 €</p>
                     <p id="eventWeather">Météo prévue : Ensoleillé <i class="fa-solid fa-sun"></i></p>
                     <div id="reserveButton">S'inscrire</div>
+                    <span class="edit_rapport">
+                        <i class="fa-solid fa-file-circle-plus"></i>
+                    </span>
                     <!-- <div id="dereserveButton">Se désinscrire</div> -->
                 </div>
             </div>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../CSS/global.css">
+        <link rel="stylesheet" href="../CSS/create_account.css">
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css">
+        <link rel="stylesheet" href="../CSS/modal.css" />
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.7/index.global.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/typescript/4.0.5/typescript.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.js"></script>
+        <script type=module src="../JS/@fullcalendar/core/locales/fr.js"></script>
+        <!-- <script type=module src="../JS/@fullcalendar/core"></script> -->
+        <script type=module src='https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@6.1.7/index.global.min.js'>
+        </script>
+        <script src="https://kit.fontawesome.com/b89837f3ad.js" crossorigin="anonymous"></script>
+
+
+
+
+
+        <title>Créer un compte</title>
+</head>
+
+<body>
+        <div class="menu_button_container">
+                <div class="toggle">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                </div>
+        </div>
+        <div id="menutoggle"></div>
+        <button id="emergencyButton"><i class="fa-solid fa-truck-medical"></i></button>
+
+
+        <div class="title_container">
+                <h1>CRéer un compte utilisateur</h1>
+        </div>
+
+
+        <div class="form_container">
+                <form id="signup_form">
+                        <div class="container">
+
+                                <div class="name_container">
+                                        <h2>Identité</h2>
+                                        <div>
+                                                <label for="lastname">Nom</label>
+                                                <input type="text" name="lastname" placeholder="Nom">
+                                        </div>
+                                        <div>
+                                                <label for="firstname">Prénom</label>
+                                                <input type="text" name="firstname" placeholder="Prénom">
+                                        </div>
+                                        <div>
+                                                <label for="mail">Adresse mail</label>
+                                                <input type="email" name="mail" placeholder="Adresse Mail">
+                                        </div>
+                                        <div>
+                                                <label for="phone">Numéro de téléphone</label>
+                                                <input type="tel" name="phone" placeholder="Numéro de Téléphone">
+                                        </div>
+                                        <div>
+                                                <label for="birthdate">Date de naissance</label>
+                                                <input type="date" name="birthdate" placeholder="Date de Naissance">
+                                        </div>
+        
+                                </div>
+                                <div class="qualifications_container">
+                                        <h2>Qualifications</h2>
+                                        <div>
+                                                <label for="diver_qualif">Qualification de plongeur</label>
+                                                <input type="text" name="diver_qualif" placeholder="Qualification de Plongeur">
+                                        </div>
+                                        <div>
+                                                <label for="instru_qualif">Qualification d'instructeur</label>
+                                                <input type="text" name="instru_qualif" placeholder="Qualification d'Instructeur">
+                                        </div>
+                                        <div>
+                                                <label for="nox_lvl">Certification NITROX</label>
+                                                <input type="text" name="nox_lvl" placeholder="Certification NITROX">
+                                        </div>
+                                        <div>
+                                                <label for="additional_qualif">Qualification additionnelle</label>
+                                                <input type="text" name="additional_qualif" placeholder="Qualification Additionnelle">
+                                        </div>
+                                        <div>
+                                                <label for="license_nb">Numéro de licence</label>
+                                                <input type="text" name="license_nb" placeholder="Numéro de Licence">
+                                        </div>
+                                        <div>
+                                                <label for="license_expi">Date d'expiration de la licence</label>
+                                                <input type="date" name="license_expi" placeholder="Licence">
+                                        </div>
+                                        <div>
+                                                <label for="medic_certif_expi">Date d'expiration du certificat médical</label>
+                                                <input type="date" name="medic_certif_expi" placeholder="Certificat Médical">
+                                        </div>
+                                </div>
+                        </div>
+                        <!-- <input type="password" name="password"> -->
+                        <div id="btn-submit">Créer le compte</div>
+
+                </form>
+        </div>
+
+        <div id="modals" style="display:flex;">
+                <modal id="confirmation_creation">
+                        <div class="top">
+                                <h1 id="txt_title" class="title">Sécurité</h1>
+                                <h3 id="txt_descr">Veuillez entrer votre mot de passe pour confirmer la création du compte</h3>
+                        </div>
+                        <div class="fields-container">
+                                <h3>
+                                        <input type="password" name="password" placeholder="Mot de passe">
+                                </h3>
+                        </div>
+                        <div class="bottom">
+                                        <div id="validateButton">Valider</div>
+                                        <div id="cancelButton">Annuler</div>
+                        </div>
+                </modal>
+
+                <modal id="user_created">
+                        <div class="top">
+                                <h1 id="txt_title_user_created" class="save_title">Succès</h1>
+                                <h3 id="txt_descr_user_created">Le compte a été créé avec succès</h3>
+                        </div>
+                </modal>
+                <modal id="menuModal">
+                        <div class="menu_content">
+                                <a class=active href="">Tableau de Bord</a>
+                                <a href="">Plannification</a>
+                                <a href="">Statistiques</a>
+                                <a href="">Rapport de Plongée</a>
+                                <a href="">Mes Informations</a>
+                        </div>
+                </modal>
+                <modal id="emergencyModal">
+
+                        <div class="top">
+                                <h1 id="txt_title" class="title">APPEL SOS</h1>
+                                <h3>Appuyez une nouvelle fois pour demander du secours</h3>
+                                <h3>Tap once again to call for emergency help</h3>
+                        </div>
+                        <div id="txt_descr" class="fields-container">
+                                <h3>
+                                        <a id="callButton"><i class="fa-solid fa-truck-medical"></i></a>
+                                </h3>
+                        </div>
+                </modal>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="../JS/modal.js"></script>
+        <script type=module src="../JS/create_account.js"></script>
+</body>
+
+</html>

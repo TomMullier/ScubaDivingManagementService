@@ -42,6 +42,11 @@ app.get("/dive_report", function (req, res) {
     res.sendFile(path.join(__dirname + "/Vue/HTML/dive_report.html"));
 });
 
+
+app.get("/create_account", function (req, res) {
+    res.sendFile(path.join(__dirname + "/Vue/HTML/create_account.html"));
+});
+
 app.use(express.static(path.join(__dirname, "Vue")));
 app.listen(4200, (err) => {
     if (err) console.error(err);

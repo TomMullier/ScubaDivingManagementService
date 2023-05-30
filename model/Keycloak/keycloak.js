@@ -155,7 +155,7 @@ async function addUser(adminToken, dataReq) {
             return undefined
         });
     return add;
-}
+} 
 
 
 async function createUser(userData, clientUsername) {
@@ -199,6 +199,37 @@ async function createUser(userData, clientUsername) {
     return true;
 }
 
+async function deleteUser(mail) {
+    const adminToken = await getAcessToken(); // return token, undefined if err
+    if (!adminToken) return false;
+    const userId = await getUserId(adminToken, mail); // return user id, undefined if err
+    if (!userId) return false;
+
+
+
+    let config = {
+        method: 'delete',
+        maxBodyLength: Infinity,
+        url: process.env.URL_USER+"/"+userId,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${adminToken}`
+        },
+    };
+    const deleteUser = await axios.request(config)
+        .then((response) => {
+            console.log("Success deleting user")
+            return true
+        })
+        .catch((error) => {
+            console.log("Failed deleting user")
+            console.log("\t->", error.response.data['errorMessage']);
+            return undefined
+        });
+    return deleteUser;
+}
+
 module.exports = {
-    createUser
+    createUser,
+    deleteUser
 }

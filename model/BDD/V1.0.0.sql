@@ -31,6 +31,8 @@ CREATE TABLE Diver(
    Id_Diver CHAR(36)  NOT NULL,
    Lastname VARCHAR(50)  NOT NULL,
    Firstname VARCHAR(50)  NOT NULL,
+   Mail VARCHAR(50) NOT NULL,
+   Phone VARCHAR(10) NOT NULL,
    Diver_Qualification VARCHAR(50) ,
    Instructor_Qualification VARCHAR(50) ,
    Nox_Level CHAR(1) ,
@@ -45,6 +47,8 @@ CREATE TABLE Diver(
 #COMMENT ON COLUMN Diver.Id_Diver IS 'of type GUID stored as char(36). Like 363d5a64-22c2-4b45-a29b-2d2d358e340c';
 #COMMENT ON COLUMN Diver.Lastname IS 'Last name of diver';
 #COMMENT ON COLUMN Diver.Firstname IS 'First name of diver';
+#COMMENT ON COLUMN Diver.Mail IS 'Mail of diver';
+#COMMENT ON COLUMN Diver.Phone IS 'Phone of diver';
 #COMMENT ON COLUMN Diver.Diver_Qualification IS 'Current qualification of diver: BA, PA12, PA20, PA40, PA60, PE20, PE40, PE60,  N1, N2, N3, N3, N4, N5, BR, AG, OR';
 #COMMENT ON COLUMN Diver.Instructor_Qualification IS 'Current instructor qualication fo diver if it exists  E1, E2, E3, E4';
 #COMMENT ON COLUMN Diver.Nox_Level IS 'Current Nitrox qualification of diver if it exists: Simple, Confirmed';

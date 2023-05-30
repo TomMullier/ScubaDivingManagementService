@@ -148,6 +148,7 @@ app.post('/auth/club/club_members', keycloak.protect(),
     body("diver_qualif").trim().escape(),
     body("instru_qualif").trim().escape(),
     body("nox_lvl").trim().escape(),
+    body("additional_qualif").trim().escape(),
     body("license_nb").trim().escape(),
     body("license_expi").trim().escape(),
     body("medic_certif_expi").trim().escape(),
@@ -155,8 +156,21 @@ app.post('/auth/club/club_members', keycloak.protect(),
     body("password").trim().escape(),
     async function (req, res) {
         if (checkUser(req, "CLUB")) {
-            const response = await Keycloak_module.createUser(req.body, getUserName(req));
-            res.send({created:response});
+            let responseKc = await Keycloak_module.createUser(req.body, getUserName(req));
+            console.log(responseKc);
+            if (responseKc) {
+                Database.createUser(req.body, (created) => {
+                    if (created) {
+                        return res.json({ created: true });
+                    } else {
+                        //delete user in keycloak   
+                        Keycloak_module.deleteUser(req.body.mail);
+                        return res.json({ created: false });
+                    }
+                })
+            } else {
+                return res.json({ created: false });
+            }
         }
         else res.redirect('/auth/dashboard');
     })

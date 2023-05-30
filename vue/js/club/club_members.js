@@ -3,6 +3,7 @@ const signupFormNodes = {
     lastname: signupForm.querySelector('input[name="lastname"]'),
     firstname: signupForm.querySelector('input[name="firstname"]'),
     mail: signupForm.querySelector('input[name="mail"]'),
+    phone: signupForm.querySelector('input[name="phone"]'),
     diver_qualif: signupForm.querySelector('input[name="diver_qualif"]'),
     instru_qualif: signupForm.querySelector('input[name="instru_qualif"]'),
     nox_lvl: signupForm.querySelector('input[name="nox_lvl"]'),
@@ -13,15 +14,15 @@ const signupFormNodes = {
     birthdate: signupForm.querySelector('input[name="birthdate"]'),
     isDp: signupForm.querySelector('input[name="isDp"]'),
     password: signupForm.querySelector('input[name="password"]')
-
 };
 
 document.getElementById("btn-submit").addEventListener('click', (e) => {
-    e.preventDefault;
+    e.preventDefault();
     const data = {
         lastname: signupFormNodes.lastname.value,
         firstname: signupFormNodes.firstname.value,
         mail: signupFormNodes.mail.value,
+        phone: signupFormNodes.phone.value,
         diver_qualif: signupFormNodes.diver_qualif.value,
         instru_qualif: signupFormNodes.instru_qualif.value,
         nox_lvl: signupFormNodes.nox_lvl.value,
@@ -32,16 +33,17 @@ document.getElementById("btn-submit").addEventListener('click', (e) => {
         birthdate: signupFormNodes.birthdate.value,
         isDp: signupFormNodes.isDp.checked,
         password: signupFormNodes.password.value
-    };
-    // console.log(data);
-
+    };    
     fetch('/auth/club/club_members', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
-    }).then(res => {
-        console.log(res);
     })
-})
+        .then((res) => res.json())
+        .then((res) => {
+            console.log(res);
+        });
+    
+});

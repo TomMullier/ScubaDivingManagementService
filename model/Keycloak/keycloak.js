@@ -29,7 +29,8 @@ async function getAcessToken() {
         })
         .catch((error) => {
             console.log("Failed getting admin token");
-            //console.log(error);
+            console.log("\t->", error.response.data['errorMessage']);
+            return undefined
         });
     return adminTk;
 }
@@ -46,15 +47,23 @@ async function getRoleId(token, role) {
     };
     const roles = await axios.request(config)
         .then((response) => {
-            console.log("Success getting role ID")
+            console.log("Success getting all roles")
             return response.data;
         })
         .catch((error) => {
-            console.log("Failed getting role ID")
-            //console.log(error);
+            console.log("Failed getting all role")
+            console.log("\t->", error.response.data['errorMessage']);
+            return undefined
+
         });
     const role_user = roles.find(item => item.name === role); //change role here
-    return role_user.id;
+    if (role_user && role_user.id) {
+        console.log("\t->Success finding role ID");
+        return role_user.id
+    } else {
+        console.log("\t->Failed finding role ID");
+        return undefined
+    }
 }
 
 async function getUserId(token, userMail) {
@@ -69,26 +78,28 @@ async function getUserId(token, userMail) {
     };
     const users = await axios.request(config)
         .then((response) => {
-            console.log("Success getting user")
+            console.log("Success getting all user")
             return response.data;
         })
         .catch((error) => {
-            console.log("Failed getting user")
-            //console.log(error);
+            console.log("Failed getting all user")
+            console.log("\t->", error.response.data['errorMessage']);
+            return undefined
         });
 
     let user = "";
     for (let i = 0; i < users.length; i++) {
         if (users[i].username === userMail) {
-            console.log("Success finding user ID");
+            console.log("\t->Success finding user ID");
             user = users[i];
+            return user.id;
         };
     }
     if (user === "") {
-        user = "UNDEFINED";
         console.log("Failed to find user ID");
+        console.log("\t->", error.response.data['errorMessage']);
+        return undefined
     }
-    return user.id;
 }
 
 async function setRole(idRole, idUser, roleName, token) {
@@ -109,17 +120,45 @@ async function setRole(idRole, idUser, roleName, token) {
         },
         data: JSON.stringify(data)
     };
-    axios.request(config)
+    const success = await axios.request(config)
         .then((res) => {
             console.log("Success setting role");
+            return true;
         })
         .catch((error) => {
             console.log("Failed setting role");
-            // console.log(error);
+            console.log("\t->", error.response.data['errorMessage']);
+            return undefined
         });
+    return success;
 }
 
-async function create_user(userData, clientUsername) {
+async function addUser(adminToken, dataReq) {
+    let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: process.env.URL_USER,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${adminToken}`
+        },
+        data: dataReq
+    };
+    const add = await axios.request(config)
+        .then((response) => {
+            console.log("Success adding new user")
+            return true
+        })
+        .catch((error) => {
+            console.log("Failed adding new user")
+            console.log("\t->", error.response.data['errorMessage']);
+            return undefined
+        });
+    return add;
+}
+
+
+async function createUser(userData, clientUsername) {
     dataClient.username = clientUsername;
     dataClient.password = userData.password;
     console.log(userData);
@@ -131,43 +170,35 @@ async function create_user(userData, clientUsername) {
         "credentials": [
             {
                 "type": "password",
-                "value": "pass",
+                "value": userData.license_nb,
                 "temporary": true
             }
         ],
         "enabled": true
     });
-    
-    const adminToken = await getAcessToken();
-    let config = {
-        method: 'post',
-        maxBodyLength: Infinity,
-        url: process.env.URL_USER,
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${adminToken}`
-        },
-        data: dataReq
-    };
-    await axios.request(config)
-        .then((response) => {
-            console.log("Success adding new user")
-            //console.log(JSON.stringify(response.data));
-        })
-        .catch((error) => {
-            console.log("Failed adding new user")
-            //console.log(error);
-        });
 
-    const roleId = await getRoleId(adminToken, 'app_user')// change role here
-    // if dp  const roleId = getRole(adminToken, 'app_dp')// change role here
-    const userId = await getUserId(adminToken, userData.mail)
+    let role_name = 'app_user'; //or app_dp
+    const adminToken = await getAcessToken(); // return token, undefined if err
+    if (!adminToken) return false;
+    const successUser = await addUser(adminToken, dataReq); // return true, undefined if err
+    if (!successUser) return false;
+    const userId = await getUserId(adminToken, userData.mail); // return user id, undefined if err
+    if (!userId) return false;
+    let roleId = await getRoleId(adminToken, role_name); // return role id, undefined if err
+    if (!roleId) return false;
+    let successRole = await setRole(roleId, userId, role_name, adminToken); // return true, undefined if err
+    if (!successRole) return false;
 
-    await setRole(roleId, userId, "app_user", adminToken) //change if dp
-
-
+    if (userData.isDp) {
+        role_name = 'app_dp';
+        roleId = await getRoleId(adminToken, role_name); // return role id, undefined if err
+        if (!roleId) return false;
+        successRole = await setRole(roleId, userId, role_name, adminToken); // return true, undefined if err
+        if (!successRole) return false;
+    }
+    return true;
 }
 
 module.exports = {
-    create_user
+    createUser
 }

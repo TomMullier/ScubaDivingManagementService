@@ -144,6 +144,7 @@ app.post('/auth/club/club_members', keycloak.protect(),
     body("lastname").trim().escape(),
     body("firstname").trim().escape(),
     body("mail").trim().escape(),
+    body("phone").trim().escape(),
     body("diver_qualif").trim().escape(),
     body("instru_qualif").trim().escape(),
     body("nox_lvl").trim().escape(),
@@ -152,9 +153,10 @@ app.post('/auth/club/club_members', keycloak.protect(),
     body("medic_certif_expi").trim().escape(),
     body("birthdate").trim().escape(),
     body("password").trim().escape(),
-    function (req, res) {
+    async function (req, res) {
         if (checkUser(req, "CLUB")) {
-            Keycloak_module.create_user(req.body, getUserName(req));
+            const response = await Keycloak_module.createUser(req.body, getUserName(req));
+            res.send({created:response});
         }
         else res.redirect('/auth/dashboard');
     })

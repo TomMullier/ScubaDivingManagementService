@@ -24,21 +24,22 @@ emergencyButton.addEventListener("click", function () {
 });
 
 let save_buttons = document.querySelectorAll(".save_button_infos");
+
 save_buttons.forEach(function (button) {
   button.addEventListener("click", function () {
-    button.innerHTML = "<img src='../img/loading_animation.svg' alt='loading' class='loading_gif'>";
-    button.style.width = "20px";
+    modals.show("validation_save");
+    // time out to close
     setTimeout(function () {
-      button.style.width = "100px";
-      button.innerHTML = "<i class='fas fa-check'></i>";
-      modals.show("validation_save");
-      setTimeout(function () {
-        modals.closeCurrent();
-        button.style.width = "200px";
-        button.innerHTML = "Sauvegarder";
-      }, 2000);
-
+      modals.closeCurrent();
     }, 2000);
 
   });
 });
+
+
+// Sélectionnez l'élément du bouton de sauvegarde
+const saveButton = document.getElementById('saveButton');
+
+// Ajoutez un gestionnaire d'événement au clic sur le bouton de sauvegarde
+saveButton.addEventListener('click', generatePDF);
+document.getElementById('saveButton').addEventListener('click', generatePDF);

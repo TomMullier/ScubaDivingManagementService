@@ -38,6 +38,10 @@ app.get("/profile", function (req, res) {
     res.sendFile(path.join(__dirname + "/Vue/HTML/my_profile.html"));
 });
 
+app.get("/dive_report", function (req, res) {
+    res.sendFile(path.join(__dirname + "/Vue/HTML/dive_report.html"));
+});
+
 app.use(express.static(path.join(__dirname, "Vue")));
 app.listen(4200, (err) => {
     if (err) console.error(err);

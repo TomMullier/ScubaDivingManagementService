@@ -101,7 +101,7 @@
 
         <div class="modify_password">
           <h1>Mot de passe</h1>
-          <div>
+          <div class="modify_password_container">
             <div class="info-item">
               <h2 class="info-title">Ancien mot de passe</h2>
               <input type="password" id="password" placeholder="Mot de passe" class="info-input">
@@ -119,7 +119,9 @@
             </div>
 
           </div>
-
+          <div class="save_button_infos">
+            Sauvegarder
+          </div>
         </div>
         <div class="qualif_doc_container">
 
@@ -158,6 +160,9 @@
               </div>
 
             </div>
+            <div class="save_button_infos">
+              Sauvegarder
+            </div>
           </div>
         </div>
       </div>
@@ -167,6 +172,14 @@
 
 
     <div id="modals" style="display:flex;">
+      <modal id="validation_save">
+        <div class="top">
+          <h1 id="txt_title" class="save_title">Sauvegarde</h1>
+          <h3>Les modifications ont bien été sauvegardées</h3>
+        </div>
+      </modal>
+
+
       <modal id="menuModal">
 
         <div class="menu_content">

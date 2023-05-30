@@ -157,7 +157,7 @@ function UpdateDiveTeamComposition(Id_Dive_Team_Composition,Dive_Type,Diver_Age,
   Requete(tmpREQ);
 }
 function DeleteDiveTeamComposition(Id_Dive_Team_Composition){
-  tmpREQ = `DELETE from Dive_Team_Composition WHERE Id_Dive_Team_Composition ="`+Id_Dive_Team_Composition;
+  tmpREQ = `DELETE from Dive_Team_Composition WHERE Id_Dive_Team_Composition ="`+Id_Dive_Team_Composition+`";`;
   Requete(tmpREQ);
 }
 
@@ -165,9 +165,13 @@ function DeleteDiveTeamComposition(Id_Dive_Team_Composition){
 function CreateMaxDepthForQualification(Diver_Qualification,Diver_Age,Guided_Diver_Depth,Autonomous_Diver_Depth){
   tmpUID = randomUUID();
   tmpREQ = `INSERT into Max_Depth_for_Qualification value("`+tmpUID+`", "`+Diver_Qualification+`", "`+Diver_Age+`", "`+Guided_Diver_Depth+`", "`+Autonomous_Diver_Depth+`");`;
-  console.log(tmpREQ);
+  Requete(tmpREQ);
 }
 
+function DeleteMaxDepthForQualification(Id_Max_Depth_for_Qualification){
+  tmpREQ = `DELETE from Max_Depth_for_Qualification WHERE Id_Max_Depth_for_Qualification ="`+Id_Max_Depth_for_Qualification+`";`
+  Requete(tmpREQ);
+}
 
 
 //test Diver
@@ -233,3 +237,6 @@ Planned_Date = "2023-11-05";Planned_Time = "12";Comments ="";Special_Needs = "Sa
 //UpdateDiveTeamMember("5909b800-e5e8-461c-8543-f6276bda8cb7","bab987de-f3bb-4003-a0ca-fb962f6031db","N0","N2","Aucun","E2","0","C'est la merde frère","50");
 //DeleteDiveTeamMember("5909b800-e5e8-461c-8543-f6276bda8cb7","bab987de-f3bb-4003-a0ca-fb962f6031db");
 
+//Test MaxDepthforQualification
+//CreateMaxDepthForQualification('N2','18','40','20');
+//DeleteMaxDepthForQualification('6f45d467-1d51-4b70-bc64-f2e221bdcae8');

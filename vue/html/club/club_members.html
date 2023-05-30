@@ -1,14 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+
 <body>
     <h1>Club members</h1>
 
+    <form id="signup_form" style="display: flex; flex-direction: column;">
+        <input type="text" name="lastname" placeholder="lastname">
+        <input type="text" name="firstname" placeholder="firstname">
+        <input type="email" name="mail" placeholder="mail">
+        <input type="text" name="diver_qualif" placeholder="diver_qualif">
+        <input type="text" name="instru_qualif" placeholder="instru_qualif">
+        <input type="text" name="nox_lvl" placeholder="nox_lvl">
+        <input type="text" name="additional_qualif" placeholder="additional_qualif">
+        <input type="text" name="license_nb" placeholder="license_nb">
+        <label for="license_expi">license_expi</label><input type="date" name="license_expi" placeholder="license_expi">
+        <label for="medic_certif_expi">medic_certif_expi</label><input type="date" name="medic_certif_expi"
+            placeholder="medic_certif_expi">
+        <label for="birthdate">birthdate</label><input type="date" name="birthdate" placeholder="birthdate">
+        <br>
+        <input type="password" name="password">
+        <button id="btn-submit">SUBMIT</button>
+
+    </form>
+
     <script type="module" src="../../js/club/club_members.js"></script>
 </body>
+
 </html>

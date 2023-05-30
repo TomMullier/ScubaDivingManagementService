@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require("body-parser");
 const session = require("express-session");
 const Keycloak = require("keycloak-connect");
+const { body, validationResult } = require("express-validator");
 const app = express();
 const http = require("http").Server(app);
 const path = require("path");
@@ -34,6 +35,10 @@ function checkUser(req, location) {
         if (roles.includes(location)) return true;
         else return false;
     }
+}
+
+function getUserName(req) {
+    return req.kauth.grant.access_token.content.preferred_username;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -133,6 +138,29 @@ app.get('/auth/club/locations', keycloak.protect(), function (req, res) {
     }
     else res.redirect('/auth/dashboard');
 })
+
+
+app.post('/auth/club/club_members', keycloak.protect(),
+    body("lastname").trim().escape(),
+    body("firstname").trim().escape(),
+    body("mail").trim().escape(),
+    body("diver_qualif").trim().escape(),
+    body("instru_qualif").trim().escape(),
+    body("nox_lvl").trim().escape(),
+    body("license_nb").trim().escape(),
+    body("license_expi").trim().escape(),
+    body("medic_certif_expi").trim().escape(),
+    body("birthdate").trim().escape(),
+    body("password").trim().escape(),
+    function (req, res) {
+        if (checkUser(req, "CLUB")) {
+            Keycloak_module.create_user(req.body, getUserName(req));
+        }
+        else res.redirect('/auth/dashboard');
+    })
+
+
+
 
 http.listen(port, hostname, (err) => {
     if (err) console.error(err);

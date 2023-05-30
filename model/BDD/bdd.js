@@ -10,13 +10,17 @@ class BDD {
             host: process.env.MYSQL_HOST,
             user: process.env.MYSQL_USERNAME,
             password: process.env.MYSQL_PASSWORD,
-          //  database: process.env.DATABASE_NAME
+            database: process.env.DATABASE_NAME
         });
 
         this.con.connect(function(err) {
             if (err) throw err;
-            console.log("Connected!");
+            console.log("DB connected!");
           });
+    }
+
+    name(params) {
+        
     }
 }
 

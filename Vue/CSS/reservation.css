@@ -113,7 +113,7 @@ body {
 }
 #emergencyButton:hover i {
   color: #f2574a;
-  background-color: #fff;
+  background-color: white;
   width: 60px;
   height: 60px;
   transition: 0.2s;
@@ -631,7 +631,7 @@ body {
   width: 100%;
   margin: 0;
   height: 20%;
-  padding: 10px;
+  padding: 10px 0;
 }
 #eventModal .modal-wrapper #eventStart {
   font-size: 15px;

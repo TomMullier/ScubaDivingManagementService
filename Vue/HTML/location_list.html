@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../CSS/global.css">
+        <link rel="stylesheet" href="../CSS/location_list.css">
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css">
+        <link rel="stylesheet" href="../CSS/modal.css" />
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.7/index.global.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/typescript/4.0.5/typescript.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.js"></script>
+        <script type=module src="../JS/@fullcalendar/core/locales/fr.js"></script>
+        <!-- <script type=module src="../JS/@fullcalendar/core"></script> -->
+        <script type=module src='https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@6.1.7/index.global.min.js'>
+        </script>
+        <script src="https://kit.fontawesome.com/b89837f3ad.js" crossorigin="anonymous"></script>
+        
+
+
+
+
+
+        <title>Liste des Lieux</title>
+</head>
+
+<body>
+        <div class="menu_button_container">
+                <div class="toggle">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                </div>
+        </div>
+        <div id="menutoggle"></div>
+        <button id="emergencyButton"><i class="fa-solid fa-truck-medical"></i></button>
+
+
+        <div class="title_container">
+                <h1>Mon profil</h1>
+        </div>
+
+        <div class="top_bar">
+                <div class="search_bar_container">
+                        <input id="searchbar" type="text" placeholder="Rechercher un lieu">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                
+                <div id="create_button" class="create_button">
+                        <i class="fa-solid fa-plus"></i>
+                        <p>Créer un lieu</p>
+                </div>
+        </div>
+
+        <div class="list_container">
+                <div class="list_item">
+                        <h1 class="list_title">JUNIA ISEN Lille</h1>
+                        <h2 class="adress">41 Boulevard Vauban, 59000 Lille</h2>
+                        <div class="coordinate">
+                                
+                                <h2 class="latitude"><i class="fa-solid fa-map-marker"></i> Latitude : 50.636565</h2>
+                                <h2 class="longitude"><i class="fa-solid fa-map-marker"></i> Longitude : 3.069910</h2>
+                        </div>
+                        <a href="" class="phone"><i class="fa-solid fa-phone"></i>03 20 30 40 50</a>
+                        <a href="" class="web"><i class="fa-solid fa-at"></i> Site Web</a>
+                        <div class="button_container">
+                                <button class="edit_button"><i class="fa-solid fa-pencil"></i></button>
+                                <button class="delete_button"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                </div>
+
+        </div>
+
+
+
+        <div id="modals" style="display:flex;">
+
+                <modal id="create_location">
+                        <div class="top">
+                                <h1 class="title">Créer un lieu</h1>
+                                <h3>Remplissez les champs ci-dessous pour créer un lieu</h3>
+                        </div>
+                        <div class="fields-container">
+                                <h3>
+                                        <label for="name">Nom du lieu</label>
+                                        <input type="text" id="name" name="name" placeholder="Nom du lieu">
+                                </h3>
+                                <h3>
+                                        <label for="adress">Adresse</label>
+                                        <input type="text" id="adress" name="adress" placeholder="Adresse">
+                                </h3>
+                                <h3>
+                                        <label for="latitude">Latitude</label>
+                                        <input type="text" id="latitude" name="latitude" placeholder="Latitude">
+                                </h3>
+                                <h3>
+                                        <label for="longitude">Longitude</label>
+                                        <input type="text" id="longitude" name="longitude" placeholder="Longitude">
+                                </h3>
+                                <h3>
+                                        <label for="phone">Téléphone</label>
+                                        <input type="text" id="phone" name="phone" placeholder="Téléphone">
+                                </h3>
+                                <h3>
+                                        <label for="web">Site Web</label>
+                                        <input type="text" id="web" name="web" placeholder="Site Web">
+                                </h3>
+                        </div>
+                        <div class="button_container">
+                                <button class="create_button">Créer</button>
+                                <button class="cancel_button">Annuler</button>
+                        </div>
+                </modal>
+
+                <modal id="menuModal">
+                        <div class="menu_content">
+                                <a class=active href="">Tableau de Bord</a>
+                                <a href="">Plannification</a>
+                                <a href="">Statistiques</a>
+                                <a href="">Rapport de Plongée</a>
+                                <a href="">Mes Informations</a>
+                        </div>
+                </modal>
+                <modal id="emergencyModal">
+
+                        <div class="top">
+                                <h1 id="txt_title" class="title">APPEL SOS</h1>
+                                <h3>Appuyez une nouvelle fois pour demander du secours</h3>
+                                <h3>Tap once again to call for emergency help</h3>
+                        </div>
+                        <div id="txt_descr" class="fields-container">
+                                <h3>
+                                        <a id="callButton"><i class="fa-solid fa-truck-medical"></i></a>
+                                </h3>
+                        </div>
+                </modal>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="../JS/modal.js"></script>
+        <script type=module src="../JS/location_list.js"></script>
+</body>
+
+</html>

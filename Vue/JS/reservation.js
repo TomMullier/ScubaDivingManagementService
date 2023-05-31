@@ -260,7 +260,7 @@ let rapport_button = document.querySelector(".edit_rapport");
 rapport_button.addEventListener("click", function () {
   modals.closeCurrent();
 
-  
+
   console.log(eventClicked);
   setTimeout(function () {
 
@@ -273,7 +273,7 @@ rapport_button.addEventListener("click", function () {
 
   // GMT +2
 
-  document.querySelector(".title_rapport_plannif").innerHTML = "Plannification "+eventClicked.title;
+  document.querySelector(".title_rapport_plannif").innerHTML = "Plannification " + eventClicked.title;
 
 
 
@@ -281,57 +281,65 @@ rapport_button.addEventListener("click", function () {
 
 const legendItems = document.querySelectorAll('.legend_item');
 const tableContainer = document.querySelector('.table-container');
-const maxTagsPerColumn = 5;
-let columns = [document.getElementById('column1')];
-let draggedItem = null;
+const maxTagsPerColumn = 4;
+let columnCounter = 1;
 
 // Gestionnaires d'événements pour le glisser-déposer des éléments de la légende
 legendItems.forEach(item => {
   item.addEventListener('dragstart', () => {
-    draggedItem = item;
     item.classList.add('dragged');
   });
 
   item.addEventListener('dragend', () => {
-    draggedItem = null;
     item.classList.remove('dragged');
   });
 });
 
-function createNewColumn() {
-  const column = document.createElement('div');
-  column.classList.add('column');
-  column.id = `column${columns.length + 1}`;
+// Fonction pour créer une nouvelle colonne avec les mêmes caractéristiques que la colonne d'origine
+const createNewColumn = () => {
+  columnCounter++;
+  const newColumn = document.createElement('div');
+  newColumn.classList.add('column');
+  newColumn.id = `column${columnCounter}`;
 
   const columnTitle = document.createElement('h2');
   columnTitle.classList.add('column-title');
-  columnTitle.textContent = `Palanquée ${columns.length + 1}`;
-  column.appendChild(columnTitle);
+  columnTitle.textContent = `Palanquée ${columnCounter}`;
+  newColumn.appendChild(columnTitle);
 
-  columns.push(column);
-  tableContainer.appendChild(column);
-
-  // Ajouter les gestionnaires d'événements pour la nouvelle colonne
-  column.addEventListener('dragover', e => {
+  // Ajouter les gestionnaires d'événements pour le glisser-déposer dans la nouvelle colonne
+  newColumn.addEventListener('dragover', e => {
     e.preventDefault();
-    column.classList.add('dragover');
+    newColumn.classList.add('dragover');
   });
 
-  column.addEventListener('dragleave', () => {
-    column.classList.remove('dragover');
+  newColumn.addEventListener('dragleave', () => {
+    newColumn.classList.remove('dragover');
   });
 
-  column.addEventListener('drop', () => {
-    if (column.children.length < maxTagsPerColumn) {
-      column.appendChild(draggedItem);
-      draggedItem.classList.remove('dragged');
-      draggedItem.classList.add('in-table');
-      column.classList.remove('dragover');
+  newColumn.addEventListener('drop', e => {
+    e.preventDefault();
+    const draggedItem = document.querySelector('.dragged');
+    const parentColumn = draggedItem.parentElement;
+
+    if (parentColumn !== newColumn) {
+      if (newColumn.children.length < maxTagsPerColumn) {
+        newColumn.appendChild(draggedItem);
+        if (parentColumn.children.length === 0 && parentColumn !== tableContainer.lastElementChild) {
+          tableContainer.removeChild(parentColumn);
+        }
+      }
     }
-  });
-}
 
-// Gestionnaire d'événement pour le glisser-déposer sur les colonnes existantes
+    newColumn.classList.remove('dragover');
+  });
+
+  return newColumn;
+};
+
+// Gestionnaires d'événements pour le glisser-déposer des colonnes du tableau
+const columns = document.querySelectorAll('.column');
+
 columns.forEach(column => {
   column.addEventListener('dragover', e => {
     e.preventDefault();
@@ -342,26 +350,33 @@ columns.forEach(column => {
     column.classList.remove('dragover');
   });
 
-  column.addEventListener('drop', () => {
-    if (column.children.length < maxTagsPerColumn) {
-      column.appendChild(draggedItem);
-      draggedItem.classList.remove('dragged');
-      draggedItem.classList.add('in-table');
-      column.classList.remove('dragover');
+  column.addEventListener('drop', e => {
+    e.preventDefault();
+    const draggedItem = document.querySelector('.dragged');
+    const parentColumn = draggedItem.parentElement;
+
+    if (parentColumn !== column) {
+      if (column.children.length === 0) {
+        const newColumn = createNewColumn();
+        tableContainer.appendChild(newColumn);
+        newColumn.appendChild(draggedItem);
+      } else if (column.children.length < maxTagsPerColumn) {
+        column.appendChild(draggedItem);
+        if (parentColumn.children.length === 0 && parentColumn !== tableContainer.lastElementChild) {
+          tableContainer.removeChild(parentColumn);
+        }
+      }
     }
+
+    column.classList.remove('dragover');
   });
 });
 
-// Gestionnaire d'événement pour le glisser-déposer sur la première colonne
-columns[0].addEventListener('drop', () => {
-  if (columns[0].children.length < maxTagsPerColumn) {
-    columns[0].appendChild(draggedItem);
-    draggedItem.classList.remove('dragged');
-    draggedItem.classList.add('in-table');
-    columns[0].classList.remove('dragover');
 
-    if (columns[0].children.length === 1) {
-      createNewColumn();
-    }
-  }
-});
+
+
+
+
+
+
+

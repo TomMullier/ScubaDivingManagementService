@@ -96,8 +96,7 @@ async function getUserId(token, userMail) {
         };
     }
     if (user === "") {
-        console.log("Failed to find user ID");
-        console.log("\t->", error.response.data['errorMessage']);
+        console.log("\t->Failed to find user ID");
         return undefined
     }
 }
@@ -155,22 +154,21 @@ async function addUser(adminToken, dataReq) {
             return undefined
         });
     return add;
-} 
+}
 
 
 async function createUser(userData, clientUsername) {
     dataClient.username = clientUsername;
     dataClient.password = userData.password;
-    console.log(userData);
 
     let dataReq = JSON.stringify({
-        "email": userData.mail,
-        "firstName": userData.firstname,
-        "lastName": userData.lastname,
+        "email": userData.Mail,
+        "firstName": userData.Firstname,
+        "lastName": userData.Lastname,
         "credentials": [
             {
                 "type": "password",
-                "value": userData.license_nb,
+                "value": userData.License_Number,
                 "temporary": true
             }
         ],
@@ -179,10 +177,13 @@ async function createUser(userData, clientUsername) {
 
     let role_name = 'app_user'; //or app_dp
     const adminToken = await getAcessToken(); // return token, undefined if err
+    dataClient.username = "";
+    dataClient.password = "";
+
     if (!adminToken) return false;
     const successUser = await addUser(adminToken, dataReq); // return true, undefined if err
     if (!successUser) return false;
-    const userId = await getUserId(adminToken, userData.mail); // return user id, undefined if err
+    const userId = await getUserId(adminToken, userData.Mail); // return user id, undefined if err
     if (!userId) return false;
     let roleId = await getRoleId(adminToken, role_name); // return role id, undefined if err
     if (!roleId) return false;
@@ -199,8 +200,15 @@ async function createUser(userData, clientUsername) {
     return true;
 }
 
-async function deleteUser(mail) {
+async function deleteUser(mail, clientUsername = "", clientPassword = "") {
+    if (clientUsername != "" && clientPassword != "") {
+        dataClient.username = clientUsername;
+        dataClient.password = clientPassword;
+    }
     const adminToken = await getAcessToken(); // return token, undefined if err
+    dataClient.username = "";
+    dataClient.password = "";
+
     if (!adminToken) return false;
     const userId = await getUserId(adminToken, mail); // return user id, undefined if err
     if (!userId) return false;
@@ -210,7 +218,7 @@ async function deleteUser(mail) {
     let config = {
         method: 'delete',
         maxBodyLength: Infinity,
-        url: process.env.URL_USER+"/"+userId,
+        url: process.env.URL_USER + "/" + userId,
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${adminToken}`
@@ -224,7 +232,7 @@ async function deleteUser(mail) {
         .catch((error) => {
             console.log("Failed deleting user")
             console.log("\t->", error.response.data['errorMessage']);
-            return undefined
+            return false
         });
     return deleteUser;
 }

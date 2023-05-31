@@ -132,6 +132,71 @@ app.get('/auth/club/club_members', keycloak.protect(), function (req, res) {
     else res.redirect('/auth/dashboard');
 })
 
+app.put('/auth/club/club_members', keycloak.protect(),
+    body("newMail").trim().escape(),
+    body("phone").trim().escape(),
+    body("diver_qualif").trim().escape(),
+    body("instru_qualif").trim().escape(),
+    body("nox_lvl").trim().escape(),
+    body("additional_qualif").trim().escape(),
+    body("license_nb").trim().escape(),
+    body("license_expi").trim().escape(),
+    body("medic_certif_expi").trim().escape(),
+    function (req, res) {
+        if (checkUser(req, "CLUB")) {
+            Database.modifUser(req.body, (created) => {
+                if (created) {
+                    return res.json({ created: true });
+                } else {
+                    Keycloak_module.deleteUser(req.body.Mail);
+                    return res.json({ created: false });
+                }
+            })
+        } else { res.redirect('/auth/dashboard') };
+    })
+
+app.delete('/auth/club/club_members', keycloak.protect(), async function (req, res) {
+    // Récupérer toutes les infos dans DB
+    // Supprimer dans DB
+    // SI OK
+        // Supprimer dans Kc
+        // SI OK FIN
+        // SINON Remettre dans DB
+    // SINON FIN
+    if (checkUser(req, "CLUB")) {
+        console.log("Getting user info in DB");
+
+        Database.getUserInfo(req.body.Mail, (userInfo) => {
+            if (userInfo === undefined) return res.json({ deleted: false })
+            console.log("Deleting user in DB");
+
+            Database.deleteUser(req.body.Mail, async (isDelDb) => {
+                if (!isDelDb) return res.json({ deleted: false })
+                console.log("Deleting user in KC");
+
+                const isDelKc = await Keycloak_module.deleteUser(req.body.Mail, getUserName(req), req.body.password);
+                if (isDelKc) return res.json({ deleted: true })
+                
+                console.log("ERROR, adding user in DB");
+                Database.createUser(userInfo, false, (isInser) => {
+                    if (isInser) return res.json({ created: true });
+                    else return res.json({ created: false });
+                })
+            })
+        })
+    }
+    else res.redirect('/auth/dashboard');
+})
+
+app.get('/auth/club/get_club_members', keycloak.protect(), async function (req, res) {
+    if (checkUser(req, "CLUB")) {
+        Database.getUsersList((users) => {
+            return res.json(users);
+        });
+    }
+    else res.redirect('/auth/dashboard');
+})
+
 app.get('/auth/club/locations', keycloak.protect(), function (req, res) {
     if (checkUser(req, "CLUB")) {
         res.sendFile(__dirname + "/vue/html/club/locations.html", { headers: { 'userType': 'club' } });
@@ -141,30 +206,30 @@ app.get('/auth/club/locations', keycloak.protect(), function (req, res) {
 
 
 app.post('/auth/club/club_members', keycloak.protect(),
-    body("lastname").trim().escape(),
-    body("firstname").trim().escape(),
-    body("mail").trim().escape(),
-    body("phone").trim().escape(),
-    body("diver_qualif").trim().escape(),
-    body("instru_qualif").trim().escape(),
-    body("nox_lvl").trim().escape(),
-    body("additional_qualif").trim().escape(),
-    body("license_nb").trim().escape(),
-    body("license_expi").trim().escape(),
-    body("medic_certif_expi").trim().escape(),
-    body("birthdate").trim().escape(),
+    body("Lastname").trim().escape(),
+    body("Firstname").trim().escape(),
+    body("Mail").trim().escape(),
+    body("Phone").trim().escape(),
+    body("Diver_Qualification").trim().escape(),
+    body("Instructor_Qualification").trim().escape(),
+    body("Nox_Level").trim().escape(),
+    body("Additional_Qualifications").trim().escape(),
+    body("License_Number").trim().escape(),
+    body("License_Expiration_Date").trim().escape(),
+    body("Medical_Certificate_Expiration_Date").trim().escape(),
+    body("Birthdate").trim().escape(),
     body("password").trim().escape(),
     async function (req, res) {
         if (checkUser(req, "CLUB")) {
             let responseKc = await Keycloak_module.createUser(req.body, getUserName(req));
-            console.log(responseKc);
+            console.log("Now stocking in DB");
             if (responseKc) {
-                Database.createUser(req.body, (created) => {
+                Database.createUser(req.body, true, async (created) => {
                     if (created) {
                         return res.json({ created: true });
                     } else {
                         //delete user in keycloak   
-                        Keycloak_module.deleteUser(req.body.mail);
+                        await Keycloak_module.deleteUser(req.body.Mail);
                         return res.json({ created: false });
                     }
                 })

@@ -21,36 +21,79 @@ class BDD {
         });
     }
 
-    createUser(userData, callback) {
-        const data = {
-            Id_Diver: uuidv4(),
-            Lastname: userData.lastname,
-            Firstname: userData.firstname,
-            Mail: userData.mail,
-            Phone: userData.phone,
-            Diver_Qualification: userData.diver_qualif,
-            Instructor_Qualification: userData.instru_qualif,
-            Nox_Level: userData.nox_lvl,
-            Additional_Qualifications: userData.additional_qualif,
-            License_Number: userData.license_nb,
-            License_Expiration_Date: userData.license_expi,
-            Medical_Certificate_Expiration_Date: userData.medic_certif_expi,
-            Birthdate: userData.birthdate
+    createUser(userData, isNew, callback) {
+        if (isNew) {
+            userData.Id_Diver = uuidv4();
+            delete userData.password;
+            delete userData.isDp;
         }
-        console.log(data);
+
         let query = 'INSERT INTO diver SET ?';
 
 
-        this.con.query(query, [data], (err, result) => {
+        this.con.query(query, [userData], (err, result) => {
             if (err) {
                 console.log(err);
                 console.log("Deleting user in Keycloak");
                 callback(false);
-            }else {
+            } else {
                 console.log("User correctly inserted ");
                 callback(true);
             }
         })
+    }
+
+    getUsersList(callback) {
+        const query = 'SELECT Lastname, Firstname, Mail, Phone FROM diver';
+        this.con.query(query, (err, result) => {
+            if (err) {
+                console.log(err);
+            }
+            else {
+                return callback(result);
+            }
+        })
+    }
+
+    getUserInfo(mail, callback) {
+        const data = {
+            Mail: mail
+        };
+
+        const query = 'SELECT * FROM diver WHERE ?';
+
+        this.con.query(query, [data], (err, result) => {
+            if (err) {
+                console.log(err);
+                console.log("Can't get user info");
+                callback(undefined);
+            } else {
+                console.log("Getting user info");
+                callback(result[0]);
+            }
+        })
+    }
+
+    deleteUser(userMail, callback) {
+        const data = {
+            Mail: userMail
+        };
+
+        const query = 'DELETE FROM diver WHERE ?';
+
+        this.con.query(query, [data], (err, result) => {
+            if (err) {
+                console.log(err);
+                return callback(false)
+            }
+            else {
+                return callback(true);
+            }
+        })
+    }
+
+    modifUser(userData, callback) {
+        console.log(userData);
     }
 }
 

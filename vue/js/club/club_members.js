@@ -85,7 +85,7 @@ fetch('/auth/club/get_club_members', {
         btnModif.forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
-                modifUser(e.target.parentElement.querySelector(".mail").innerText);
+                getUserInfo(e.target.parentElement.querySelector(".mail").innerText);
             })
         })
 
@@ -97,28 +97,54 @@ fetch('/auth/club/get_club_members', {
         })
     })
 
-function modifUser(target) {
+function getUserInfo(target) {
     console.log(target);
 
-    const data = {
-        oldMail: target,
-        phone: "0987654321",
-        diver_qualif: signupFormNodes.diver_qualif.value,
-        instru_qualif: signupFormNodes.instru_qualif.value,
-        nox_lvl: signupFormNodes.nox_lvl.value,
-        additional_qualif: signupFormNodes.additional_qualif.value,
-        license_nb: signupFormNodes.license_nb.value,
-        license_expi: signupFormNodes.license_expi.value,
-        medic_certif_expi
-    }
+    // const data = {
+    //     oldMail: target,
+    //     phone: "0987654321",
+    //     diver_qualif: signupFormNodes.diver_qualif.value,
+    //     instru_qualif: signupFormNodes.instru_qualif.value,
+    //     nox_lvl: signupFormNodes.nox_lvl.value,
+    //     additional_qualif: signupFormNodes.additional_qualif.value,
+    //     license_nb: signupFormNodes.license_nb.value,
+    //     license_expi: signupFormNodes.license_expi.value,
+    //     medic_certif_expi
+    // }
 
+    fetch('/auth/club/get_member_info', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ Mail: target })
+    }).then(res => res.json())
+        .then(res => {
+            console.log(res)
+
+            let data = res;
+            data.Mail = "b@b.b"
+            delete data.Lastname;
+            delete data.Firstname;
+            delete data.Birthdate;
+            data.License_Expiration_Date = "1234-12-12";
+            data.Medical_Certificate_Expiration_Date = "1234-12-12";
+            
+
+            modifyUserInfo(data, signupFormNodes.password.value)
+        })
+}
+
+function modifyUserInfo(data, clientPassword) {
+    data.clientPassword = clientPassword;
     fetch('/auth/club/club_members', {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(data)
-    })
+        body: JSON.stringify(data )
+    }).then(res => res.json())
+        .then(res => console.log(res))
 }
 
 function deleterUser(target) {
@@ -130,8 +156,8 @@ function deleterUser(target) {
         },
         body: JSON.stringify({ Mail: target, password: signupFormNodes.password.value })
     }).then((res) => res.json())
-    .then((res) => {
-        console.log(res);
-    });
+        .then((res) => {
+            console.log(res);
+        });
 
 }

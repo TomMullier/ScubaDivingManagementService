@@ -55,7 +55,7 @@ class BDD {
         })
     }
 
-    getUserInfo(mail, callback) {
+    getUserInfoByMail(mail, callback) {
         const data = {
             Mail: mail
         };
@@ -68,7 +68,26 @@ class BDD {
                 console.log("Can't get user info");
                 callback(undefined);
             } else {
-                console.log("Getting user info");
+                console.log("Getting user info DB");
+                callback(result[0]);
+            }
+        })
+    }
+
+    getUserInfoById(id, callback) {
+        const data = {
+            Id_Diver: id
+        };
+
+        const query = 'SELECT * FROM diver WHERE ?';
+
+        this.con.query(query, [data], (err, result) => {
+            if (err) {
+                console.log(err);
+                console.log("Can't get user info");
+                callback(undefined);
+            } else {
+                console.log("Getting user info DB");
                 callback(result[0]);
             }
         })
@@ -92,8 +111,21 @@ class BDD {
         })
     }
 
-    modifUser(userData, callback) {
-        console.log(userData);
+    modifUser(data, callback) {
+        console.log(data);
+
+        const query = 'UPDATE diver SET ? WHERE Id_Diver = ?'
+
+        this.con.query(query, [data, data.Id_Diver], (err, result) => {
+            if (err) {
+                console.log(err);
+                return callback(false)
+            }
+            else {
+                console.log("User info modified");
+                return callback(true);
+            }
+        })
     }
 }
 

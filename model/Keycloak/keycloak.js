@@ -237,7 +237,44 @@ async function deleteUser(mail, clientUsername = "", clientPassword = "") {
     return deleteUser;
 }
 
+async function modifyUser(oldMail, newMail, clientUsername = "", clientPassword = "") {
+    if (clientUsername != "" && clientPassword != "") {
+        dataClient.username = clientUsername;
+        dataClient.password = clientPassword;
+    }
+    const adminToken = await getAcessToken(); // return token, undefined if err
+    dataClient.username = "";
+    dataClient.password = "";
+
+    if (!adminToken) return false;
+    const userId = await getUserId(adminToken, oldMail); // return user id, undefined if err
+    if (!userId) return false;
+
+    let config = {
+        method: 'put',
+        maxBodyLength: Infinity,
+        url: process.env.URL_USER + "/" + userId,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${adminToken}`
+        },
+        data: JSON.stringify({ "email": newMail })
+    };
+    const modifUser = await axios.request(config)
+        .then((response) => {
+            console.log("Success modifying user")
+            return true
+        })
+        .catch((error) => {
+            console.log("Failed modifying user")
+            console.log("\t->", error.response.data['errorMessage']);
+            return false
+        });
+    return modifUser;
+}
+
 module.exports = {
     createUser,
-    deleteUser
+    deleteUser,
+    modifyUser
 }

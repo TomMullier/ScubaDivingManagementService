@@ -56,8 +56,7 @@ app.get('/login', keycloak.protect(), function (req, res) {
             res.redirect("/auth/dashboard");
         }
         else res.redirect('/logout');
-    }
-    else {
+    } else {
         console.log("Aucun rôle valide");
         res.redirect('/logout');
     }
@@ -70,8 +69,7 @@ app.get('/auth/dashboard', keycloak.protect(), function (req, res) {
         res.sendFile(__dirname + "/vue/html/dashboard.html", { headers: { 'userType': 'dp' } });
     } else if (checkUser(req, "USER")) {
         res.sendFile(__dirname + "/vue/html/dashboard.html", { headers: { 'userType': 'user' } });
-    }
-    else res.redirect('/logout');
+    } else res.redirect('/logout');
 });
 
 /* ---------------------------------- USER ---------------------------------- */
@@ -80,8 +78,7 @@ app.get('/auth/user/planning', keycloak.protect(), function (req, res) {
         res.sendFile(__dirname + "/vue/html/user/planning_user.html", { headers: { 'userType': 'dp' } });
     } else if (checkUser(req, "USER")) {
         res.sendFile(__dirname + "/vue/html/user/planning_user.html", { headers: { 'userType': 'user' } });
-    }
-    else res.redirect('/auth/dashboard');
+    } else res.redirect('/auth/dashboard');
 })
 
 app.get('/auth/user/statistics', keycloak.protect(), function (req, res) {
@@ -89,8 +86,7 @@ app.get('/auth/user/statistics', keycloak.protect(), function (req, res) {
         res.sendFile(__dirname + "/vue/html/user/statistics.html", { headers: { 'userType': 'dp' } });
     } else if (checkUser(req, "USER")) {
         res.sendFile(__dirname + "/vue/html/user/statistics.html", { headers: { 'userType': 'user' } });
-    }
-    else res.redirect('/auth/dashboard');
+    } else res.redirect('/auth/dashboard');
 })
 
 app.get('/auth/user/account', keycloak.protect(), function (req, res) {
@@ -98,75 +94,40 @@ app.get('/auth/user/account', keycloak.protect(), function (req, res) {
         res.sendFile(__dirname + "/vue/html/user/account.html", { headers: { 'userType': 'dp' } });
     } else if (checkUser(req, "USER")) {
         res.sendFile(__dirname + "/vue/html/user/account.html", { headers: { 'userType': 'user' } });
-    }
-    else res.redirect('/auth/dashboard');
+    } else res.redirect('/auth/dashboard');
 })
 
 /* -------------------------- DIRECTEUR DE PLONGEE -------------------------- */
 app.get('/auth/dp/scuba_file', keycloak.protect(), function (req, res) {
     if (checkUser(req, "DP")) {
         res.sendFile(__dirname + "/vue/html/dp/scuba_file.html", { headers: { 'userType': 'dp' } });
-    }
-    else res.redirect('/auth/dashboard');
+    } else res.redirect('/auth/dashboard');
 })
 
 app.get('/auth/dp/incident_rapport', keycloak.protect(), function (req, res) {
     if (checkUser(req, "DP")) {
         res.download(__dirname + "/vue/rapport_incident.pdf", { headers: { 'userType': 'dp' } });
-    }
-    else res.redirect('/auth/dashboard');
+    } else res.redirect('/auth/dashboard');
 })
 
 /* ---------------------------------- CLUB ---------------------------------- */
 app.get('/auth/club/planning', keycloak.protect(), function (req, res) {
     if (checkUser(req, "CLUB")) {
         res.sendFile(__dirname + "/vue/html/club/planning_club.html", { headers: { 'userType': 'club' } });
-    }
-    else res.redirect('/auth/dashboard');
+    } else res.redirect('/auth/dashboard');
 })
 
 app.get('/auth/club/club_members', keycloak.protect(), function (req, res) {
     if (checkUser(req, "CLUB")) {
         res.sendFile(__dirname + "/vue/html/club/club_members.html", { headers: { 'userType': 'club' } });
-    }
-    else res.redirect('/auth/dashboard');
+    } else res.redirect('/auth/dashboard');
 })
 
-app.put('/auth/club/club_members', keycloak.protect(),
-    body("newMail").trim().escape(),
-    body("phone").trim().escape(),
-    body("diver_qualif").trim().escape(),
-    body("instru_qualif").trim().escape(),
-    body("nox_lvl").trim().escape(),
-    body("additional_qualif").trim().escape(),
-    body("license_nb").trim().escape(),
-    body("license_expi").trim().escape(),
-    body("medic_certif_expi").trim().escape(),
-    function (req, res) {
-        if (checkUser(req, "CLUB")) {
-            Database.modifUser(req.body, (created) => {
-                if (created) {
-                    return res.json({ created: true });
-                } else {
-                    Keycloak_module.deleteUser(req.body.Mail);
-                    return res.json({ created: false });
-                }
-            })
-        } else { res.redirect('/auth/dashboard') };
-    })
-
 app.delete('/auth/club/club_members', keycloak.protect(), async function (req, res) {
-    // Récupérer toutes les infos dans DB
-    // Supprimer dans DB
-    // SI OK
-        // Supprimer dans Kc
-        // SI OK FIN
-        // SINON Remettre dans DB
-    // SINON FIN
     if (checkUser(req, "CLUB")) {
         console.log("Getting user info in DB");
 
-        Database.getUserInfo(req.body.Mail, (userInfo) => {
+        Database.getUserInfoByMail(req.body.Mail, (userInfo) => {
             if (userInfo === undefined) return res.json({ deleted: false })
             console.log("Deleting user in DB");
 
@@ -176,7 +137,7 @@ app.delete('/auth/club/club_members', keycloak.protect(), async function (req, r
 
                 const isDelKc = await Keycloak_module.deleteUser(req.body.Mail, getUserName(req), req.body.password);
                 if (isDelKc) return res.json({ deleted: true })
-                
+
                 console.log("ERROR, adding user in DB");
                 Database.createUser(userInfo, false, (isInser) => {
                     if (isInser) return res.json({ created: true });
@@ -184,8 +145,7 @@ app.delete('/auth/club/club_members', keycloak.protect(), async function (req, r
                 })
             })
         })
-    }
-    else res.redirect('/auth/dashboard');
+    } else res.redirect('/auth/dashboard');
 })
 
 app.get('/auth/club/get_club_members', keycloak.protect(), async function (req, res) {
@@ -193,16 +153,58 @@ app.get('/auth/club/get_club_members', keycloak.protect(), async function (req, 
         Database.getUsersList((users) => {
             return res.json(users);
         });
-    }
-    else res.redirect('/auth/dashboard');
+    } else res.redirect('/auth/dashboard');
 })
 
 app.get('/auth/club/locations', keycloak.protect(), function (req, res) {
     if (checkUser(req, "CLUB")) {
         res.sendFile(__dirname + "/vue/html/club/locations.html", { headers: { 'userType': 'club' } });
-    }
-    else res.redirect('/auth/dashboard');
+    } else res.redirect('/auth/dashboard');
 })
+
+app.post('/auth/club/get_member_info', keycloak.protect(), function (req, res) {
+    if (checkUser(req, "CLUB")) {
+        Database.getUserInfoByMail(req.body.Mail, (userInfo) => {
+            userInfo.License_Expiration_Date = new Date(userInfo.License_Expiration_Date).toISOString().split('T')[0]
+            userInfo.Medical_Certificate_Expiration_Date = new Date(userInfo.Medical_Certificate_Expiration_Date).toISOString().split('T')[0]
+            return res.json(userInfo)
+        })
+    } else res.redirect('/auth/dashboard');
+
+})
+
+app.put('/auth/club/club_members', keycloak.protect(),
+    body("Mail").trim().escape(),
+    body("Phone").trim().escape(),
+    body("Diver_Qualification").trim().escape(),
+    body("Instructor_Qualification").trim().escape(),
+    body("Nox_Level").trim().escape(),
+    body("Additional_Qualifications").trim().escape(),
+    body("License_Number").trim().escape(),
+    body("License_Expiration_Date").trim().escape(),
+    body("Medical_Certificate_Expiration_Date").trim().escape(),
+    function (req, res) {
+        let clientPassword = req.body.clientPassword
+
+        delete req.body.clientPassword
+        if (checkUser(req, "CLUB")) {
+            Database.getUserInfoById(req.body.Id_Diver, (userInfo) => {
+                if (userInfo === undefined) return res.json({ deleted: false })
+                console.log("Modifying user in DB");
+                Database.modifUser(req.body, async (updated) => {
+                    if (!updated) res.json({ modified: false })
+                    const modifKc = await Keycloak_module.modifyUser(userInfo.Mail, req.body.Mail, getUserName(req), clientPassword)
+                    if (modifKc) return res.json({ modified: true })
+
+                    console.log("ERROR, setting old info of user in DB");
+                    Database.modifUser(userInfo, (isInser) => {
+                        if (isInser) return res.json({ unmodified: true });
+                        else return res.json({ unmodified: false });
+                    })                    
+                })
+            })
+        } else res.redirect('/auth/dashboard');
+    })
 
 
 app.post('/auth/club/club_members', keycloak.protect(),
@@ -236,8 +238,7 @@ app.post('/auth/club/club_members', keycloak.protect(),
             } else {
                 return res.json({ created: false });
             }
-        }
-        else res.redirect('/auth/dashboard');
+        } else res.redirect('/auth/dashboard');
     })
 
 

@@ -280,8 +280,9 @@ rapport_button.addEventListener("click", function () {
 });
 
 const legendItems = document.querySelectorAll('.legend_item');
-const columns = document.querySelectorAll('.column');
-
+const tableContainer = document.querySelector('.table-container');
+const maxTagsPerColumn = 5;
+let columns = [document.getElementById('column1')];
 let draggedItem = null;
 
 // Gestionnaires d'événements pour le glisser-déposer des éléments de la légende
@@ -297,7 +298,40 @@ legendItems.forEach(item => {
   });
 });
 
-// Gestionnaires d'événements pour le glisser-déposer des colonnes du tableau
+function createNewColumn() {
+  const column = document.createElement('div');
+  column.classList.add('column');
+  column.id = `column${columns.length + 1}`;
+
+  const columnTitle = document.createElement('h2');
+  columnTitle.classList.add('column-title');
+  columnTitle.textContent = `Palanquée ${columns.length + 1}`;
+  column.appendChild(columnTitle);
+
+  columns.push(column);
+  tableContainer.appendChild(column);
+
+  // Ajouter les gestionnaires d'événements pour la nouvelle colonne
+  column.addEventListener('dragover', e => {
+    e.preventDefault();
+    column.classList.add('dragover');
+  });
+
+  column.addEventListener('dragleave', () => {
+    column.classList.remove('dragover');
+  });
+
+  column.addEventListener('drop', () => {
+    if (column.children.length < maxTagsPerColumn) {
+      column.appendChild(draggedItem);
+      draggedItem.classList.remove('dragged');
+      draggedItem.classList.add('in-table');
+      column.classList.remove('dragover');
+    }
+  });
+}
+
+// Gestionnaire d'événement pour le glisser-déposer sur les colonnes existantes
 columns.forEach(column => {
   column.addEventListener('dragover', e => {
     e.preventDefault();
@@ -309,10 +343,25 @@ columns.forEach(column => {
   });
 
   column.addEventListener('drop', () => {
-    column.appendChild(draggedItem);
-    draggedItem.classList.remove('dragged');
-    draggedItem.classList.add('in-table');
-    column.classList.remove('dragover');
+    if (column.children.length < maxTagsPerColumn) {
+      column.appendChild(draggedItem);
+      draggedItem.classList.remove('dragged');
+      draggedItem.classList.add('in-table');
+      column.classList.remove('dragover');
+    }
   });
 });
 
+// Gestionnaire d'événement pour le glisser-déposer sur la première colonne
+columns[0].addEventListener('drop', () => {
+  if (columns[0].children.length < maxTagsPerColumn) {
+    columns[0].appendChild(draggedItem);
+    draggedItem.classList.remove('dragged');
+    draggedItem.classList.add('in-table');
+    columns[0].classList.remove('dragover');
+
+    if (columns[0].children.length === 1) {
+      createNewColumn();
+    }
+  }
+});

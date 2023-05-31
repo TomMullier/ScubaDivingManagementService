@@ -24,7 +24,7 @@
 
 
 
-        <title>Créer un compte</title>
+        <title>Liste des utilisateurs</title>
 </head>
 
 <body>
@@ -40,81 +40,116 @@
 
 
         <div class="title_container">
-                <h1>CRéer un compte utilisateur</h1>
+                <h1>Liste des utilisateurs</h1>
         </div>
 
-
-        <div class="form_container">
-                <form id="signup_form">
-                        <div class="container">
-
-                                <div class="name_container">
-                                        <h2>Identité</h2>
-                                        <div>
-                                                <label for="lastname">Nom</label>
-                                                <input type="text" name="lastname" placeholder="Nom">
-                                        </div>
-                                        <div>
-                                                <label for="firstname">Prénom</label>
-                                                <input type="text" name="firstname" placeholder="Prénom">
-                                        </div>
-                                        <div>
-                                                <label for="mail">Adresse mail</label>
-                                                <input type="email" name="mail" placeholder="Adresse Mail">
-                                        </div>
-                                        <div>
-                                                <label for="phone">Numéro de téléphone</label>
-                                                <input type="tel" name="phone" placeholder="Numéro de Téléphone">
-                                        </div>
-                                        <div>
-                                                <label for="birthdate">Date de naissance</label>
-                                                <input type="date" name="birthdate" placeholder="Date de Naissance">
-                                        </div>
-        
+        <div class="global_container">
+                <div class="top_bar">
+                        <div class="search_bar_container">
+                                <input id="searchbar" type="text" placeholder="Rechercher un utilisateur">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                        </div>
+                        <div class="filter_container">
+                                <div class="filter_button">
+                                        <i class="fa-solid fa-filter"></i>
+                                        <p>Filtrer</p>
                                 </div>
-                                <div class="qualifications_container">
-                                        <h2>Qualifications</h2>
-                                        <div>
-                                                <label for="diver_qualif">Qualification de plongeur</label>
-                                                <input type="text" name="diver_qualif" placeholder="Qualification de Plongeur">
+                                <div class="filter_options">
+                                        <div class="filter_option">
+                                                <input type="checkbox" name="diver" id="diver">
+                                                <label for="diver">Plongeur</label>
                                         </div>
-                                        <div>
-                                                <label for="instru_qualif">Qualification d'instructeur</label>
-                                                <input type="text" name="instru_qualif" placeholder="Qualification d'Instructeur">
+                                        <div class="filter_option">
+                                                <input type="checkbox" name="instructor" id="instructor">
+                                                <label for="instructor">Instructeur</label>
                                         </div>
-                                        <div>
-                                                <label for="nox_lvl">Certification NITROX</label>
-                                                <input type="text" name="nox_lvl" placeholder="Certification NITROX">
-                                        </div>
-                                        <div>
-                                                <label for="additional_qualif">Qualification additionnelle</label>
-                                                <input type="text" name="additional_qualif" placeholder="Qualification Additionnelle">
-                                        </div>
-                                        <div>
-                                                <label for="license_nb">Numéro de licence</label>
-                                                <input type="text" name="license_nb" placeholder="Numéro de Licence">
-                                        </div>
-                                        <div>
-                                                <label for="license_expi">Date d'expiration de la licence</label>
-                                                <input type="date" name="license_expi" placeholder="Licence">
-                                        </div>
-                                        <div>
-                                                <label for="medic_certif_expi">Date d'expiration du certificat médical</label>
-                                                <input type="date" name="medic_certif_expi" placeholder="Certificat Médical">
+                                        <div class="filter_option">
+                                                <input type="checkbox" name="admin" id="admin">
+                                                <label for="admin">Administrateur</label>
                                         </div>
                                 </div>
                         </div>
-                        <!-- <input type="password" name="password"> -->
-                        <div id="btn-submit">Créer le compte</div>
+                        <div class="create_button">
+                                <i class="fa-solid fa-plus"></i>
+                                <p>Créer un compte</p>
+                        </div>
+                </div>
+                <div class="list_container">
+                        <div class="user_item">
+                                <div class="infos">
+                                        <h2 class="name">MULLIER Tom</h2>
+                                        <h2 class="mail">azerty@azerty.com</h2>
+                                        <h2 class="phone">06 06 06 06 06</h2>
+                                </div>
+                                <div class="buttons">
+                                        <div class="edit_button">
+                                                <i id='edit-button' class="button fa-solid fa-pencil"></i>
+                                        </div>
+                                        <div class="delete_button">
+                                                <i id="delete-button" class="button fa-solid fa-trash"></i>
+                                        </div>
+                                </div>
+                        </div>
+                        <div class="user_item">
+                                <div class="infos">
+                                        <h2 class="name">MULLIER Tom</h2>
+                                        <h2 class="mail">azerty@azerty.com</h2>
+                                        <h2 class="phone">06 06 06 06 06</h2>
+                                </div>
+                                <div class="buttons">
+                                        <div class="edit_button">
+                                                <i id='edit-button' class="button fa-solid fa-pencil"></i>
+                                        </div>
+                                        <div class="delete_button">
+                                                <i id="delete-button" class="button fa-solid fa-trash"></i>
+                                        </div>
+                                </div>
+                        </div>
+                        <div class="user_item">
+                                <div class="infos">
+                                        <h2 class="name">MOLCRETTE Alan</h2>
+                                        <h2 class="mail">fchgvjb</h2>
+                                        <h2 class="phone">06 06 06 06 06</h2>
+                                </div>
+                                <div class="buttons">
+                                        <div class="edit_button">
+                                                <i id='edit-button' class="button fa-solid fa-pencil"></i>
+                                        </div>
+                                        <div class="delete_button">
+                                                <i id="delete-button" class="button fa-solid fa-trash"></i>
+                                        </div>
+                                </div>
+                        </div>
+                        <div class="user_item">
+                                <div class="infos">
+                                        <h2 class="name">AZERTY azerty</h2>
+                                        <h2 class="mail">fdxgchvjbknl,</h2>
+                                        <h2 class="phone">06 06 06 06 06</h2>
+                                </div>
+                                <div class="buttons">
+                                        <div class="edit_button">
+                                                <i id='edit-button' class="button fa-solid fa-pencil"></i>
+                                        </div>
+                                        <div class="delete_button">
+                                                <i id="delete-button" class="button fa-solid fa-trash"></i>
+                                        </div>
+                                </div>
+                        </div>
 
-                </form>
+                        
+                        
+                </div>
         </div>
 
+
+
+
         <div id="modals" style="display:flex;">
-                <modal id="confirmation_creation">
+                <modal id="confirm_delete">
                         <div class="top">
                                 <h1 id="txt_title" class="title">Sécurité</h1>
-                                <h3 id="txt_descr">Veuillez entrer votre mot de passe pour confirmer la création du compte</h3>
+                                <h3 id="txt_descr">Veuillez entrer votre mot de passe pour confirmer la suppression du
+                                        compte</h3>
                         </div>
                         <div class="fields-container">
                                 <h3>
@@ -122,8 +157,162 @@
                                 </h3>
                         </div>
                         <div class="bottom">
-                                        <div id="validateButton">Valider</div>
-                                        <div id="cancelButton">Annuler</div>
+                                <div id="validateButton">Valider</div>
+                                <div id="cancelButton">Annuler</div>
+                        </div>
+                </modal>
+                <modal id=user-info>
+                        <div class="image_container">
+                                <img src="../img/1.jpg" alt="Profile Picture">
+                        </div>
+                        <div class="general_info">
+                                <h1 class="name">John Doe</h1>
+                                <h2 class="mail">john.doe@gmail.com</h2>
+                                <h2 class="phone">06 06 06 06 06</h2>
+                                <h2 class="birthdate">01/01/2000</h2>
+                        </div>
+                        <div class="qualifications_container_display">
+                                <h2>Qualifications</h2>
+                                <div>
+                                        <label for="diver_qualif">Qualification de
+                                                plongeur</label>
+                                        <input disabled type="text" name="diver_qualif"
+                                                placeholder="Qualification de Plongeur">
+                                </div>
+                                <div>
+                                        <label for="instru_qualif">Qualification
+                                                d'instructeur</label>
+                                        <input disabled type="text" name="instru_qualif"
+                                                placeholder="Qualification d'Instructeur">
+                                </div>
+                                <div>
+                                        <label for="nox_lvl">Certification NITROX</label>
+                                        <input disabled type="text" name="nox_lvl"
+                                                placeholder="Certification NITROX">
+                                </div>
+                                <div>
+                                        <label for="additional_qualif">Qualification
+                                                additionnelle</label>
+                                        <input disabled type="text" name="additional_qualif"
+                                                placeholder="Qualification Additionnelle">
+                                </div>
+                                <div>
+                                        <label for="license_nb">Numéro de licence</label>
+                                        <input disabled type="text" name="license_nb"
+                                                placeholder="Numéro de Licence">
+                                </div>
+                                <div>
+                                        <label for="license_expi">Date d'expiration de la
+                                                licence</label>
+                                        <input disabled type="date" name="license_expi"
+                                                placeholder="Licence">
+                                </div>
+                                <div>
+                                        <label for="medic_certif_expi">Date d'expiration du
+                                                certificat médical</label>
+                                        <input disabled type="date" name="medic_certif_expi"
+                                                placeholder="Certificat Médical">
+                                </div>
+                        </div>
+                </modal>
+                <modal id="create_user">
+                        <h1 id="modify_create_title">Créer un compte</h1>
+                        <div class="form_container">
+                                <form id="signup_form">
+                                        <div class="container">
+
+                                                <div class="name_container">
+                                                        <h2>Identité</h2>
+                                                        <div>
+                                                                <label for="lastname">Nom</label>
+                                                                <input type="text" name="lastname" placeholder="Nom">
+                                                        </div>
+                                                        <div>
+                                                                <label for="firstname">Prénom</label>
+                                                                <input type="text" name="firstname"
+                                                                        placeholder="Prénom">
+                                                        </div>
+                                                        <div>
+                                                                <label for="mail">Adresse mail</label>
+                                                                <input type="email" name="mail"
+                                                                        placeholder="Adresse Mail">
+                                                        </div>
+                                                        <div>
+                                                                <label for="phone">Numéro de téléphone</label>
+                                                                <input type="tel" name="phone"
+                                                                        placeholder="Numéro de Téléphone">
+                                                        </div>
+                                                        <div>
+                                                                <label for="birthdate">Date de naissance</label>
+                                                                <input type="date" name="birthdate"
+                                                                        placeholder="Date de Naissance">
+                                                        </div>
+
+                                                </div>
+                                                <div class="qualifications_container">
+                                                        <h2>Qualifications</h2>
+                                                        <div>
+                                                                <label for="diver_qualif">Qualification de
+                                                                        plongeur</label>
+                                                                <input type="text" name="diver_qualif"
+                                                                        placeholder="Qualification de Plongeur">
+                                                        </div>
+                                                        <div>
+                                                                <label for="instru_qualif">Qualification
+                                                                        d'instructeur</label>
+                                                                <input type="text" name="instru_qualif"
+                                                                        placeholder="Qualification d'Instructeur">
+                                                        </div>
+                                                        <div>
+                                                                <label for="nox_lvl">Certification NITROX</label>
+                                                                <input type="text" name="nox_lvl"
+                                                                        placeholder="Certification NITROX">
+                                                        </div>
+                                                        <div>
+                                                                <label for="additional_qualif">Qualification
+                                                                        additionnelle</label>
+                                                                <input type="text" name="additional_qualif"
+                                                                        placeholder="Qualification Additionnelle">
+                                                        </div>
+                                                        <div>
+                                                                <label for="license_nb">Numéro de licence</label>
+                                                                <input type="text" name="license_nb"
+                                                                        placeholder="Numéro de Licence">
+                                                        </div>
+                                                        <div>
+                                                                <label for="license_expi">Date d'expiration de la
+                                                                        licence</label>
+                                                                <input type="date" name="license_expi"
+                                                                        placeholder="Licence">
+                                                        </div>
+                                                        <div>
+                                                                <label for="medic_certif_expi">Date d'expiration du
+                                                                        certificat médical</label>
+                                                                <input type="date" name="medic_certif_expi"
+                                                                        placeholder="Certificat Médical">
+                                                        </div>
+                                                </div>
+                                        </div>
+                                        <!-- <input type="password" name="password"> -->
+                                        <div id="btn-submit">Créer le compte</div>
+
+                                </form>
+                        </div>
+                </modal>
+                <modal id="confirmation_creation">
+                        <div class="top">
+                                <h1 id="txt_title" class="title">Sécurité</h1>
+                                <h3 id="txt_descr">Veuillez entrer votre mot de passe pour confirmer la création/modification du
+                                        compte</h3>
+                        </div>
+                        <div class="fields-container">
+                                <h3>
+                                        <input type="password" name="password" placeholder="Mot de passe">
+                                </h3>
+                        </div>
+                        <div class="bottom">
+                                <div id="validateButton">Valider</div>
+                                <div id="cancelButton">Annuler</div>
                         </div>
                 </modal>
 

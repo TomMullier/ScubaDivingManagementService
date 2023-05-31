@@ -1040,7 +1040,7 @@ body {
   cursor: pointer;
   transition: 0.2s;
 }
-#dive_rapport .user_legend_container {
+.user_legend_container {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -1049,7 +1049,7 @@ body {
   height: auto;
   margin-top: 20px;
 }
-#dive_rapport .user_legend_container .legend {
+.user_legend_container .legend {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -1058,7 +1058,8 @@ body {
   height: auto;
   margin-right: 20px;
 }
-#dive_rapport .user_legend_container .legend .legend_item {
+.legend_item,
+.in-table {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -1068,9 +1069,11 @@ body {
   margin-right: 10px;
   border-radius: 13px;
   padding-right: 10px;
+  margin-bottom: 5px;
   border: 2px solid;
 }
-#dive_rapport .user_legend_container .legend p {
+.legend_item p,
+.in-table p {
   margin: 0;
   padding: 0;
   margin-left: 10px;
@@ -1078,53 +1081,82 @@ body {
   font-family: 'Montserrat', sans-serif;
   color: #120B8F;
 }
-#dive_rapport .user_legend_container .legend .legend_color {
+.legend_item .legend_color,
+.in-table .legend_color {
   width: 20px;
   height: 20px;
   border-radius: 50%;
 }
-#dive_rapport .user_legend_container .legend .green_border {
+.legend_item .green_border,
+.in-table .green_border {
   border-color: #4CAF50;
 }
-#dive_rapport .user_legend_container .legend .orange_border {
+.legend_item .orange_border,
+.in-table .orange_border {
   border-color: #f2574a;
 }
-#dive_rapport .user_legend_container .legend .blue_border {
+.legend_item .blue_border,
+.in-table .blue_border {
   border-color: #120B8F;
 }
-#dive_rapport .user_legend_container .legend .grey_border {
+.legend_item .grey_border,
+.in-table .grey_border {
   border-color: #BDC7D7;
 }
-#dive_rapport .user_legend_container .legend .green_full {
+.legend_item .green_full,
+.in-table .green_full {
   background-color: #4CAF50;
 }
-#dive_rapport .user_legend_container .legend .orange_full {
+.legend_item .orange_full,
+.in-table .orange_full {
   background-color: #f2574a;
 }
-#dive_rapport .user_legend_container .legend .blue_full {
+.legend_item .blue_full,
+.in-table .blue_full {
   background-color: #120B8F;
 }
-#dive_rapport .user_legend_container .legend .grey_full {
+.legend_item .grey_full,
+.in-table .grey_full {
   background-color: #BDC7D7;
 }
-#dive_rapport .legend_item {
+.legend_item {
   cursor: move;
 }
-#dive_rapport .column {
-  display: inline-block;
-  width: 30%;
-  height: 200px;
+.column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   border: 1px solid #ccc;
   margin-right: 10px;
   margin-bottom: 10px;
   padding: 10px;
 }
-#dive_rapport .column.dragover {
-  background-color: #f0f0f0;
-}
-#dive_rapport .table-container {
+.table-container {
   display: flex;
   justify-content: space-between;
+}
+.column {
+  flex: 1;
+  min-width: 200px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: #f8f8f8;
+  border-radius: 5px;
+}
+.column-title {
+  font-family: 'Montserrat', sans-serif;
+  color: #120B8F;
+  font-weight: bold;
+  margin: 0;
+  padding: 0;
+  font-size: 18px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+.column.dragover {
+  background-color: #f0f0f0;
 }
 #dive_rapport .next_button_infos {
   display: flex;

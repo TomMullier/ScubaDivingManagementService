@@ -541,7 +541,7 @@
         height: auto;
         margin-right: 20px;
 
-        .legend_item {
+        .legend_item{
             display: flex;
             flex-direction: row;
             align-items: center;
@@ -827,114 +827,149 @@
 
 }
 
-#dive_rapport {
-    .user_legend_container {
+.user_legend_container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: auto;
+    margin-top: 20px;
+
+    .legend {
         display: flex;
         flex-direction: row;
         align-items: center;
         justify-content: center;
-        width: 100%;
+        width: auto;
         height: auto;
-        margin-top: 20px;
-    
-        .legend {
+        margin-right: 20px;
+
+        
+    }
+}
+.legend_item,
+        .in-table{
             display: flex;
             flex-direction: row;
             align-items: center;
             justify-content: center;
             width: auto;
             height: auto;
-            margin-right: 20px;
-    
-            .legend_item {
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-                justify-content: center;
-                width: auto;
-                height: auto;
-                margin-right: 10px;
-                border-radius: 13px;
-                padding-right: 10px;
-                // border-top-left-radius: 11px;
-                // border-bottom-left-radius: 11px;
-                ;
-                border: 2px solid;
-            }
-    
-            p {
-                margin: 0;
-                padding: 0;
-                margin-left: 10px;
-                font-size: 13px;
-                font-family: @body_font;
-                color: @dark_blue;
-            }
-    
-            .legend_color {
-                width: 20px;
-                height: 20px;
-                border-radius: 50%;
-            }
-    
-            .green_border {
-                border-color: #4CAF50;
-            }
-    
-            .orange_border {
-                border-color: @orange;
-            }
-    
-            .blue_border {
-                border-color: @dark_blue;
-            }
-    
-            .grey_border {
-                border-color: @grey;
-            }
-    
-            .green_full {
-                background-color: #4CAF50;
-            }
-    
-            .orange_full {
-                background-color: @orange;
-            }
-    
-            .blue_full {
-                background-color: @dark_blue;
-            }
-    
-            .grey_full {
-                background-color: @grey;
-            }
+            margin-right: 10px;
+            border-radius: 13px;
+            padding-right: 10px;
+            margin-bottom: 5px;
+            // border-top-left-radius: 11px;
+            // border-bottom-left-radius: 11px;
+            
+            border: 2px solid;
+                    
+          
+          
+
+        p {
+            margin: 0;
+            padding: 0;
+            margin-left: 10px;
+            font-size: 13px;
+            font-family: @body_font;
+            color: @dark_blue;
+        }
+
+        .legend_color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+
+        .green_border {
+            border-color: #4CAF50;
+        }
+
+        .orange_border {
+            border-color: @orange;
+        }
+
+        .blue_border {
+            border-color: @dark_blue;
+        }
+
+        .grey_border {
+            border-color: @grey;
+        }
+
+        .green_full {
+            background-color: #4CAF50;
+        }
+
+        .orange_full {
+            background-color: @orange;
+        }
+
+        .blue_full {
+            background-color: @dark_blue;
+        }
+
+        .grey_full {
+            background-color: @grey;
         }
     }
-    .legend_item {
-        cursor: move;
-      }
-      
-      .column {
-        display: inline-block;
-        width: 30%;
-        height: 200px;
-        border: 1px solid #ccc;
-        margin-right: 10px;
-        margin-bottom: 10px;
-        padding: 10px;
-      }
-      
-      .column.dragover {
-        background-color: #f0f0f0;
-      }
-      
-      .table-container {
-        display: flex;
-        justify-content: space-between;
-      }
-      
-      
-      
+.legend_item {
+    cursor: move;
+  }
+
+
+
+  .column {
+    flex:1;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ccc;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+  }
+  
+
+  
+  .table-container {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .column {
+    flex: 1;
+    min-width: 200px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f8f8f8;
+    border-radius: 5px;
+  }
+  
+  .column-title {
+    font-family: @body_font;
+    color: @dark_blue;  
+    font-weight: bold;
+    margin-bottom: 10px;
+    margin: 0;
+    padding: 0;
+    font-size: 18px;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  .column.dragover {
+    background-color: #f0f0f0;
+  }
+  
+
+  
+  
+
+#dive_rapport {
+    
     .next_button_infos {
         display: flex;
         justify-content: center;

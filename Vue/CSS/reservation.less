@@ -245,14 +245,14 @@
         justify-content: center;
         align-items: center;
         padding: 0;
-        min-width: 40%;
+        min-width: 60%;
 
 
         .global {
             display: flex;
             flex-direction: row;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             width: 100%;
             height: 80%;
             padding: 20px 0;
@@ -360,12 +360,31 @@
             height: 100%;
             margin-left: 50px;
             margin-right: 10px;
+            border-left: 2px solid @orange;
+            h5{
+                margin:0;
+                color: @grey;
+                font-size: 11px;
+                font-family: @body_font;
+                text-align: center;
+            }
             h3{
+                margin:0;
                 color: @dark_blue;
                 font-size: 15px;
                 font-family: @body_font;
                 text-align: center;
                 text-transform: uppercase;
+            }
+            .DP{
+                color:@orange;
+                font-weight: bold;
+            }
+
+            .DP::before{
+                content: "DP :";
+                margin-right: 5px;
+
             }
             ul li{
                 list-style:circle;
@@ -375,7 +394,6 @@
                 align-items: left;
                 justify-content: left;
                 height: auto;
-                padding: 10px 0;
                 font-size: 15px;
                 font-family: @body_font;
                 text-transform: normal;

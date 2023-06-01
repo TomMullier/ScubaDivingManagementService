@@ -50,7 +50,7 @@
                         <input id="searchbar" type="text" placeholder="Rechercher un lieu">
                         <i class="fa-solid fa-magnifying-glass"></i>
                 </div>
-                
+
                 <div id="create_button" class="create_button">
                         <i class="fa-solid fa-plus"></i>
                         <p>Créer un lieu</p>
@@ -62,7 +62,7 @@
                         <h1 class="list_title">JUNIA ISEN Lille</h1>
                         <h2 class="adress">41 Boulevard Vauban, 59000 Lille</h2>
                         <div class="coordinate">
-                                
+
                                 <h2 class="latitude"><i class="fa-solid fa-map-marker"></i> Latitude : 50.636565</h2>
                                 <h2 class="longitude"><i class="fa-solid fa-map-marker"></i> Longitude : 3.069910</h2>
                         </div>
@@ -99,29 +99,33 @@
                                         <label for="name">Nom du lieu</label>
                                         <input type="text" id="name" name="name" placeholder="Nom du lieu">
                                 </h3>
-                                <h3>
-                                        <label for="country">Pays</label>
-                                        <select id="country" name="country">
-                                                <option value="" selected="selected">Sélectionnez un pays</option>
-                                        </select>
-                                </h3>
-                                <h3>
-                                        <label for="street">Rue</label>
-                                        <input type="text" id="street" name="street" placeholder="Rue">
-                                </h3>
-                                <h3>
-                                        <label for="postalCode">Code postal</label>
-                                        <input type="text" id="postalCode" name="postalCode" placeholder="Code postal">
-                                </h3>
-                                <h3>
-                                        <label for="city">Ville</label>
-                                        <input type="text" id="city" name="city" placeholder="Ville">
-                                </h3>
-                                <h3>
-                                        <label for="adress_complement">Complément d'adresse</label>
-                                        <input type="text" id="adress_complement" name="adress_complement" placeholder="Complément d'adresse">
-                                </h3>
-                                                                            
+                                <div class="adress_container">
+                                        <h3>
+                                                <label for="country">Pays</label>
+                                                <select id="country" name="country">
+                                                        <option value="" selected="selected">Sélectionnez un pays
+                                                        </option>
+                                                </select>
+                                        </h3>
+                                        <h3>
+                                                <label for="street">Rue</label>
+                                                <input type="text" id="street" name="street" placeholder="Rue">
+                                        </h3>
+                                        <h3>
+                                                <label for="postalCode">Code postal</label>
+                                                <input type="text" id="postalCode" name="postalCode"
+                                                        placeholder="Code postal">
+                                        </h3>
+                                        <h3>
+                                                <label for="city">Ville</label>
+                                                <input type="text" id="city" name="city" placeholder="Ville">
+                                        </h3>
+                                        <h3>
+                                                <label for="adress_complement">Complément d'adresse</label>
+                                                <input type="text" id="adress_complement" name="adress_complement"
+                                                        placeholder="Complément d'adresse">
+                                        </h3>
+                                </div>
                                 <h3>
                                         <label for="latitude">Latitude</label>
                                         <input type="text" id="latitude" name="latitude" placeholder="Latitude">

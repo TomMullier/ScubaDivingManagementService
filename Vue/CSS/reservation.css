@@ -560,13 +560,13 @@ body {
   justify-content: center;
   align-items: center;
   padding: 0;
-  min-width: 40%;
+  min-width: 60%;
 }
 #eventModal .modal-wrapper .global {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   width: 100%;
   height: 80%;
   padding: 20px 0;
@@ -656,13 +656,30 @@ body {
   height: 100%;
   margin-left: 50px;
   margin-right: 10px;
+  border-left: 2px solid #f2574a;
+}
+#eventModal .modal-wrapper .listOfUser h5 {
+  margin: 0;
+  color: #BDC7D7;
+  font-size: 11px;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
 }
 #eventModal .modal-wrapper .listOfUser h3 {
+  margin: 0;
   color: #120B8F;
   font-size: 15px;
   font-family: 'Montserrat', sans-serif;
   text-align: center;
   text-transform: uppercase;
+}
+#eventModal .modal-wrapper .listOfUser .DP {
+  color: #f2574a;
+  font-weight: bold;
+}
+#eventModal .modal-wrapper .listOfUser .DP::before {
+  content: "DP :";
+  margin-right: 5px;
 }
 #eventModal .modal-wrapper .listOfUser ul li {
   list-style: circle;
@@ -672,7 +689,6 @@ body {
   align-items: left;
   justify-content: left;
   height: auto;
-  padding: 10px 0;
   font-size: 15px;
   font-family: 'Montserrat', sans-serif;
   text-transform: normal;

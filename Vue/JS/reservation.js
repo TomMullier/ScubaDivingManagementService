@@ -163,8 +163,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 var events = []
-events.push(new Event(new Date(2023, 5, 1, 10, 0), new Date(2023, 5, 1, 12, 0), 20, 10, "La Ciotat", " Commentaire Commentaire ", " Besoin Besoin Besoin", false, 5,3));
-
+events.push(new Event(new Date(2023, 5, 1, 10, 0), new Date(2023, 5, 1, 12, 0), 20, 10, "La Ciotat", " Commentaire Commentaire ", " Besoin Besoin Besoin", false, 5,3, "Exploration"));
 
 // Update label text when slider value changes
 
@@ -268,4 +267,27 @@ rapport_button.addEventListener("click", function () {
 
 
 
+});
+
+
+// JavaScript
+const nameSelects = document.querySelectorAll('.diver-name');
+const nameOptions = document.querySelectorAll('.diver-name option');
+
+// Gérer les changements de sélection
+nameSelects.forEach(select => {
+  select.addEventListener('change', () => {
+    const selectedValues = Array.from(nameSelects)
+      .map(s => s.value)
+      .filter(value => value !== '');
+
+    // Parcourir toutes les options
+    nameOptions.forEach(option => {
+      // Vérifier si l'option a déjà été sélectionnée
+      const isOptionSelected = selectedValues.includes(option.value);
+
+      // Activer/désactiver l'option en fonction de sa sélection
+      option.disabled = isOptionSelected;
+    });
+  });
 });

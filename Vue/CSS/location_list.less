@@ -244,7 +244,7 @@
                 height: auto;
                 background-color: white;
                 border-radius: 10px;
-                margin-top:10px;
+                margin-top: 10px;
                 box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
                 transition: all 0.2s;
 
@@ -303,7 +303,8 @@
                         background-color: @grey;
                 }
 
-                .phone,.web {
+                .phone,
+                .web {
                         display: flex;
                         flex-direction: row;
                         justify-content: center;
@@ -316,21 +317,26 @@
                         font-family: @body_font;
                         text-align: center;
                         text-decoration: none;
-                        i{
+
+                        i {
                                 margin-right: 10px;
                         }
+
                         &:hover {
                                 cursor: pointer;
                                 color: @orange;
                         }
                 }
+
                 .web {
                         margin-bottom: 10px;
                 }
+
                 .phone {
                         margin-top: 10px;
                 }
-                .button_container{
+
+                .button_container {
                         display: flex;
                         justify-content: center;
                         align-items: center;
@@ -343,7 +349,8 @@
                         border-bottom-right-radius: 10px;
                         background-color: @grey;
                         transition: all 0.2s;
-                        button{
+
+                        button {
                                 display: flex;
                                 justify-content: center;
                                 align-items: center;
@@ -358,6 +365,7 @@
                                 font-family: @body_font;
                                 text-align: center;
                                 transition: all 0.2s;
+
                                 &:hover {
                                         background-color: @orange;
                                         color: white;
@@ -365,10 +373,12 @@
 
                                 }
                         }
-                        .edit_button{
+
+                        .edit_button {
                                 border-bottom-left-radius: 10px;
                         }
-                        .delete_button{
+
+                        .delete_button {
                                 border-bottom-right-radius: 10px;
                         }
                 }
@@ -376,18 +386,19 @@
         }
 }
 
-#create_location{
-        .modal-wrapper{
+#create_location {
+        .modal-wrapper {
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                height:auto;
-                width:auto;
+                height: auto;
+                width: auto;
                 background-color: white;
                 flex-direction: column;
                 border-radius: 10px;
-                .top{
-                        h1{
+
+                .top {
+                        h1 {
                                 font-size: 20px;
                                 color: @orange;
                                 font-family: @body_font;
@@ -396,17 +407,19 @@
                                 padding: 10px 0;
                                 text-transform: uppercase;
                         }
-                        h3{
+
+                        h3 {
                                 font-size: 15px;
                                 color: @dark_blue;
                                 font-family: @body_font;
                                 text-align: center;
                                 margin: 0;
                                 padding: 0px 0;
-                                margin-bottom:20px;
+                                margin-bottom: 20px;
                         }
                 }
-                .fields-container{
+
+                .fields-container {
                         width: 100%;
                         height: auto;
                         display: flex;
@@ -415,17 +428,26 @@
                         align-items: center;
                         margin: 0;
                         padding: 0;
-                        h3{
+
+                        .adress_container {
+                                margin-top: 40px;
+                                margin-bottom: 40px;
+                               width: 100%;
+                        }
+
+                        h3 {
                                 width: 100%;
-                        height: auto;
-                        display: flex;
-                        flex-direction: row;
-                        justify-content: space-between;
-                        align-items: center;  
-                        margin: 0;
-                        padding: 0;
-                        margin-bottom: 15px;
-                                label{
+                                height: auto;
+                                display: flex;
+                                flex-direction: row;
+                                justify-content: space-between;
+                                align-items: center;
+                                margin: 0;
+                                padding: 0;
+                                margin-bottom: 15px;
+
+
+                                label {
                                         font-size: 15px;
                                         color: @dark_blue;
                                         font-family: @body_font;
@@ -433,6 +455,7 @@
                                         margin: 0;
                                         padding: 0px 0;
                                 }
+
                                 input {
                                         width: 200px;
                                         height: 30px;
@@ -444,77 +467,80 @@
                                         font-size: 15px;
                                         outline: none;
                                         transition: all 0.2s;
+
                                         &:focus {
                                                 border-radius: 15px;
                                                 border: 1px solid @orange;
                                         }
                                 }
 
-                                    
-                                }
-                                select#country {
-                                        width: 200px;
-                                        height: 30px;
-                                        border-radius: 0;
-                                        border: 1px solid #ccc;
-                                        font-size: 14px;
-                                        font-family: @body_font;
-                                        padding: 5px;
-                                        background-color: #fff;
-                                      }
-                                      
-                                
-                                select#country option {
-                                        font-size: 14px;
-                                        font-family: @body_font;
-                                }
+                        }
+
+                        select#country {
+                                width: 200px;
+                                height: 30px;
+                                border-radius: 0;
+                                border: 1px solid #ccc;
+                                font-size: 14px;
+                                font-family: @body_font;
+                                padding: 5px;
+                                background-color: #fff;
+                        }
+
+
+                        select#country option {
+                                font-size: 14px;
+                                font-family: @body_font;
                         }
                 }
+        }
 
-                .button_container{
+        .button_container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                height: auto;
+                margin: 0;
+                padding: 0;
+                transition: all 0.2s;
+                margin-bottom: 20px;
+                margin-top: 20px;
+
+                button {
                         display: flex;
                         justify-content: center;
                         align-items: center;
-                        width: 100%;
-                        height: auto;
+                        width: 50%;
+                        height: 40px;
                         margin: 0;
                         padding: 0;
+                        border: none;
+                        background-color: transparent;
+                        color: @orange;
+                        font-size: 15px;
+                        font-family: @body_font;
+                        text-align: center;
                         transition: all 0.2s;
-                        margin-bottom: 20px;
-                        margin-top: 20px;
-                        button{
-                                display: flex;
-                                justify-content: center;
-                                align-items: center;
-                                width: 50%;
-                                height: 40px;
-                                margin: 0;
-                                padding: 0;
-                                border: none;
-                                background-color: transparent;
-                                color: @orange;
-                                font-size: 15px;
-                                font-family: @body_font;
-                                text-align: center;
-                                transition: all 0.2s;
-                                border-radius: 25px;
-                                border: 1px solid @orange;
+                        border-radius: 25px;
+                        border: 1px solid @orange;
 
-                                &:hover {
-                                        background-color: @orange;
-                                        color: white;
-                                        cursor: pointer;
-                                        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
-                                }
-                        }
-                        .create_button{
-                                margin-right: 10px;
+                        &:hover {
                                 background-color: @orange;
                                 color: white;
-                                &:hover {
-                                        cursor: pointer;
-                                        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
-                                }
+                                cursor: pointer;
+                                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+                        }
+                }
+
+                .create_button {
+                        margin-right: 10px;
+                        background-color: @orange;
+                        color: white;
+
+                        &:hover {
+                                cursor: pointer;
+                                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
                         }
                 }
         }
@@ -531,7 +557,7 @@
                 background-color: white;
                 border-radius: 10px;
                 padding: 20px;
-                
+
 
                 .top {
                         display: flex;

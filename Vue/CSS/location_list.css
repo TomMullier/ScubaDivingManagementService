@@ -718,6 +718,11 @@ body {
   margin: 0;
   padding: 0;
 }
+#create_location .modal-wrapper .fields-container .adress_container {
+  margin-top: 40px;
+  margin-bottom: 40px;
+  width: 100%;
+}
 #create_location .modal-wrapper .fields-container h3 {
   width: 100%;
   height: auto;
@@ -753,7 +758,7 @@ body {
   border-radius: 15px;
   border: 1px solid #f2574a;
 }
-#create_location .modal-wrapper .fields-container h3 select#country {
+#create_location .modal-wrapper .fields-container select#country {
   width: 200px;
   height: 30px;
   border-radius: 0;
@@ -763,11 +768,11 @@ body {
   padding: 5px;
   background-color: #fff;
 }
-#create_location .modal-wrapper .fields-container h3 select#country option {
+#create_location .modal-wrapper .fields-container select#country option {
   font-size: 14px;
   font-family: 'Montserrat', sans-serif;
 }
-#create_location .modal-wrapper .button_container {
+#create_location .button_container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -779,7 +784,7 @@ body {
   margin-bottom: 20px;
   margin-top: 20px;
 }
-#create_location .modal-wrapper .button_container button {
+#create_location .button_container button {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -797,18 +802,18 @@ body {
   border-radius: 25px;
   border: 1px solid #f2574a;
 }
-#create_location .modal-wrapper .button_container button:hover {
+#create_location .button_container button:hover {
   background-color: #f2574a;
   color: white;
   cursor: pointer;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
 }
-#create_location .modal-wrapper .button_container .create_button {
+#create_location .button_container .create_button {
   margin-right: 10px;
   background-color: #f2574a;
   color: white;
 }
-#create_location .modal-wrapper .button_container .create_button:hover {
+#create_location .button_container .create_button:hover {
   cursor: pointer;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
 }

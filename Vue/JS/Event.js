@@ -1,5 +1,5 @@
 class Event {
-        constructor(start, end, divePrice, InstructorPrice, location, comment, needs, open, max, maxlevel) {
+        constructor(start, end, divePrice, InstructorPrice, location, comment, needs, open, max, maxlevel, diveType) {
                 this.start = start;
                 this.end = end;
                 this.divePrice = divePrice;
@@ -7,11 +7,12 @@ class Event {
                 this.location = location;
                 this.comment = comment;
                 this.needs = needs;
-                this.title="Evenement à "+location;
+                this.title=diveType+" à "+location;
                 this.open=open;
                 this.max=max;
                 this.maxlevel=maxlevel;
                 this.users = [];
+                this.diveType=diveType;
         }
 
         addUser(user) {

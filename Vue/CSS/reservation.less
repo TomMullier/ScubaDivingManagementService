@@ -258,13 +258,12 @@
             padding: 20px 0;
 
             .left {
-                width: 50%;
+                width: 20%;
 
                 .timeline_bar {
                     width: 2px;
                     background-color: @grey;
                     margin-left: 20%;
-                    ;
                     height: 100%;
                 }
 
@@ -277,7 +276,7 @@
                     height: auto;
                     top: 0;
                     margin-top: 20%;
-                    margin-left: calc(10% - 8px);
+                    margin-left: calc(3% - 8px);
 
                     #eventStart {
                         font-size: 15px;
@@ -299,7 +298,7 @@
                     bottom: 0;
                     margin-bottom: 10%;
                     height: auto;
-                    margin-left: calc(10% - 8px);
+                    margin-left: calc(3% - 8px);
 
 
                     #eventEnd {
@@ -331,7 +330,7 @@
             width: 100%;
             margin: 0;
             height: 20%;
-            padding: 10px 0;
+            padding: 10px 0px;
         }
 
         #eventStart {
@@ -356,14 +355,43 @@
             align-items: center;
         }
 
+        .listOfUser{
+            width:35%;
+            height: 100%;
+            margin-left: 50px;
+            margin-right: 10px;
+            h3{
+                color: @dark_blue;
+                font-size: 15px;
+                font-family: @body_font;
+                text-align: center;
+                text-transform: uppercase;
+            }
+            ul li{
+                list-style:circle;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                align-items: left;
+                justify-content: left;
+                height: auto;
+                padding: 10px 0;
+                font-size: 15px;
+                font-family: @body_font;
+                text-transform: normal;
+                color: @dark_blue;
 
+                
+            }
+
+        }
         .right {
             display: flex;
             flex-direction: column;
             align-items: start;
-            margin-left: 20px;
-            margin-right: 30px;
             justify-content: flex-start;
+            width:50%;
+            margin-left:50px;
 
             p {
                 margin: 0;
@@ -453,12 +481,11 @@
                 }
             }
 
-            #eventPrice {
+            #eventPriceDiver, #eventPriceInstructor {
                 margin: 0;
-                margin-top: 20px;
                 padding: 0;
                 color: @orange;
-                font-size: 20px;
+                font-size: 18px;
                 text-transform: uppercase;
                 font-weight: bold;
                 font-family: @body_font;
@@ -468,24 +495,27 @@
                 }
             }
 
-            #eventWeather {
+            #eventPriceDiver{
                 margin-top: 20px;
-                margin: 0;
-                padding: 0;
-                color: @grey;
-                font-size: 15px;
-                font-family: @body_font;
-
-                i {
-                    margin-right: 5px;
-                }
             }
 
+            #eventPriceInstructor{
+                margin-bottom: 20px;
+                font-size: 13px;
+                color: @dark_blue;
+                font-weight: normal;
+            }
 
         }
 
+        #comment, #needs{
+            font-size: 15px;
+            color: @grey;
+            font-family: @body_font;
+        }
 
-        #reserveButton {
+
+        .reserveButton {
             margin-top: 20px;
             padding: 10px 20px;
             background-color: #4caf50;
@@ -499,11 +529,11 @@
             text-transform: uppercase;
         }
 
-        #reserveButton:hover {
+        .reserveButton:hover {
             background-color: #368039;
         }
 
-        #dereserveButton {
+        .unreserveButton {
             margin-top: 20px;
             padding: 10px 20px;
             background-color: @orange;
@@ -517,7 +547,7 @@
             text-transform: uppercase;
         }
 
-        #dereserveButton:hover {
+        .unreserveButton:hover {
             background-color: @dark_orange;
         }
     }
@@ -542,7 +572,7 @@
         height: auto;
         margin-right: 20px;
 
-        .legend_item{
+        .legend_item {
             display: flex;
             flex-direction: row;
             align-items: center;
@@ -846,100 +876,102 @@
         height: auto;
         margin-right: 20px;
 
-        
+
     }
 }
+
 .legend_item,
-        .in-table{
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: center;
-            width: auto;
-            height: auto;
-            margin-right: 10px;
-            border-radius: 13px;
-            padding-right: 10px;
-            margin-bottom: 5px;
-            // border-top-left-radius: 11px;
-            // border-bottom-left-radius: 11px;
-            
-            border: 2px solid;
-                    
-          
-          
+.in-table {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    height: auto;
+    margin-right: 10px;
+    border-radius: 13px;
+    padding-right: 10px;
+    margin-bottom: 5px;
+    // border-top-left-radius: 11px;
+    // border-bottom-left-radius: 11px;
 
-        p {
-            margin: 0;
-            padding: 0;
-            margin-left: 10px;
-            font-size: 13px;
-            font-family: @body_font;
-            color: @dark_blue;
-        }
+    border: 2px solid;
 
-        .legend_color {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-        }
 
-        .green_border {
-            border-color: #4CAF50;
-        }
 
-        .orange_border {
-            border-color: @orange;
-        }
 
-        .blue_border {
-            border-color: @dark_blue;
-        }
-
-        .grey_border {
-            border-color: @grey;
-        }
-
-        .green_full {
-            background-color: #4CAF50;
-        }
-
-        .orange_full {
-            background-color: @orange;
-        }
-
-        .blue_full {
-            background-color: @dark_blue;
-        }
-
-        .grey_full {
-            background-color: @grey;
-        }
+    p {
+        margin: 0;
+        padding: 0;
+        margin-left: 10px;
+        font-size: 13px;
+        font-family: @body_font;
+        color: @dark_blue;
     }
+
+    .legend_color {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+    }
+
+    .green_border {
+        border-color: #4CAF50;
+    }
+
+    .orange_border {
+        border-color: @orange;
+    }
+
+    .blue_border {
+        border-color: @dark_blue;
+    }
+
+    .grey_border {
+        border-color: @grey;
+    }
+
+    .green_full {
+        background-color: #4CAF50;
+    }
+
+    .orange_full {
+        background-color: @orange;
+    }
+
+    .blue_full {
+        background-color: @dark_blue;
+    }
+
+    .grey_full {
+        background-color: @grey;
+    }
+}
+
 .legend_item {
     cursor: move;
-  }
+}
 
 
 
-  .column {
-    flex:1;
+.column {
+    flex: 1;
     display: flex;
     flex-direction: column;
     border: 1px solid #ccc;
     margin-right: 10px;
     margin-bottom: 10px;
     padding: 10px;
-  }
-  
+}
 
-  
-  .table-container {
+
+
+.table-container {
     display: flex;
     justify-content: space-between;
-  }
-  
-  .column {
+}
+
+.column {
     flex: 1;
     min-width: 200px;
     margin-right: 10px;
@@ -948,11 +980,11 @@
     border: 1px solid #ccc;
     background-color: #f8f8f8;
     border-radius: 5px;
-  }
-  
-  .column-title {
+}
+
+.column-title {
     font-family: @body_font;
-    color: @dark_blue;  
+    color: @dark_blue;
     font-weight: bold;
     margin-bottom: 10px;
     margin: 0;
@@ -960,27 +992,29 @@
     font-size: 18px;
     text-align: center;
     margin-bottom: 10px;
-  }
-  .column.dragover {
-    background-color: #f0f0f0;
-  }
-  
+}
 
-  
-  
+.column.dragover {
+    background-color: #f0f0f0;
+}
+
+
+
+
 
 #dive_rapport {
-    
+
     .next_button_infos {
         display: flex;
         justify-content: center;
         align-items: center;
         width: auto;
         height: auto;
+        margin: 0 auto;
         margin-top: 20px;
         margin-bottom: 20px;
-        padding: 10px 10px;
-        width: 200px;
+        padding: 10px 20px;
+        width: fit-content;
         background-color: @orange;
         color: white;
         font-family: @body_font;
@@ -1008,13 +1042,23 @@
             height: 20px;
         }
     }
+    .add_palanquee{
+        background-color: white;
+        color:@orange;
+        border: 1px solid @orange;
+        font-size: 12px;
+        &:hover{
+            background-color: @orange;
+            color:white;
+        }
+
+    }
 
     .modal-wrapper {
         width: 100%;
         height: 100%;
         background-color: white;
         border-radius: 0px;
-
         .general_plannification_container {
             display: flex;
             flex-direction: column;
@@ -1055,7 +1099,7 @@
                     margin-right: 20px;
                 }
 
-                input {
+                input, select {
                     width: 200px;
                     height: 30px;
                     border-radius: 5px;
@@ -1066,7 +1110,6 @@
                     text-transform: uppercase;
                     margin-right: 0;
                     padding: 0;
-                    padding: 0 10px
                 }
             }
 
@@ -1111,7 +1154,7 @@
                 display: flex;
                 flex-direction: row;
                 justify-content: space-between;
-                width: 30%;
+                width: 100%;
                 align-items: center;
                 margin-bottom: 20px;
                 padding: 0;
@@ -1127,8 +1170,67 @@
                     margin-right: 20px;
                 }
 
-                input {
+                input, select {
                     width: 200px;
+                    height: 30px;
+                    border-radius: 5px;
+                    border: 1px solid @dark_blue;
+                    font-family: @body_font;
+                    font-size: 15px;
+                    text-align: center;
+                    text-transform: uppercase;
+                    margin-right: 0;
+                    padding: 0;
+                }
+
+                .next_button_infos {
+                    margin-bottom: 50px;
+                }
+            }
+        }
+        .diver{
+            // Make it as a card
+            width: fit-content;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            margin-bottom: 20px;
+            h1 {
+                color: @orange;
+                font-size: 20px;
+                margin:0;
+                font-family: @body_font;
+                text-align: center;
+                text-transform: uppercase;
+            }
+            select{
+                color: @dark_blue;
+                font-size: 15px;
+                margin:0;
+                margin-bottom: 10px;
+                font-family: @body_font;
+                text-align: center;
+                text-transform: uppercase;
+            }
+            .diver-parameters{
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                width: auto;
+                align-items: center;
+                margin-bottom: 20px;
+                padding: 0;
+                margin: 0;
+                
+                select{
+                    width: 30%;
                     height: 30px;
                     border-radius: 5px;
                     border: 1px solid @dark_blue;
@@ -1140,19 +1242,15 @@
                     padding: 0;
                     padding: 0 10px
                 }
-
-                .next_button_infos {
-                    margin-bottom: 50px;
-                }
             }
         }
-
         .parametres-container {
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             margin-top: 50px;
+            margin-bottom: 50px;
 
             h1 {
                 color: @orange;
@@ -1186,7 +1284,7 @@
                     margin-right: 20px;
                 }
 
-                input {
+                input, select{
                     width: 200px;
                     height: 30px;
                     border-radius: 5px;
@@ -1197,7 +1295,6 @@
                     text-transform: uppercase;
                     margin-right: 0;
                     padding: 0;
-                    padding: 0 10px
                 }
 
                 .next_button_infos {

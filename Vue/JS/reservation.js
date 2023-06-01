@@ -1,6 +1,10 @@
 import {
   frLocale
 } from './@fullcalendar/core/locales/fr.js';
+
+import {
+  Event
+} from "./Event.js";
 let calendar;
 let eventClicked;
 document.addEventListener('DOMContentLoaded', function () {
@@ -44,13 +48,15 @@ document.addEventListener('DOMContentLoaded', function () {
       // Evénement -> info.event
 
       eventClicked = info.event;
+      // Open Modale
       modals.show("eventModal", function () {
         menutoggle.classList.remove('active');
       });
       menutoggle.classList.toggle('active');
       menutoggle.classList.toggle('close-modal');
-
+      //Titre
       document.querySelector("#eventTitle").innerHTML = info.event.title;
+      // Durée
       //get start time with 2 digits even if 0
       let startHour = info.event.start.getHours();
       let startMinutes = info.event.start.getMinutes();
@@ -81,37 +87,84 @@ document.addEventListener('DOMContentLoaded', function () {
       document.querySelector("#eventStart").innerHTML = startTime;
       document.querySelector("#eventEnd").innerHTML = endTime;
 
-      // document.querySelector("#left_bar").style.height=$(".global").height()+"px";
-      // document.querySelector("#left_bar").style.width=$(".global").width()+"px";  
+      // Location
       document.querySelector(".timeline_bar").style.height = $(".global").height() + "px";
-      let adress = document.querySelector("#eventLocation").innerText;
-      // Remove line breaks
+      let adress = eventClicked.extendedProps.location;
+      document.querySelector("#eventLocation").innerText = adress;
       adress = adress.replace(/(\r\n|\n|\r)/gm, " ");
-
       document.querySelector("#eventLocation").href = "https://www.google.com/maps/search/?api=1&query=" + adress;
-      // Set title of link to "Voir sur Google Maps"
       document.querySelector("#eventLocation").title = "Voir sur Google Maps";
+
+      // Level display
+      let level = eventClicked.extendedProps.maxlevel;
+      let level_item = document.querySelectorAll(".level-item-modale");
+      level_item.forEach(function (level_item_item) {
+        if (parseInt(level_item_item.innerText) <= parseInt(level)) {
+          level_item_item.classList.add("active");
+          level_item_item.classList.remove("not-active");
+        } else {
+          level_item_item.classList.remove("active");
+          level_item_item.classList.add("not-active");
+        }
+      });
+
+      // Price
+      let DivePrice = eventClicked.extendedProps.divePrice;
+      let InstructorPrice = eventClicked.extendedProps.InstructorPrice;
+      document.querySelector("#eventPriceDiver").innerHTML = "Plongeur : "+DivePrice + " €";
+      document.querySelector("#eventPriceInstructor").innerHTML = "Instructeur : "+InstructorPrice + "€";
+
+
+      // Comment
+      let comment = eventClicked.extendedProps.comment;
+      document.querySelector("#comment").innerHTML = "Commentaire : "+comment;
+
+      // Needs
+      let needs = eventClicked.extendedProps.needs;
+      document.querySelector("#needs").innerHTML = "Besoin : "+needs;
+
+      // Button click
+      let button = document.querySelector("#reserveButton");
+      button.addEventListener("click", function () {
+        if(button.classList.contains("reserveButton")){
+        button.innerHTML = "Se désinscrire";
+        button.classList.add("unreserveButton");
+        button.classList.remove("reserveButton");
+        eventClicked.setProp("backgroundColor", "#f2574a");}
+        else{
+          button.innerHTML = "Réserver";
+          button.classList.add("reserveButton");
+          button.classList.remove("unreserveButton");
+          eventClicked.setProp("backgroundColor", "#4CAF50");
+        }
+
+      });
+
+      if(new Date(eventClicked.end) < new Date()){
+        button.style.display = "none";
+      } else {
+        button.style.display = "flex";
+      }
     }
 
   });
+
   events.forEach(function (event) {
     if (event.reserved) {
       event.backgroundColor = "#f2574a";
     } else {
       event.backgroundColor = "#4CAF50";
     }
-    if (new Date(event.start) < new Date() && new Date(event.end) > new Date()) {
-      event.backgroundColor = "#120B8F";
-    }
-    if (new Date(event.end) < new Date()) {
-      event.backgroundColor = "#8b93a1";
-    }
-
     calendar.addEvent(event);
   });
   calendar.render();
 
 });
+
+
+var events = []
+events.push(new Event(new Date(2023, 5, 1, 10, 0), new Date(2023, 5, 1, 12, 0), 20, 10, "La Ciotat", " Commentaire Commentaire ", " Besoin Besoin Besoin", false, 5,3));
+
 
 // Update label text when slider value changes
 
@@ -193,68 +246,6 @@ emergencyButton.addEventListener("click", function () {
 
 
 
-var events = [{
-    title: 'Événement 1',
-    start: '2023-05-25T10:00:00',
-    end: '2023-05-25T12:00:00',
-    reserved: false
-  },
-  {
-    title: 'Événement 2',
-    start: '2023-05-25T14:00:00',
-    end: '2023-05-25T16:00:00',
-    reserved: false
-  },
-  {
-    title: 'Événement 3',
-    start: '2023-05-26T12:00:00',
-    end: '2023-05-26T13:30:00',
-    reserved: true,
-  },
-  {
-    title: 'Événement 6',
-    start: '2023-05-26T15:00:00',
-    end: '2023-05-26T16:30:00',
-    reserved: true,
-  },
-  {
-    title: 'Événement 4',
-    start: '2023-05-27T12:00:00',
-    end: '2023-05-27T13:00:00',
-    reserved: true
-  },
-  {
-    title: 'Événement 5',
-    start: '2023-05-28T12:00:00',
-    end: '2023-05-28T13:00:00',
-    reserved: false
-  },
-  {
-    title: 'Événement 3',
-    start: '2023-05-30T12:00:00',
-    end: '2023-05-30T13:00:00',
-    reserved: false
-  },
-  {
-    title: 'Événement 3',
-    start: '2023-05-31T12:00:00',
-    end: '2023-05-31T13:00:00',
-    reserved: false
-  },
-  {
-    title: 'Événement 3',
-    start: '2023-05-21T12:00:00',
-    end: '2023-05-21T13:00:00',
-    reserved: false
-  },
-  {
-    title: 'Événement 3',
-    start: '2023-05-29T12:00:00',
-    end: '2023-05-29  T13:00:00',
-    reserved: false
-  }
-]
-
 
 let rapport_button = document.querySelector(".edit_rapport");
 rapport_button.addEventListener("click", function () {
@@ -278,105 +269,3 @@ rapport_button.addEventListener("click", function () {
 
 
 });
-
-const legendItems = document.querySelectorAll('.legend_item');
-const tableContainer = document.querySelector('.table-container');
-const maxTagsPerColumn = 4;
-let columnCounter = 1;
-
-// Gestionnaires d'événements pour le glisser-déposer des éléments de la légende
-legendItems.forEach(item => {
-  item.addEventListener('dragstart', () => {
-    item.classList.add('dragged');
-  });
-
-  item.addEventListener('dragend', () => {
-    item.classList.remove('dragged');
-  });
-});
-
-// Fonction pour créer une nouvelle colonne avec les mêmes caractéristiques que la colonne d'origine
-const createNewColumn = () => {
-  columnCounter++;
-  const newColumn = document.createElement('div');
-  newColumn.classList.add('column');
-  newColumn.id = `column${columnCounter}`;
-
-  const columnTitle = document.createElement('h2');
-  columnTitle.classList.add('column-title');
-  columnTitle.textContent = `Palanquée ${columnCounter}`;
-  newColumn.appendChild(columnTitle);
-
-  // Ajouter les gestionnaires d'événements pour le glisser-déposer dans la nouvelle colonne
-  newColumn.addEventListener('dragover', e => {
-    e.preventDefault();
-    newColumn.classList.add('dragover');
-  });
-
-  newColumn.addEventListener('dragleave', () => {
-    newColumn.classList.remove('dragover');
-  });
-
-  newColumn.addEventListener('drop', e => {
-    e.preventDefault();
-    const draggedItem = document.querySelector('.dragged');
-    const parentColumn = draggedItem.parentElement;
-
-    if (parentColumn !== newColumn) {
-      if (newColumn.children.length < maxTagsPerColumn) {
-        newColumn.appendChild(draggedItem);
-        if (parentColumn.children.length === 0 && parentColumn !== tableContainer.lastElementChild) {
-          tableContainer.removeChild(parentColumn);
-        }
-      }
-    }
-
-    newColumn.classList.remove('dragover');
-  });
-
-  return newColumn;
-};
-
-// Gestionnaires d'événements pour le glisser-déposer des colonnes du tableau
-const columns = document.querySelectorAll('.column');
-
-columns.forEach(column => {
-  column.addEventListener('dragover', e => {
-    e.preventDefault();
-    column.classList.add('dragover');
-  });
-
-  column.addEventListener('dragleave', () => {
-    column.classList.remove('dragover');
-  });
-
-  column.addEventListener('drop', e => {
-    e.preventDefault();
-    const draggedItem = document.querySelector('.dragged');
-    const parentColumn = draggedItem.parentElement;
-
-    if (parentColumn !== column) {
-      if (column.children.length === 0) {
-        const newColumn = createNewColumn();
-        tableContainer.appendChild(newColumn);
-        newColumn.appendChild(draggedItem);
-      } else if (column.children.length < maxTagsPerColumn) {
-        column.appendChild(draggedItem);
-        if (parentColumn.children.length === 0 && parentColumn !== tableContainer.lastElementChild) {
-          tableContainer.removeChild(parentColumn);
-        }
-      }
-    }
-
-    column.classList.remove('dragover');
-  });
-});
-
-
-
-
-
-
-
-
-

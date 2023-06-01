@@ -19,7 +19,8 @@
         <script type=module src='https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@6.1.7/index.global.min.js'>
         </script>
         <script src="https://kit.fontawesome.com/b89837f3ad.js" crossorigin="anonymous"></script>
-        
+
+
 
 
 
@@ -78,7 +79,16 @@
 
 
         <div id="modals" style="display:flex;">
-
+                <modal id="confirm_delete">
+                        <div class="top">
+                                <h1 id="txt_title" class="title">Sécurité</h1>
+                                <h3 id="txt_descr">Voulez-vous vraiment supprimer ce lieu ?</h3>
+                        </div>
+                        <div class="bottom">
+                                <div id="validateButton">Valider</div>
+                                <div id="cancelButton">Annuler</div>
+                        </div>
+                </modal>
                 <modal id="create_location">
                         <div class="top">
                                 <h1 class="title">Créer un lieu</h1>
@@ -90,9 +100,28 @@
                                         <input type="text" id="name" name="name" placeholder="Nom du lieu">
                                 </h3>
                                 <h3>
-                                        <label for="adress">Adresse</label>
-                                        <input type="text" id="adress" name="adress" placeholder="Adresse">
+                                        <label for="country">Pays</label>
+                                        <select id="country" name="country">
+                                                <option value="" selected="selected">Sélectionnez un pays</option>
+                                        </select>
                                 </h3>
+                                <h3>
+                                        <label for="street">Rue</label>
+                                        <input type="text" id="street" name="street" placeholder="Rue">
+                                </h3>
+                                <h3>
+                                        <label for="postalCode">Code postal</label>
+                                        <input type="text" id="postalCode" name="postalCode" placeholder="Code postal">
+                                </h3>
+                                <h3>
+                                        <label for="city">Ville</label>
+                                        <input type="text" id="city" name="city" placeholder="Ville">
+                                </h3>
+                                <h3>
+                                        <label for="adress_complement">Complément d'adresse</label>
+                                        <input type="text" id="adress_complement" name="adress_complement" placeholder="Complément d'adresse">
+                                </h3>
+                                                                            
                                 <h3>
                                         <label for="latitude">Latitude</label>
                                         <input type="text" id="latitude" name="latitude" placeholder="Latitude">

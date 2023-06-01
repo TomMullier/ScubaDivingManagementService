@@ -572,7 +572,7 @@ body {
   padding: 20px 0;
 }
 #eventModal .modal-wrapper .global .left {
-  width: 50%;
+  width: 20%;
 }
 #eventModal .modal-wrapper .global .left .timeline_bar {
   width: 2px;
@@ -589,7 +589,7 @@ body {
   height: auto;
   top: 0;
   margin-top: 20%;
-  margin-left: calc(10% - 8px);
+  margin-left: calc(3% - 8px);
 }
 #eventModal .modal-wrapper .global .left .start_container #eventStart {
   font-size: 15px;
@@ -608,7 +608,7 @@ body {
   bottom: 0;
   margin-bottom: 10%;
   height: auto;
-  margin-left: calc(10% - 8px);
+  margin-left: calc(3% - 8px);
 }
 #eventModal .modal-wrapper .global .left .end_container #eventEnd {
   font-size: 15px;
@@ -631,7 +631,7 @@ body {
   width: 100%;
   margin: 0;
   height: 20%;
-  padding: 10px 0;
+  padding: 10px 0px;
 }
 #eventModal .modal-wrapper #eventStart {
   font-size: 15px;
@@ -651,13 +651,40 @@ body {
   display: flex;
   align-items: center;
 }
+#eventModal .modal-wrapper .listOfUser {
+  width: 35%;
+  height: 100%;
+  margin-left: 50px;
+  margin-right: 10px;
+}
+#eventModal .modal-wrapper .listOfUser h3 {
+  color: #120B8F;
+  font-size: 15px;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  text-transform: uppercase;
+}
+#eventModal .modal-wrapper .listOfUser ul li {
+  list-style: circle;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: left;
+  justify-content: left;
+  height: auto;
+  padding: 10px 0;
+  font-size: 15px;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: normal;
+  color: #120B8F;
+}
 #eventModal .modal-wrapper .right {
   display: flex;
   flex-direction: column;
   align-items: start;
-  margin-left: 20px;
-  margin-right: 30px;
   justify-content: flex-start;
+  width: 50%;
+  margin-left: 50px;
 }
 #eventModal .modal-wrapper .right p {
   margin: 0;
@@ -731,31 +758,36 @@ body {
   color: white;
   font-weight: bold;
 }
-#eventModal .modal-wrapper .right #eventPrice {
+#eventModal .modal-wrapper .right #eventPriceDiver,
+#eventModal .modal-wrapper .right #eventPriceInstructor {
   margin: 0;
-  margin-top: 20px;
   padding: 0;
   color: #f2574a;
-  font-size: 20px;
+  font-size: 18px;
   text-transform: uppercase;
   font-weight: bold;
   font-family: 'Montserrat', sans-serif;
 }
-#eventModal .modal-wrapper .right #eventPrice i {
+#eventModal .modal-wrapper .right #eventPriceDiver i,
+#eventModal .modal-wrapper .right #eventPriceInstructor i {
   margin-right: 5px;
 }
-#eventModal .modal-wrapper .right #eventWeather {
+#eventModal .modal-wrapper .right #eventPriceDiver {
   margin-top: 20px;
-  margin: 0;
-  padding: 0;
-  color: #BDC7D7;
+}
+#eventModal .modal-wrapper .right #eventPriceInstructor {
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: #120B8F;
+  font-weight: normal;
+}
+#eventModal .modal-wrapper #comment,
+#eventModal .modal-wrapper #needs {
   font-size: 15px;
+  color: #BDC7D7;
   font-family: 'Montserrat', sans-serif;
 }
-#eventModal .modal-wrapper .right #eventWeather i {
-  margin-right: 5px;
-}
-#eventModal .modal-wrapper #reserveButton {
+#eventModal .modal-wrapper .reserveButton {
   margin-top: 20px;
   padding: 10px 20px;
   background-color: #4caf50;
@@ -768,10 +800,10 @@ body {
   transition: 0.2s;
   text-transform: uppercase;
 }
-#eventModal .modal-wrapper #reserveButton:hover {
+#eventModal .modal-wrapper .reserveButton:hover {
   background-color: #368039;
 }
-#eventModal .modal-wrapper #dereserveButton {
+#eventModal .modal-wrapper .unreserveButton {
   margin-top: 20px;
   padding: 10px 20px;
   background-color: #f2574a;
@@ -784,7 +816,7 @@ body {
   transition: 0.2s;
   text-transform: uppercase;
 }
-#eventModal .modal-wrapper #dereserveButton:hover {
+#eventModal .modal-wrapper .unreserveButton:hover {
   background-color: #c44236;
 }
 .legend_container {
@@ -1164,10 +1196,11 @@ body {
   align-items: center;
   width: auto;
   height: auto;
+  margin: 0 auto;
   margin-top: 20px;
   margin-bottom: 20px;
-  padding: 10px 10px;
-  width: 200px;
+  padding: 10px 20px;
+  width: fit-content;
   background-color: #f2574a;
   color: white;
   font-family: 'Montserrat', sans-serif;
@@ -1190,6 +1223,16 @@ body {
 #dive_rapport .next_button_infos .loading_gif {
   width: 20px;
   height: 20px;
+}
+#dive_rapport .add_palanquee {
+  background-color: white;
+  color: #f2574a;
+  border: 1px solid #f2574a;
+  font-size: 12px;
+}
+#dive_rapport .add_palanquee:hover {
+  background-color: #f2574a;
+  color: white;
 }
 #dive_rapport .modal-wrapper {
   width: 100%;
@@ -1243,7 +1286,12 @@ body {
 #dive_rapport .modal-wrapper .general_plannification_container .time_container input,
 #dive_rapport .modal-wrapper .general_plannification_container .location_container input,
 #dive_rapport .modal-wrapper .general_plannification_container .plongueurs input,
-#dive_rapport .modal-wrapper .general_plannification_container .nombre_plongeurs input {
+#dive_rapport .modal-wrapper .general_plannification_container .nombre_plongeurs input,
+#dive_rapport .modal-wrapper .general_plannification_container .date_container select,
+#dive_rapport .modal-wrapper .general_plannification_container .time_container select,
+#dive_rapport .modal-wrapper .general_plannification_container .location_container select,
+#dive_rapport .modal-wrapper .general_plannification_container .plongueurs select,
+#dive_rapport .modal-wrapper .general_plannification_container .nombre_plongeurs select {
   width: 200px;
   height: 30px;
   border-radius: 5px;
@@ -1254,7 +1302,6 @@ body {
   text-transform: uppercase;
   margin-right: 0;
   padding: 0;
-  padding: 0 10px;
 }
 #dive_rapport .modal-wrapper .general_plannification_container .map_dive {
   width: 30%;
@@ -1293,7 +1340,7 @@ body {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  width: 30%;
+  width: 100%;
   align-items: center;
   margin-bottom: 20px;
   padding: 0;
@@ -1310,8 +1357,67 @@ body {
   margin-right: 20px;
 }
 #dive_rapport .modal-wrapper .plongeurs_container .plongueurs input,
-#dive_rapport .modal-wrapper .plongeurs_container .nombre_plongeurs input {
+#dive_rapport .modal-wrapper .plongeurs_container .nombre_plongeurs input,
+#dive_rapport .modal-wrapper .plongeurs_container .plongueurs select,
+#dive_rapport .modal-wrapper .plongeurs_container .nombre_plongeurs select {
   width: 200px;
+  height: 30px;
+  border-radius: 5px;
+  border: 1px solid #120B8F;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  text-align: center;
+  text-transform: uppercase;
+  margin-right: 0;
+  padding: 0;
+}
+#dive_rapport .modal-wrapper .plongeurs_container .plongueurs .next_button_infos,
+#dive_rapport .modal-wrapper .plongeurs_container .nombre_plongeurs .next_button_infos {
+  margin-bottom: 50px;
+}
+#dive_rapport .modal-wrapper .diver {
+  width: fit-content;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+#dive_rapport .modal-wrapper .diver h1 {
+  color: #f2574a;
+  font-size: 20px;
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  text-transform: uppercase;
+}
+#dive_rapport .modal-wrapper .diver select {
+  color: #120B8F;
+  font-size: 15px;
+  margin: 0;
+  margin-bottom: 10px;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  text-transform: uppercase;
+}
+#dive_rapport .modal-wrapper .diver .diver-parameters {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: auto;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 0;
+  margin: 0;
+}
+#dive_rapport .modal-wrapper .diver .diver-parameters select {
+  width: 30%;
   height: 30px;
   border-radius: 5px;
   border: 1px solid #120B8F;
@@ -1323,16 +1429,13 @@ body {
   padding: 0;
   padding: 0 10px;
 }
-#dive_rapport .modal-wrapper .plongeurs_container .plongueurs .next_button_infos,
-#dive_rapport .modal-wrapper .plongeurs_container .nombre_plongeurs .next_button_infos {
-  margin-bottom: 50px;
-}
 #dive_rapport .modal-wrapper .parametres-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   margin-top: 50px;
+  margin-bottom: 50px;
 }
 #dive_rapport .modal-wrapper .parametres-container h1 {
   color: #f2574a;
@@ -1370,7 +1473,11 @@ body {
 #dive_rapport .modal-wrapper .parametres-container .metres-prevus input,
 #dive_rapport .modal-wrapper .parametres-container .metres-realises input,
 #dive_rapport .modal-wrapper .parametres-container .temps-prevu input,
-#dive_rapport .modal-wrapper .parametres-container .temps-realise input {
+#dive_rapport .modal-wrapper .parametres-container .temps-realise input,
+#dive_rapport .modal-wrapper .parametres-container .metres-prevus select,
+#dive_rapport .modal-wrapper .parametres-container .metres-realises select,
+#dive_rapport .modal-wrapper .parametres-container .temps-prevu select,
+#dive_rapport .modal-wrapper .parametres-container .temps-realise select {
   width: 200px;
   height: 30px;
   border-radius: 5px;
@@ -1381,7 +1488,6 @@ body {
   text-transform: uppercase;
   margin-right: 0;
   padding: 0;
-  padding: 0 10px;
 }
 #dive_rapport .modal-wrapper .parametres-container .metres-prevus .next_button_infos,
 #dive_rapport .modal-wrapper .parametres-container .metres-realises .next_button_infos,

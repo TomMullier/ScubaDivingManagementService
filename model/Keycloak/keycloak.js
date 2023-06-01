@@ -190,7 +190,7 @@ async function createUser(userData, clientUsername) {
     let successRole = await setRole(roleId, userId, role_name, adminToken); // return true, undefined if err
     if (!successRole) return false;
 
-    if (userData.isDp) {
+    if (userData.Diver_Qualification === "P5") { // if diver is P5, it's a DP
         role_name = 'app_dp';
         roleId = await getRoleId(adminToken, role_name); // return role id, undefined if err
         if (!roleId) return false;

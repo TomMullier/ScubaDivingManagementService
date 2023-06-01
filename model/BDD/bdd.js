@@ -31,7 +31,6 @@ class BDD {
         if (isNew) {
             userData.Id_Diver = uuidv4();
             delete userData.password;
-            delete userData.isDp;
         }
         let query = 'INSERT INTO diver SET ?';
         this.con.query(query, [userData], (err, result) => {

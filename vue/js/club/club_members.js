@@ -14,7 +14,6 @@ const signupFormNodes = {
     license_expi: signupForm.querySelector('input[name="license_expi"]'),
     medic_certif_expi: signupForm.querySelector('input[name="medic_certif_expi"]'),
     birthdate: signupForm.querySelector('input[name="birthdate"]'),
-    isDp: signupForm.querySelector('input[name="isDp"]'),
     password: signupForm.querySelector('input[name="password"]')
 };
 
@@ -34,7 +33,6 @@ document.getElementById("btn-submit").addEventListener('click', (e) => {
         License_Expiration_Date: signupFormNodes.license_expi.value,
         Medical_Certificate_Expiration_Date: signupFormNodes.medic_certif_expi.value,
         Birthdate: signupFormNodes.birthdate.value,
-        isDp: signupFormNodes.isDp.checked,
         password: signupFormNodes.password.value
     };
     data.Mail = (data.Mail).toLowerCase()

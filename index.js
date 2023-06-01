@@ -388,7 +388,7 @@ app.put("/auth/club/locations", keycloak.protect(),
     body("SOS_Tel_Number").trim().escape().isLength({ min: 10, max: 10 }),          // Emergency
     body("Emergency_Plan").trim().escape(),                                         //     /
     body("Post_Accident_Procedure").trim().escape(),                                //     /
-    function (req, res) {
+    async function (req, res) {
         if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(422).json({ errors: errors.array() });
@@ -409,18 +409,17 @@ app.put("/auth/club/locations", keycloak.protect(),
         delete req.body.Version;
 
         console.log("Modifying location in DB");
-        Database.getDiveSiteInfoById({ Id_Dive_Site: req.body.Id_Dive_Site }, (siteInfo) => {
-            Database.modifDiveSite(req.body, (isUpdateSite) => {
-                if (!isUpdateSite) return res.json({ modified: false, comment: "Impossible to update Location" });
-                Database.modifEmergencyPlan(dataEmergency, (isUpdateEm) => {
-                    if (isUpdateEm) return res.json({ modified: true, comment: "Location and Emergency Plan updated" });
-                    else {
-                        Database.modifDiveSite(siteInfo, (isUpdateSite) => {
-                            if (!isUpdateSite) return res.json({ modified: false, comment: "Impossible to cancel update of Location" });
-                            else return res.json({ modified: false, comment: "Impossible to update Emergency Plan" });
-                        })
-                    }
-                })
+        const siteInfo = await Database.getDiveSiteInfoById({ Id_Dive_Site: req.body.Id_Dive_Site });
+        Database.modifDiveSite(req.body, (isUpdateSite) => {
+            if (!isUpdateSite) return res.json({ modified: false, comment: "Impossible to update Location" });
+            Database.modifEmergencyPlan(dataEmergency, (isUpdateEm) => {
+                if (isUpdateEm) return res.json({ modified: true, comment: "Location and Emergency Plan updated" });
+                else {
+                    Database.modifDiveSite(siteInfo, (isUpdateSite) => {
+                        if (!isUpdateSite) return res.json({ modified: false, comment: "Impossible to cancel update of Location" });
+                        else return res.json({ modified: false, comment: "Impossible to update Emergency Plan" });
+                    })
+                }
             })
         })
     })

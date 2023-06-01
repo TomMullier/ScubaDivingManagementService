@@ -163,18 +163,20 @@ class BDD {
         })
     }
 
-    getDiveSiteInfoById(data, callback) {
-        const query = 'SELECT * FROM dive_site WHERE ?';
-        this.con.query(query, [data], (err, result) => {
-            if (err) {
-                console.log(err);
-                console.log("Can't get location info");
-                callback(undefined);
-            } else {
-                console.log("Sending location info");
-                callback(result[0]);
-            }
-        })
+    getDiveSiteInfoById(data) {
+        return new Promise((resolve, reject) => {
+            const query = 'SELECT * FROM dive_site WHERE ?';
+            this.con.query(query, [data], (err, result) => {
+                if (err) {
+                    console.log(err);
+                    console.log("Can't get location info");
+                    reject(err); // à récup dans un catch
+                } else {
+                    console.log("Sending location info");
+                    resolve(result[0]);
+                }
+            })
+        });
     }
 
     modifDiveSite(data, callback) {

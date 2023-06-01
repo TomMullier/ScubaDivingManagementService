@@ -24,7 +24,7 @@ class Event {
         this.Dive_Type = diveType; //
     }
 }
-addEvent(new Event(new Date(2024, 5, 1, 10, 0), new Date(2024, 5, 1, 12, 0), 20, 10, {Id_Dive_Site:"ad47d2df-dba2-4a59-b0af-e05032013e94", Site_Name : "La Ciotat"}, " Commentaire Commentaire ", " Besoin Besoin Besoin", false, 5, 3, "Exploration"));
+// addEvent(new Event(new Date(2024, 5, 1, 10, 0), new Date(2024, 5, 1, 12, 0), 20, 10, {Id_Dive_Site:"ad47d2df-dba2-4a59-b0af-e05032013e94", Site_Name : "La Ciotat"}, " Commentaire Commentaire ", " Besoin Besoin Besoin", false, 5, 3, "Exploration"));
 
 function addEvent(event) {
     event.Dive_Site_Id_Dive_Site = event.Location.Id_Dive_Site;

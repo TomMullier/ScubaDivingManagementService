@@ -123,7 +123,7 @@ class BDD {
     /*                                  DIVE SITE                                 */
     /* -------------------------------------------------------------------------- */
 
-    createDiveSite(data, callback){
+    createDiveSite(data, callback) {
         console.log(data);
         data.Id_Dive_Site = uuidv4();
         let query = 'INSERT INTO dive_site SET ?';
@@ -207,9 +207,8 @@ class BDD {
     /* -------------------------------------------------------------------------- */
     /*                               EMERGENCY PLAN                               */
     /* -------------------------------------------------------------------------- */
-    
-    createEmergencyPlan(data, callback){
-        console.log(data);
+
+    createEmergencyPlan(data, callback) {
         let query = 'INSERT INTO emergency_plan SET ?';
         this.con.query(query, [data], (err, result) => {
             if (err) {
@@ -263,20 +262,53 @@ class BDD {
         })
     }
 
-}
 
-function CreateDiveSite(Site_Name, Latitude, Longitude, Track_Type, Track_Number, Track_Name, Zip_Code, City_Name, Country_Name, Additional_Address, Tel_Number, Information_URL) {
-    tmpUID = randomUUID();
-    tmpREQ = `INSERT INTO dive_site (Id_Dive_Site,Site_Name,Gps_Latitude,Gps_Longitude,Track_Type,Track_Number,Track_Name,Zip_Code,City_Name,Country_Name,Additional_Address,Tel_Number,Information_URL) value ("` + tmpUID + `", "` + Site_Name + `", "` + Latitude + `", "` + Longitude + `", "` + Track_Type + `", "` + Track_Number + `", "` + Track_Name + `", "` + Zip_Code + `", "` + City_Name + `", "` + Country_Name + `", "` + Additional_Address + `", "` + Tel_Number + `", "` + Information_URL + `");`;
-    Requete(tmpREQ);
-}
-function UpdateDiveSite(Id_Dive_Site, Site_Name, Latitude, Longitude, Track_Type, Track_Number, Track_Name, Zip_Code, City_Name, Country_Name, Additional_Address, Tel_Number, Information_URL) {
-    tmpREQ = `UPDATE Dive_Site set Site_Name ="` + Site_Name + `",Gps_Latitude ="` + Latitude + `",Gps_Longitude ="` + Longitude + `",Track_Type ="` + Track_Type + `",Track_Number ="` + Track_Number + `",Track_Name ="` + Track_Name + `",Zip_Code ="` + Zip_Code + `",City_Name ="` + City_Name + `",Country_Name ="` + Country_Name + `",Additional_Address ="` + Additional_Address + `",Tel_Number ="` + Tel_Number + `",Information_URL ="` + Information_URL + `" WHERE Id_Dive_Site = "` + Id_Dive_Site + `";`;
-    Requete(tmpREQ);
-}
-function DeleteDiveSite(Id_Dive_Site) {
-    tmpREQ = `DELETE from Dive_Site where Id_Dive_Site ="` + Id_Dive_Site + `";`;
-    Requete(tmpREQ);
+    /* -------------------------------------------------------------------------- */
+    /*                                  PLANNING                                  */
+    /* -------------------------------------------------------------------------- */
+
+    createEvent(data, callback) {
+        data.Id_Planned_Dive = uuidv4();
+        console.log(data);
+        let query = 'INSERT INTO planned_dive SET ?';
+        this.con.query(query, [data], (err, result) => {
+            if (err) {
+                console.log(err);
+                callback(false);
+            } else {
+                console.log("Event correctly inserted ");
+                callback(true);
+            }
+        })
+    }
+
+
+
+    getPlanning(callback) {
+        const query = 'SELECT * FROM planned_dive INNER JOIN dive_site ON planned_dive.Dive_Site_Id_Dive_Site = dive_site.Id_Dive_Site';
+        this.con.query(query, (err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                return callback(result);
+            }
+        })
+    }
+
+    modifEvent(data, callback) {
+        const query = 'UPDATE planned_dive SET ? WHERE Id_Planned_Dive = ?'
+        this.con.query(query, [data, data.Id_Planned_Dive], (err, result) => {
+            if (err) {
+                console.log(err);
+                return callback(false)
+            } else {
+                console.log("Event info modified");
+                return callback(true);
+            }
+        })
+    }
+
+
 }
 
 //PLANNED_DIVE
@@ -291,21 +323,6 @@ function DeletePlannedDive(Id_Planned_Dive) {
 }
 function UpdatePlannedDive(Id_Planned_Dive, Planned_Date, Planned_Time, Comments, Special_Needs, Status, Diver_Price, Instructor_Price, Id_Dive_Site) {
     tmpREQ = `UPDATE planned_dive set Planned_Date ="` + Planned_Date + `",Planned_Time="` + Planned_Time + `",Comments="` + Comments + `",Special_Needs="` + Special_Needs + `",Status="` + Status + `",Diver_Price="` + Diver_Price + `",Instructor_Price="` + Instructor_Price + `",Dive_Site_Id_Dive_Site="` + Id_Dive_Site + `" WHERE Id_Planned_Dive ="` + Id_Planned_Dive + `";`;
-    Requete(tmpREQ);
-}
-
-//Emergency_Plan
-function CreateEmergencyPlan(SOS_Tel_Number, Emergency_Plan, Post_Accident_Procedure, Version, Id_Dive_Site) {
-    tmpUID = randomUUID();
-    tmpREQ = `INSERT INTO Emergency_Plan (Id_Emergency_Plan,SOS_Tel_Number,Emergency_Plan,Post_Accident_Procedure,Version,Dive_Site_Id_Dive_Site) value ("` + tmpUID + `", "` + SOS_Tel_Number + `", "` + Emergency_Plan + `", "` + Post_Accident_Procedure + `", "` + Version + `", "` + Id_Dive_Site + `");`;
-    Requete(tmpREQ);
-}
-function UpdateEmergencyPlan(Id_Emergency_Plan, SOS_Tel_Number, Emergency_Plan, Post_Accident_Procedure, Version) {
-    tmpREQ = `UPDATE Emergency_Plan set SOS_Tel_Number ="` + SOS_Tel_Number + `",Emergency_Plan ="` + Emergency_Plan + `",Post_Accident_Procedure ="` + Post_Accident_Procedure + `",Version ="` + Version + `" WHERE Id_Emergency_Plan ="` + Id_Emergency_Plan + `";`;
-    Requete(tmpREQ);
-}
-function DeleteEmergencyPlan(Id_Emergency_Plan) {
-    tmpREQ = `DELETE from Emergency_Plan where Id_Emergency_Plan ="` + Id_Emergency_Plan + `";`;
     Requete(tmpREQ);
 }
 

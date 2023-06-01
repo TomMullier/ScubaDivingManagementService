@@ -72,14 +72,79 @@ app.get('/auth/dashboard', keycloak.protect(), function (req, res) {
     } else res.redirect('/logout');
 });
 
-/* ---------------------------------- USER ---------------------------------- */
-app.get('/auth/user/planning', keycloak.protect(), function (req, res) {
-    if (checkUser(req, "DP")) {
-        res.sendFile(__dirname + "/vue/html/user/planning_user.html", { headers: { 'userType': 'dp' } });
+/* -------------------------------------------------------------------------- */
+/*                                  PLANNING                                  */
+/* -------------------------------------------------------------------------- */
+
+app.get('/auth/planning', keycloak.protect(), function (req, res) {
+    if (checkUser(req, "CLUB")) {
+        res.sendFile(__dirname + "/vue/html/planning.html", { headers: { 'userType': 'club' } });
+    } else if (checkUser(req, "DP")) {
+        res.sendFile(__dirname + "/vue/html/planning.html", { headers: { 'userType': 'dp' } });
     } else if (checkUser(req, "USER")) {
-        res.sendFile(__dirname + "/vue/html/user/planning_user.html", { headers: { 'userType': 'user' } });
+        res.sendFile(__dirname + "/vue/html/planning.html", { headers: { 'userType': 'user' } });
     } else res.redirect('/auth/dashboard');
 })
+
+
+/* --------------------------------- CREATE --------------------------------- */
+app.post('/auth/planning', keycloak.protect(),
+    body("Start_Date").trim().escape(),
+    body("End_Date").trim().escape(),
+    body("Diver_Price").trim().escape(),
+    body("Instructor_Price").trim().escape(),
+    body("Dive_Site_Id_Dive_Site").trim().escape(),
+    body("Comments").trim().escape(),
+    body("Special_Needs").trim().escape(),
+    body("Status").trim().escape(),
+    body("Max_Divers").trim().escape(),
+    body("Dive_Type").trim().escape(),
+    function (req, res) {
+        if (!checkUser(req, "CLUB")) return res.sendStatus(401);
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(422).json({ errors: errors.array() });
+        console.log("Creating planning in DB");
+        Database.createEvent(req.body, (created) => {
+            if (created) return res.json({ created: true });
+            else return res.json({ created: false });
+        });
+    })
+
+
+/* ---------------------------------- READ ---------------------------------- */
+app.get('/auth/planning/get_planning', keycloak.protect(), function (req, res) {
+    let username = req.kauth.grant.access_token.content.preferred_username;
+    Database.getPlanning((planning) => {
+        //! Also return la liste des evenements auquel le mec est inscrit
+        return res.json({ planning, username: username });
+    });
+})
+
+/* --------------------------------- UPDATE --------------------------------- */
+app.put('/auth/planning', keycloak.protect(),
+    body("Start_Date").trim().escape(),
+    body("End_Date").trim().escape(),
+    body("Diver_Price").trim().escape(),
+    body("Instructor_Price").trim().escape(),
+    body("Location").trim().escape(),
+    body("Comments").trim().escape(),
+    body("Special_Needs").trim().escape(),
+    body("Status").trim().escape(),
+    body("Max_Divers").trim().escape(),
+    body("Dive_Type").trim().escape(),
+    function (req, res) {
+        if (!checkUser(req, "CLUB")) return res.sendStatus(401);
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(422).json({ errors: errors.array() });
+        console.log("Modifying planning in DB");
+        Database.modifEvent(req.body, (modified) => {
+            if (modified) return res.json({ modified: true });
+            else return res.json({ modified: false });
+        });
+    })
+
+
+/* ---------------------------------- USER ---------------------------------- */
 
 app.get('/auth/user/statistics', keycloak.protect(), function (req, res) {
     if (checkUser(req, "DP")) {
@@ -106,12 +171,6 @@ app.get('/auth/dp/scuba_file', keycloak.protect(), function (req, res) {
 app.get('/auth/dp/incident_rapport', keycloak.protect(), function (req, res) {
     if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
     res.download(__dirname + "/vue/rapport_incident.pdf", { headers: { 'userType': 'dp' } });
-})
-
-/* ---------------------------------- CLUB ---------------------------------- */
-app.get('/auth/club/planning', keycloak.protect(), function (req, res) {
-    if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
-    res.sendFile(__dirname + "/vue/html/club/planning_club.html", { headers: { 'userType': 'club' } });
 })
 
 /* -------------------------------------------------------------------------- */
@@ -371,11 +430,11 @@ app.delete("/auth/club/locations", keycloak.protect(), function (req, res) {
     if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
     console.log("Deleting location in DB");
     Database.getDiveSiteInfoByName(req.body, (siteInfo) => {
-        Database.deleteEmergencyPlan({Id_Emergency_Plan:siteInfo.Id_Dive_Site}, (isDelete) => {
+        Database.deleteEmergencyPlan({ Id_Emergency_Plan: siteInfo.Id_Dive_Site }, (isDelete) => {
             if (!isDelete) return res.json({ deleted: false, comment: "Impossible to delete Emergency Plan" });
             Database.deleteDiveSite(req.body, (isDelete) => {
                 if (isDelete) return res.json({ deleted: true, comment: "Location and Emergency Plan deleted" });
-                else{
+                else {
                     Database.createEmergencyPlan(siteInfo, (isCreate) => {
                         if (!isCreate) return res.json({ deleted: false, comment: "Impossible to recreate Emergency Plan" });
                         else return res.json({ deleted: false, comment: "Impossible to delete Location" });
@@ -385,7 +444,6 @@ app.delete("/auth/club/locations", keycloak.protect(), function (req, res) {
         })
     })
 })
-
 
 
 

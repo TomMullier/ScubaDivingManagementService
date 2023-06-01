@@ -18,6 +18,7 @@ const signupFormNodes = {
     password: signupForm.querySelector('input[name="password"]')
 };
 
+/* ------------------------------- CREATE USER ------------------------------ */
 document.getElementById("btn-submit").addEventListener('click', (e) => {
     e.preventDefault();
     const data = {
@@ -51,7 +52,7 @@ document.getElementById("btn-submit").addEventListener('click', (e) => {
 });
 
 
-// requete db utilisateurs 
+/* ------------------------------ GET USER LIST ----------------------------- */
 fetch('/auth/club/get_club_members', {
     method: 'GET',
     headers: {
@@ -97,20 +98,10 @@ fetch('/auth/club/get_club_members', {
         })
     })
 
+
+/* ------------------------------ GET USER INFO ----------------------------- */
 function getUserInfo(target) {
     console.log(target);
-
-    // const data = {
-    //     oldMail: target,
-    //     phone: "0987654321",
-    //     diver_qualif: signupFormNodes.diver_qualif.value,
-    //     instru_qualif: signupFormNodes.instru_qualif.value,
-    //     nox_lvl: signupFormNodes.nox_lvl.value,
-    //     additional_qualif: signupFormNodes.additional_qualif.value,
-    //     license_nb: signupFormNodes.license_nb.value,
-    //     license_expi: signupFormNodes.license_expi.value,
-    //     medic_certif_expi
-    // }
 
     fetch('/auth/club/get_member_info', {
         method: 'POST',
@@ -129,12 +120,13 @@ function getUserInfo(target) {
             delete data.Birthdate;
             data.License_Expiration_Date = "1234-12-12";
             data.Medical_Certificate_Expiration_Date = "1234-12-12";
-            
+
 
             modifyUserInfo(data, signupFormNodes.password.value)
         })
 }
 
+/* ---------------------------- MODIFY USER INFO ---------------------------- */
 function modifyUserInfo(data, clientPassword) {
     data.clientPassword = clientPassword;
     fetch('/auth/club/club_members', {
@@ -142,11 +134,12 @@ function modifyUserInfo(data, clientPassword) {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(data )
+        body: JSON.stringify(data)
     }).then(res => res.json())
         .then(res => console.log(res))
 }
 
+/* ------------------------------- DELETE USER ------------------------------ */
 function deleterUser(target) {
     console.log(target);
     fetch('/auth/club/club_members', {
@@ -159,5 +152,4 @@ function deleterUser(target) {
         .then((res) => {
             console.log(res);
         });
-
 }

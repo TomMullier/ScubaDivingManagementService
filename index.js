@@ -99,78 +99,69 @@ app.get('/auth/user/account', keycloak.protect(), function (req, res) {
 
 /* -------------------------- DIRECTEUR DE PLONGEE -------------------------- */
 app.get('/auth/dp/scuba_file', keycloak.protect(), function (req, res) {
-    if (checkUser(req, "DP")) {
-        res.sendFile(__dirname + "/vue/html/dp/scuba_file.html", { headers: { 'userType': 'dp' } });
-    } else res.redirect('/auth/dashboard');
+    if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
+    res.sendFile(__dirname + "/vue/html/dp/scuba_file.html", { headers: { 'userType': 'dp' } });
 })
 
 app.get('/auth/dp/incident_rapport', keycloak.protect(), function (req, res) {
-    if (checkUser(req, "DP")) {
-        res.download(__dirname + "/vue/rapport_incident.pdf", { headers: { 'userType': 'dp' } });
-    } else res.redirect('/auth/dashboard');
+    if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
+    res.download(__dirname + "/vue/rapport_incident.pdf", { headers: { 'userType': 'dp' } });
 })
 
 /* ---------------------------------- CLUB ---------------------------------- */
 app.get('/auth/club/planning', keycloak.protect(), function (req, res) {
-    if (checkUser(req, "CLUB")) {
-        res.sendFile(__dirname + "/vue/html/club/planning_club.html", { headers: { 'userType': 'club' } });
-    } else res.redirect('/auth/dashboard');
+    if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
+    res.sendFile(__dirname + "/vue/html/club/planning_club.html", { headers: { 'userType': 'club' } });
 })
 
 app.get('/auth/club/club_members', keycloak.protect(), function (req, res) {
-    if (checkUser(req, "CLUB")) {
-        res.sendFile(__dirname + "/vue/html/club/club_members.html", { headers: { 'userType': 'club' } });
-    } else res.redirect('/auth/dashboard');
+    if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
+    res.sendFile(__dirname + "/vue/html/club/club_members.html", { headers: { 'userType': 'club' } });
 })
 
 app.delete('/auth/club/club_members', keycloak.protect(), async function (req, res) {
-    if (checkUser(req, "CLUB")) {
-        console.log("Getting user info in DB");
+    if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
+    console.log("Getting user info in DB");
 
-        Database.getUserInfoByMail(req.body.Mail, (userInfo) => {
-            if (userInfo === undefined) return res.json({ deleted: false })
-            console.log("Deleting user in DB");
+    Database.getUserInfoByMail(req.body.Mail, (userInfo) => {
+        if (userInfo === undefined) return res.json({ deleted: false })
+        console.log("Deleting user in DB");
 
-            Database.deleteUser(req.body.Mail, async (isDelDb) => {
-                if (!isDelDb) return res.json({ deleted: false })
-                console.log("Deleting user in KC");
+        Database.deleteUser(req.body.Mail, async (isDelDb) => {
+            if (!isDelDb) return res.json({ deleted: false })
+            console.log("Deleting user in KC");
 
-                const isDelKc = await Keycloak_module.deleteUser(req.body.Mail, getUserName(req), req.body.password);
-                if (isDelKc) return res.json({ deleted: true })
+            const isDelKc = await Keycloak_module.deleteUser(req.body.Mail, getUserName(req), req.body.password);
+            if (isDelKc) return res.json({ deleted: true })
 
-                console.log("ERROR, adding user in DB");
-                Database.createUser(userInfo, false, (isInser) => {
-                    if (isInser) return res.json({ created: true });
-                    else return res.json({ created: false });
-                })
+            console.log("ERROR, adding user in DB");
+            Database.createUser(userInfo, false, (isInser) => {
+                if (isInser) return res.json({ created: true });
+                else return res.json({ created: false });
             })
         })
-    } else res.redirect('/auth/dashboard');
+    })
 })
 
 app.get('/auth/club/get_club_members', keycloak.protect(), async function (req, res) {
-    if (checkUser(req, "CLUB")) {
-        Database.getUsersList((users) => {
-            return res.json(users);
-        });
-    } else res.redirect('/auth/dashboard');
+    if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
+    Database.getUsersList((users) => {
+        return res.json(users);
+    });
 })
 
 app.get('/auth/club/locations', keycloak.protect(), function (req, res) {
-    if (checkUser(req, "CLUB")) {
-        res.sendFile(__dirname + "/vue/html/club/locations.html", { headers: { 'userType': 'club' } });
-    } else res.redirect('/auth/dashboard');
+    if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
+    res.sendFile(__dirname + "/vue/html/club/locations.html", { headers: { 'userType': 'club' } });
 })
 
 app.post('/auth/club/get_member_info', keycloak.protect(), function (req, res) {
-    if (checkUser(req, "CLUB")) {
-        Database.getUserInfoByMail(req.body.Mail, (userInfo) => {
-            userInfo.License_Expiration_Date = new Date(userInfo.License_Expiration_Date).toISOString().split('T')[0]
-            userInfo.Medical_Certificate_Expiration_Date = new Date(userInfo.Medical_Certificate_Expiration_Date).toISOString().split('T')[0]
-            return res.json(userInfo)
-        })
-    } else res.redirect('/auth/dashboard');
-
+    if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
+    Database.getUserInfoByMail(req.body.Mail, (userInfo) => {
+        userInfo.License_Expiration_Date = new Date(userInfo.License_Expiration_Date).toISOString().split('T')[0]
+        userInfo.Medical_Certificate_Expiration_Date = new Date(userInfo.Medical_Certificate_Expiration_Date).toISOString().split('T')[0]
+        return res.json(userInfo)
+    })
 })
 
 app.put('/auth/club/club_members', keycloak.protect(),
@@ -184,28 +175,27 @@ app.put('/auth/club/club_members', keycloak.protect(),
     body("License_Expiration_Date").trim().escape(),
     body("Medical_Certificate_Expiration_Date").trim().escape(),
     function (req, res) {
+        if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(422).json({ errors: errors.array() });
         let clientPassword = req.body.clientPassword
-
         delete req.body.clientPassword
-        if (checkUser(req, "CLUB")) {
-            Database.getUserInfoById(req.body.Id_Diver, (userInfo) => {
-                if (userInfo === undefined) return res.json({ deleted: false })
-                console.log("Modifying user in DB");
-                Database.modifUser(req.body, async (updated) => {
-                    if (!updated) res.json({ modified: false })
-                    const modifKc = await Keycloak_module.modifyUser(userInfo.Mail, req.body.Mail, getUserName(req), clientPassword)
-                    if (modifKc) return res.json({ modified: true })
+        Database.getUserInfoById(req.body.Id_Diver, (userInfo) => {
+            if (userInfo === undefined) return res.json({ deleted: false })
+            console.log("Modifying user in DB");
+            Database.modifUser(req.body, async (updated) => {
+                if (!updated) res.json({ modified: false })
+                const modifKc = await Keycloak_module.modifyUser(userInfo.Mail, req.body.Mail, getUserName(req), clientPassword)
+                if (modifKc) return res.json({ modified: true })
 
-                    console.log("ERROR, setting old info of user in DB");
-                    Database.modifUser(userInfo, (isInser) => {
-                        if (isInser) return res.json({ unmodified: true });
-                        else return res.json({ unmodified: false });
-                    })                    
+                console.log("ERROR, setting old info of user in DB");
+                Database.modifUser(userInfo, (isInser) => {
+                    if (isInser) return res.json({ unmodified: true });
+                    else return res.json({ unmodified: false });
                 })
             })
-        } else res.redirect('/auth/dashboard');
+        })
     })
-
 
 app.post('/auth/club/club_members', keycloak.protect(),
     body("Lastname").trim().escape(),
@@ -222,27 +212,95 @@ app.post('/auth/club/club_members', keycloak.protect(),
     body("Birthdate").trim().escape(),
     body("password").trim().escape(),
     async function (req, res) {
-        if (checkUser(req, "CLUB")) {
-            let responseKc = await Keycloak_module.createUser(req.body, getUserName(req));
-            console.log("Now stocking in DB");
-            if (responseKc) {
-                Database.createUser(req.body, true, async (created) => {
-                    if (created) {
-                        return res.json({ created: true });
-                    } else {
-                        //delete user in keycloak   
-                        await Keycloak_module.deleteUser(req.body.Mail);
-                        return res.json({ created: false });
-                    }
-                })
-            } else {
-                return res.json({ created: false });
-            }
-        } else res.redirect('/auth/dashboard');
+        if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(422).json({ errors: errors.array() });
+        let responseKc = await Keycloak_module.createUser(req.body, getUserName(req));
+        console.log("Now stocking in DB");
+        if (responseKc) {
+            Database.createUser(req.body, true, async (created) => {
+                if (created) {
+                    return res.json({ created: true });
+                } else {
+                    //delete user in keycloak   
+                    await Keycloak_module.deleteUser(req.body.Mail);
+                    return res.json({ created: false });
+                }
+            })
+        } else {
+            return res.json({ created: false });
+        }
     })
 
+app.post("/auth/club/locations", keycloak.protect(),
+    body("Site_Name").trim().escape(),
+    body("Gps_Latitude").trim().escape().isNumeric(),
+    body("Gps_Longitude").trim().escape().isNumeric(),
+    body("Track_Type").trim().escape(),
+    body("Track_Number").trim().escape(),
+    body("Track_Name").trim().escape(),
+    body("Zip_Code").trim().escape(),
+    body("City_Name").trim().escape(),
+    body("Country_Name").trim().escape(),
+    body("Additional_Address").trim().escape(),
+    body("Tel_Number").trim().escape().isLength({ min: 10, max: 10 }),
+    body("Information_URL").trim().escape(),
+    function (req, res) {
+        if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(422).json({ errors: errors.array() });
+        console.log("Creating location in DB");
+        Database.createDiveSite(req.body, (inserted) => {
+            return res.json({ created: inserted })
+        })
+    })
 
+app.get("/auth/club/get_locations", keycloak.protect(), function (req, res) {
+    if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
+    console.log("Getting all locations in DB");
+    Database.getDiveSiteList((locations) => {
+        return res.json(locations);
+    });
+})
 
+app.post("/auth/club/get_location_info", keycloak.protect(), function (req, res) {
+    if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
+    console.log("Getting location info in DB");
+    Database.getLocationInfo(req.body, (siteInfo) => {
+        return res.json(siteInfo)
+    })
+})
+
+app.put("/auth/club/locations", keycloak.protect(),
+    body("Site_Name").trim().escape(),
+    body("Gps_Latitude").trim().escape().isNumeric(),
+    body("Gps_Longitude").trim().escape().isNumeric(),
+    body("Track_Type").trim().escape(),
+    body("Track_Number").trim().escape(),
+    body("Track_Name").trim().escape(),
+    body("Zip_Code").trim().escape(),
+    body("City_Name").trim().escape(),
+    body("Country_Name").trim().escape(),
+    body("Additional_Address").trim().escape(),
+    body("Tel_Number").trim().escape().isLength({ min: 10, max: 10 }),
+    body("Information_URL").trim().escape(),
+    function (req, res) {
+        if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(422).json({ errors: errors.array() });
+        console.log("Modifying location in DB");
+        Database.modifLocation(req.body, (modif)=>{
+            return res.json({modified:modif});
+        })
+    })
+
+app.delete("/auth/club/locations", keycloak.protect(), function (req, res) {
+    if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
+    console.log("Deleting location in DB");
+    Database.deleteLocation(req.body, (del)=>{
+        return res.json({deleted:del});
+    })
+})
 
 http.listen(port, hostname, (err) => {
     if (err) console.error(err);

@@ -7,6 +7,9 @@ if (process.env.NODE_ENV !== 'production') {
 
 
 class BDD {
+    /* -------------------------------------------------------------------------- */
+    /*                                 CONSTRUCTOR                                */
+    /* -------------------------------------------------------------------------- */
     constructor() {
         this.con = mysql.createConnection({
             host: process.env.MYSQL_HOST,
@@ -21,16 +24,16 @@ class BDD {
         });
     }
 
+    /* -------------------------------------------------------------------------- */
+    /*                                CLUB MEMBERS                                */
+    /* -------------------------------------------------------------------------- */
     createUser(userData, isNew, callback) {
         if (isNew) {
             userData.Id_Diver = uuidv4();
             delete userData.password;
             delete userData.isDp;
         }
-
         let query = 'INSERT INTO diver SET ?';
-
-
         this.con.query(query, [userData], (err, result) => {
             if (err) {
                 console.log(err);
@@ -48,8 +51,7 @@ class BDD {
         this.con.query(query, (err, result) => {
             if (err) {
                 console.log(err);
-            }
-            else {
+            } else {
                 return callback(result);
             }
         })
@@ -59,9 +61,7 @@ class BDD {
         const data = {
             Mail: mail
         };
-
         const query = 'SELECT * FROM diver WHERE ?';
-
         this.con.query(query, [data], (err, result) => {
             if (err) {
                 console.log(err);
@@ -78,9 +78,7 @@ class BDD {
         const data = {
             Id_Diver: id
         };
-
         const query = 'SELECT * FROM diver WHERE ?';
-
         this.con.query(query, [data], (err, result) => {
             if (err) {
                 console.log(err);
@@ -93,73 +91,106 @@ class BDD {
         })
     }
 
-    deleteUser(userMail, callback) {
-        const data = {
-            Mail: userMail
-        };
-
-        const query = 'DELETE FROM diver WHERE ?';
-
-        this.con.query(query, [data], (err, result) => {
-            if (err) {
-                console.log(err);
-                return callback(false)
-            }
-            else {
-                return callback(true);
-            }
-        })
-    }
-
     modifUser(data, callback) {
-        console.log(data);
-
         const query = 'UPDATE diver SET ? WHERE Id_Diver = ?'
-
         this.con.query(query, [data, data.Id_Diver], (err, result) => {
             if (err) {
                 console.log(err);
                 return callback(false)
-            }
-            else {
+            } else {
                 console.log("User info modified");
                 return callback(true);
             }
         })
     }
+
+    deleteUser(userMail, callback) {
+        const data = {
+            Mail: userMail
+        };
+        const query = 'DELETE FROM diver WHERE ?';
+        this.con.query(query, [data], (err, result) => {
+            if (err) {
+                console.log(err);
+                return callback(false)
+            } else {
+                return callback(true);
+            }
+        })
+    }
+
+
+    /* -------------------------------------------------------------------------- */
+    /*                                  DIVE SITE                                 */
+    /* -------------------------------------------------------------------------- */
+
+    createDiveSite(data, callback){
+        console.log(data);
+        data.Id_Dive_Site = uuidv4();
+        let query = 'INSERT INTO dive_site SET ?';
+        this.con.query(query, [data], (err, result) => {
+            if (err) {
+                console.log(err);
+                callback(false);
+            } else {
+                console.log("Site correctly inserted ");
+                callback(true);
+            }
+        })
+    }
+
+    getDiveSiteList(callback) {
+        const query = 'SELECT * FROM dive_site';
+        this.con.query(query, (err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                return callback(result);
+            }
+        })
+    }
+
+    getLocationInfo(data, callback) {
+        const query = 'SELECT * FROM dive_site WHERE ?';
+        this.con.query(query, [data], (err, result) => {
+            if (err) {
+                console.log(err);
+                console.log("Can't get location info");
+                callback(undefined);
+            } else {
+                console.log("Sending location info");
+                callback(result[0]);
+            }
+        })
+    }
+
+    modifLocation(data, callback) {
+        const query = 'UPDATE dive_site SET ? WHERE Id_Dive_Site = ?'
+        this.con.query(query, [data, data.Id_Dive_Site], (err, result) => {
+            if (err) {
+                console.log(err);
+                return callback(false)
+            } else {
+                console.log("Location info modified");
+                return callback(true);
+            }
+        })
+    }
+
+    deleteLocation(data, callback) {
+        const query = 'DELETE FROM dive_site WHERE ?';
+        this.con.query(query, [data], (err, result) => {
+            if (err) {
+                console.log(err);
+                return callback(false)
+            } else {
+                console.log("Delete locatin OK");
+                return callback(true);
+            }
+        })
+    }
 }
 
-
-
-function Requete(req) {
-    con.connect(function (err) {
-        if (err) throw err;
-        con.query(req, function (err, result, fields) {
-            if (err) throw err;
-            console.log(result);
-        });
-    });
-}
-
-
-//USER
-function CreateUser(Lastname, Firstname, License_Number, License_Expiration_Date, Medical_Certificate_Expiration_Date, Birthdate) {
-    tmpUID = randomUUID();
-    tmpREQ = `INSERT INTO diver (Id_Diver,Lastname,Firstname,License_Number,License_Expiration_Date,Medical_Certificate_Expiration_Date,Birthdate) value ("` + tmpUID + `", "` + Lastname + `", "` + Firstname + `", "` + License_Number + `", "` + License_Expiration_Date + `", "` + Medical_Certificate_Expiration_Date + `", "` + Birthdate + `");`;
-    Requete(tmpREQ);
-}
-
-function UpdateUser(Id_Diver, License_Number, License_Expiration_Date, Medical_Certificate_Expiration_Date) {
-    tmpREQ = `UPDATE diver set License_Number ="` + License_Number + `",License_Expiration_Date ="` + License_Expiration_Date + `",Medical_Certificate_Expiration_Date ="` + Medical_Certificate_Expiration_Date + `" WHERE Id_Diver = "` + Id_Diver + `"`;
-    Requete(tmpREQ);
-}
-
-function DeleteUser(Diver_Id) {
-    tmpREQ = `DELETE from diver where Id_Diver = "` + Diver_Id + `"`;
-    Requete(tmpREQ);
-}
-
-//DIVE_SITE
 function CreateDiveSite(Site_Name, Latitude, Longitude, Track_Type, Track_Number, Track_Name, Zip_Code, City_Name, Country_Name, Additional_Address, Tel_Number, Information_URL) {
     tmpUID = randomUUID();
     tmpREQ = `INSERT INTO dive_site (Id_Dive_Site,Site_Name,Gps_Latitude,Gps_Longitude,Track_Type,Track_Number,Track_Name,Zip_Code,City_Name,Country_Name,Additional_Address,Tel_Number,Information_URL) value ("` + tmpUID + `", "` + Site_Name + `", "` + Latitude + `", "` + Longitude + `", "` + Track_Type + `", "` + Track_Number + `", "` + Track_Name + `", "` + Zip_Code + `", "` + City_Name + `", "` + Country_Name + `", "` + Additional_Address + `", "` + Tel_Number + `", "` + Information_URL + `");`;

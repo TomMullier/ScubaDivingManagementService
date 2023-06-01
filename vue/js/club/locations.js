@@ -14,6 +14,9 @@ const locationFormNodes = {
       Additional_Address: locationForm.querySelector('input[name="Additional_Address"]'),
       Tel_Number: locationForm.querySelector('input[name="Tel_Number"]'),
       Information_URL: locationForm.querySelector('input[name="Information_URL"]'),
+      SOS_Tel_Number: locationForm.querySelector('input[name="SOS_Tel_Number"]'),
+      Emergency_Plan: locationForm.querySelector('input[name="Emergency_Plan"]'),
+      Post_Accident_Procedure: locationForm.querySelector('input[name="Post_Accident_Procedure"]')
 };
 
 
@@ -32,7 +35,10 @@ document.getElementById("btn-submit").addEventListener('click', (e) => {
             Country_Name: locationFormNodes.Country_Name.value,
             Additional_Address: locationFormNodes.Additional_Address.value,
             Tel_Number: locationFormNodes.Tel_Number.value,
-            Information_URL: locationFormNodes.Information_URL.value
+            Information_URL: locationFormNodes.Information_URL.value,
+            SOS_Tel_Number: locationFormNodes.SOS_Tel_Number.value,
+            Emergency_Plan: locationFormNodes.Emergency_Plan.value,
+            Post_Accident_Procedure: locationFormNodes.Post_Accident_Procedure.value
       };
       fetch('/auth/club/locations', {
             method: 'POST',
@@ -109,10 +115,9 @@ function getLocationInfo(target) {
             .then(res => {
                   console.log(res)
 
-                  let data = res;
-                  data.Tel_Number = "0987654321";
-
-                  modifyLocation(data)
+                  let data = { ...res.siteInfo, ...res.emergencyPlanInfo };
+                  console.log(data);
+                  modifyLocation(data);
             })
 }
 
@@ -137,7 +142,7 @@ function deleteLocation(target) {
             headers: {
                   'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ Site_Name : target })
+            body: JSON.stringify({ Site_Name: target })
       }).then((res) => res.json())
             .then((res) => {
                   console.log(res);

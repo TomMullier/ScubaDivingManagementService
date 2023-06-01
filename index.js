@@ -246,7 +246,7 @@ app.get('/auth/club/locations', keycloak.protect(), function (req, res) {
 
 /* --------------------------------- CREATE --------------------------------- */
 app.post("/auth/club/locations", keycloak.protect(),
-    body("Site_Name").trim().escape(),
+    body("Site_Name").trim().escape(),  // Location
     body("Gps_Latitude").trim().escape().isNumeric(),
     body("Gps_Longitude").trim().escape().isNumeric(),
     body("Track_Type").trim().escape(),
@@ -258,13 +258,38 @@ app.post("/auth/club/locations", keycloak.protect(),
     body("Additional_Address").trim().escape(),
     body("Tel_Number").trim().escape().isLength({ min: 10, max: 10 }),
     body("Information_URL").trim().escape(),
+    body("SOS_Tel_Number").trim().escape().isLength({ min: 10, max: 10 }),          // Emergency
+    body("Emergency_Plan").trim().escape(),                                         //     /
+    body("Post_Accident_Procedure").trim().escape(),                                //     /
     function (req, res) {
         if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(422).json({ errors: errors.array() });
+
+        const dataEmergency = {
+            SOS_Tel_Number: req.body.SOS_Tel_Number,
+            Emergency_Plan: req.body.Emergency_Plan,
+            Post_Accident_Procedure: req.body.Post_Accident_Procedure,
+            Version: 0
+        }
+        delete req.body.SOS_Tel_Number;
+        delete req.body.Emergency_Plan;
+        delete req.body.Post_Accident_Procedure;
+
         console.log("Creating location in DB");
-        Database.createDiveSite(req.body, (inserted) => {
-            return res.json({ created: inserted })
+        Database.createDiveSite(req.body, (idLoc) => {
+            if (idLoc === undefined) return res.json({ created: false, comment: "Impossible to add Location" })
+            dataEmergency.Id_Emergency_Plan = idLoc;
+            dataEmergency.Dive_Site_Id_Dive_Site = idLoc;
+            Database.createEmergencyPlan(dataEmergency, (creaEm) => {
+                if (creaEm) return res.json({ created: true, comment: "Location and Emergency Plan added" })
+                else {
+                    Database.deleteDiveSite({ Site_Name: req.body.Site_Name }, (delLoc) => {
+                        if (delLoc) return res.json({ created: false, comment: "Impossible to add Emergency Plan" })
+                        else return res.json({ created: false, comment: "Impossible to add Emergency Plan and Location" })
+                    })
+                }
+            })
         })
     })
 
@@ -280,8 +305,10 @@ app.get("/auth/club/get_locations", keycloak.protect(), function (req, res) {
 app.post("/auth/club/get_location_info", keycloak.protect(), function (req, res) {
     if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
     console.log("Getting location info in DB");
-    Database.getLocationInfo(req.body, (siteInfo) => {
-        return res.json(siteInfo)
+    Database.getDiveSiteInfoByName(req.body, (siteInfo) => {
+        Database.getEmergencyPlan({ Id_Emergency_Plan: siteInfo.Id_Dive_Site }, (emergencyInfo) => {
+            return res.json({ siteInfo: siteInfo, emergencyPlanInfo: emergencyInfo });
+        })
     })
 })
 
@@ -299,13 +326,43 @@ app.put("/auth/club/locations", keycloak.protect(),
     body("Additional_Address").trim().escape(),
     body("Tel_Number").trim().escape().isLength({ min: 10, max: 10 }),
     body("Information_URL").trim().escape(),
+    body("SOS_Tel_Number").trim().escape().isLength({ min: 10, max: 10 }),          // Emergency
+    body("Emergency_Plan").trim().escape(),                                         //     /
+    body("Post_Accident_Procedure").trim().escape(),                                //     /
     function (req, res) {
         if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(422).json({ errors: errors.array() });
+
+        const dataEmergency = {
+            Id_Emergency_Plan: req.body.Id_Emergency_Plan,
+            Dive_Site_Id_Dive_Site: req.body.Dive_Site_Id_Dive_Site,
+            SOS_Tel_Number: req.body.SOS_Tel_Number,
+            Emergency_Plan: req.body.Emergency_Plan,
+            Post_Accident_Procedure: req.body.Post_Accident_Procedure,
+            Version: req.body.Version
+        }
+        delete req.body.Id_Emergency_Plan;
+        delete req.body.Dive_Site_Id_Dive_Site;
+        delete req.body.SOS_Tel_Number;
+        delete req.body.Emergency_Plan;
+        delete req.body.Post_Accident_Procedure;
+        delete req.body.Version;
+
         console.log("Modifying location in DB");
-        Database.modifLocation(req.body, (modif)=>{
-            return res.json({modified:modif});
+        Database.getDiveSiteInfoById({ Id_Dive_Site: req.body.Id_Dive_Site }, (siteInfo) => {
+            Database.modifDiveSite(req.body, (isUpdateSite) => {
+                if (!isUpdateSite) return res.json({ modified: false, comment: "Impossible to update Location" });
+                Database.modifEmergencyPlan(dataEmergency, (isUpdateEm) => {
+                    if (isUpdateEm) return res.json({ modified: true, comment: "Location and Emergency Plan updated" });
+                    else {
+                        Database.modifDiveSite(siteInfo, (isUpdateSite) => {
+                            if (!isUpdateSite) return res.json({ modified: false, comment: "Impossible to cancel update of Location" });
+                            else return res.json({ modified: false, comment: "Impossible to update Emergency Plan" });
+                        })
+                    }
+                })
+            })
         })
     })
 
@@ -313,8 +370,19 @@ app.put("/auth/club/locations", keycloak.protect(),
 app.delete("/auth/club/locations", keycloak.protect(), function (req, res) {
     if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
     console.log("Deleting location in DB");
-    Database.deleteLocation(req.body, (del)=>{
-        return res.json({deleted:del});
+    Database.getDiveSiteInfoByName(req.body, (siteInfo) => {
+        Database.deleteEmergencyPlan({Id_Emergency_Plan:siteInfo.Id_Dive_Site}, (isDelete) => {
+            if (!isDelete) return res.json({ deleted: false, comment: "Impossible to delete Emergency Plan" });
+            Database.deleteDiveSite(req.body, (isDelete) => {
+                if (isDelete) return res.json({ deleted: true, comment: "Location and Emergency Plan deleted" });
+                else{
+                    Database.createEmergencyPlan(siteInfo, (isCreate) => {
+                        if (!isCreate) return res.json({ deleted: false, comment: "Impossible to recreate Emergency Plan" });
+                        else return res.json({ deleted: false, comment: "Impossible to delete Location" });
+                    })
+                }
+            })
+        })
     })
 })
 

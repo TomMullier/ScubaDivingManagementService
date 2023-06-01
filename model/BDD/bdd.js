@@ -130,10 +130,10 @@ class BDD {
         this.con.query(query, [data], (err, result) => {
             if (err) {
                 console.log(err);
-                callback(false);
+                callback(undefined);
             } else {
                 console.log("Site correctly inserted ");
-                callback(true);
+                callback(data.Id_Dive_Site);
             }
         })
     }
@@ -149,7 +149,7 @@ class BDD {
         })
     }
 
-    getLocationInfo(data, callback) {
+    getDiveSiteInfoByName(data, callback) {
         const query = 'SELECT * FROM dive_site WHERE ?';
         this.con.query(query, [data], (err, result) => {
             if (err) {
@@ -163,7 +163,21 @@ class BDD {
         })
     }
 
-    modifLocation(data, callback) {
+    getDiveSiteInfoById(data, callback) {
+        const query = 'SELECT * FROM dive_site WHERE ?';
+        this.con.query(query, [data], (err, result) => {
+            if (err) {
+                console.log(err);
+                console.log("Can't get location info");
+                callback(undefined);
+            } else {
+                console.log("Sending location info");
+                callback(result[0]);
+            }
+        })
+    }
+
+    modifDiveSite(data, callback) {
         const query = 'UPDATE dive_site SET ? WHERE Id_Dive_Site = ?'
         this.con.query(query, [data, data.Id_Dive_Site], (err, result) => {
             if (err) {
@@ -176,7 +190,7 @@ class BDD {
         })
     }
 
-    deleteLocation(data, callback) {
+    deleteDiveSite(data, callback) {
         const query = 'DELETE FROM dive_site WHERE ?';
         this.con.query(query, [data], (err, result) => {
             if (err) {
@@ -188,6 +202,67 @@ class BDD {
             }
         })
     }
+
+
+    /* -------------------------------------------------------------------------- */
+    /*                               EMERGENCY PLAN                               */
+    /* -------------------------------------------------------------------------- */
+    
+    createEmergencyPlan(data, callback){
+        console.log(data);
+        let query = 'INSERT INTO emergency_plan SET ?';
+        this.con.query(query, [data], (err, result) => {
+            if (err) {
+                console.log(err);
+                callback(false);
+            } else {
+                console.log("Emergency plan correctly inserted ");
+                callback(true);
+            }
+        })
+    }
+
+    getEmergencyPlan(data, callback) {
+        const query = 'SELECT * FROM emergency_plan WHERE ?';
+        this.con.query(query, [data], (err, result) => {
+            if (err) {
+                console.log(err);
+                console.log("Can't get location info");
+                callback(undefined);
+            } else {
+                console.log("Sending location info");
+                let res = result[0];
+                callback(res);
+            }
+        })
+    }
+
+    modifEmergencyPlan(data, callback) {
+        const query = 'UPDATE emergency_plan SET ? WHERE Id_Emergency_Plan = ?'
+        this.con.query(query, [data, data.Id_Emergency_Plan], (err, result) => {
+            if (err) {
+                console.log(err);
+                return callback(false)
+            } else {
+                console.log("Location info modified");
+                return callback(true);
+            }
+        })
+    }
+
+    deleteEmergencyPlan(data, callback) {
+        const query = 'DELETE FROM emergency_plan WHERE ?';
+        this.con.query(query, [data], (err, result) => {
+            if (err) {
+                console.log(err);
+                return callback(false)
+            } else {
+                console.log("Delete locatin OK");
+                return callback(true);
+            }
+        })
+    }
+
 }
 
 function CreateDiveSite(Site_Name, Latitude, Longitude, Track_Type, Track_Number, Track_Name, Zip_Code, City_Name, Country_Name, Additional_Address, Tel_Number, Information_URL) {

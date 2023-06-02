@@ -61,8 +61,8 @@ CREATE TABLE Diver(
 CREATE TABLE Planned_Dive(
    Id_Planned_Dive CHAR(36)  NOT NULL,
    Dive_Type VARCHAR(50) NOT NULL,
-   Start_Date VARCHAR(50)  NOT NULL,
-   End_Date VARCHAR(50)  NOT NULL,
+   Start_Date DATETIME NOT NULL,
+   End_Date DATETIME NOT NULL,
    Max_Divers INT(50)  NOT NULL,
    Comments VARCHAR(50) ,
    Special_Needs VARCHAR(50) ,

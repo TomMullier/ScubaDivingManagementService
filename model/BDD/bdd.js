@@ -62,7 +62,7 @@ class BDD {
         };
         const query = 'SELECT * FROM diver WHERE ?';
         this.con.query(query, [data], (err, result) => {
-            if (err) {
+            if (err || !result[0]) {
                 console.log(err);
                 console.log("Can't get user info");
                 callback(undefined);
@@ -79,7 +79,7 @@ class BDD {
         };
         const query = 'SELECT * FROM diver WHERE ?';
         this.con.query(query, [data], (err, result) => {
-            if (err) {
+            if (err || !result[0]) {
                 console.log(err);
                 console.log("Can't get user info");
                 callback(undefined);
@@ -152,7 +152,7 @@ class BDD {
     getDiveSiteInfoByName(data, callback) {
         const query = 'SELECT * FROM dive_site WHERE ?';
         this.con.query(query, [data], (err, result) => {
-            if (err) {
+            if (err || !result[0]) {
                 console.log(err);
                 console.log("Can't get location info");
                 callback(undefined);
@@ -163,20 +163,18 @@ class BDD {
         })
     }
 
-    getDiveSiteInfoById(data) {
-        return new Promise((resolve, reject) => {
-            const query = 'SELECT * FROM dive_site WHERE ?';
-            this.con.query(query, [data], (err, result) => {
-                if (err) {
-                    console.log(err);
-                    console.log("Can't get location info");
-                    reject(err); // à récup dans un catch
-                } else {
-                    console.log("Sending location info");
-                    resolve(result[0]);
-                }
-            })
-        });
+    getDiveSiteInfoById(data, callback) {
+        const query = 'SELECT * FROM dive_site WHERE ?';
+        this.con.query(query, [data], (err, result) => {
+            if (err || !result[0]) {
+                console.log(err);
+                console.log("Can't get location info");
+                callback(undefined);
+            } else {
+                console.log("Sending location info");
+                callback(result[0]);
+            }
+        })
     }
 
     modifDiveSite(data, callback) {
@@ -226,7 +224,7 @@ class BDD {
     getEmergencyPlan(data, callback) {
         const query = 'SELECT * FROM emergency_plan WHERE ?';
         this.con.query(query, [data], (err, result) => {
-            if (err) {
+            if (err || !result[0]) {
                 console.log(err);
                 console.log("Can't get location info");
                 callback(undefined);
@@ -284,15 +282,32 @@ class BDD {
         })
     }
 
-
-
     getPlanning(callback) {
-        const query = 'SELECT * FROM planned_dive INNER JOIN dive_site ON planned_dive.Dive_Site_Id_Dive_Site = dive_site.Id_Dive_Site';
+        const query = 'SELECT * FROM planned_dive';
         this.con.query(query, (err, result) => {
             if (err) {
                 console.log(err);
             } else {
                 return callback(result);
+            }
+        })
+    }
+
+    getEvent(data, callback) {
+        const query = 'SELECT * FROM planned_dive WHERE Start_Date = ? AND End_Date = ? AND Diver_Price = ? AND Instructor_Price = ? AND Comments = ? AND Special_Needs = ? AND Status = ? AND Max_Divers = ? AND Dive_Type = ? AND Dive_Site_Id_Dive_Site = ?';
+        this.con.query(query, [data.Start_Date, data.End_Date, data.Diver_Price, data.Instructor_Price, data.Comments, data.Special_Needs, data.Status, data.Max_Divers, data.Dive_Type, data.Dive_Site_Id_Dive_Site], (err, result) => {
+            if (err || !result[0]) {
+                console.log(err);
+                callback(undefined);
+            } else {
+                let Start_Date = new Date(result[0].Start_Date);
+                let End_Date = new Date(result[0].End_Date);
+                const offset = Start_Date.getTimezoneOffset()
+                Start_Date = new Date(Start_Date.getTime() - (offset * 60 * 1000))
+                End_Date = new Date(End_Date.getTime() - (offset * 60 * 1000))
+                result[0].Start_Date = Start_Date;
+                result[0].End_Date = End_Date;
+                return callback(result[0]);
             }
         })
     }
@@ -310,23 +325,64 @@ class BDD {
         })
     }
 
+    deleteEvent(data, callback) {
+        const query = 'DELETE FROM planned_dive WHERE Id_Planned_Dive = ?'
+        this.con.query(query, [data.Id_Planned_Dive], (err, result) => {
+            if (err) {
+                console.log(err);
+                return callback(false)
+            } else {
+                console.log("Event deleted");
+                return callback(true);
+            }
+        })
+    }
 
+    /* -------------------------------------------------------------------------- */
+    /*                                REGISTRATION                                */
+    /* -------------------------------------------------------------------------- */
+
+    getRegistration(data, callback) {
+        const query = 'SELECT * FROM dive_registration WHERE Diver_Id_Diver = ? AND Planned_Dive_Id_Planned_Dive = ?';
+        this.con.query(query, [data.Diver_Id_Diver, data.Planned_Dive_Id_Planned_Dive], (err, result) => {
+            if (err || !result[0]) {
+                console.log(err);
+                callback(undefined);
+            } else {
+                return callback(result[0]);
+            }
+        })
+    }
+
+    createRegistration(data, callback) {
+        console.log(data);
+        let query = 'INSERT INTO dive_registration SET ?';
+        this.con.query(query, [data], (err, result) => {
+            if (err) {
+                console.log(err);
+                callback(false);
+            } else {
+                console.log("Registration correctly inserted ");
+                callback(true);
+            }
+        })
+    }
+
+    deleteRegistration(data, callback) {
+        console.log(data);
+        let query = 'DELETE FROM dive_registration WHERE Diver_Id_Diver = ? AND Planned_Dive_Id_Planned_Dive = ?';
+        this.con.query(query, [data.Diver_Id_Diver, data.Planned_Dive_Id_Planned_Dive], (err, result) => {
+            if (err) {
+                console.log(err);
+                callback(false);
+            } else {
+                console.log("Registration deleted ");
+                callback(true);
+            }
+        })
+    }
 }
 
-//PLANNED_DIVE
-function CreatePlannedDive(Planned_Date, Planned_Time, Comments, Special_Needs, Status, Diver_Price, Instructor_Price, Id_Dive_Site) {
-    tmpUID = randomUUID();
-    tmpREQ = `INSERT INTO planned_dive (Id_Planned_Dive,Planned_Date,Planned_Time,Comments,Special_Needs,Status,Diver_Price,Instructor_Price,Dive_Site_Id_Dive_Site) value ("` + tmpUID + `", "` + Planned_Date + `", "` + Planned_Time + `", "` + Comments + `", "` + Special_Needs + `", "` + Status + `", "` + Diver_Price + `", "` + Instructor_Price + `", "` + Id_Dive_Site + `");`;
-    Requete(tmpREQ);
-}
-function DeletePlannedDive(Id_Planned_Dive) {
-    tmpREQ = `DELETE from Planned_Dive where Id_Planned_Dive ="` + Id_Planned_Dive + `";`;
-    Requete(tmpREQ);
-}
-function UpdatePlannedDive(Id_Planned_Dive, Planned_Date, Planned_Time, Comments, Special_Needs, Status, Diver_Price, Instructor_Price, Id_Dive_Site) {
-    tmpREQ = `UPDATE planned_dive set Planned_Date ="` + Planned_Date + `",Planned_Time="` + Planned_Time + `",Comments="` + Comments + `",Special_Needs="` + Special_Needs + `",Status="` + Status + `",Diver_Price="` + Diver_Price + `",Instructor_Price="` + Instructor_Price + `",Dive_Site_Id_Dive_Site="` + Id_Dive_Site + `" WHERE Id_Planned_Dive ="` + Id_Planned_Dive + `";`;
-    Requete(tmpREQ);
-}
 
 //Dive_Registration
 function CreateDiveRegistration(Id_Diver, Id_Planned_Dive, Diver_Role, Personal_Comment, Car_Pooling_Seat_Offered, Car_Pooling_Seat_Request) {

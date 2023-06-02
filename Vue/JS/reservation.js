@@ -380,3 +380,20 @@ search_user.addEventListener("input", function () {
     }
   });
 });
+
+// Sélectionnez la modale
+const modal = document.getElementById('create_location');
+
+// Fonction pour désactiver le défilement
+function disableScroll() {
+  // Obtenez la position actuelle de la fenêtre
+  const scrollY = window.scrollY;
+  const scrollX = window.scrollX;
+
+  // Ajoutez des styles pour désactiver le défilement
+  document.body.style.overflow = 'hidden';
+  document.body.style.position = 'fixed';
+  document.body.style.top = `-${scrollY}px`;
+  document.body.style.left = `-${scrollX}px`;
+}
+

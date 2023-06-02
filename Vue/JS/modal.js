@@ -6,6 +6,7 @@ function showTemplateModal(id){
     modal.style.display = "flex"
     modal.removeAttribute('aria-hidden')
     modal.setAttribute('aria-modal', 'true')
+    document.querySelector("body").style.overflow = "hidden"
 
     // Auto focus
     $('input:first').focus()
@@ -26,6 +27,7 @@ function closeTemplateModal(e){
     cmodal.querySelector('.modal-wrapper').removeEventListener('click', stopPropagation)
     forEach(cmodal.getElementsByClassName('close-modal'), item => item.removeEventListener('click', stopPropagation))
     cmodal.addEventListener('animationend', hideTemplateModal)
+    document.querySelector("body").style.overflow = "auto"
 }
 
 function hideTemplateModal(){
@@ -34,6 +36,7 @@ function hideTemplateModal(){
     cmodal.removeEventListener('animationend', hideTemplateModal)
     if(window.callback) window.callback()
     window.cmodal = null
+    document.querySelector("body").style.overflow = "auto"
 }
 
 function stopPropagation(e){ e.stopPropagation() }

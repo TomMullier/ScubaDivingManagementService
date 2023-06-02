@@ -33,6 +33,7 @@
     </div>
     <div id="menutoggle"></div>
     <button id="emergencyButton"><i class="fa-solid fa-truck-medical"></i></button>
+    <button id="createEventButton"><i class="fa-solid fa-plus"></i></button>
     <div class="title_container">
         <h1>Réservations de créneaux</h1>
     </div>
@@ -42,17 +43,6 @@
 
     <div class="top_bar_container">
         <div class="filter_container">
-            <!-- Filters by level, duration and price max -->
-            <div class="filter_level">
-                <p><i class="fa-solid fa-star"></i>Filtrer par niveau requis minimum : </i></p>
-                <div class="level">
-                    <p class="level-item active">1</p>
-                    <p class="level-item active">2</p>
-                    <p class="level-item active">3</p>
-                    <p class="level-item active">4</p>
-                    <p class="level-item active">5</p>
-                </div>
-            </div>
             <div class="filter_duration">
                 <p><i class="fa-solid fa-clock"></i>Filtrer par durée maximum : </i></p>
                 <input type="range" min="0" max="150" step="30" value="150" class="slider" id="timeSlider">
@@ -90,7 +80,84 @@
     </div>
 
     <div id="modals" style="display:flex;">
+        <modal id="createEventModal">
+            <input id="createEventTitle" type="text" placeholder="Inserer le titre de l'évènement">
+            <div class="global " id="global_create">
+                <div class="left" id="CreateLeft_bar">
+                    <div class="timeline_bar" id="timeline_create">
+                        <div class="start_container">
+                            <div class="orange_circle"></div>
+                            <p id="createEventStart"><input type="time"></p>
+                        </div>
+                        <div class="end_container">
+                            <div class="orange_circle"></div>
+                            <p id="createEventEnd"><input type="time"></p>
+                        </div>
+                    </div>
 
+                </div>
+                <div class="right">
+                    <span id="createEventLocation"> <i class="fa-solid fa-location-dot"></i><textarea rows=""
+                            cols=""></textarea> </span>
+                    <p id="createEventPriceDiver">Plongeur : <input type="number" name="" id=""> €</p>
+                    <p id="createEventPriceInstructor">Instructeur : <input type="number" name="" id=""> €</p>
+                    <textarea placeholder="Commentaire" id="createComment"></textarea>
+                    <textarea placeholder="Besoins spécifiques" id="createNeeds"></textarea>
+                    <div class="closedEvent">
+                        évenement fermé
+                        <input id='checkbox_list' class="apple-switch" type="checkbox">
+                    </div>
+                    <div class="maxDiver">
+                        <h3>Nombre de plongeurs maximum</h3>
+                        <input type="number" id="maxDiver" min="0" max="50" name="maxDiver" value="">
+                    </div>
+                    <div class="diveType">
+                        <h3>Type de plongée</h3>
+                        <select name="diveType" id="diveType">
+                            <option value="">Type</option>
+                            <option value="Exploration">Exploration</option>
+                            <option value="Technique">Technique</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="listOfUser">
+                    <div class="titleSearchUser">
+                        <h3>Rechercher un utilisateur</h3>
+                        <input type="text" id="searchUser" placeholder="Rechercher un utilisateur">
+                    </div>
+                    <div class="user_list">
+                        <div class="user_list_item">
+                            <input type="checkbox" name="" id="">Marcel Campion
+                        </div>
+                        <div class="user_list_item">
+                            <input type="checkbox" name="" id="">Marcel Campion
+                        </div>
+                        <div class="user_list_item">
+                            <input type="checkbox" name="" id="">Marcel Campion
+                        </div>
+                        <div class="user_list_item">
+                            <input type="checkbox" name="" id="">Marcel Campion
+                        </div>
+                        <div class="user_list_item">
+                            <input type="checkbox" name="" id="">Marcel Campion
+                        </div>
+                        <div class="user_list_item">
+                            <input type="checkbox" name="" id="">Marcel Campion
+                        </div>
+                        <div class="user_list_item">
+                            <input type="checkbox" name="" id="">Marcel Campion
+                        </div>
+                        <div class="user_list_item">
+                            <input type="checkbox" name="" id="">Marcel Campion
+                        </div>
+                        <div class="user_list_item">
+                            <input type="checkbox" name="" id="">Marcel Campion
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="createEventButton">Créer l'évènement</div>
+        </modal>
         <modal id="dive_rapport">
             <div class="general_plannification_container">
                 <h1 class="title_rapport_plannif">Plannification</h1>
@@ -125,7 +192,7 @@
 
             </div>
 
-            <div class="parametres-container">
+            <div id= "palanquees-container" class="parametres-container">
                 <h1>Palanquée 1</h1>
                 <h2>Paramètres</h2>
                 <div class="metres-prevus">
@@ -169,7 +236,7 @@
                     <option value="John">John</option>
                     <option value="Alice">Alice</option>
                     <option value="Bob">Bob</option>
-                  </select>
+                </select>
                 <select name="" id="" class="level-diver">
                     <option value="">Niveau</option>
                     <option value="">1</option>
@@ -204,7 +271,7 @@
                     <option value="John">John</option>
                     <option value="Alice">Alice</option>
                     <option value="Bob">Bob</option>
-                  </select>
+                </select>
                 <select name="" id="" class="level-diver">
                     <option value="">Niveau</option>
                     <option value="">1</option>
@@ -239,7 +306,7 @@
                     <option value="John">John</option>
                     <option value="Alice">Alice</option>
                     <option value="Bob">Bob</option>
-                  </select>
+                </select>
                 <select name="" id="" class="level-diver">
                     <option value="">Niveau</option>
                     <option value="">1</option>
@@ -274,7 +341,7 @@
                     <option value="John">John</option>
                     <option value="Alice">Alice</option>
                     <option value="Bob">Bob</option>
-                  </select>
+                </select>
                 <select name="" id="" class="level-diver">
                     <option value="">Niveau</option>
                     <option value="">1</option>
@@ -320,28 +387,27 @@
         <modal id="menuModal">
             <div class="menu_content">
                 <a href="">Tableau de Bord</a>
-                <a class=active href="">Plannification</a>
-                <a href="">Statistiques</a>
-                <a href="">Rapport de Plongée</a>
                 <a href="">Mes Informations</a>
-            </div>
+                <a class=active href="">Plannification</a>
+                <a href="">Statistiques</a>     
+        </div>  
         </modal>
 
         <modal id="eventModal">
             <!-- TITRE -->
             <h2 id="eventTitle"></h2>
-            <div class="global">
+            <div class="global" id="global-view">
                 <div class="left" id="left_bar">
-                    <div class="timeline_bar"></div>
-                    <div class="start_container">
-                        <div class="orange_circle"></div>
-                        <p id="eventStart"></p>
+                    <div class="timeline_bar" id="timeline_view">
+                        <div class="start_container">
+                            <div class="orange_circle"></div>
+                            <p id="eventStart"></p>
+                        </div>
+                        <div class="end_container">
+                            <div class="orange_circle"></div>
+                            <p id="eventEnd"></p>
+                        </div>
                     </div>
-                    <div class="end_container">
-                        <div class="orange_circle"></div>
-                        <p id="eventEnd"></p>
-                    </div>
-
                 </div>
                 <div class="right">
                     <a href="" target=”_blank” id="eventLocation"> <i class="fa-solid fa-location-dot"></i> Junia
@@ -349,16 +415,7 @@
                         Vauban<br>59000 Lille</a>
                     <p id="eventDuration"><i class="fa-solid fa-clock"></i>Durée estimée : <span
                             class="event_duration"></span></p>
-                    <div id="eventLevel">
-                        <p><i class="fa-solid fa-star"></i>Niveau requis minimum : </i></p>
-                        <div class="level">
-                            <p class="level-item-modale">1</p>
-                            <p class="level-item-modale">2</p>
-                            <p class="level-item-modale">3</p>
-                            <p class="level-item-modale">4</p>
-                            <p class="level-item-modale">5</p>
-                        </div>
-                    </div>
+
                     <p id="eventPriceDiver">Plongeur : 30,00 € </p>
                     <p id="eventPriceInstructor">Instructeur : 15,00 € </p>
                     <p id="comment"></p>

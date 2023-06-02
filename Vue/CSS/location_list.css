@@ -681,7 +681,7 @@ body {
   border-bottom-right-radius: 10px;
 }
 #create_location .modal-wrapper {
-  display: flex;
+  display: block;
   justify-content: center;
   align-items: center;
   height: auto;
@@ -689,6 +689,7 @@ body {
   background-color: white;
   flex-direction: column;
   border-radius: 10px;
+  max-height: 80vh;
 }
 #create_location .modal-wrapper .top h1 {
   font-size: 20px;
@@ -717,6 +718,7 @@ body {
   align-items: center;
   margin: 0;
   padding: 0;
+  flex-grow: 1;
 }
 #create_location .modal-wrapper .fields-container .adress_container {
   margin-top: 40px;

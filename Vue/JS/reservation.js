@@ -4,7 +4,7 @@ import {
 
 import {
   Event
-} from "./Event.js";
+} from "./class/Event.js";
 let calendar;
 let eventClicked;
 document.addEventListener('DOMContentLoaded', function () {
@@ -88,7 +88,9 @@ document.addEventListener('DOMContentLoaded', function () {
       document.querySelector("#eventEnd").innerHTML = endTime;
 
       // Location
-      document.querySelector(".timeline_bar").style.height = $(".global").height() + "px";
+      setTimeout(function () {
+        document.querySelector("#timeline_view").style.height = "calc("+$("#global-view").height() + "px - 40px)";
+      }, 0);
       let adress = eventClicked.extendedProps.location;
       document.querySelector("#eventLocation").innerText = adress;
       adress = adress.replace(/(\r\n|\n|\r)/gm, " ");
@@ -111,27 +113,27 @@ document.addEventListener('DOMContentLoaded', function () {
       // Price
       let DivePrice = eventClicked.extendedProps.divePrice;
       let InstructorPrice = eventClicked.extendedProps.InstructorPrice;
-      document.querySelector("#eventPriceDiver").innerHTML = "Plongeur : "+DivePrice + " €";
-      document.querySelector("#eventPriceInstructor").innerHTML = "Instructeur : "+InstructorPrice + "€";
+      document.querySelector("#eventPriceDiver").innerHTML = "Plongeur : " + DivePrice + " €";
+      document.querySelector("#eventPriceInstructor").innerHTML = "Instructeur : " + InstructorPrice + "€";
 
 
       // Comment
       let comment = eventClicked.extendedProps.comment;
-      document.querySelector("#comment").innerHTML = "Commentaire : "+comment;
+      document.querySelector("#comment").innerHTML = "Commentaire : " + comment;
 
       // Needs
       let needs = eventClicked.extendedProps.needs;
-      document.querySelector("#needs").innerHTML = "Besoin : "+needs;
+      document.querySelector("#needs").innerHTML = "Besoin : " + needs;
 
       // Button click
       let button = document.querySelector("#reserveButton");
       button.addEventListener("click", function () {
-        if(button.classList.contains("reserveButton")){
-        button.innerHTML = "Se désinscrire";
-        button.classList.add("unreserveButton");
-        button.classList.remove("reserveButton");
-        eventClicked.setProp("backgroundColor", "#f2574a");}
-        else{
+        if (button.classList.contains("reserveButton")) {
+          button.innerHTML = "Se désinscrire";
+          button.classList.add("unreserveButton");
+          button.classList.remove("reserveButton");
+          eventClicked.setProp("backgroundColor", "#f2574a");
+        } else {
           button.innerHTML = "Réserver";
           button.classList.add("reserveButton");
           button.classList.remove("unreserveButton");
@@ -140,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       });
 
-      if(new Date(eventClicked.end) < new Date()){
+      if (new Date(eventClicked.end) < new Date()) {
         button.style.display = "none";
       } else {
         button.style.display = "flex";
@@ -163,7 +165,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 var events = []
-events.push(new Event(new Date(2023, 5, 1, 10, 0), new Date(2023, 5, 1, 12, 0), 20, 10, "La Ciotat", " Commentaire Commentaire ", " Besoin Besoin Besoin", false, 5,3, "Exploration"));
+events.push(new Event(new Date(2023, 5, 1, 10, 0), new Date(2023, 5, 1, 12, 0), 20, 10, "La Ciotat", " Commentaire Commentaire ", " Besoin Besoin Besoin", false, 5, 3, "Exploration"));
+events.push(new Event(new Date(2023, 5, 2, 14, 0), new Date(2023, 5, 2, 16, 0), 20, 10, "JUNIA", "Enguerrand j'espère tu seras à l'heure", "VP03", false, 5, 3, "Technique"));
 
 // Update label text when slider value changes
 
@@ -186,22 +189,6 @@ slider2.addEventListener("input", function () {
   if (this.value == 150) {
     label.textContent = "Illimité"
   } else label.textContent = price.toString().padStart(2, "0") + "€";
-});
-
-// Eupdate level background color
-var levelItems = document.querySelectorAll(".level-item");
-levelItems.forEach(function (levelItem) {
-  levelItem.addEventListener("click", function () {
-    levelItems.forEach(function (elem) {
-      if (parseInt(elem.innerText) <= parseInt(levelItem.innerText)) {
-        elem.classList.add("active");
-        elem.classList.remove("not-active");
-      } else {
-        elem.classList.remove("active");
-        elem.classList.add("not-active");
-      }
-    });
-  });
 });
 
 let list_checkbox = document.querySelector("#checkbox_list");
@@ -270,24 +257,52 @@ rapport_button.addEventListener("click", function () {
 });
 
 
-// JavaScript
 const nameSelects = document.querySelectorAll('.diver-name');
 const nameOptions = document.querySelectorAll('.diver-name option');
 
-// Gérer les changements de sélection
+
 nameSelects.forEach(select => {
   select.addEventListener('change', () => {
     const selectedValues = Array.from(nameSelects)
       .map(s => s.value)
       .filter(value => value !== '');
 
-    // Parcourir toutes les options
     nameOptions.forEach(option => {
-      // Vérifier si l'option a déjà été sélectionnée
       const isOptionSelected = selectedValues.includes(option.value);
 
-      // Activer/désactiver l'option en fonction de sa sélection
       option.disabled = isOptionSelected;
     });
   });
 });
+
+
+let create_event_button = document.querySelector("#createEventButton");
+
+create_event_button.addEventListener("click", function () {
+  document.querySelector("#timeline_create").style.height = "calc("+$("#global_create").height() + "px - 40px)";
+  modals.show("createEventModal", function () {
+    menutoggle.classList.remove('active');
+  });
+  document.querySelector(".timeline_bar").style.height = $(".global").height() + "px";
+  menutoggle.classList.toggle('active');
+  menutoggle.classList.toggle('close-modal');
+});
+
+
+// Search of user
+let search_user = document.querySelector("#searchUser");
+
+search_user.addEventListener("input", function () {
+  let search = search_user.value;
+  let users = document.querySelectorAll(".user_list_item");
+  users.forEach(function (user) {
+    if (user.innerText.toLowerCase().includes(search.toLowerCase())) {
+      user.style.display = "flex";
+    } else {
+      user.style.display = "none";
+    }
+  });
+});
+
+
+

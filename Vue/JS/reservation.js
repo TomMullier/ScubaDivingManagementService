@@ -190,13 +190,8 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
 
-
   events.forEach(function (event) {
-    if (event.reserved) {
-      event.backgroundColor = "#f2574a";
-    } else {
-      event.backgroundColor = "#4CAF50";
-    }
+    
     calendar.addEvent(event);
   });
   calendar.render();

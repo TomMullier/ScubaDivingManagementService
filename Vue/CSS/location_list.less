@@ -389,14 +389,13 @@
 #create_location {
         .modal-wrapper {
                 display: flex;
-    justify-content: center;
-    align-items: flex-start; /* Alignez les éléments en haut */
-    flex-wrap: wrap;
+                justify-content: center;
+                flex-wrap: wrap;
                 align-items: center;
                 height: auto;
                 width: auto;
                 background-color: white;
-                flex-direction: column;
+                flex-direction: row;
                 border-radius: 10px;
                 max-height: 80vh;
                 
@@ -426,7 +425,8 @@
                 .fields-container {
                         width: 100%;
                         height: auto;
-                        display: grid;
+                        display: table-row;
+                        display: flex;
                         flex-direction: row;
                         justify-content: space-between;
                         align-items: center;

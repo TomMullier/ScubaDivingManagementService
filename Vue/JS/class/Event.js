@@ -13,6 +13,13 @@ class Event {
                 this.maxlevel=maxlevel;
                 this.users = [];
                 this.diveType=diveType;
+                if(new Date(this.end) < new Date()){
+                        this.backgroundColor="grey";
+                        this.borderColor="grey";
+                } else{
+                        this.backgroundColor="#4caf50";
+                        this.borderColor="#4caf50";
+                }
         }
 
         addUser(user) {

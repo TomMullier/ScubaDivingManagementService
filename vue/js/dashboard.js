@@ -6,3 +6,14 @@ fetch('/auth/dashboard')
         // Faire ce que vous souhaitez avec la valeur "isAdmin"
         console.log('userType:', userType);
     });
+
+    fetch('/auth/dashboard/get_info', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(res => res.json())
+        .then(res => {
+            console.log(res)
+            
+        })

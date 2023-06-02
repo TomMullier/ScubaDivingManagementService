@@ -17,32 +17,32 @@ fetch('/auth/planning/get_planning', {
         // updateEvent(res[0])
         // deleteEvent(res[0])
         // getEvent(res[0]);
-        // register(res[0], { Personnal_Comment: "comment", Car_Pooling_Seat_Offered: 2, Car_Pooling_Seat_Request: "Y" });
-        unregister(res[0], { Personnal_Comment: "comment", Car_Pooling_Seat_Offered: 2, Car_Pooling_Seat_Request: "Y" });
+        // register(res[1], { Personnal_Comment: "comment", Car_Pooling_Seat_Offered: 2, Car_Pooling_Seat_Request: "Y" });
+        // unregister(res[0], { Personnal_Comment: "comment", Car_Pooling_Seat_Offered: 2, Car_Pooling_Seat_Request: "Y" });
     })
 
-
-/* -------------------------------------------------------------------------- */
-/*                                    EVENT                                   */
-/* -------------------------------------------------------------------------- */
-class Event {
-    constructor(start, end, divePrice, InstructorPrice, location, comment, needs, open, max, maxlevel, diveType) {
-        this.Start_Date = start; //
-        this.End_Date = end;//
-        this.Diver_Price = divePrice;//
-        this.Instructor_Price = InstructorPrice;//
-        this.Location = location;//
-        this.Comments = comment;//
-        this.Special_Needs = needs;//
-        this.title = diveType + " à " + location;
-        this.Status = open;//
-        this.Max_Divers = max;//
-        this.users = [];
-        this.Dive_Type = diveType; //
+    
+    /* -------------------------------------------------------------------------- */
+    /*                                    EVENT                                   */
+    /* -------------------------------------------------------------------------- */
+    class Event {
+        constructor(start, end, divePrice, InstructorPrice, location, comment, needs, open, max, maxlevel, diveType) {
+            this.Start_Date = start; //
+            this.End_Date = end;//
+            this.Diver_Price = divePrice;//
+            this.Instructor_Price = InstructorPrice;//
+            this.Location = location;//
+            this.Comments = comment;//
+            this.Special_Needs = needs;//
+            this.title = diveType + " à " + location;
+            this.Status = open;//
+            this.Max_Divers = max;//
+            this.users = [];
+            this.Dive_Type = diveType; //
+        }
     }
-}
-// addEvent(new Event(new Date(2023, 5, 1, 10, 0), new Date(2023, 5, 1, 12, 0), 20, 10, { Id_Dive_Site: "714d047c-5409-4593-9139-f84748bbd495", Site_Name: "La Ciotat" }, " Commentaire Commentaire ", " Besoin Besoin Besoin", false, 5, 3, "Exploration"));
-
+    // addEvent(new Event(new Date(2024, 5, 1, 10, 0), new Date(2024, 5, 1, 12, 0), 20, 10, { Id_Dive_Site: "714d047c-5409-4593-9139-f84748bbd495", Site_Name: "La Ciotat" }, " Commentaire Commentaire ", " Besoin Besoin Besoin", false, 5, 3, "Exploration"));
+    
 /* ------------------------------ CREATE EVENT ------------------------------ */
 function addEvent(event) {
     event.Dive_Site_Id_Dive_Site = event.Location.Id_Dive_Site;

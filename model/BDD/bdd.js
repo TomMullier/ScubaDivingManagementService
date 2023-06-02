@@ -354,8 +354,20 @@ class BDD {
         })
     }
 
+    getRegistrationList(data, callback){
+        const query = 'SELECT planned_dive.* FROM dive_registration INNER JOIN planned_dive ON planned_dive.Id_Planned_Dive = dive_registration.Planned_Dive_Id_Planned_Dive WHERE dive_registration.Diver_Id_Diver = ?';
+        this.con.query(query, [data], (err, result) => {
+            console.log(result);
+            if (err || !result[0]) {
+                console.log(err);
+                callback(undefined);
+            } else {
+                return callback(result);
+            }
+        })
+    }
+
     createRegistration(data, callback) {
-        console.log(data);
         let query = 'INSERT INTO dive_registration SET ?';
         this.con.query(query, [data], (err, result) => {
             if (err) {
@@ -369,7 +381,6 @@ class BDD {
     }
 
     deleteRegistration(data, callback) {
-        console.log(data);
         let query = 'DELETE FROM dive_registration WHERE Diver_Id_Diver = ? AND Planned_Dive_Id_Planned_Dive = ?';
         this.con.query(query, [data.Diver_Id_Diver, data.Planned_Dive_Id_Planned_Dive], (err, result) => {
             if (err) {

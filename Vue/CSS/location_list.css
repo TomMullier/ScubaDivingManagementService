@@ -724,6 +724,21 @@ body {
   margin-top: 40px;
   margin-bottom: 40px;
   width: 100%;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  font-size: large;
+  color: #120B8F;
+  font-weight: bold;
+}
+#create_location .modal-wrapper .fields-container .emergency_plan {
+  margin-top: 40px;
+  margin-bottom: 40px;
+  width: 100%;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  font-size: large;
+  color: #120B8F;
+  font-weight: bold;
 }
 #create_location .modal-wrapper .fields-container h3 {
   width: 100%;

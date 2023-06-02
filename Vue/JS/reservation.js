@@ -8,7 +8,11 @@ import {
 let calendar;
 let eventClicked;
 document.addEventListener('DOMContentLoaded', function () {
+  let slider2 = document.getElementById("priceSlider");
+  var slider = document.getElementById("timeSlider");
 
+  eventsFilteredPrice = events;
+  eventsFilteredTime = events;
 
   var calendarEl = document.getElementById('calendar');
 
@@ -43,6 +47,9 @@ document.addEventListener('DOMContentLoaded', function () {
         endTime: '18:00' // 4pm
       }
     ],
+    events: function (fetchInfo, successCallback, failureCallback) {
+      successCallback([])
+    },
     eventClick: function (info) {
       // Element HTML -> info.el
       // Evénement -> info.event
@@ -89,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // Location
       setTimeout(function () {
-        document.querySelector("#timeline_view").style.height = "calc("+$("#global-view").height() + "px - 40px)";
+        document.querySelector("#timeline_view").style.height = "calc(" + $("#global-view").height() + "px - 40px)";
       }, 0);
       let adress = eventClicked.extendedProps.location;
       document.querySelector("#eventLocation").innerText = adress;
@@ -147,9 +154,10 @@ document.addEventListener('DOMContentLoaded', function () {
       } else {
         button.style.display = "flex";
       }
-    }
-
+    },
   });
+
+
 
   events.forEach(function (event) {
     if (event.reserved) {
@@ -161,35 +169,75 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   calendar.render();
 
+
+  slider.addEventListener("input", function () {
+    var label = document.getElementById("timeLabel");
+    var hours = Math.floor(this.value / 60);
+    var minutes = this.value % 60;
+    if (this.value == 150) {
+      label.textContent = "Illimité"
+      eventsFilteredTime = events;
+    } else {
+      label.textContent = hours.toString().padStart(2, "0") + ":" + minutes.toString().padStart(2, "0");
+      eventsFilteredTime = [];
+      events.forEach(function (event) {
+        var start = event.start;
+        var end = event.end;
+        var duration = (end - start) / 1000 / 60;
+        if (duration <= slider.value) {
+          eventsFilteredTime.push(event);
+        }
+      })
+    }
+    
+    // To display the events
+    calendar.removeAllEvents();
+    eventsFilteredTime.forEach(function (event) {
+      if (eventsFilteredPrice.includes(event)) {
+        calendar.addEvent(event);
+      }
+    });
+  });
+
+  slider2.addEventListener("input", function () {
+    var label = document.getElementById("priceLabel");
+    var price = Math.floor(this.value);
+    if (this.value == 150) {
+      label.textContent = "Illimité"
+      eventsFilteredPrice = events;
+    } else {
+      label.textContent = price.toString().padStart(2, "0") + "€";
+      eventsFilteredPrice = [];
+      events.forEach(function (event) {
+        if (event.divePrice <= price) {
+          eventsFilteredPrice.push(event);
+        }
+      });
+    }
+    calendar.removeAllEvents();
+    eventsFilteredPrice.forEach(function (event) {
+      if (eventsFilteredTime.includes(event)) {
+        calendar.addEvent(event);
+      }
+    });
+  });
 });
 
 
 var events = []
+var eventsFilteredTime = [];
+var eventsFilteredPrice = [];
 events.push(new Event(new Date(2023, 5, 1, 10, 0), new Date(2023, 5, 1, 12, 0), 20, 10, "La Ciotat", " Commentaire Commentaire ", " Besoin Besoin Besoin", false, 5, 3, "Exploration"));
-events.push(new Event(new Date(2023, 5, 2, 14, 0), new Date(2023, 5, 2, 16, 0), 20, 10, "JUNIA", "Enguerrand j'espère tu seras à l'heure", "VP03", false, 5, 3, "Technique"));
+events.push(new Event(new Date(2023, 5, 2, 14, 0), new Date(2023, 5, 2, 16, 0), 60, 10, "JUNIA", "Enguerrand j'espère tu seras à l'heure", "VP03", false, 5, 3, "Technique"));
+events.push(new Event(new Date(2023, 5, 2, 10, 0), new Date(2023, 5, 2, 10, 30), 30, 10, "JUNIA", "Enguerrand j'espère tu seras à l'heure", "VP03", false, 5, 3, "Technique"));
 
 // Update label text when slider value changes
 
-var slider = document.getElementById("timeSlider");
-slider.addEventListener("input", function () {
-  var label = document.getElementById("timeLabel");
-  var hours = Math.floor(this.value / 60);
-  var minutes = this.value % 60;
-  if (this.value == 150) {
-    label.textContent = "Illimité"
-  } else label.textContent = hours.toString().padStart(2, "0") + ":" + minutes.toString().padStart(2, "0");
-});
 
-// Update label text when slider value changes
-var slider2 = document.getElementById("priceSlider");
 
-slider2.addEventListener("input", function () {
-  var label = document.getElementById("priceLabel");
-  var price = Math.floor(this.value);
-  if (this.value == 150) {
-    label.textContent = "Illimité"
-  } else label.textContent = price.toString().padStart(2, "0") + "€";
-});
+
+
+
 
 let list_checkbox = document.querySelector("#checkbox_list");
 list_checkbox.addEventListener("click", function () {
@@ -279,7 +327,7 @@ nameSelects.forEach(select => {
 let create_event_button = document.querySelector("#createEventButton");
 
 create_event_button.addEventListener("click", function () {
-  document.querySelector("#timeline_create").style.height = "calc("+$("#global_create").height() + "px - 40px)";
+  document.querySelector("#timeline_create").style.height = "calc(" + $("#global_create").height() + "px - 40px)";
   modals.show("createEventModal", function () {
     menutoggle.classList.remove('active');
   });
@@ -303,6 +351,3 @@ search_user.addEventListener("input", function () {
     }
   });
 });
-
-
-

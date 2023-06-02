@@ -681,8 +681,11 @@ body {
   border-bottom-right-radius: 10px;
 }
 #create_location .modal-wrapper {
-  display: block;
+  display: flex;
   justify-content: center;
+  align-items: flex-start;
+  /* Alignez les éléments en haut */
+  flex-wrap: wrap;
   align-items: center;
   height: auto;
   width: auto;
@@ -712,8 +715,8 @@ body {
 #create_location .modal-wrapper .fields-container {
   width: 100%;
   height: auto;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
   margin: 0;

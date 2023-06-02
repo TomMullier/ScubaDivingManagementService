@@ -388,8 +388,10 @@
 
 #create_location {
         .modal-wrapper {
-                display: block;
-                justify-content: center;
+                display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Alignez les éléments en haut */
+    flex-wrap: wrap;
                 align-items: center;
                 height: auto;
                 width: auto;
@@ -424,8 +426,8 @@
                 .fields-container {
                         width: 100%;
                         height: auto;
-                        display: flex;
-                        flex-direction: column;
+                        display: grid;
+                        flex-direction: row;
                         justify-content: space-between;
                         align-items: center;
                         margin: 0;
@@ -458,6 +460,7 @@
                                 width: 100%;
                                 height: auto;
                                 display: flex;
+
                                 flex-direction: row;
                                 justify-content: space-between;
                                 align-items: center;

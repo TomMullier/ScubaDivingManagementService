@@ -132,6 +132,38 @@ document.addEventListener('DOMContentLoaded', function () {
       let needs = eventClicked.extendedProps.needs;
       document.querySelector("#needs").innerHTML = "Besoin : " + needs;
 
+      /// Order of divers
+      let list = document.querySelectorAll(".listOfUser ul li");
+      let innerTexts = [];
+      list.forEach(function (li) {
+        if (!li.classList.contains("DP")) {
+          innerTexts.push(li.innerText);
+        }
+      });
+      innerTexts.sort();
+      list.forEach(function (li) {
+        if (li.classList.contains("DP")) {
+          innerTexts.unshift(li.innerText);
+        }
+      });
+      document.querySelector(".listOfUser ul").innerHTML = "";
+      let li = document.createElement("li");
+      li.innerText = innerTexts[0];
+      li.classList.add("DP");
+      document.querySelector(".listOfUser ul").appendChild(li);
+      innerTexts.shift();
+      innerTexts.forEach(function (innerText) {
+        // create li
+        li = document.createElement("li");
+        li.innerText = innerText;
+        // add li to ul
+        document.querySelector(".listOfUser ul").appendChild(li);
+      });
+      console.log(list);
+
+
+
+
       // Button click
       let button = document.querySelector("#reserveButton");
       button.addEventListener("click", function () {
@@ -170,6 +202,8 @@ document.addEventListener('DOMContentLoaded', function () {
   calendar.render();
 
 
+  // Filtres
+
   slider.addEventListener("input", function () {
     var label = document.getElementById("timeLabel");
     var hours = Math.floor(this.value / 60);
@@ -189,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       })
     }
-    
+
     // To display the events
     calendar.removeAllEvents();
     eventsFilteredTime.forEach(function (event) {

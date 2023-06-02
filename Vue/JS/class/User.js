@@ -11,6 +11,10 @@ class User {
                 this.licenceNumber = licenceNumber;
                 this.licenceExpiration = licenceExpiration;
                 this.medicalExpiration = medicalExpiration;
-                this.birthdate = birthdate;
+                this.birthdate = birthdate+"T00:00:00";
         }
 }
+
+export {
+        User
+} //exporter les variables pour les utiliser dans d'autres fichiers

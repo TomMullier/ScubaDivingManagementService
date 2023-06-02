@@ -401,6 +401,8 @@
                 
                 
                 .top {
+                        
+                        
                         h1 {
                                 font-size: 20px;
                                 color: @orange;
@@ -419,6 +421,7 @@
                                 margin: 0;
                                 padding: 0px 0;
                                 margin-bottom: 20px;
+                                
                         }
                 }
 
@@ -427,35 +430,28 @@
                         height: auto;
                         display: table-row;
                         display: flex;
-                        flex-direction: row;
+                        flex-direction: row;                
                         justify-content: space-between;
                         align-items: center;
                         margin: 0;
                         padding: 0;
-                        flex-grow: 1;
 
-                        .adress_container {
-                                margin-top: 40px;
-                                margin-bottom: 40px;
-                                width: 100%;
-                                font-family: @body_font;
-                                text-align: center;
-                                font-size: large;
-                                color: @dark_blue;
-                                font-weight: bold;
-
-                        }
-                        .emergency_plan {
-                                margin-top: 40px;
-                                margin-bottom: 40px;
-                                width: 100%;
+                        .infos-location,
+                        .emergency_plan,
+                        .adress_container{
+                                display: flex;
+                                flex-direction: column; 
+                                margin: 30px;
+                                width: 80%;
                                 font-family: @body_font;
                                 text-align: center;
                                 font-size: large;
                                 color: @dark_blue;
                                 font-weight: bold;
                         }
-
+                            font-weight: bold;
+                        }
+                        
                         h3 {
                                 width: 100%;
                                 height: auto;

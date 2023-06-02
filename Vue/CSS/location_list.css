@@ -720,12 +720,27 @@ body {
   align-items: center;
   margin: 0;
   padding: 0;
-  flex-grow: 1;
 }
-#create_location .modal-wrapper .fields-container .adress_container {
+#create_location .modal-wrapper .fields-container .infos-location {
+  display: flex;
+  flex-direction: column;
   margin-top: 40px;
   margin-bottom: 40px;
-  width: 100%;
+  margin-left: 20px;
+  width: 80%;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  font-size: large;
+  color: #120B8F;
+  font-weight: bold;
+}
+#create_location .modal-wrapper .fields-container .adress_container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 40px;
+  margin-bottom: 40px;
+  margin-left: 20px;
+  width: 80%;
   font-family: 'Montserrat', sans-serif;
   text-align: center;
   font-size: large;
@@ -735,7 +750,8 @@ body {
 #create_location .modal-wrapper .fields-container .emergency_plan {
   margin-top: 40px;
   margin-bottom: 40px;
-  width: 100%;
+  margin-left: 20px;
+  width: 80%;
   font-family: 'Montserrat', sans-serif;
   text-align: center;
   font-size: large;

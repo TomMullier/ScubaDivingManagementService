@@ -288,6 +288,9 @@ class BDD {
             if (err) {
                 console.log(err);
             } else {
+                result.forEach(event => {
+                    event = dateFormat(event);
+                });
                 return callback(result);
             }
         })
@@ -300,13 +303,7 @@ class BDD {
                 console.log(err);
                 callback(undefined);
             } else {
-                let Start_Date = new Date(result[0].Start_Date);
-                let End_Date = new Date(result[0].End_Date);
-                const offset = Start_Date.getTimezoneOffset()
-                Start_Date = new Date(Start_Date.getTime() - (offset * 60 * 1000))
-                End_Date = new Date(End_Date.getTime() - (offset * 60 * 1000))
-                result[0].Start_Date = Start_Date;
-                result[0].End_Date = End_Date;
+                result[0] = dateFormat(result[0]);
                 return callback(result[0]);
             }
         })
@@ -349,19 +346,22 @@ class BDD {
                 console.log(err);
                 callback(undefined);
             } else {
+                result[0] = dateFormat(result[0]);
                 return callback(result[0]);
             }
         })
     }
 
-    getRegistrationList(data, callback){
+    getRegistrationList(data, callback) {
         const query = 'SELECT planned_dive.* FROM dive_registration INNER JOIN planned_dive ON planned_dive.Id_Planned_Dive = dive_registration.Planned_Dive_Id_Planned_Dive WHERE dive_registration.Diver_Id_Diver = ?';
         this.con.query(query, [data], (err, result) => {
-            console.log(result);
             if (err || !result[0]) {
                 console.log(err);
                 callback(undefined);
             } else {
+                result.forEach(event => {
+                    event = dateFormat(event);
+                });
                 return callback(result);
             }
         })
@@ -394,6 +394,25 @@ class BDD {
     }
 }
 
+/* -------------------------------------------------------------------------- */
+/*                                  FUNCTIONS                                 */
+/* -------------------------------------------------------------------------- */
+
+function dateFormat(event) {
+    event.Start_Date = getDateFormat(event.Start_Date);
+    event.End_Date = getDateFormat(event.End_Date);
+    return event;
+}
+
+function getDateFormat(badDate) {
+    badDate += '';
+    badDate = new Date(badDate).toLocaleString()
+    const day = badDate.split(' ')[0].split("/")[0];
+    const month = badDate.split(' ')[0].split("/")[1];
+    const year = badDate.split(' ')[0].split("/")[2];
+    const hour = badDate.split(' ')[1];
+    return year + "-" + month + "-" + day + " " + hour;
+}
 
 //Dive_Registration
 function CreateDiveRegistration(Id_Diver, Id_Planned_Dive, Diver_Role, Personal_Comment, Car_Pooling_Seat_Offered, Car_Pooling_Seat_Request) {

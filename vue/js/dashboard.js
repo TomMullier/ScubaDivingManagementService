@@ -7,13 +7,13 @@ fetch('/auth/dashboard')
         console.log('userType:', userType);
     });
 
-    fetch('/auth/dashboard/get_info', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }).then(res => res.json())
-        .then(res => {
-            console.log(res)
-            
-        })
+fetch('/auth/dashboard/get_info', {
+    method: 'GET',
+    headers: {
+        'Content-Type': 'application/json'
+    }
+}).then(res => res.json())
+    .then(res => {
+        console.log(res)
+
+    })

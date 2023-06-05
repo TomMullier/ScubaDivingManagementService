@@ -163,8 +163,8 @@ app.get('/auth/planning/get_planning', keycloak.protect(), function (req, res) {
     Database.getPlanning((allEvents) => {
         Database.getDiveSiteList((allLocations) => {
             allEvents.forEach(event => {
-                event.Start_Date = getDateFormat(new Date(event.Start_Date).toLocaleString());
-                event.End_Date = getDateFormat(new Date(event.End_Date).toLocaleString());
+                // event.Start_Date = getDateFormat(new Date(event.Start_Date).toLocaleString());
+                // event.End_Date = getDateFormat(new Date(event.End_Date).toLocaleString());
 
                 event.Location = allLocations.filter(location => location.Id_Dive_Site === event.Dive_Site_Id_Dive_Site)[0];
             })

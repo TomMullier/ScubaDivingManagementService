@@ -85,16 +85,16 @@ app.get('/auth/dashboard', keycloak.protect(), function (req, res) {
 });
 
 
-app.get('/auth/dashboard/get_info', keycloak.protect(), function (req, res) {    
+app.get('/auth/dashboard/get_info', keycloak.protect(), function (req, res) {
     let username = req.kauth.grant.access_token.content.preferred_username;
-    if (checkUser(req, "CLUB")) return res.json({username:username});
+    if (checkUser(req, "CLUB")) return res.json({ username: username });
 
     Database.getUserInfoByMail(username, (userInfo) => {
-        if (userInfo === undefined) return res.json({username:username});
+        if (userInfo === undefined) return res.json({ username: username });
 
         Database.getRegistrationList(userInfo.Id_Diver, (registrationList) => {
-            if (!registrationList) return res.json({username:username});
-            return res.json({userInfo: userInfo, registrationList: registrationList});
+            if (!registrationList) return res.json({ username: username });
+            return res.json({ userInfo: userInfo, registrationList: registrationList });
         });
     })
 });
@@ -151,7 +151,7 @@ app.post('/auth/planning/get_event', keycloak.protect(), function (req, res) {
     req.body.End_Date = getDateFormat(new Date(req.body.End_Date).toLocaleString());
     Database.getEvent(req.body, (event) => {
         Database.getDiveSiteInfoById({ Id_Dive_Site: event.Dive_Site_Id_Dive_Site }, (location) => {
-            if(location === undefined) return res.json({ event: event, location: undefined })
+            if (location === undefined) return res.json({ event: event, location: undefined })
             event.Location = location;
             delete event.Dive_Site_Id_Dive_Site;
             return res.json(event);
@@ -162,14 +162,13 @@ app.post('/auth/planning/get_event', keycloak.protect(), function (req, res) {
 app.get('/auth/planning/get_planning', keycloak.protect(), function (req, res) {
     Database.getPlanning((allEvents) => {
         Database.getDiveSiteList((allLocations) => {
-            allEvents.forEach(event => {
-                // event.Start_Date = getDateFormat(new Date(event.Start_Date).toLocaleString());
-                // event.End_Date = getDateFormat(new Date(event.End_Date).toLocaleString());
-
-                event.Location = allLocations.filter(location => location.Id_Dive_Site === event.Dive_Site_Id_Dive_Site)[0];
+            Database.getDiversRegistered((allDivers) => {
+                allEvents.forEach(event => {
+                    event.Location = allLocations.filter(location => location.Id_Dive_Site === event.Dive_Site_Id_Dive_Site)[0];
+                    event.Users = allDivers.filter(diver => diver.Planned_Dive_Id_Planned_Dive === event.Id_Planned_Dive);
+                })
+                return res.json(allEvents);
             })
-            //! Also return la liste des evenements auquel le mec est inscrit
-            return res.json(allEvents);
         })
     });
 })
@@ -271,7 +270,7 @@ app.delete('/auth/planning/registration', keycloak.protect(), function (req, res
             if (eventInfo === undefined) return res.json({ deleted: false, comment: "Event doesn't exist" })
             Database.getRegistration({ Diver_Id_Diver: userInfo.Id_Diver, Planned_Dive_Id_Planned_Dive: eventInfo.Id_Planned_Dive }, (registration) => {
                 if (registration === undefined) return res.json({ deleted: false, comment: "User is not register" })
-                Database.deleteRegistration({Diver_Id_Diver:userInfo.Id_Diver, Planned_Dive_Id_Planned_Dive:eventInfo.Id_Planned_Dive}, (deleted) => {
+                Database.deleteRegistration({ Diver_Id_Diver: userInfo.Id_Diver, Planned_Dive_Id_Planned_Dive: eventInfo.Id_Planned_Dive }, (deleted) => {
                     if (deleted) return res.json({ deleted: true, comment: "Registration deleted" })
                     else return res.json({ deleted: false, comment: "Impossible to delete Registration" })
                 })

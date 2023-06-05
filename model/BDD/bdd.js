@@ -63,7 +63,7 @@ class BDD {
         const query = 'SELECT * FROM diver WHERE ?';
         this.con.query(query, [data], (err, result) => {
             if (err || !result[0]) {
-                console.log(err);
+                if (err) console.log(err);
                 console.log("Can't get user info");
                 callback(undefined);
             } else {
@@ -80,7 +80,7 @@ class BDD {
         const query = 'SELECT * FROM diver WHERE ?';
         this.con.query(query, [data], (err, result) => {
             if (err || !result[0]) {
-                console.log(err);
+                if (err) console.log(err);
                 console.log("Can't get user info");
                 callback(undefined);
             } else {
@@ -153,7 +153,7 @@ class BDD {
         const query = 'SELECT * FROM dive_site WHERE ?';
         this.con.query(query, [data], (err, result) => {
             if (err || !result[0]) {
-                console.log(err);
+                if (err) console.log(err);
                 console.log("Can't get location info");
                 callback(undefined);
             } else {
@@ -167,7 +167,7 @@ class BDD {
         const query = 'SELECT * FROM dive_site WHERE ?';
         this.con.query(query, [data], (err, result) => {
             if (err || !result[0]) {
-                console.log(err);
+                if (err) console.log(err);
                 console.log("Can't get location info");
                 callback(undefined);
             } else {
@@ -225,7 +225,7 @@ class BDD {
         const query = 'SELECT * FROM emergency_plan WHERE ?';
         this.con.query(query, [data], (err, result) => {
             if (err || !result[0]) {
-                console.log(err);
+                if (err) console.log(err);
                 console.log("Can't get location info");
                 callback(undefined);
             } else {
@@ -300,7 +300,7 @@ class BDD {
         const query = 'SELECT * FROM planned_dive WHERE Start_Date = ? AND End_Date = ? AND Diver_Price = ? AND Instructor_Price = ? AND Comments = ? AND Special_Needs = ? AND Status = ? AND Max_Divers = ? AND Dive_Type = ? AND Dive_Site_Id_Dive_Site = ?';
         this.con.query(query, [data.Start_Date, data.End_Date, data.Diver_Price, data.Instructor_Price, data.Comments, data.Special_Needs, data.Status, data.Max_Divers, data.Dive_Type, data.Dive_Site_Id_Dive_Site], (err, result) => {
             if (err || !result[0]) {
-                console.log(err);
+                if (err) console.log(err);
                 callback(undefined);
             } else {
                 result[0] = dateFormat(result[0]);
@@ -343,7 +343,7 @@ class BDD {
         const query = 'SELECT * FROM dive_registration WHERE Diver_Id_Diver = ? AND Planned_Dive_Id_Planned_Dive = ?';
         this.con.query(query, [data.Diver_Id_Diver, data.Planned_Dive_Id_Planned_Dive], (err, result) => {
             if (err || !result[0]) {
-                console.log(err);
+                if (err) console.log(err);
                 callback(undefined);
             } else {
                 result[0] = dateFormat(result[0]);
@@ -352,11 +352,23 @@ class BDD {
         })
     }
 
+    getDiversRegistered(callback) {
+        const query = 'SELECT diver.*, dive_registration.Planned_Dive_Id_Planned_Dive FROM dive_registration INNER JOIN diver ON diver.Id_Diver = dive_registration.Diver_Id_Diver';
+        this.con.query(query, (err, result) => {
+            if (err || !result[0]) {
+                if (err) console.log(err);
+                callback(undefined);
+            } else {
+                return callback(result);
+            }
+        })
+    }
+
     getRegistrationList(data, callback) {
         const query = 'SELECT planned_dive.* FROM dive_registration INNER JOIN planned_dive ON planned_dive.Id_Planned_Dive = dive_registration.Planned_Dive_Id_Planned_Dive WHERE dive_registration.Diver_Id_Diver = ?';
         this.con.query(query, [data], (err, result) => {
             if (err || !result[0]) {
-                console.log(err);
+                if (err) console.log(err);
                 callback(undefined);
             } else {
                 result.forEach(event => {
@@ -414,36 +426,7 @@ function getDateFormat(badDate) {
     return year + "-" + month + "-" + day + " " + hour;
 }
 
-//Dive_Registration
-function CreateDiveRegistration(Id_Diver, Id_Planned_Dive, Diver_Role, Personal_Comment, Car_Pooling_Seat_Offered, Car_Pooling_Seat_Request) {
-    tmpNOW = new Date();
-    tmpTimestamp = tmpNOW.getFullYear().toString() + `-` + tmpNOW.getMonth().toString() + `-` + tmpNOW.getDate().toString() + " " + tmpNOW.getHours().toString() + ":" + tmpNOW.getMinutes().toString() + ":" + tmpNOW.getSeconds().toString();
-    tmpREQ = `INSERT INTO Dive_Registration (Diver_Id_Diver,Planned_Dive_Id_Planned_Dive,Diver_Role,Registration_Timestamp,Personal_Comment,Car_Pooling_Seat_Offered,Car_Pooling_Seat_Request) value ("` + Id_Diver + `", "` + Id_Planned_Dive + `", "` + Diver_Role + `", "` + tmpTimestamp + `", "` + Personal_Comment + `", "` + Car_Pooling_Seat_Offered + `", "` + Car_Pooling_Seat_Request + `");`;
-    Requete(tmpREQ);
-}
-function UpdateDiveRegistration(Id_Diver, Id_Planned_Dive, Diver_Role, Personal_Comment, Car_Pooling_Seat_Offered, Car_Pooling_Seat_Request) {
-    tmpREQ = `UPDATE Dive_Registration set Diver_Role ="` + Diver_Role + `",Personal_Comment ="` + Personal_Comment + `",Car_Pooling_Seat_Offered ="` + Car_Pooling_Seat_Offered + `",Car_Pooling_Seat_Request ="` + Car_Pooling_Seat_Request + `" WHERE Diver_Id_Diver ="` + Id_Diver + `" AND Planned_Dive_Id_Planned_Dive ="` + Id_Planned_Dive + `";`;
-    Requete(tmpREQ);
-}
-function DeleteDiveRegistration(Id_Diver, Id_Planned_Dive) {
-    tmpREQ = `DELETE from Dive_Registration where Diver_Id_Diver ="` + Id_Diver + `" AND Planned_Dive_Id_Planned_Dive ="` + Id_Planned_Dive + `";`;
-    Requete(tmpREQ);
-}
 
-//Dive
-function CreateDive(Begin_Time, Begin_Date, End_Date, End_Time, Comment, Surface_Security, Dive_Price, Instructor_Price, Max_Ppo2, Id_Diver, Id_Planned_Dive) {
-    tmpUID = randomUUID()
-    tmpREQ = `INSERT INTO Dive (Id_Dive,Begin_Time,Begin_Date,End_Date,End_Time,Comment,Surface_Security,Dive_Price,Instructor_Price,Max_Ppo2,Diver_Id_Diver,Planned_Dive_Id_Planned_Dive) value ("` + tmpUID + `", "` + Begin_Time + `", "` + Begin_Date + `", "` + End_Date + `", "` + End_Time + `", "` + Comment + `", "` + Surface_Security + `", "` + Dive_Price + `", "` + Instructor_Price + `", "` + Max_Ppo2 + `", "` + Id_Diver + `", "` + Id_Planned_Dive + `");`;
-    Requete(tmpREQ);
-}
-function UpdateDive(Id_Dive, Begin_Time, Begin_Date, End_Date, End_Time, Comment, Surface_Security, Dive_Price, Instructor_Price, Max_Ppo2) {
-    tmpREQ = `UPDATE Dive set Begin_Time ="` + Begin_Time + `",Begin_Date ="` + Begin_Date + `",End_Date="` + End_Date + `",End_Time="` + End_Time + `",Comment="` + Comment + `",Surface_Security="` + Surface_Security + `",Dive_Price ="` + Dive_Price + `",Instructor_Price="` + Instructor_Price + `",Max_Ppo2 ="` + Max_Ppo2 + `" WHERE Id_Dive ="` + Id_Dive + `";`;
-    Requete(tmpREQ);
-}
-function DeleteDive(Id_Dive) {
-    tmpREQ = "DELETE from Dive WHERE Id_Dive =" + Id_Dive + `";`;
-    Requete(tmpREQ);
-}
 
 //Dive_Team
 function CreateDiveTeam(Max_Depth, Max_Duration, Actual_Depth, Max_Duration, Actual_Depth, Actual_Duration, Dive_Type, Sequence_Number, Start_Time, Stop_Time, Comment, Id_Diver, Id_Dive) {

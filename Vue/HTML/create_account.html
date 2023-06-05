@@ -75,69 +75,6 @@
                         </div>
                 </div>
                 <div class="list_container">
-                        <div class="user_item">
-                                <div class="infos">
-                                        <h2 class="name">MULLIER Tom</h2>
-                                        <h2 class="mail">azerty@azerty.com</h2>
-                                        <h2 class="phone">06 06 06 06 06</h2>
-                                </div>
-                                <div class="buttons">
-                                        <div class="edit_button">
-                                                <i id='edit-button' class="button fa-solid fa-pencil"></i>
-                                        </div>
-                                        <div class="delete_button">
-                                                <i id="delete-button" class="button fa-solid fa-trash"></i>
-                                        </div>
-                                </div>
-                        </div>
-                        <div class="user_item">
-                                <div class="infos">
-                                        <h2 class="name">MULLIER Tom</h2>
-                                        <h2 class="mail">azerty@azerty.com</h2>
-                                        <h2 class="phone">06 06 06 06 06</h2>
-                                </div>
-                                <div class="buttons">
-                                        <div class="edit_button">
-                                                <i id='edit-button' class="button fa-solid fa-pencil"></i>
-                                        </div>
-                                        <div class="delete_button">
-                                                <i id="delete-button" class="button fa-solid fa-trash"></i>
-                                        </div>
-                                </div>
-                        </div>
-                        <div class="user_item">
-                                <div class="infos">
-                                        <h2 class="name">MOLCRETTE Alan</h2>
-                                        <h2 class="mail">fchgvjb</h2>
-                                        <h2 class="phone">06 06 06 06 06</h2>
-                                </div>
-                                <div class="buttons">
-                                        <div class="edit_button">
-                                                <i id='edit-button' class="button fa-solid fa-pencil"></i>
-                                        </div>
-                                        <div class="delete_button">
-                                                <i id="delete-button" class="button fa-solid fa-trash"></i>
-                                        </div>
-                                </div>
-                        </div>
-                        <div class="user_item">
-                                <div class="infos">
-                                        <h2 class="name">AZERTY azerty</h2>
-                                        <h2 class="mail">fdxgchvjbknl,</h2>
-                                        <h2 class="phone">06 06 06 06 06</h2>
-                                </div>
-                                <div class="buttons">
-                                        <div class="edit_button">
-                                                <i id='edit-button' class="button fa-solid fa-pencil"></i>
-                                        </div>
-                                        <div class="delete_button">
-                                                <i id="delete-button" class="button fa-solid fa-trash"></i>
-                                        </div>
-                                </div>
-                        </div>
-
-
-
                 </div>
         </div>
 
@@ -158,56 +95,56 @@
                         </div>
                         <div class="bottom">
                                 <div id="validateButton">Valider</div>
-                                <div id="cancelButton">Annuler</div>
+                                <div id="cancelButton" class="close-modal">Annuler</div>
                         </div>
                 </modal>
                 <modal id=user-info>
                         <div class="image_container">
-                                <img src="../img/1.jpg" alt="Profile Picture">
+                                <img src="" id="profile_show" alt="Profile Picture">
                         </div>
                         <div class="general_info">
-                                <h1 class="name">John Doe</h1>
-                                <h2 class="mail">john.doe@gmail.com</h2>
-                                <h2 class="phone">06 06 06 06 06</h2>
-                                <h2 class="birthdate">01/01/2000</h2>
+                                <h1 id=name_show class="name"></h1>
+                                <h2 id=mail_show class="mail"></h2>
+                                <h2 id=phone_show class="phone"></h2>
+                                <h2 id=birthdate_show class="birthdate"></h2>
                         </div>
                         <div class="qualifications_container_display">
                                 <h2>Qualifications</h2>
                                 <div>
                                         <label for="diver_qualif">Qualification de
                                                 plongeur</label>
-                                        <input disabled type="text" name="diver_qualif"
+                                        <input disabled type="text" id=diver_qualif_show name="diver_qualif"
                                                 placeholder="Qualification de Plongeur">
                                 </div>
                                 <div>
                                         <label for="instru_qualif">Qualification
                                                 d'instructeur</label>
-                                        <input disabled type="text" name="instru_qualif"
+                                        <input disabled type="text" id="instru_qualif_show" name="instru_qualif"
                                                 placeholder="Qualification d'Instructeur">
                                 </div>
                                 <div>
                                         <label for="nox_lvl">Certification NITROX</label>
-                                        <input disabled type="text" name="nox_lvl" placeholder="Certification NITROX">
+                                        <input disabled type="text" name="nox_lvl" id="nitrox_qualif_show" placeholder="Certification NITROX">
                                 </div>
                                 <div>
                                         <label for="additional_qualif">Qualification
                                                 additionnelle</label>
-                                        <input disabled type="text" name="additional_qualif"
+                                        <input disabled type="text" id=additionnal_qualif_show name="additional_qualif"
                                                 placeholder="Qualification Additionnelle">
                                 </div>
                                 <div>
                                         <label for="license_nb">Numéro de licence</label>
-                                        <input disabled type="text" name="license_nb" placeholder="Numéro de Licence">
+                                        <input disabled type="text" id="licence_show" name="license_nb" placeholder="Numéro de Licence">
                                 </div>
                                 <div>
                                         <label for="license_expi">Date d'expiration de la
                                                 licence</label>
-                                        <input disabled type="date" name="license_expi" placeholder="Licence">
+                                        <input disabled type="date" name="license_expi" id="licence_date_show" placeholder="Licence">
                                 </div>
                                 <div>
                                         <label for="medic_certif_expi">Date d'expiration du
                                                 certificat médical</label>
-                                        <input disabled type="date" name="medic_certif_expi"
+                                        <input disabled type="date" id="medic_date_show" name="medic_certif_expi"
                                                 placeholder="Certificat Médical">
                                 </div>
                         </div>
@@ -222,26 +159,26 @@
                                                         <h2>Identité</h2>
                                                         <div>
                                                                 <label for="lastname">Nom</label>
-                                                                <input type="text" name="lastname" placeholder="Nom">
+                                                                <input id=lastname type="text" name="lastname" placeholder="Nom">
                                                         </div>
                                                         <div>
                                                                 <label for="firstname">Prénom</label>
-                                                                <input type="text" name="firstname"
+                                                                <input id=firstname type="text" name="firstname"
                                                                         placeholder="Prénom">
                                                         </div>
                                                         <div>
                                                                 <label for="mail">Adresse mail</label>
-                                                                <input type="email" name="mail"
+                                                                <input id=mail type="email" name="mail"
                                                                         placeholder="Adresse Mail">
                                                         </div>
                                                         <div>
                                                                 <label for="phone">Numéro de téléphone</label>
-                                                                <input type="tel" name="phone"
+                                                                <input id=phone type="tel" name="phone"
                                                                         placeholder="Numéro de Téléphone">
                                                         </div>
                                                         <div>
                                                                 <label for="birthdate">Date de naissance</label>
-                                                                <input type="date" name="birthdate"
+                                                                <input id=birthdate type="date" name="birthdate"
                                                                         placeholder="Date de Naissance">
                                                         </div>
 
@@ -251,41 +188,41 @@
                                                         <div>
                                                                 <label for="diver_qualif">Qualification de
                                                                         plongeur</label>
-                                                                <input type="text" name="diver_qualif"
+                                                                <input id="diver_qualif" type="text" name="diver_qualif"
                                                                         placeholder="Qualification de Plongeur">
                                                         </div>
                                                         <div>
                                                                 <label for="instru_qualif">Qualification
                                                                         d'instructeur</label>
-                                                                <input type="text" name="instru_qualif"
+                                                                <input id="instru_qualif" type="text" name="instru_qualif"
                                                                         placeholder="Qualification d'Instructeur">
                                                         </div>
                                                         <div>
                                                                 <label for="nox_lvl">Certification NITROX</label>
-                                                                <input type="text" name="nox_lvl"
+                                                                <input id="nitrox_qualif" type="text" name="nox_lvl"
                                                                         placeholder="Certification NITROX">
                                                         </div>
                                                         <div>
                                                                 <label for="additional_qualif">Qualification
                                                                         additionnelle</label>
-                                                                <input type="text" name="additional_qualif"
+                                                                <input id="additionnal_qualif" type="text" name="additional_qualif"
                                                                         placeholder="Qualification Additionnelle">
                                                         </div>
                                                         <div>
                                                                 <label for="license_nb">Numéro de licence</label>
-                                                                <input type="text" name="license_nb"
+                                                                <input id="licence" type="text" name="license_nb"
                                                                         placeholder="Numéro de Licence">
                                                         </div>
                                                         <div>
                                                                 <label for="license_expi">Date d'expiration de la
                                                                         licence</label>
-                                                                <input type="date" name="license_expi"
+                                                                <input id=licence_date type="date" name="license_expi"
                                                                         placeholder="Licence">
                                                         </div>
                                                         <div>
                                                                 <label for="medic_certif_expi">Date d'expiration du
                                                                         certificat médical</label>
-                                                                <input type="date" name="medic_certif_expi"
+                                                                <input id="medic_date" type="date" name="medic_certif_expi"
                                                                         placeholder="Certificat Médical">
                                                         </div>
                                                 </div>
@@ -310,7 +247,7 @@
                         </div>
                         <div class="bottom">
                                 <div id="validateButton">Valider</div>
-                                <div id="cancelButton">Annuler</div>
+                                <div id="cancelButton" class="close-modal">Annuler</div>
                         </div>
                 </modal>
 
@@ -322,12 +259,12 @@
                 </modal>
                 <modal id="menuModal">
                         <div class="menu_content">
-                                <a href="">Tableau de Bord</a>
-                                <a href="">Plannification</a>
-                                <a href="">Statistiques</a>
-                                <a href="">Mon profil</a>
-                                <a href="">Liste des Lieux</a>
-                                <a class=active href="">Liste des Utilisateurs</a>
+                                <a href="/dashboard">Tableau de Bord</a>
+                                <a href="/reservation">Plannification</a>
+                                <!-- <a href="">Statistiques</a> -->
+                                <a href="/profile">Mon profil</a>
+                                <a class="club_only" href="/location_list">Liste des Lieux</a>
+                                <a class="club_only active" href="">Liste des Utilisateurs</a>
                         </div>
                 </modal>
                 <modal id="emergencyModal">

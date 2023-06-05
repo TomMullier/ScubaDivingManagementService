@@ -47,7 +47,7 @@
                                 <h1>Mon Profil</h1>
                                 <div class="separator"></div>
                                 <div class="photo_container">
-                                        <img src="../img/2.jpg" alt="profil picture">
+                                        <img id="my_profile_picture" src="" alt="profil picture">
                                 </div>
                         </div>
                         <div class="profil_infos">
@@ -77,7 +77,7 @@
                 <div class="separator"></div>
                 <p id="important_text"></p>
         </div>
-        <div class="message_add">
+        <div class="club_only message_add">
                 <h1>AFFICHER UN MESSAGE IMPORTANT POUR TOUS LES UTILISATEURS</h1>
         </div>
 
@@ -99,17 +99,15 @@
 
         <div id="modals" style="display:flex;">
                 <modal id="menuModal">
-
                         <div class="menu_content">
                                 <a class=active href="/dashboard">Tableau de Bord</a>
                                 <a href="/reservation">Plannification</a>
-                                <a href="/profile">Mon profil</a>     
-                                <a href="/location">Liste des Lieux</a>     
-                                <a href="/create_account">Liste des Utilisateurs</a>     
-                        </div>  
+                                <a href="/profile">Mon profil</a>
+                                <a class="club_only" href="/location">Liste des Lieux</a>
+                                <a class="club_only" href="/create_account">Liste des Utilisateurs</a>
+                        </div>
                 </modal>
                 <modal id="emergencyModal">
-
                         <div class="top">
                                 <h1 id="txt_title" class="title">APPEL SOS</h1>
                                 <h3>Appuyez une nouvelle fois pour demander du secours</h3>
@@ -129,8 +127,13 @@
                                 <textarea id="textarea_important" rows="" cols=""
                                         placeholder="Ecrivez votre message ici"></textarea>
                         </div>
-                        <div class="validate_message">
-                                Valider
+                        <div class="buttons_container">
+                                <div class="validate_message">
+                                        Valider
+                                </div>
+                                <div class="cancel_message close-modal">
+                                        Annuler
+                                </div>
                         </div>
                 </modal>
         </div>

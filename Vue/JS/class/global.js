@@ -6,15 +6,36 @@ import {
         Event
 } from './Event.js';
 
-let me = new User('Mullier', 'Tom', "tom.mullier@outlook.fr", "0768868797", "N3", "" ,"S", "", "123456789", "2020-12-30", "2020-12-31", "2003-01-03");
+let me = new User('Mullier', 'Tom', "tom.mullier@outlook.fr", "0768868797", "N3", "" ,"S", "", "123456789", "2020-12-30", "2020-12-31", "2003-01-07");
+
+
+// user, dp, club
+let my_role = "user"
+
+let all_user = [];
+all_user.push(new User('Mullier', 'Tom', "tom.mullier@outlook.fr", "0768868797", "N3", "" ,"S", "", "123456789", "2020-12-30", "2020-12-31", "2003-01-07"))
+all_user.push(new User('Mullier', 'Max', "tom.mullier@outlook.fr", "0768868797", "N3", "" ,"S", "", "123456789", "2020-12-30", "2020-12-31", "2003-01-07"))
+all_user.push(new User('Mullier', 'Elen', "tom.mullier@outlook.fr", "0768868797", "N3", "" ,"S", "", "123456789", "2020-12-30", "2020-12-31", "2003-01-07"))
+all_user.push(new User('Mullier', 'Maxime', "tom.mullier@outlook.fr", "0768868797", "N3", "" ,"S", "", "123456789", "2020-12-30", "2020-12-31", "2003-01-07"))
+all_user.push(new User('Mullier', 'Eng', "tom.mullier@outlook.fr", "0768868797", "N3", "" ,"S", "", "123456789", "2020-12-30", "2020-12-31", "2003-01-07"))
+all_user.push(new User('Mullier', 'Alan', "tom.mullier@outlook.fr", "0768868797", "N3", "" ,"S", "", "123456789", "2020-12-30", "2020-12-31", "2003-01-07"))
+
 
 let events =[];
-events.push(new Event(new Date(2023, 5, 1, 10, 0), new Date(2023, 5, 1, 12, 0), 20, 10, "La Ciotat", " Commentaire Commentaire ", " Besoin Besoin Besoin", false, 5, 3, "Exploration"));
-events.push(new Event(new Date(2023, 5, 2, 14, 0), new Date(2023, 5, 2, 16, 0), 60, 10, "JUNIA", "Enguerrand j'espère tu seras à l'heure", "VP03", false, 5, 3, "Technique"));
-events.push(new Event(new Date(2023, 5, 2, 14, 0), new Date(2023, 5, 2, 18, 0), 60, 10, "JUNIA", "Enguerrand j'espère tu seras à l'heure", "VP03", false, 5, 3, "Technique"));
-events.push(new Event(new Date(2023, 5, 2, 10, 0), new Date(2023, 5, 2, 10, 30), 30, 10, "Décathlon", "tomtom tomt om", "oui oui oui", false, 5, 3, "Exploration"));
+events.push(new Event(new Date(2023, 5, 5, 10, 0), new Date(2023, 5, 5, 12, 0), 20, 10, "La Ciotat", " Commentaire Commentaire ", " Besoin Besoin Besoin", false, 5, 3, "Exploration"));
+events.push(new Event(new Date(2023, 5, 5, 14, 0), new Date(2023, 5, 5, 16, 0), 60, 10, "JUNIA", "Enguerrand j'espère tu seras à l'heure", "VP03", false, 5, 3, "Technique"));
+events.push(new Event(new Date(2023, 5, 6, 10, 0), new Date(2023, 5, 6, 10, 30), 30, 10, "Décathlon", "tomtom tomt om", "oui oui oui", false, 5, 3, "Exploration"));
+
+if(my_role !="club"){
+        document.querySelectorAll(".club_only").forEach(function(element){
+          element.style.display = "none";
+        })
+      }
+      
 
 export {
         me,
-        events
+        events,
+        my_role,
+        all_user
 } //exporter les variables pour les utiliser dans d'autres fichiers

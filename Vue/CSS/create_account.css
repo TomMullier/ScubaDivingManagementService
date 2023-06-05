@@ -113,7 +113,7 @@ body {
 }
 #emergencyButton:hover i {
   color: #f2574a;
-  background-color: #fff;
+  background-color: white;
   width: 60px;
   height: 60px;
   transition: 0.2s;
@@ -356,7 +356,7 @@ body {
   content: "> ";
 }
 .toggle {
-  position: absolute;
+  position: fixed;
   width: 70px;
   height: 70px;
   background: transparent;
@@ -395,16 +395,6 @@ body {
 }
 .toggle.active span:nth-child(3) {
   transform: rotate(-45deg);
-}
-.menu_button_container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 50px;
-  margin-left: 50px;
-  font-family: 'Montserrat', sans-serif;
-  width: auto;
-  height: auto;
 }
 .title_container {
   display: flex;

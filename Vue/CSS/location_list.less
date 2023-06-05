@@ -398,11 +398,12 @@
                 flex-direction: row;
                 border-radius: 10px;
                 max-height: 80vh;
-                
-                
+                max-width: 80vw;
+
+
                 .top {
-                        
-                        
+
+
                         h1 {
                                 font-size: 20px;
                                 color: @orange;
@@ -421,7 +422,7 @@
                                 margin: 0;
                                 padding: 0px 0;
                                 margin-bottom: 20px;
-                                
+
                         }
                 }
 
@@ -430,49 +431,193 @@
                         height: auto;
                         display: table-row;
                         display: flex;
-                        flex-direction: row;                
-                        justify-content: space-between;
+                        flex-direction: row;
+                        justify-content: space-evenly;
+                        gap: 60px;
                         align-items: center;
                         margin: 0;
                         padding: 0;
+                        font-weight: bold;
 
                         .infos-location,
                         .emergency_plan,
-                        .adress_container{
+                        .adress_container {
+                                margin: 0%;
                                 display: flex;
-                                flex-direction: column; 
-                                margin: 30px;
-                                width: 80%;
+                                flex-direction: column;
                                 font-family: @body_font;
                                 text-align: center;
                                 font-size: large;
                                 color: @dark_blue;
                                 font-weight: bold;
-                        }
-                            font-weight: bold;
-                        }
-                        
-                        h3 {
-                                width: 100%;
-                                height: auto;
-                                display: flex;
 
-                                flex-direction: row;
-                                justify-content: space-between;
+                                &:not(:last-child) {
+                                        margin-right: 20px;
+                                }
+
+
+                                h3 {
+                                        width: 100%;
+                                        height: auto;
+                                        display: flex;
+
+                                        flex-direction: row;
+                                        justify-content: space-between;
+                                        align-items: center;
+                                        margin: 0;
+                                        padding: 0;
+                                        margin-bottom: 15px;
+
+
+                                        label {
+                                                font-size: 15px;
+                                                color: @dark_blue;
+                                                font-family: @body_font;
+                                                text-align: center;
+                                                margin: 0;
+                                                padding: 0px 0;
+                                        }
+
+                                        input {
+                                                width: 200px;
+                                                height: 30px;
+                                                border-radius: 0px;
+                                                border: none;
+                                                border-bottom: 1px solid @dark_blue;
+                                                padding: 0 10px;
+                                                font-family: @body_font;
+                                                font-size: 15px;
+                                                outline: none;
+                                                transition: all 0.2s;
+
+                                                &:focus {
+                                                        border-radius: 15px;
+                                                        border: 1px solid @orange;
+                                                }
+                                        }
+
+                                }
+
+                                select#country {
+                                        width: 200px;
+                                        height: 30px;
+                                        border-radius: 0;
+                                        border: 1px solid #ccc;
+                                        font-size: 14px;
+                                        font-family: @body_font;
+                                        padding: 5px;
+                                        background-color: #fff;
+                                }
+
+
+                                select#country option {
+                                        font-size: 14px;
+                                        font-family: @body_font;
+                                }
+                        }
+                }
+
+
+                .button_container {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        width: 100%;
+                        height: auto;
+                        margin: 0;
+                        padding: 0;
+                        transition: all 0.2s;
+                        margin-bottom: 20px;
+                        margin-top: 20px;
+
+                        button {
+                                display: flex;
+                                justify-content: center;
                                 align-items: center;
+                                width: 50%;
+                                height: 40px;
                                 margin: 0;
                                 padding: 0;
-                                margin-bottom: 15px;
+                                border: none;
+                                background-color: transparent;
+                                color: @orange;
+                                font-size: 15px;
+                                font-family: @body_font;
+                                text-align: center;
+                                transition: all 0.2s;
+                                border-radius: 25px;
+                                border: 1px solid @orange;
+
+                                &:hover {
+                                        background-color: @orange;
+                                        color: white;
+                                        cursor: pointer;
+                                        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+                                }
+                        }
+
+                        .create_button {
+                                margin-right: 10px;
+                                background-color: @orange;
+                                color: white;
+
+                                &:hover {
+                                        cursor: pointer;
+                                        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+                                }
+                        }
+                }
+        }
+
+        #confirm_delete {
+                .modal-wrapper {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        flex-direction: column;
+                        width: auto;
+                        height: auto;
+                        background-color: white;
+                        border-radius: 10px;
+                        padding: 20px;
 
 
-                                label {
-                                        font-size: 15px;
-                                        color: @dark_blue;
+                        .top {
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                flex-direction: column;
+                                width: 100%;
+                                height: auto;
+                                margin-bottom: 20px;
+                                margin-top: 20px;
+
+                                h1 {
+                                        color: @orange;
+                                        font-size: 20px;
+                                        margin-bottom: 30px;
                                         font-family: @body_font;
                                         text-align: center;
-                                        margin: 0;
-                                        padding: 0px 0;
+                                        text-transform: uppercase;
                                 }
+
+                                h3 {
+                                        color: @dark_blue;
+                                        font-size: 15px;
+                                        margin: 0%;
+                                        font-family: @body_font;
+                                        text-align: center;
+                                        // text-transform: uppercase;
+                                }
+                        }
+
+                        .fields-container {
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                flex-direction: column;
+                                width: 100%;
+                                height: auto;
 
                                 input {
                                         width: 200px;
@@ -487,235 +632,96 @@
                                         transition: all 0.2s;
 
                                         &:focus {
-                                                border-radius: 15px;
                                                 border: 1px solid @orange;
+                                                border-radius: 10px;
+                                        }
+                                }
+                        }
+
+                        .bottom {
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                flex-direction: row;
+                                width: 100%;
+                                height: auto;
+                                margin-bottom: 20px;
+
+                                #validateButton {
+                                        display: flex;
+                                        justify-content: center;
+                                        align-items: center;
+                                        width: auto;
+                                        height: auto;
+                                        margin-top: 20px;
+                                        margin-bottom: 20px;
+                                        padding: 10px 10px;
+                                        width: 200px;
+                                        background-color: @orange;
+                                        color: white;
+                                        font-family: @body_font;
+                                        font-size: 15px;
+                                        text-align: center;
+                                        text-transform: uppercase;
+                                        transition: all 0.2s;
+                                        border-radius: 20px;
+                                        border: none;
+
+                                        &:hover {
+                                                cursor: pointer;
+                                                background-color: darken(@orange, 10%);
+                                                box-shadow: 0 0px 20px rgba(0, 0, 0, 0.08);
+                                        }
+
+                                        i {
+                                                font-size: 20px;
+                                        }
+
+                                        .loading_gif {
+                                                width: 20px;
+                                                height: 20px;
                                         }
                                 }
 
-                        }
-
-                        select#country {
-                                width: 200px;
-                                height: 30px;
-                                border-radius: 0;
-                                border: 1px solid #ccc;
-                                font-size: 14px;
-                                font-family: @body_font;
-                                padding: 5px;
-                                background-color: #fff;
-                        }
-
-
-                        select#country option {
-                                font-size: 14px;
-                                font-family: @body_font;
-                        }
-                }
-        }
-
-        .button_container {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                width: 100%;
-                height: auto;
-                margin: 0;
-                padding: 0;
-                transition: all 0.2s;
-                margin-bottom: 20px;
-                margin-top: 20px;
-
-                button {
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        width: 50%;
-                        height: 40px;
-                        margin: 0;
-                        padding: 0;
-                        border: none;
-                        background-color: transparent;
-                        color: @orange;
-                        font-size: 15px;
-                        font-family: @body_font;
-                        text-align: center;
-                        transition: all 0.2s;
-                        border-radius: 25px;
-                        border: 1px solid @orange;
-
-                        &:hover {
-                                background-color: @orange;
-                                color: white;
-                                cursor: pointer;
-                                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
-                        }
-                }
-
-                .create_button {
-                        margin-right: 10px;
-                        background-color: @orange;
-                        color: white;
-
-                        &:hover {
-                                cursor: pointer;
-                                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
-                        }
-                }
-        }
-}
-
-#confirm_delete {
-        .modal-wrapper {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                flex-direction: column;
-                width: auto;
-                height: auto;
-                background-color: white;
-                border-radius: 10px;
-                padding: 20px;
-
-
-                .top {
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        flex-direction: column;
-                        width: 100%;
-                        height: auto;
-                        margin-bottom: 20px;
-                        margin-top: 20px;
-
-                        h1 {
-                                color: @orange;
-                                font-size: 20px;
-                                margin-bottom: 30px;
-                                font-family: @body_font;
-                                text-align: center;
-                                text-transform: uppercase;
-                        }
-
-                        h3 {
-                                color: @dark_blue;
-                                font-size: 15px;
-                                margin: 0%;
-                                font-family: @body_font;
-                                text-align: center;
-                                // text-transform: uppercase;
-                        }
-                }
-
-                .fields-container {
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        flex-direction: column;
-                        width: 100%;
-                        height: auto;
-
-                        input {
-                                width: 200px;
-                                height: 30px;
-                                border-radius: 0px;
-                                border: none;
-                                border-bottom: 1px solid @dark_blue;
-                                padding: 0 10px;
-                                font-family: @body_font;
-                                font-size: 15px;
-                                outline: none;
-                                transition: all 0.2s;
-
-                                &:focus {
+                                #cancelButton {
+                                        display: flex;
+                                        justify-content: center;
+                                        align-items: center;
+                                        width: auto;
+                                        height: auto;
+                                        margin-top: 20px;
+                                        margin-bottom: 20px;
+                                        padding: 10px 10px;
+                                        width: 200px;
+                                        background-color: white;
+                                        color: @orange;
+                                        font-family: @body_font;
+                                        font-size: 15px;
+                                        text-align: center;
+                                        text-transform: uppercase;
+                                        transition: all 0.2s;
+                                        border-radius: 20px;
+                                        border: none;
                                         border: 1px solid @orange;
-                                        border-radius: 10px;
+                                        margin-left: 20px;
+
+                                        &:hover {
+                                                cursor: pointer;
+                                                background-color: darken(white, 10%);
+                                                box-shadow: 0 0px 20px rgba(0, 0, 0, 0.08);
+                                        }
+
+                                        i {
+                                                font-size: 20px;
+                                        }
+
+                                        .loading_gif {
+                                                width: 20px;
+                                                height: 20px;
+                                        }
                                 }
                         }
                 }
 
-                .bottom {
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        flex-direction: row;
-                        width: 100%;
-                        height: auto;
-                        margin-bottom: 20px;
-
-                        #validateButton {
-                                display: flex;
-                                justify-content: center;
-                                align-items: center;
-                                width: auto;
-                                height: auto;
-                                margin-top: 20px;
-                                margin-bottom: 20px;
-                                padding: 10px 10px;
-                                width: 200px;
-                                background-color: @orange;
-                                color: white;
-                                font-family: @body_font;
-                                font-size: 15px;
-                                text-align: center;
-                                text-transform: uppercase;
-                                transition: all 0.2s;
-                                border-radius: 20px;
-                                border: none;
-
-                                &:hover {
-                                        cursor: pointer;
-                                        background-color: darken(@orange, 10%);
-                                        box-shadow: 0 0px 20px rgba(0, 0, 0, 0.08);
-                                }
-
-                                i {
-                                        font-size: 20px;
-                                }
-
-                                .loading_gif {
-                                        width: 20px;
-                                        height: 20px;
-                                }
-                        }
-
-                        #cancelButton {
-                                display: flex;
-                                justify-content: center;
-                                align-items: center;
-                                width: auto;
-                                height: auto;
-                                margin-top: 20px;
-                                margin-bottom: 20px;
-                                padding: 10px 10px;
-                                width: 200px;
-                                background-color: white;
-                                color: @orange;
-                                font-family: @body_font;
-                                font-size: 15px;
-                                text-align: center;
-                                text-transform: uppercase;
-                                transition: all 0.2s;
-                                border-radius: 20px;
-                                border: none;
-                                border: 1px solid @orange;
-                                margin-left: 20px;
-
-                                &:hover {
-                                        cursor: pointer;
-                                        background-color: darken(white, 10%);
-                                        box-shadow: 0 0px 20px rgba(0, 0, 0, 0.08);
-                                }
-
-                                i {
-                                        font-size: 20px;
-                                }
-
-                                .loading_gif {
-                                        width: 20px;
-                                        height: 20px;
-                                }
-                        }
-                }
         }
-
 }

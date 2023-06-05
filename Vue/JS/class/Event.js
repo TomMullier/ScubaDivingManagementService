@@ -1,5 +1,10 @@
 class Event {
         constructor(start, end, divePrice, InstructorPrice, location, comment, needs, open, max, maxlevel, diveType) {
+                if(start>end){
+                        let temp = start;
+                        start = end;
+                        end = temp;
+                }
                 this.start = start;
                 this.end = end;
                 this.divePrice = divePrice;

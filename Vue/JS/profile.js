@@ -1,4 +1,10 @@
-//boutton menu
+import {
+  me,
+  events,
+  my_role
+} from './class/global.js';
+
+
 let menutoggle = document.querySelector('.toggle')
 menutoggle.onclick = function () {
   menutoggle.classList.toggle('active');
@@ -41,4 +47,46 @@ save_buttons.forEach(function (button) {
     }, 2000);
 
   });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelector('#profile_picture').src = "../img/profile_pictures/" + me.firstname + me.lastname + me.licenceNumber + ".jpg";
+  document.querySelector(".name").innerHTML = me.firstname + " " + me.lastname;
+  document.querySelector(".licence_number").innerHTML = me.licenceNumber;
+  document.querySelector(".birthdate").innerHTML = new Date(me.birthdate).toLocaleDateString();
+  document.querySelector(".email").value = me.mail;
+  document.querySelector(".phone").value = me.phone;
+  document.querySelector(".name_identity").value = me.lastname;
+  document.querySelector(".firstname_identity").value = me.firstname;
+  document.querySelector(".info-section").style.height = "calc(" + $(".profile_container_card").height() + " + 40px)";
+  if(me.diverQualification!=""){
+    document.querySelector("#qualif").value = me.diverQualification;
+  }
+  if(me.instructorQualification!=""){
+    document.querySelector("#qualif_instruc").value = me.instructorQualification;
+  }
+  if(me.noxLevel!=""){
+    document.querySelector("#niveau").value = me.noxLevel;
+  }
+  if(me.additionnalQualification!=""){
+    document.querySelector("#qualif_add").value = me.additionnalQualification;
+  }
+
+
+});
+
+document.querySelector(".phone").addEventListener("input", function () {
+  if (document.querySelector(".phone").value != me.phone || document.querySelector(".email").value != me.mail) {
+    document.querySelector(".save_button_infos").style.display = "flex";
+  } else {
+    document.querySelector(".save_button_infos").style.display = "none";
+  }
+});
+
+document.querySelector(".email").addEventListener("input", function () {
+  if (document.querySelector(".email").value != me.mail || document.querySelector(".phone").value != me.phone) {
+    document.querySelector(".save_button_infos").style.display = "flex";
+  } else {
+    document.querySelector(".save_button_infos").style.display = "none";
+  }
 });

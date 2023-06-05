@@ -4,10 +4,12 @@ import {
 
 import {
   me,
-  events
+  events,
+  my_role
 } from './class/global.js';
 
 document.addEventListener('DOMContentLoaded', function () {
+  document.querySelector('#my_profile_picture').src = "../img/profile_pictures/" + me.firstname + me.lastname + me.licenceNumber + ".jpg";
   var calendarEl = document.getElementById('calendar');
 
   var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -54,6 +56,11 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   events.forEach(function (event) {
+    if (event.start > new Date()) {
+      event.backgroundColor = "#4CAF50";
+    } else {
+      event.backgroundColor = "grey";
+    }
     calendar.addEvent(event);
     let startHour = event.start.getHours();
     let endHour = event.end.getHours();
@@ -66,10 +73,6 @@ document.addEventListener('DOMContentLoaded', function () {
     let title = getTitle(event);
 
     let today = new Date();
-    // let todayDate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-    // startDate = startDate.split('-')[0] + '-' + startDate.split('-')[1] + '-' + startDate.split('-')[2];
-    // let startDate2 = new Date(startDate);
-    // todayDate = new Date(todayDate);
     if (startDate > today) {
       startDate = startDate.toLocaleDateString();
       if (startMinutes < 10) {
@@ -90,6 +93,8 @@ document.addEventListener('DOMContentLoaded', function () {
   if (document.getElementById("important_text").innerText == "") {
     document.querySelector(".message").style.display = "none";
   }
+
+  document.querySelector(".event_list").style.height = "calc("+$("#calendar").height() + "px + 30px)";
 });
 
 //boutton menu

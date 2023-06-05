@@ -356,6 +356,47 @@ body {
   content: "> ";
 }
 .toggle {
+  position: fixed;
+  width: 70px;
+  height: 70px;
+  background: transparent;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0);
+  border-radius: 1px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  overflow: hidden;
+}
+.toggle span {
+  position: absolute;
+  width: 40px;
+  height: 4px;
+  background: #f2574a;
+  border-radius: 4px;
+  transition: 0.5s;
+}
+.toggle span:nth-child(1) {
+  transform: translateY(-15px);
+  width: 25px;
+  left: 15px;
+}
+.toggle.active span:nth-child(1) {
+  width: 40px;
+  transform: translateY(0px) rotate(45deg);
+}
+.toggle span:nth-child(2) {
+  transform: translateY(15px);
+  width: 15px;
+  left: 15px;
+}
+.toggle.active span:nth-child(2) {
+  transform: translateX(60px);
+}
+.toggle.active span:nth-child(3) {
+  transform: rotate(-45deg);
+}
+.toggle {
   position: absolute;
   width: 70px;
   height: 70px;
@@ -691,6 +732,7 @@ body {
   flex-direction: row;
   border-radius: 10px;
   max-height: 80vh;
+  max-width: 80vw;
 }
 #create_location .modal-wrapper .top h1 {
   font-size: 20px;
@@ -716,49 +758,33 @@ body {
   display: table-row;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: space-evenly;
+  gap: 60px;
   align-items: center;
   margin: 0;
   padding: 0;
-}
-#create_location .modal-wrapper .fields-container .infos-location {
-  display: flex;
-  flex-direction: column;
-  margin-top: 40px;
-  margin-bottom: 40px;
-  margin-left: 20px;
-  width: 80%;
-  font-family: 'Montserrat', sans-serif;
-  text-align: center;
-  font-size: large;
-  color: #120B8F;
   font-weight: bold;
 }
+#create_location .modal-wrapper .fields-container .infos-location,
+#create_location .modal-wrapper .fields-container .emergency_plan,
 #create_location .modal-wrapper .fields-container .adress_container {
+  margin: 0%;
   display: flex;
   flex-direction: column;
-  margin-top: 40px;
-  margin-bottom: 40px;
-  margin-left: 20px;
-  width: 80%;
   font-family: 'Montserrat', sans-serif;
   text-align: center;
   font-size: large;
   color: #120B8F;
   font-weight: bold;
 }
-#create_location .modal-wrapper .fields-container .emergency_plan {
-  margin-top: 40px;
-  margin-bottom: 40px;
-  margin-left: 20px;
-  width: 80%;
-  font-family: 'Montserrat', sans-serif;
-  text-align: center;
-  font-size: large;
-  color: #120B8F;
-  font-weight: bold;
+#create_location .modal-wrapper .fields-container .infos-location:not(:last-child),
+#create_location .modal-wrapper .fields-container .emergency_plan:not(:last-child),
+#create_location .modal-wrapper .fields-container .adress_container:not(:last-child) {
+  margin-right: 20px;
 }
-#create_location .modal-wrapper .fields-container h3 {
+#create_location .modal-wrapper .fields-container .infos-location h3,
+#create_location .modal-wrapper .fields-container .emergency_plan h3,
+#create_location .modal-wrapper .fields-container .adress_container h3 {
   width: 100%;
   height: auto;
   display: flex;
@@ -769,7 +795,9 @@ body {
   padding: 0;
   margin-bottom: 15px;
 }
-#create_location .modal-wrapper .fields-container h3 label {
+#create_location .modal-wrapper .fields-container .infos-location h3 label,
+#create_location .modal-wrapper .fields-container .emergency_plan h3 label,
+#create_location .modal-wrapper .fields-container .adress_container h3 label {
   font-size: 15px;
   color: #120B8F;
   font-family: 'Montserrat', sans-serif;
@@ -777,7 +805,9 @@ body {
   margin: 0;
   padding: 0px 0;
 }
-#create_location .modal-wrapper .fields-container h3 input {
+#create_location .modal-wrapper .fields-container .infos-location h3 input,
+#create_location .modal-wrapper .fields-container .emergency_plan h3 input,
+#create_location .modal-wrapper .fields-container .adress_container h3 input {
   width: 200px;
   height: 30px;
   border-radius: 0px;
@@ -789,11 +819,15 @@ body {
   outline: none;
   transition: all 0.2s;
 }
-#create_location .modal-wrapper .fields-container h3 input:focus {
+#create_location .modal-wrapper .fields-container .infos-location h3 input:focus,
+#create_location .modal-wrapper .fields-container .emergency_plan h3 input:focus,
+#create_location .modal-wrapper .fields-container .adress_container h3 input:focus {
   border-radius: 15px;
   border: 1px solid #f2574a;
 }
-#create_location .modal-wrapper .fields-container select#country {
+#create_location .modal-wrapper .fields-container .infos-location select#country,
+#create_location .modal-wrapper .fields-container .emergency_plan select#country,
+#create_location .modal-wrapper .fields-container .adress_container select#country {
   width: 200px;
   height: 30px;
   border-radius: 0;
@@ -803,11 +837,13 @@ body {
   padding: 5px;
   background-color: #fff;
 }
-#create_location .modal-wrapper .fields-container select#country option {
+#create_location .modal-wrapper .fields-container .infos-location select#country option,
+#create_location .modal-wrapper .fields-container .emergency_plan select#country option,
+#create_location .modal-wrapper .fields-container .adress_container select#country option {
   font-size: 14px;
   font-family: 'Montserrat', sans-serif;
 }
-#create_location .button_container {
+#create_location .modal-wrapper .button_container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -819,7 +855,7 @@ body {
   margin-bottom: 20px;
   margin-top: 20px;
 }
-#create_location .button_container button {
+#create_location .modal-wrapper .button_container button {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -837,22 +873,22 @@ body {
   border-radius: 25px;
   border: 1px solid #f2574a;
 }
-#create_location .button_container button:hover {
+#create_location .modal-wrapper .button_container button:hover {
   background-color: #f2574a;
   color: white;
   cursor: pointer;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
 }
-#create_location .button_container .create_button {
+#create_location .modal-wrapper .button_container .create_button {
   margin-right: 10px;
   background-color: #f2574a;
   color: white;
 }
-#create_location .button_container .create_button:hover {
+#create_location .modal-wrapper .button_container .create_button:hover {
   cursor: pointer;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
 }
-#confirm_delete .modal-wrapper {
+#create_location #confirm_delete .modal-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -863,7 +899,7 @@ body {
   border-radius: 10px;
   padding: 20px;
 }
-#confirm_delete .modal-wrapper .top {
+#create_location #confirm_delete .modal-wrapper .top {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -873,7 +909,7 @@ body {
   margin-bottom: 20px;
   margin-top: 20px;
 }
-#confirm_delete .modal-wrapper .top h1 {
+#create_location #confirm_delete .modal-wrapper .top h1 {
   color: #f2574a;
   font-size: 20px;
   margin-bottom: 30px;
@@ -881,14 +917,14 @@ body {
   text-align: center;
   text-transform: uppercase;
 }
-#confirm_delete .modal-wrapper .top h3 {
+#create_location #confirm_delete .modal-wrapper .top h3 {
   color: #120B8F;
   font-size: 15px;
   margin: 0%;
   font-family: 'Montserrat', sans-serif;
   text-align: center;
 }
-#confirm_delete .modal-wrapper .fields-container {
+#create_location #confirm_delete .modal-wrapper .fields-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -896,7 +932,7 @@ body {
   width: 100%;
   height: auto;
 }
-#confirm_delete .modal-wrapper .fields-container input {
+#create_location #confirm_delete .modal-wrapper .fields-container input {
   width: 200px;
   height: 30px;
   border-radius: 0px;
@@ -908,11 +944,11 @@ body {
   outline: none;
   transition: all 0.2s;
 }
-#confirm_delete .modal-wrapper .fields-container input:focus {
+#create_location #confirm_delete .modal-wrapper .fields-container input:focus {
   border: 1px solid #f2574a;
   border-radius: 10px;
 }
-#confirm_delete .modal-wrapper .bottom {
+#create_location #confirm_delete .modal-wrapper .bottom {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -921,7 +957,7 @@ body {
   height: auto;
   margin-bottom: 20px;
 }
-#confirm_delete .modal-wrapper .bottom #validateButton {
+#create_location #confirm_delete .modal-wrapper .bottom #validateButton {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -941,19 +977,19 @@ body {
   border-radius: 20px;
   border: none;
 }
-#confirm_delete .modal-wrapper .bottom #validateButton:hover {
+#create_location #confirm_delete .modal-wrapper .bottom #validateButton:hover {
   cursor: pointer;
   background-color: #ef2b1a;
   box-shadow: 0 0px 20px rgba(0, 0, 0, 0.08);
 }
-#confirm_delete .modal-wrapper .bottom #validateButton i {
+#create_location #confirm_delete .modal-wrapper .bottom #validateButton i {
   font-size: 20px;
 }
-#confirm_delete .modal-wrapper .bottom #validateButton .loading_gif {
+#create_location #confirm_delete .modal-wrapper .bottom #validateButton .loading_gif {
   width: 20px;
   height: 20px;
 }
-#confirm_delete .modal-wrapper .bottom #cancelButton {
+#create_location #confirm_delete .modal-wrapper .bottom #cancelButton {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -975,15 +1011,15 @@ body {
   border: 1px solid #f2574a;
   margin-left: 20px;
 }
-#confirm_delete .modal-wrapper .bottom #cancelButton:hover {
+#create_location #confirm_delete .modal-wrapper .bottom #cancelButton:hover {
   cursor: pointer;
   background-color: #e6e6e6;
   box-shadow: 0 0px 20px rgba(0, 0, 0, 0.08);
 }
-#confirm_delete .modal-wrapper .bottom #cancelButton i {
+#create_location #confirm_delete .modal-wrapper .bottom #cancelButton i {
   font-size: 20px;
 }
-#confirm_delete .modal-wrapper .bottom #cancelButton .loading_gif {
+#create_location #confirm_delete .modal-wrapper .bottom #cancelButton .loading_gif {
   width: 20px;
   height: 20px;
 }

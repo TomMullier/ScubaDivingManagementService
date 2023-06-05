@@ -3,6 +3,11 @@ import {
 } from './@fullcalendar/core/locales/fr.js';
 
 import {
+  me,
+  events
+} from "./class/global.js";
+
+import {
   Event
 } from "./class/Event.js";
 let calendar;
@@ -47,13 +52,11 @@ document.addEventListener('DOMContentLoaded', function () {
         endTime: '18:00' // 4pm
       }
     ],
-    events: function (fetchInfo, successCallback, failureCallback) {
-      successCallback([])
-    },
+    events: [],
     eventClick: function (info) {
       // Element HTML -> info.el
       // Evénement -> info.event
-
+      
       eventClicked = info.event;
       // Open Modale
       modals.show("eventModal", function () {
@@ -71,6 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
         startMinutes = "0" + startMinutes;
 
       }
+      console.log(info.event.end);
       //get end time with 2 digits even if 0
       let endHour = info.event.end.getHours();
       let endMinutes = info.event.end.getMinutes();
@@ -159,27 +163,11 @@ document.addEventListener('DOMContentLoaded', function () {
         // add li to ul
         document.querySelector(".listOfUser ul").appendChild(li);
       });
-      console.log(list);
 
 
 
 
-      // Button click
-      let button = document.querySelector("#reserveButton");
-      button.addEventListener("click", function () {
-        if (button.classList.contains("reserveButton")) {
-          button.innerHTML = "Se désinscrire";
-          button.classList.add("unreserveButton");
-          button.classList.remove("reserveButton");
-          eventClicked.setProp("backgroundColor", "#f2574a");
-        } else {
-          button.innerHTML = "Réserver";
-          button.classList.add("reserveButton");
-          button.classList.remove("unreserveButton");
-          eventClicked.setProp("backgroundColor", "#4CAF50");
-        }
 
-      });
 
       if (new Date(eventClicked.end) < new Date()) {
         button.style.display = "none";
@@ -187,14 +175,22 @@ document.addEventListener('DOMContentLoaded', function () {
         button.style.display = "flex";
       }
     },
+
   });
-
-
   events.forEach(function (event) {
-    
+    if (event.start > new Date()) {
+      event.backgroundColor = "#4CAF50";
+    } else {
+      event.backgroundColor = "grey";
+    }
+    console.log(event)
     calendar.addEvent(event);
+    console.log(calendar.getEvents());
   });
+  
   calendar.render();
+
+
 
 
   // Filtres
@@ -253,17 +249,28 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-var events = []
 var eventsFilteredTime = [];
 var eventsFilteredPrice = [];
-events.push(new Event(new Date(2023, 5, 1, 10, 0), new Date(2023, 5, 1, 12, 0), 20, 10, "La Ciotat", " Commentaire Commentaire ", " Besoin Besoin Besoin", false, 5, 3, "Exploration"));
-events.push(new Event(new Date(2023, 5, 2, 14, 0), new Date(2023, 5, 2, 16, 0), 60, 10, "JUNIA", "Enguerrand j'espère tu seras à l'heure", "VP03", false, 5, 3, "Technique"));
-events.push(new Event(new Date(2023, 5, 2, 10, 0), new Date(2023, 5, 2, 10, 30), 30, 10, "JUNIA", "Enguerrand j'espère tu seras à l'heure", "VP03", false, 5, 3, "Technique"));
 
 // Update label text when slider value changes
 
 
+// Button click
+let button = document.querySelector("#reserveButton");
+button.addEventListener("click", function () {
+  if (button.classList.contains("reserveButton")) {
+    button.innerHTML = "Se désinscrire";
+    button.classList.add("unreserveButton");
+    button.classList.remove("reserveButton");
+    eventClicked.setProp("backgroundColor", "#f2574a");
+  } else {
+    button.innerHTML = "Réserver";
+    button.classList.add("reserveButton");
+    button.classList.remove("unreserveButton");
+    eventClicked.setProp("backgroundColor", "#4CAF50");
+  }
 
+});
 
 
 
@@ -315,7 +322,7 @@ rapport_button.addEventListener("click", function () {
   modals.closeCurrent();
 
 
-  console.log(eventClicked);
+  // console.log(eventClicked);
   setTimeout(function () {
 
     modals.show("dive_rapport", function () {
@@ -325,11 +332,98 @@ rapport_button.addEventListener("click", function () {
     menutoggle.classList.toggle('close-modal');
   }, 500);
 
+
   // GMT +2
 
   document.querySelector(".title_rapport_plannif").innerHTML = "Plannification " + eventClicked.title;
 
+});
 
+
+
+let rating_button = document.querySelector(".rating");
+rating_button.addEventListener("click", function () {
+  modals.closeCurrent();
+
+
+  setTimeout(function () {
+
+    modals.show("rating", function () {
+      menutoggle.classList.remove('active');
+    });
+    menutoggle.classList.toggle('active');
+    menutoggle.classList.toggle('close-modal');
+  }, 500);
+
+  //notation de l'event
+
+  // Sélection des étoiles
+  let stars = document.querySelectorAll('.fa-regular.fa-star');
+
+  // Variable pour stocker le nombre d'étoiles sélectionnées pour chaque critère
+  let ratings = {
+    general: 0,
+    lieu: 0,
+    organisation: 0,
+    conditions: 0
+  };
+
+  // Gestion de l'événement pour chaque étoile
+  stars.forEach(function (star, index) {
+    star.addEventListener('mouseover', function () {
+      // Agrandir l'étoile survolée
+      star.style.transform = 'scale(1.2)';
+    });
+
+    star.addEventListener('mouseout', function () {
+      star.style.transform = 'scale(1)';
+    });
+
+    star.addEventListener('click', function () {
+      if (star.classList.contains('fa-solid')) {
+        for (let i = index + 1; i < stars.length; i++) {
+          stars[i].classList.remove('fa-solid');
+          stars[i].classList.add('fa-regular');
+        }
+
+        switch (star.parentNode.parentNode.classList[0]) {
+          case 'note_general':
+            ratings.general = index + 1;
+            break;
+          case 'Lieu':
+            ratings.lieu = index + 1;
+            break;
+          case 'organisation':
+            ratings.organisation = index + 1;
+            break;
+          case 'cond_plongee':
+            ratings.conditions = index + 1;
+            break;
+        }
+      } else {
+        for (let i = 0; i <= index; i++) {
+          stars[i].classList.remove('fa-regular');
+          stars[i].classList.add('fa-solid');
+        }
+
+        // Mettre à jour le nombre d'étoiles sélectionnées pour le critère correspondant
+        switch (star.parentNode.parentNode.classList[0]) {
+          case 'note_general':
+            ratings.general = index + 1;
+            break;
+          case 'Lieu':
+            ratings.lieu = index + 1;
+            break;
+          case 'organisation':
+            ratings.organisation = index + 1;
+            break;
+          case 'cond_plongee':
+            ratings.conditions = index + 1;
+            break;
+        }
+      }
+    });
+  });
 
 });
 
@@ -356,44 +450,173 @@ nameSelects.forEach(select => {
 let create_event_button = document.querySelector("#createEventButton");
 
 create_event_button.addEventListener("click", function () {
-  document.querySelector("#timeline_create").style.height = "calc(" + $("#global_create").height() + "px - 40px)";
   modals.show("createEventModal", function () {
     menutoggle.classList.remove('active');
   });
-  document.querySelector(".timeline_bar").style.height = $(".global").height() + "px";
   menutoggle.classList.toggle('active');
   menutoggle.classList.toggle('close-modal');
 });
 
+// Search of location 
+let search_location = document.querySelector("#eventLocationInput");
 
-// Search of user
-let search_user = document.querySelector("#searchUser");
-
-search_user.addEventListener("input", function () {
-  let search = search_user.value;
-  let users = document.querySelectorAll(".user_list_item");
-  users.forEach(function (user) {
-    if (user.innerText.toLowerCase().includes(search.toLowerCase())) {
-      user.style.display = "flex";
+search_location.addEventListener("input", function () {
+  let search = search_location.value;
+  let locations = document.querySelectorAll(".location_item");
+  locations.forEach(function (location) {
+    if (location.innerText.toLowerCase().includes(search.toLowerCase())) {
+      location.style.display = "flex";
+      document.querySelector(".location_list_dropdown").style.display = "flex";
+      location.addEventListener("click", function () {
+        search_location.value = location.innerText;
+        document.querySelector(".location_list_dropdown").style.display = "none";
+      });
     } else {
-      user.style.display = "none";
+      location.style.display = "none";
     }
+
+  });
+  let display = false;
+  locations.forEach(function (location) {
+    if (location.style.display == "flex") {
+      display = true;
+    }
+  });
+  if (search_location.value == "") {
+    display = false;
+  }
+  if (display) {
+    document.querySelector(".location_list_dropdown").style.display = "flex";
+  } else {
+    document.querySelector(".location_list_dropdown").style.display = "none";
+  }
+});
+
+let search_dp = document.querySelector("#eventDPInput");
+
+
+
+
+search_dp.addEventListener("input", function () {
+  let search = search_dp.value;
+  let dps = document.querySelectorAll(".DP_item");
+  dps.forEach(function (dp) {
+    if (dp.innerText.toLowerCase().includes(search.toLowerCase())) {
+      dp.style.display = "flex";
+      document.querySelector(".DP_list_dropdown").style.display = "flex";
+      dp.addEventListener("click", function () {
+        search_dp.value = dp.innerText;
+        document.querySelector(".DP_list_dropdown").style.display = "none";
+      });
+    } else {
+      dp.style.display = "none";
+    }
+
+  });
+  let display = false;
+  dps.forEach(function (dp) {
+    if (dp.style.display == "flex") {
+      display = true;
+    }
+  });
+  if (search_dp.value == "") {
+    display = false;
+  }
+  if (display) {
+    document.querySelector(".DP_list_dropdown").style.display = "flex";
+  } else {
+    document.querySelector(".DP_list_dropdown").style.display = "none";
+  }
+});
+
+let search_diver = document.querySelector("#eventDiverInput");
+
+search_diver.addEventListener("click", function () {
+  detectDivers();
+  let dps = document.querySelectorAll(".diver_item");
+  document.querySelector(".diver_list_dropdown").style.display = "none";
+
+  dps.forEach(function (dp) {
+    if (dp.querySelector("input").checked) {
+      dp.style.display = "flex";
+      document.querySelector(".diver_list_dropdown").style.display = "flex";
+    } else {
+      dp.style.display = "none";
+    }
+
   });
 });
 
-// Sélectionnez la modale
-const modal = document.getElementById('create_location');
+search_diver.addEventListener("input", function checkInputDiver() {
+  detectDivers();
+  let search = search_diver.value;
+  let divers = document.querySelectorAll(".diver_item");
+  divers.forEach(function (diver) {
 
-// Fonction pour désactiver le défilement
-function disableScroll() {
-  // Obtenez la position actuelle de la fenêtre
-  const scrollY = window.scrollY;
-  const scrollX = window.scrollX;
+    diver.querySelector("input").addEventListener("click", function () {
+      document.querySelector(".diver_list_dropdown").style.display = "none";
+      search_diver.value = "";
 
-  // Ajoutez des styles pour désactiver le défilement
-  document.body.style.overflow = 'hidden';
-  document.body.style.position = 'fixed';
-  document.body.style.top = `-${scrollY}px`;
-  document.body.style.left = `-${scrollX}px`;
+      checkInputDiver();
+    });
+    if (diver.innerText.toLowerCase().includes(search.toLowerCase())) {
+      diver.style.display = "flex";
+      document.querySelector(".diver_list_dropdown").style.display = "flex";
+    } else {
+      if (diver.querySelector("input").checked) {
+        diver.style.display = "flex";
+      } else {
+        diver.style.display = "none";
+      }
+    }
+
+  });
+
+  let display = false;
+  divers.forEach(function (diver) {
+    if (diver.style.display == "flex") {
+      display = true;
+    }
+  });
+  if (search_diver.value == "") {
+    display = false;
+  }
+  if (display) {
+    document.querySelector(".diver_list_dropdown").style.display = "flex";
+  } else {
+    document.querySelector(".diver_list_dropdown").style.display = "none";
+  }
+});
+
+function detectDivers() {
+  let divers = document.querySelectorAll(".diver_item");
+  let number_of_diver = 0;
+  divers.forEach(function (diver) {
+    if (diver.querySelector("input").checked) {
+      number_of_diver++;
+    }
+  });
+  search_diver.placeholder = "Rechercher" + " (" + number_of_diver + " inscrits)";
 }
 
+
+
+
+
+// Search of user
+// let search_user = document.querySelector("#searchUser");
+
+// search_user.addEventListener("input", function () {
+//   let search = search_user.value;
+//   let users = document.querySelectorAll(".user_list_item");
+//   users.forEach(function (user) {
+//     if (user.innerText.toLowerCase().includes(search.toLowerCase())) {
+//       user.style.display = "flex";
+//     } else {
+//       user.style.display = "none";
+//     }
+//   });
+// });
+
+
+document.querySelector(".prenom").innerText = me.firstname;

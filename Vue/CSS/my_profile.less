@@ -236,7 +236,10 @@
     .info-section {
       display: flex;
       flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
       width: 100%;
+      height: 100%;
 
       .name_container {
         display: flex;
@@ -478,6 +481,15 @@
     transition: 0.2s;
 
   }
+#prenom,
+#nom,
+#qualif,
+#qualif_instruc,
+#qualif_add,
+#niveau{
+  background-color: rgba(50, 50, 50, 0.114);
+  cursor: not-allowed;
+}
 }
 
 .save_button_infos {

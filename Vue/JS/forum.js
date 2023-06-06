@@ -1,9 +1,4 @@
-import {
-    me,
-    events,
-    my_role
-  } from './class/global.js';
-  
+
   
 //boutton menu
 let menutoggle = document.querySelector('.toggle')
@@ -28,6 +23,5 @@ emergencyButton.addEventListener("click", function () {
   menutoggle.classList.toggle('active');
   menutoggle.classList.toggle('close-modal');
 });
-
 
   

@@ -574,8 +574,8 @@
 }
 
 #rating {
-    .modal-wrapper {
-        width: 60%;
+    .modal-wrapper{
+        width: auto;
         height: auto;
         background-color: white;
         border-radius: 10px;
@@ -584,14 +584,79 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-    }
+        .validate_rating{
+            margin-top: 20px;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background-color: @orange;
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+            text-transform: uppercase;
+            display: flex;
+            h3{
+                margin: 0;
+                padding: 0px 0;
+            }
+            &:hover {
+                background-color: @dark_orange;
+            }
+        }
+        h1 {
+            color: @orange;
+            font-size: 20px;
+            margin-bottom: 40px;
+            font-family: @body_font;
+            text-align: center;
+            text-transform: uppercase;
+        }
+        .rating_container{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            .rating_item{
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                margin-bottom: 40px;
+                h3{
+                    width: 50%;
+                    color: @dark_blue;
+                    font-size: 15px;
+                    margin-bottom: 20px;
+                    font-family: @body_font;
+                    text-align: left;
+                    text-transform: uppercase;
+                    margin:0;
+                    margin-right: 10px;
+                }
+                .rating_stars{
+                    width: 50%;
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    align-items: center;
+                    i{
+                        color: @orange;
+                        font-size: 30px;
+                        margin: 0 5px;
+                        cursor: pointer;
+                    }
+                    i:hover{
+                        color: @dark_orange;
+                    }
+                }
+            }
 
-    i {
-        color: @dark_blue;
-        ;
-        font-size: 30px;
-        cursor: pointer;
-        transition: 0.2s;
+        }
+
     }
 }
 

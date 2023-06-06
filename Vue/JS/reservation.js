@@ -65,6 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
       }
       eventClicked = info.event;
+
       // Open Modale
       modals.show("eventModal", function () {
         menutoggle.classList.remove('active');
@@ -178,8 +179,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
       if (new Date(eventClicked.end) < new Date()) {
         button.style.display = "none";
+        document.querySelector(".rating").style.display = "flex";
       } else {
         button.style.display = "flex";
+        document.querySelector(".rating").style.display = "none";
       }
     },
 
@@ -338,116 +341,6 @@ rapport_button.addEventListener("click", function () {
   document.querySelector(".title_rapport_plannif").innerHTML = "Plannification " + eventClicked.title;
 });
 
-
-
-// let rating_button = document.querySelector(".rating");
-// rating_button.addEventListener("click", function () {
-//   modals.closeCurrent();
-
-
-//   setTimeout(function () {
-
-//     modals.show("rating", function () {
-//       menutoggle.classList.remove('active');
-//     });
-//     menutoggle.classList.toggle('active');
-//     menutoggle.classList.toggle('close-modal');
-//   }, 500);
-
-//   //notation de l'event
-
-//   // Sélection des étoiles
-//   let stars = document.querySelectorAll('.fa-regular.fa-star');
-
-//   // Variable pour stocker le nombre d'étoiles sélectionnées pour chaque critère
-//   let ratings = {
-//     general: 0,
-//     lieu: 0,
-//     organisation: 0,
-//     conditions: 0
-//   };
-
-//   // Gestion de l'événement pour chaque étoile
-//   stars.forEach(function (star, index) {
-//     star.addEventListener('mouseover', function () {
-//       // Agrandir l'étoile survolée
-//       star.style.transform = 'scale(1.2)';
-//     });
-
-//     star.addEventListener('mouseout', function () {
-//       star.style.transform = 'scale(1)';
-//     });
-
-//     star.addEventListener('click', function () {
-//       if (star.classList.contains('fa-solid')) {
-//         for (let i = index + 1; i < stars.length; i++) {
-//           stars[i].classList.remove('fa-solid');
-//           stars[i].classList.add('fa-regular');
-//         }
-
-//         switch (star.parentNode.parentNode.classList[0]) {
-//           case 'note_general':
-//             ratings.general = index + 1;
-//             break;
-//           case 'Lieu':
-//             ratings.lieu = index + 1;
-//             break;
-//           case 'organisation':
-//             ratings.organisation = index + 1;
-//             break;
-//           case 'cond_plongee':
-//             ratings.conditions = index + 1;
-//             break;
-//         }
-//       } else {
-//         for (let i = 0; i <= index; i++) {
-//           stars[i].classList.remove('fa-regular');
-//           stars[i].classList.add('fa-solid');
-//         }
-
-//         // Mettre à jour le nombre d'étoiles sélectionnées pour le critère correspondant
-//         switch (star.parentNode.parentNode.classList[0]) {
-//           case 'note_general':
-//             ratings.general = index + 1;
-//             break;
-//           case 'Lieu':
-//             ratings.lieu = index + 1;
-//             break;
-//           case 'organisation':
-//             ratings.organisation = index + 1;
-//             break;
-//           case 'cond_plongee':
-//             ratings.conditions = index + 1;
-//             break;
-//         }
-//       }
-//     });
-//   });
-
-// });
-
-
-// const nameSelects = document.querySelectorAll('.diver-name');
-// const nameOptions = document.querySelectorAll('.diver-name option');
-
-
-// nameSelects.forEach(select => {
-//   select.addEventListener('change', () => {
-//     const selectedValues = Array.from(nameSelects)
-//       .map(s => s.value)
-//       .filter(value => value !== '');
-
-//     nameOptions.forEach(option => {
-//       const isOptionSelected = selectedValues.includes(option.value);
-
-//       option.disabled = isOptionSelected;
-//     });
-//   });
-// });
-
-
-
-
 //! EVENT CREATION
 
 let create_event_button = document.querySelector("#createEventButton");
@@ -551,7 +444,6 @@ search_diver.addEventListener("click", function () {
     } else {
       dp.style.display = "none";
     }
-
   });
 });
 
@@ -705,3 +597,105 @@ function edit_event(info) {
     console.log(event_to_create);
   });
 }
+
+
+
+//! AVIS
+let general_r = 0;
+let location_r = 0;
+let orga_r = 0;
+let conditions_r = 0;
+let G_stars = [];
+let L_stars = [];
+let O_stars = [];
+let C_stars = [];
+document.querySelectorAll(".rating").forEach(function (avis) {
+  avis.addEventListener("click", function () {
+    modals.closeCurrent();
+    setTimeout(function () {
+      modals.show("rating", function () {
+        menutoggle.classList.remove('active');
+      });
+      menutoggle.classList.toggle('active');
+      menutoggle.classList.toggle('close-modal');
+      G_stars = [...document.querySelector(".general").getElementsByClassName("rating__star")];
+      L_stars = [...document.querySelector(".location_rating").getElementsByClassName("rating__star")];
+      O_stars = [...document.querySelector(".orga_rating").getElementsByClassName("rating__star")];
+      C_stars = [...document.querySelector(".conditions_rating").getElementsByClassName("rating__star")];
+      general_r = getNote(G_stars);
+      location_r = getNote(L_stars);
+      orga_r = getNote(O_stars);
+      conditions_r = getNote(C_stars);
+      document.querySelector(".validate_rating").addEventListener("click", function () {
+        console.log("FINAL RATE :")
+        console.log(finalRate())
+        modals.closeCurrent();
+      });
+    }, 500);
+  });
+});
+
+const starClassActive = "rating__star fas fa-star";
+const starClassInactive = "rating__star far fa-star";
+let ret_ = 0;
+
+function getNote(stars) {
+  let i;
+  let starsLength = stars.length;
+  stars.map((star) => {
+    star.addEventListener("click", () => {
+      i = stars.indexOf(star);
+      ret_ = i + 1;
+      if (star.className === starClassInactive) {
+        for (i; i >= 0; --i) stars[i].className = starClassActive;
+      } else {
+        for (i; i < starsLength; ++i) stars[i].className = starClassInactive;
+      }
+      return ret_;
+    });
+  });
+}
+
+function finalRate() {
+  // For general, count stars with class starClassActive
+  let general = 0;
+  G_stars.forEach(function (star) {
+    if (star.className == starClassActive) {
+      general++;
+    }
+  });
+  // For location, count stars with class starClassActive
+  let location = 0;
+  L_stars.forEach(function (star) {
+    if (star.className == starClassActive) {
+      location++;
+    }
+  });
+  // For orga, count stars with class starClassActive
+  let orga = 0;
+  O_stars.forEach(function (star) {
+
+    if (star.className == starClassActive) {
+      orga++;
+    }
+  });
+  // For conditions, count stars with class starClassActive
+  let conditions = 0;
+  C_stars.forEach(function (star) {
+    if (star.className == starClassActive) {
+      conditions++;
+    }
+  });
+  let finaleRateObject = {
+    "general": general,
+    "location": location,
+    "orga": orga,
+    "conditions": conditions
+  }
+  return finaleRateObject;
+}
+
+document.querySelector(".validate_rating").addEventListener("click", function () {
+
+  modals.closeCurrent();
+});

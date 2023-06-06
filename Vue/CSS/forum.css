@@ -370,6 +370,91 @@ body {
   text-align: center;
   text-transform: uppercase;
 }
+.contenu {
+  display: flex;
+}
+.main {
+  margin: 20px;
+  display: block;
+  width: 100%;
+  font-family: 'Montserrat', sans-serif;
+}
+.create_button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  width: 20%;
+  height: auto;
+  color: white;
+  font-size: 15px;
+  text-align: center;
+  border: none;
+  background-color: #f2574a;
+  padding: 0px 20px;
+  border-radius: 30px;
+}
+.create_button i {
+  margin-right: 10px;
+}
+.create_button p {
+  margin: 0;
+  padding: 10px 0;
+}
+.create_button:hover {
+  cursor: pointer;
+}
+.posts {
+  margin-top: 50px;
+}
+.posts .post {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+  transition: background-color 0.3s, transform 0.3s;
+}
+.posts .post:hover {
+  background-color: #f5f5f5;
+  transform: scale(1.005);
+}
+.posts .post h3 {
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+.posts .post p {
+  margin-bottom: 5px;
+}
+.posts .post a {
+  color: #333;
+  text-decoration: none;
+}
+.posts .post a:hover {
+  text-decoration: underline;
+}
+.sidebar {
+  font-family: 'Montserrat', sans-serif;
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  background-color: #f5f5f5;
+  padding: 10px;
+}
+.sidebar .menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.sidebar .menu ul li {
+  margin-bottom: 10px;
+}
+.sidebar .menu ul li a {
+  color: #333;
+  text-decoration: none;
+}
+.sidebar .menu ul li a:hover {
+  text-decoration: underline;
+}
 @keyframes topSlideIn {
   0% {
     transform: translateY(-100%);

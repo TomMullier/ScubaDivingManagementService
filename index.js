@@ -292,6 +292,10 @@ app.get('/auth/user/statistics', keycloak.protect(), function (req, res) {
     } else res.redirect('/auth/dashboard');
 })
 
+/* -------------------------------------------------------------------------- */
+/*                                   ACCOUNT                                  */
+/* -------------------------------------------------------------------------- */
+
 app.get('/auth/user/account', keycloak.protect(), function (req, res) {
     if (checkUser(req, "DP")) {
         res.sendFile(__dirname + "/vue/html/user/account.html", { headers: { 'userType': 'dp' } });
@@ -300,7 +304,29 @@ app.get('/auth/user/account', keycloak.protect(), function (req, res) {
     } else res.redirect('/auth/dashboard');
 })
 
-/* -------------------------- DIRECTEUR DE PLONGEE -------------------------- */
+/* ---------------------------------- READ ---------------------------------- */
+app.get('/auth/user/account/get_info', keycloak.protect(), function (req, res) {
+    let username = req.kauth.grant.access_token.content.preferred_username;
+    Database.getUserInfoByMail(username, (userInfo) => {
+        if (userInfo === undefined) return res.status(404).json({ comment: "Impossible to find user" });
+        return res.json(userInfo);
+    })
+})
+
+/* --------------------------------- UPDATE --------------------------------- */
+// app.get('/auth/user/account/modif', keycloak.protect(),
+//     // body("Mail").trim().escape(),
+//     // body("Phone").trim().escape(),
+//     // body("Medical_Certificate_Expiration_Date").trim().escape(),
+//     // body("password").trim().escape(),
+//     function (req, res) {
+//         console.log("ici");
+//         res.redirect(`http://10.224.1.186:8080/realms/SDMS/account`)
+//     })
+
+/* -------------------------------------------------------------------------- */
+/*                                  PALANQUEE                                 */
+/* -------------------------------------------------------------------------- */
 app.get('/auth/dp/scuba_file', keycloak.protect(), function (req, res) {
     if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
     res.sendFile(__dirname + "/vue/html/dp/scuba_file.html", { headers: { 'userType': 'dp' } });

@@ -1,6 +1,6 @@
 class Event {
         constructor(start, end, divePrice, InstructorPrice, location, comment, needs, open, max, maxlevel, diveType) {
-                if(start>end){
+                if (start > end) {
                         let temp = start;
                         start = end;
                         end = temp;
@@ -12,18 +12,18 @@ class Event {
                 this.location = location;
                 this.comment = comment;
                 this.needs = needs;
-                this.title=diveType+" à "+location;
-                this.open=open;
-                this.max=max;
-                this.maxlevel=maxlevel;
+                this.title = diveType + " à " + location;
+                this.open = open;
+                this.max = max;
+                this.maxlevel = maxlevel;
                 this.users = [];
-                this.diveType=diveType;
-                if(new Date(this.end) < new Date()){
-                        this.backgroundColor="grey";
-                        this.borderColor="grey";
-                } else{
-                        this.backgroundColor="#4caf50";
-                        this.borderColor="#4caf50";
+                this.diveType = diveType;
+                if (new Date(this.end) < new Date()) {
+                        this.backgroundColor = "grey";
+                        this.borderColor = "grey";
+                } else {
+                        this.backgroundColor = "#4caf50";
+                        this.borderColor = "#4caf50";
                 }
         }
 
@@ -98,4 +98,6 @@ class Event {
 
 }
 
-export {Event};
+export {
+        Event
+};

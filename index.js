@@ -50,6 +50,10 @@ app.get("/location", function (req, res) {
     res.sendFile(path.join(__dirname + "/Vue/HTML/location_list.html"));
 });
 
+app.get("/forum", function (req, res) {
+    res.sendFile(path.join(__dirname + "/Vue/HTML/forum.html"));
+});
+
 app.use(express.static(path.join(__dirname, "Vue")));
 app.listen(4200, (err) => {
     if (err) console.error(err);

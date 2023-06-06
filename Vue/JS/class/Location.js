@@ -14,3 +14,7 @@ class Location {
                 this.url = url;
         }
 }
+
+export {
+        Location
+} //exporter les variables pour les utiliser dans d'autres fichiers

@@ -4,12 +4,16 @@ import {
 
 import {
   me,
-  events
+  events,
+  locations,
+  my_role
 } from "./class/global.js";
 
 import {
   Event
 } from "./class/Event.js";
+
+
 let calendar;
 let eventClicked;
 document.addEventListener('DOMContentLoaded', function () {
@@ -56,7 +60,10 @@ document.addEventListener('DOMContentLoaded', function () {
     eventClick: function (info) {
       // Element HTML -> info.el
       // Evénement -> info.event
-      
+      if (my_role == "club") {
+        edit_event(info);
+        return;
+      }
       eventClicked = info.event;
       // Open Modale
       modals.show("eventModal", function () {
@@ -183,11 +190,9 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
       event.backgroundColor = "grey";
     }
-    console.log(event)
     calendar.addEvent(event);
-    console.log(calendar.getEvents());
   });
-  
+
   calendar.render();
 
 
@@ -252,10 +257,8 @@ document.addEventListener('DOMContentLoaded', function () {
 var eventsFilteredTime = [];
 var eventsFilteredPrice = [];
 
-// Update label text when slider value changes
 
-
-// Button click
+//! RESERVATION 
 let button = document.querySelector("#reserveButton");
 button.addEventListener("click", function () {
   if (button.classList.contains("reserveButton")) {
@@ -263,11 +266,15 @@ button.addEventListener("click", function () {
     button.classList.add("unreserveButton");
     button.classList.remove("reserveButton");
     eventClicked.setProp("backgroundColor", "#f2574a");
+    console.log("Evenement reservé :")
+    console.log(eventClicked);
   } else {
     button.innerHTML = "Réserver";
     button.classList.add("reserveButton");
     button.classList.remove("unreserveButton");
     eventClicked.setProp("backgroundColor", "#4CAF50");
+    console.log("Evenement annulé :")
+    console.log(eventClicked);
   }
 
 });
@@ -320,132 +327,128 @@ emergencyButton.addEventListener("click", function () {
 let rapport_button = document.querySelector(".edit_rapport");
 rapport_button.addEventListener("click", function () {
   modals.closeCurrent();
-
-
   // console.log(eventClicked);
   setTimeout(function () {
-
     modals.show("dive_rapport", function () {
       menutoggle.classList.remove('active');
     });
     menutoggle.classList.toggle('active');
     menutoggle.classList.toggle('close-modal');
   }, 500);
-
-
-  // GMT +2
-
   document.querySelector(".title_rapport_plannif").innerHTML = "Plannification " + eventClicked.title;
-
 });
 
 
 
-let rating_button = document.querySelector(".rating");
-rating_button.addEventListener("click", function () {
-  modals.closeCurrent();
+// let rating_button = document.querySelector(".rating");
+// rating_button.addEventListener("click", function () {
+//   modals.closeCurrent();
 
 
-  setTimeout(function () {
+//   setTimeout(function () {
 
-    modals.show("rating", function () {
-      menutoggle.classList.remove('active');
-    });
-    menutoggle.classList.toggle('active');
-    menutoggle.classList.toggle('close-modal');
-  }, 500);
+//     modals.show("rating", function () {
+//       menutoggle.classList.remove('active');
+//     });
+//     menutoggle.classList.toggle('active');
+//     menutoggle.classList.toggle('close-modal');
+//   }, 500);
 
-  //notation de l'event
+//   //notation de l'event
 
-  // Sélection des étoiles
-  let stars = document.querySelectorAll('.fa-regular.fa-star');
+//   // Sélection des étoiles
+//   let stars = document.querySelectorAll('.fa-regular.fa-star');
 
-  // Variable pour stocker le nombre d'étoiles sélectionnées pour chaque critère
-  let ratings = {
-    general: 0,
-    lieu: 0,
-    organisation: 0,
-    conditions: 0
-  };
+//   // Variable pour stocker le nombre d'étoiles sélectionnées pour chaque critère
+//   let ratings = {
+//     general: 0,
+//     lieu: 0,
+//     organisation: 0,
+//     conditions: 0
+//   };
 
-  // Gestion de l'événement pour chaque étoile
-  stars.forEach(function (star, index) {
-    star.addEventListener('mouseover', function () {
-      // Agrandir l'étoile survolée
-      star.style.transform = 'scale(1.2)';
-    });
+//   // Gestion de l'événement pour chaque étoile
+//   stars.forEach(function (star, index) {
+//     star.addEventListener('mouseover', function () {
+//       // Agrandir l'étoile survolée
+//       star.style.transform = 'scale(1.2)';
+//     });
 
-    star.addEventListener('mouseout', function () {
-      star.style.transform = 'scale(1)';
-    });
+//     star.addEventListener('mouseout', function () {
+//       star.style.transform = 'scale(1)';
+//     });
 
-    star.addEventListener('click', function () {
-      if (star.classList.contains('fa-solid')) {
-        for (let i = index + 1; i < stars.length; i++) {
-          stars[i].classList.remove('fa-solid');
-          stars[i].classList.add('fa-regular');
-        }
+//     star.addEventListener('click', function () {
+//       if (star.classList.contains('fa-solid')) {
+//         for (let i = index + 1; i < stars.length; i++) {
+//           stars[i].classList.remove('fa-solid');
+//           stars[i].classList.add('fa-regular');
+//         }
 
-        switch (star.parentNode.parentNode.classList[0]) {
-          case 'note_general':
-            ratings.general = index + 1;
-            break;
-          case 'Lieu':
-            ratings.lieu = index + 1;
-            break;
-          case 'organisation':
-            ratings.organisation = index + 1;
-            break;
-          case 'cond_plongee':
-            ratings.conditions = index + 1;
-            break;
-        }
-      } else {
-        for (let i = 0; i <= index; i++) {
-          stars[i].classList.remove('fa-regular');
-          stars[i].classList.add('fa-solid');
-        }
+//         switch (star.parentNode.parentNode.classList[0]) {
+//           case 'note_general':
+//             ratings.general = index + 1;
+//             break;
+//           case 'Lieu':
+//             ratings.lieu = index + 1;
+//             break;
+//           case 'organisation':
+//             ratings.organisation = index + 1;
+//             break;
+//           case 'cond_plongee':
+//             ratings.conditions = index + 1;
+//             break;
+//         }
+//       } else {
+//         for (let i = 0; i <= index; i++) {
+//           stars[i].classList.remove('fa-regular');
+//           stars[i].classList.add('fa-solid');
+//         }
 
-        // Mettre à jour le nombre d'étoiles sélectionnées pour le critère correspondant
-        switch (star.parentNode.parentNode.classList[0]) {
-          case 'note_general':
-            ratings.general = index + 1;
-            break;
-          case 'Lieu':
-            ratings.lieu = index + 1;
-            break;
-          case 'organisation':
-            ratings.organisation = index + 1;
-            break;
-          case 'cond_plongee':
-            ratings.conditions = index + 1;
-            break;
-        }
-      }
-    });
-  });
+//         // Mettre à jour le nombre d'étoiles sélectionnées pour le critère correspondant
+//         switch (star.parentNode.parentNode.classList[0]) {
+//           case 'note_general':
+//             ratings.general = index + 1;
+//             break;
+//           case 'Lieu':
+//             ratings.lieu = index + 1;
+//             break;
+//           case 'organisation':
+//             ratings.organisation = index + 1;
+//             break;
+//           case 'cond_plongee':
+//             ratings.conditions = index + 1;
+//             break;
+//         }
+//       }
+//     });
+//   });
 
-});
-
-
-const nameSelects = document.querySelectorAll('.diver-name');
-const nameOptions = document.querySelectorAll('.diver-name option');
+// });
 
 
-nameSelects.forEach(select => {
-  select.addEventListener('change', () => {
-    const selectedValues = Array.from(nameSelects)
-      .map(s => s.value)
-      .filter(value => value !== '');
+// const nameSelects = document.querySelectorAll('.diver-name');
+// const nameOptions = document.querySelectorAll('.diver-name option');
 
-    nameOptions.forEach(option => {
-      const isOptionSelected = selectedValues.includes(option.value);
 
-      option.disabled = isOptionSelected;
-    });
-  });
-});
+// nameSelects.forEach(select => {
+//   select.addEventListener('change', () => {
+//     const selectedValues = Array.from(nameSelects)
+//       .map(s => s.value)
+//       .filter(value => value !== '');
 
+//     nameOptions.forEach(option => {
+//       const isOptionSelected = selectedValues.includes(option.value);
+
+//       option.disabled = isOptionSelected;
+//     });
+//   });
+// });
+
+
+
+
+//! EVENT CREATION
 
 let create_event_button = document.querySelector("#createEventButton");
 
@@ -455,21 +458,29 @@ create_event_button.addEventListener("click", function () {
   });
   menutoggle.classList.toggle('active');
   menutoggle.classList.toggle('close-modal');
-});
+  let location_dropdown = document.querySelector("#location_list_dropdown_create");
+  location_dropdown.innerHTML = "";
+  locations.forEach(function (location) {
+    let location_item = document.createElement("H4");
+    location_item.classList.add("location_item");
+    location_item.innerText = location.name;
+    location_dropdown.appendChild(location_item);
+  });
+})
 
 // Search of location 
 let search_location = document.querySelector("#eventLocationInput");
 
 search_location.addEventListener("input", function () {
   let search = search_location.value;
-  let locations = document.querySelectorAll(".location_item");
-  locations.forEach(function (location) {
+  let location_ = document.querySelectorAll(".location_item");
+  location_.forEach(function (location) {
     if (location.innerText.toLowerCase().includes(search.toLowerCase())) {
+      document.querySelector("#createEventModal .location_list_dropdown").style.display = "flex";
       location.style.display = "flex";
-      document.querySelector(".location_list_dropdown").style.display = "flex";
       location.addEventListener("click", function () {
         search_location.value = location.innerText;
-        document.querySelector(".location_list_dropdown").style.display = "none";
+        document.querySelector("#createEventModal .location_list_dropdown").style.display = "none";
       });
     } else {
       location.style.display = "none";
@@ -477,7 +488,7 @@ search_location.addEventListener("input", function () {
 
   });
   let display = false;
-  locations.forEach(function (location) {
+  location_.forEach(function (location) {
     if (location.style.display == "flex") {
       display = true;
     }
@@ -486,27 +497,24 @@ search_location.addEventListener("input", function () {
     display = false;
   }
   if (display) {
-    document.querySelector(".location_list_dropdown").style.display = "flex";
+    document.querySelector("#createEventModal  .location_list_dropdown").style.display = "flex";
   } else {
-    document.querySelector(".location_list_dropdown").style.display = "none";
+    document.querySelector("#createEventModal  .location_list_dropdown").style.display = "none";
   }
 });
 
+
 let search_dp = document.querySelector("#eventDPInput");
-
-
-
-
 search_dp.addEventListener("input", function () {
   let search = search_dp.value;
-  let dps = document.querySelectorAll(".DP_item");
+  let dps = document.querySelectorAll("#createEventModal .DP_item");
   dps.forEach(function (dp) {
     if (dp.innerText.toLowerCase().includes(search.toLowerCase())) {
       dp.style.display = "flex";
-      document.querySelector(".DP_list_dropdown").style.display = "flex";
+      document.querySelector("#createEventModal .DP_list_dropdown").style.display = "flex";
       dp.addEventListener("click", function () {
         search_dp.value = dp.innerText;
-        document.querySelector(".DP_list_dropdown").style.display = "none";
+        document.querySelector("#createEventModal .DP_list_dropdown").style.display = "none";
       });
     } else {
       dp.style.display = "none";
@@ -523,9 +531,9 @@ search_dp.addEventListener("input", function () {
     display = false;
   }
   if (display) {
-    document.querySelector(".DP_list_dropdown").style.display = "flex";
+    document.querySelector("#createEventModal .DP_list_dropdown").style.display = "flex";
   } else {
-    document.querySelector(".DP_list_dropdown").style.display = "none";
+    document.querySelector("#createEventModal .DP_list_dropdown").style.display = "none";
   }
 });
 
@@ -534,12 +542,12 @@ let search_diver = document.querySelector("#eventDiverInput");
 search_diver.addEventListener("click", function () {
   detectDivers();
   let dps = document.querySelectorAll(".diver_item");
-  document.querySelector(".diver_list_dropdown").style.display = "none";
+  document.querySelector("#createEventModal .diver_list_dropdown").style.display = "none";
 
   dps.forEach(function (dp) {
     if (dp.querySelector("input").checked) {
       dp.style.display = "flex";
-      document.querySelector(".diver_list_dropdown").style.display = "flex";
+      document.querySelector("#createEventModal .diver_list_dropdown").style.display = "flex";
     } else {
       dp.style.display = "none";
     }
@@ -550,18 +558,18 @@ search_diver.addEventListener("click", function () {
 search_diver.addEventListener("input", function checkInputDiver() {
   detectDivers();
   let search = search_diver.value;
-  let divers = document.querySelectorAll(".diver_item");
+  let divers = document.querySelectorAll("#createEventModal .diver_item");
   divers.forEach(function (diver) {
 
     diver.querySelector("input").addEventListener("click", function () {
-      document.querySelector(".diver_list_dropdown").style.display = "none";
+      document.querySelector("#createEventModal .diver_list_dropdown").style.display = "none";
       search_diver.value = "";
 
       checkInputDiver();
     });
     if (diver.innerText.toLowerCase().includes(search.toLowerCase())) {
       diver.style.display = "flex";
-      document.querySelector(".diver_list_dropdown").style.display = "flex";
+      document.querySelector("#createEventModal .diver_list_dropdown").style.display = "flex";
     } else {
       if (diver.querySelector("input").checked) {
         diver.style.display = "flex";
@@ -582,14 +590,14 @@ search_diver.addEventListener("input", function checkInputDiver() {
     display = false;
   }
   if (display) {
-    document.querySelector(".diver_list_dropdown").style.display = "flex";
+    document.querySelector("#createEventModal .diver_list_dropdown").style.display = "flex";
   } else {
-    document.querySelector(".diver_list_dropdown").style.display = "none";
+    document.querySelector("#createEventModal .diver_list_dropdown").style.display = "none";
   }
 });
 
 function detectDivers() {
-  let divers = document.querySelectorAll(".diver_item");
+  let divers = document.querySelectorAll("#createEventModal .diver_item");
   let number_of_diver = 0;
   divers.forEach(function (diver) {
     if (diver.querySelector("input").checked) {
@@ -600,23 +608,100 @@ function detectDivers() {
 }
 
 
-
-
-
-// Search of user
-// let search_user = document.querySelector("#searchUser");
-
-// search_user.addEventListener("input", function () {
-//   let search = search_user.value;
-//   let users = document.querySelectorAll(".user_list_item");
-//   users.forEach(function (user) {
-//     if (user.innerText.toLowerCase().includes(search.toLowerCase())) {
-//       user.style.display = "flex";
-//     } else {
-//       user.style.display = "none";
-//     }
-//   });
-// });
-
+let validate_event = document.querySelector("#createEventModal .create_event_button");
+validate_event.addEventListener("click", function (e) {
+  // Prevent default action
+  e.preventDefault();
+  let beginDate = document.querySelector("#eventDateInput").value;
+  let beginTime = document.querySelector("#eventStartInput").value;
+  let endTime = document.querySelector("#eventEndInput").value;
+  let begin = new Date(beginDate + " " + beginTime);
+  let end = new Date(beginDate + " " + endTime);
+  let location = document.querySelector("#eventLocationInput").value;
+  let divePrice = document.querySelector("#eventPriceInputDiver").value;
+  let instructorPrice = document.querySelector("#eventPriceInputInstructor").value;
+  let comment = document.querySelector("#eventComment").value;
+  let needs = document.querySelector("#eventNeedInput").value;
+  let max = document.querySelector("#eventDiverNumberInput").value;
+  let type = document.querySelector("#eventTypeInput").value;
+  let dp_ = document.querySelector("#eventDPInput").value;
+  let private_ = document.querySelector("#eventPrivateInput").checked;
+  let diverList = [];
+  let event_to_create = new Event(begin, end, divePrice, instructorPrice, location, comment, needs, private_, max, 0, type);
+  document.querySelectorAll("#createEventModal .diver_item").forEach(function (diver) {
+    if (diver.querySelector("input").checked) {
+      event_to_create.addUser(diver.innerText);
+    }
+  });
+  console.log("Evenement à créer :");
+  console.log(event_to_create);
+});
 
 document.querySelector(".prenom").innerText = me.firstname;
+
+//! EVENT EDITION
+
+function edit_event(info) {
+  // Open modale
+  modals.show("modifyEventModal", function () {
+    menutoggle.classList.remove('active');
+  });
+  menutoggle.classList.toggle('active');
+  menutoggle.classList.toggle('close-modal');
+
+  // Remplir les champs avec les valeurs de info
+  document.querySelector("#eventDateInput_modify").value = info.event.start.toISOString().slice(0, 10);
+  document.querySelector("#eventStartInput_modify").value = info.event.start.toLocaleTimeString().slice(0, 5);
+  document.querySelector("#eventEndInput_modify").value = info.event.end.toLocaleTimeString().slice(0, 5);
+  document.querySelector("#eventLocationInput_modify").value = info.event.extendedProps.location;
+  document.querySelector("#eventPriceInputDiver_modify").value = info.event.extendedProps.divePrice;
+  document.querySelector("#eventPriceInputInstructor_modify").value = info.event.extendedProps.InstructorPrice;
+  document.querySelector("#eventComment_modify").value = info.event.extendedProps.comment;
+  document.querySelector("#eventNeedInput_modify").value = info.event.extendedProps.needs;
+  document.querySelector("#eventDiverNumberInput_modify").value = info.event.extendedProps.max;
+  document.querySelector("#eventTypeInput_modify").value = info.event.extendedProps.diveType;
+  document.querySelector("#eventDPInput_modify").value = info.event.extendedProps.users[0];
+  document.querySelector("#eventPrivateInput_modify").checked = info.event.extendedProps.private;
+  let diverList = [];
+  info.event.extendedProps.users.forEach(function (user) {
+    diverList.push(user);
+  });
+  let diver_item = document.querySelectorAll("#modifyEventModal .diver_item");
+  diver_item.forEach(function (diver) {
+    if (diverList.includes(diver.innerText)) {
+      diver.querySelector("input").checked = true;
+    } else {
+      diver.querySelector("input").checked = false;
+    }
+  });
+
+  // Create new event with new values
+  let validate_event = document.querySelector("#modifyEventModal .create_event_button");
+  validate_event.addEventListener("click", function (e) {
+    // Prevent default action
+    e.preventDefault();
+    let beginDate = document.querySelector("#eventDateInput_modify").value;
+    let beginTime = document.querySelector("#eventStartInput_modify").value;
+    let endTime = document.querySelector("#eventEndInput_modify").value;
+    let begin = new Date(beginDate + " " + beginTime);
+    let end = new Date(beginDate + " " + endTime);
+    let location = document.querySelector("#eventLocationInput_modify").value;
+    let divePrice = document.querySelector("#eventPriceInputDiver_modify").value;
+    let instructorPrice = document.querySelector("#eventPriceInputInstructor_modify").value;
+    let comment = document.querySelector("#eventComment_modify").value;
+    let needs = document.querySelector("#eventNeedInput_modify").value;
+    let max = document.querySelector("#eventDiverNumberInput_modify").value;
+    let type = document.querySelector("#eventTypeInput_modify").value;
+    let dp_ = document.querySelector("#eventDPInput_modify").value;
+    let private_ = document.querySelector("#eventPrivateInput_modify").checked;
+    let diverList = [];
+    let event_to_create = new Event(begin, end, divePrice, instructorPrice, location, comment, needs, private_, max, 0, type);
+    document.querySelectorAll("#modifyEventModal .diver_item").forEach(function (diver) {
+      if (diver.querySelector("input").checked) {
+        event_to_create.addUser(diver.innerText);
+      }
+    });
+    console.log("Evenement à créer :");
+    console.log(event_to_create);
+  });
+}

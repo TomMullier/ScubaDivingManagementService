@@ -33,7 +33,7 @@
     </div>
     <div id="menutoggle"></div>
     <button id="emergencyButton"><i class="fa-solid fa-truck-medical"></i></button>
-    <button id="createEventButton"><i class="fa-solid fa-plus"></i></button>
+    <button id="createEventButton" class="club_only"><i class="fa-solid fa-plus"></i></button>
     <div class="title_container">
         <h1>Plannification des plongées</h1>
     </div>
@@ -86,20 +86,20 @@
                 <div class="left">
                     <div class="date_container">
                         <h3>Date de l'évènement</h3>
-                        <input type="date" id="eventDateInput" name="eventDateInput" value="">
+                        <input type="date" id="eventDateInput_modify" name="eventDateInput" value="">
                     </div>
                     <div class="time_container">
                         <h3>Heure de début</h3>
-                        <input type="time" id="eventStartInput" name="eventStartInput" value="00:00">
+                        <input type="time" id="eventStartInput_modify" name="eventStartInput" value="00:00">
                     </div>
                     <div class="time_container">
                         <h3>Heure de fin</h3>
-                        <input type="time" id="eventEndInput" name="eventEndInput" value="00:00">
+                        <input type="time" id="eventEndInput_modify" name="eventEndInput" value="00:00">
                     </div>
                     <div class="location_container">
                         <h3>Lieu de l'évènement</h3>
                         <div class="search_location">
-                            <input type="text" id="eventLocationInput" name="eventLocationInput"
+                            <input type="text" id="eventLocationInput_modify" name="eventLocationInput"
                                 placeholder="Rechercher" value="">
                             <div class="location_list_dropdown" style="display:none">
                                 <h4 class="location_item">Nevada</h4>
@@ -114,24 +114,24 @@
                     </div>
                     <div class="price_container">
                         <h3>Prix plongeurs</h3>
-                        <input type="number" id="eventPriceInput" name="eventPriceInput" placeholder="Prix" value=""
-                            min="0">
+                        <input type="number" id="eventPriceInputDiver_modify" name="eventPriceInput" placeholder="Prix"
+                            value="" min="0">
                     </div>
                     <div class="price_container">
                         <h3>Prix instructeur</h3>
-                        <input type="number" id="eventPriceInput" name="eventPriceInput" placeholder="Prix" value=""
-                            min="0">
+                        <input type="number" id="eventPriceInputInstructor_modify" name="eventPriceInput" placeholder="Prix"
+                            value="" min="0">
                     </div>
                 </div>
                 <div class="right">
                     <div>
                         <h3>Nombre de plongeurs</h3>
-                        <input type="number" id="eventDiverNumberInput" name="eventDiverNumberInput"
+                        <input type="number" id="eventDiverNumberInput_modify" name="eventDiverNumberInput"
                             placeholder="Nombre de plongeurs" min="0" max="50" value="">
                     </div>
                     <div>
                         <h3>Type de plongée</h3>
-                        <select id="eventTypeInput" name="eventTypeInput">
+                        <select id="eventTypeInput_modify" name="eventTypeInput">
                             <option value="Exploration">Exploration</option>
                             <option value="Technique">Technique</option>
                             <select>
@@ -139,7 +139,8 @@
                     <div>
                         <h3>Directeur de Plongée</h3>
                         <div class="search_location_DP">
-                            <input type="text" id="eventDPInput" name="eventDPInput" placeholder="Rechercher" value="">
+                            <input type="text" id="eventDPInput_modify" name="eventDPInput" placeholder="Rechercher"
+                                value="">
                             <div class="DP_list_dropdown" style="display:none">
                                 <h4 class="DP_item">Tom</h4>
                                 <h4 class="DP_item">Marcel</h4>
@@ -153,13 +154,13 @@
                     </div>
                     <div>
                         <h3>Evenement privé</h3>
-                        <input type="checkbox" id="eventPrivateInput" class="apple-switch" name="eventPrivateInput"
-                            value="">
+                        <input type="checkbox" id="eventPrivateInput_modify" class="apple-switch"
+                            name="eventPrivateInput" value="">
                     </div>
                     <div>
                         <h3>Plongeurs obligatoires</h3>
                         <div class="search_location_diver">
-                            <input type="text" id="eventDiverInput" name="eventDiverInput"
+                            <input type="text" id="eventDiverInput_modify" name="eventDiverInput"
                                 placeholder="Rechercher (0 inscrits)" value="">
                             <div class="diver_list_dropdown" style="display:none">
                                 <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Tom</h4>
@@ -178,11 +179,11 @@
             </div>
             <div class="comment">
                 <h3>Commentaire</h3>
-                <textarea id="eventComment" name="eventComment" value="" placeholder="Commentaire"></textarea>
+                <textarea id="eventComment_modify" name="eventComment" value="" placeholder="Commentaire"></textarea>
             </div>
             <div class="needs">
                 <h3>Besoins spécifiques</h3>
-                <input type="text" id="eventNeedInput" name="eventNeedInput" placeholder="Besoins" value="">
+                <input type="text" id="eventNeedInput_modify" name="eventNeedInput" placeholder="Besoins" value="">
             </div>
             <div class="create_event_button">
                 Modifier l'évènement
@@ -190,171 +191,150 @@
         </modal>
         <modal id="createEventModal">
             <h1 class="createEventTitle">Planifier un évènement</h1>
-            <div class="container_create_event">
-                <div class="left">
-                    <div class="date_container">
-                        <h3>Date de l'évènement</h3>
-                        <input type="date" id="eventDateInput" name="eventDateInput" value="">
-                    </div>
-                    <div class="time_container">
-                        <h3>Heure de début</h3>
-                        <input type="time" id="eventStartInput" name="eventStartInput" value="00:00">
-                    </div>
-                    <div class="time_container">
-                        <h3>Heure de fin</h3>
-                        <input type="time" id="eventEndInput" name="eventEndInput" value="00:00">
-                    </div>
-                    <div class="location_container">
-                        <h3>Lieu de l'évènement</h3>
-                        <div class="search_location">
-                            <input type="text" id="eventLocationInput" name="eventLocationInput"
-                                placeholder="Rechercher" value="">
-                            <div class="location_list_dropdown" style="display:none">
-                                <h4 class="location_item">Nevada</h4>
-                                <h4 class="location_item">New York</h4>
-                                <h4 class="location_item">Los Angeles</h4>
-                                <h4 class="location_item">Chicago</h4>
-                                <h4 class="location_item">Houston</h4>
-                                <h4 class="location_item">Philadelphia</h4>
-                                <h4 class="location_item">Phoenix</h4>
+            <form action="">
+                <div class="container_create_event">
+                    <div class="left">
+                        <div class="date_container">
+                            <h3>Date de l'évènement</h3>
+                            <input required type="date" id="eventDateInput" name="eventDateInput" value="">
+                        </div>
+                        <div class="time_container">
+                            <h3>Heure de début</h3>
+                            <input required type="time" id="eventStartInput" name="eventStartInput" value="00:00">
+                        </div>
+                        <div class="time_container">
+                            <h3>Heure de fin</h3>
+                            <input required type="time" id="eventEndInput" name="eventEndInput" value="00:00">
+                        </div>
+                        <div class="location_container">
+                            <h3>Lieu de l'évènement</h3>
+                            <div class="search_location">
+                                <input required type="text" id="eventLocationInput" name="eventLocationInput"
+                                    placeholder="Rechercher" value="">
+                                <div class="location_list_dropdown" id=location_list_dropdown_create></div>
                             </div>
                         </div>
+                        <div class="price_container">
+                            <h3>Prix plongeurs</h3>
+                            <input required type="number" id="eventPriceInputDiver" name="eventPriceInput"
+                                placeholder="Prix" value="" min="0">
+                        </div>
+                        <div class="price_container">
+                            <h3>Prix instructeur</h3>
+                            <input required type="number" id="eventPriceInputInstructor" name="eventPriceInput"
+                                placeholder="Prix" value="" min="0">
+                        </div>
                     </div>
-                    <div class="price_container">
-                        <h3>Prix plongeurs</h3>
-                        <input type="number" id="eventPriceInput" name="eventPriceInput" placeholder="Prix" value=""
-                            min="0">
-                    </div>
-                    <div class="price_container">
-                        <h3>Prix instructeur</h3>
-                        <input type="number" id="eventPriceInput" name="eventPriceInput" placeholder="Prix" value=""
-                            min="0">
+                    <div class="right">
+                        <div>
+                            <h3>Nombre de plongeurs</h3>
+                            <input required type="number" id="eventDiverNumberInput" name="eventDiverNumberInput"
+                                min="0" max="50" placeholder="Nombre de plongeurs" value="">
+                        </div>
+                        <div>
+                            <h3>Type de plongée</h3>
+                            <select id="eventTypeInput" name="eventTypeInput">
+                                <option value="Exploration">Exploration</option>
+                                <option value="Technique">Technique</option>
+                                <select>
+                        </div>
+                        <div>
+                            <h3>Directeur de Plongée</h3>
+                            <div class="search_location_DP">
+                                <input type="text" id="eventDPInput" name="eventDPInput" placeholder="Rechercher"
+                                    value="">
+                                <div class="DP_list_dropdown" style="display:none">
+                                    <h4 class="DP_item">Tom</h4>
+                                    <h4 class="DP_item">Marcel</h4>
+                                    <h4 class="DP_item">Alan</h4>
+                                    <h4 class="DP_item">Enguerrand</h4>
+                                    <h4 class="DP_item">Maxime</h4>
+                                    <h4 class="DP_item">Maxime D</h4>
+                                    <h4 class="DP_item">Elen</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3>Evenement privé</h3>
+                            <input type="checkbox" id="eventPrivateInput" class="apple-switch"
+                                name="eventPrivateInput" value="">
+                        </div>
+                        <div>
+                            <h3>Plongeurs obligatoires</h3>
+                            <div class="search_location_diver">
+                                <input type="text" id="eventDiverInput" name="eventDiverInput"
+                                    placeholder="Rechercher (0 inscrits)" value="">
+                                <div class="diver_list_dropdown" style="display:none">
+                                    <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Tom</h4>
+                                    <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Marcel</h4>
+                                    <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Alan</h4>
+                                    <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Enguerrand</h4>
+                                    <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Maxime</h4>
+                                    <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Maxime D</h4>
+                                    <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Elen</h4>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
-                <div class="right">
-                    <div>
-                        <h3>Nombre de plongeurs</h3>
-                        <input type="number" id="eventDiverNumberInput" name="eventDiverNumberInput" min="0" max="50"
-                            placeholder="Nombre de plongeurs" value="">
-                    </div>
-                    <div>
-                        <h3>Type de plongée</h3>
-                        <select id="eventTypeInput" name="eventTypeInput">
-                            <option value="Exploration">Exploration</option>
-                            <option value="Technique">Technique</option>
-                            <select>
-                    </div>
-                    <div>
-                        <h3>Directeur de Plongée</h3>
-                        <div class="search_location_DP">
-                            <input type="text" id="eventDPInput" name="eventDPInput" placeholder="Rechercher" value="">
-                            <div class="DP_list_dropdown" style="display:none">
-                                <h4 class="DP_item">Tom</h4>
-                                <h4 class="DP_item">Marcel</h4>
-                                <h4 class="DP_item">Alan</h4>
-                                <h4 class="DP_item">Enguerrand</h4>
-                                <h4 class="DP_item">Maxime</h4>
-                                <h4 class="DP_item">Maxime D</h4>
-                                <h4 class="DP_item">Elen</h4>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <h3>Evenement privé</h3>
-                        <input type="checkbox" id="eventPrivateInput" class="apple-switch" name="eventPrivateInput"
-                            value="">
-                    </div>
-                    <div>
-                        <h3>Plongeurs obligatoires</h3>
-                        <div class="search_location_diver">
-                            <input type="text" id="eventDiverInput" name="eventDiverInput"
-                                placeholder="Rechercher (0 inscrits)" value="">
-                            <div class="diver_list_dropdown" style="display:none">
-                                <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Tom</h4>
-                                <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Marcel</h4>
-                                <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Alan</h4>
-                                <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Enguerrand</h4>
-                                <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Maxime</h4>
-                                <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Maxime D</h4>
-                                <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Elen</h4>
-                            </div>
-                        </div>
-                    </div>
-
+                <div class="comment">
+                    <h3>Commentaire</h3>
+                    <textarea id="eventComment" name="eventComment" value="" placeholder="Commentaire"></textarea>
                 </div>
-
-            </div>
-            <div class="comment">
-                <h3>Commentaire</h3>
-                <textarea id="eventComment" name="eventComment" value="" placeholder="Commentaire"></textarea>
-            </div>
-            <div class="needs">
-                <h3>Besoins spécifiques</h3>
-                <input type="text" id="eventNeedInput" name="eventNeedInput" placeholder="Besoins" value="">
-            </div>
-            <div class="create_event_button">
-                Plannifier l'évènement
-            </div>
+                <div class="needs">
+                    <h3>Besoins spécifiques</h3>
+                    <input type="text" id="eventNeedInput" name="eventNeedInput" placeholder="Besoins" value="">
+                </div>
+                <button type="submit" class="create_event_button">
+                    Plannifier l'évènement
+                </button>
+            </form>
         </modal>
 
         <modal id="rating">
             <div class="note_general">
                 <h3>Note générale</h3>
                 <div class="stars">
-                  <i id="general-star1" class="fa-regular fa-star"></i>
-                  <i id="general-star2" class="fa-regular fa-star"></i>
-                  <i id="general-star3" class="fa-regular fa-star"></i>
-                  <i id="general-star4" class="fa-regular fa-star"></i>
-                  <i id="general-star5" class="fa-regular fa-star"></i>
+                    <i id="general-star1" class="fa-regular fa-star"></i>
+                    <i id="general-star2" class="fa-regular fa-star"></i>
+                    <i id="general-star3" class="fa-regular fa-star"></i>
+                    <i id="general-star4" class="fa-regular fa-star"></i>
+                    <i id="general-star5" class="fa-regular fa-star"></i>
                 </div>
-              </div>
-              <div class="Lieu">
+            </div>
+            <div class="Lieu">
                 <h3>Lieu</h3>
                 <div class="stars">
-                  <i id="lieu-star1" class="fa-regular fa-star"></i>
-                  <i id="lieu-star2" class="fa-regular fa-star"></i>
-                  <i id="lieu-star3" class="fa-regular fa-star"></i>
-                  <i id="lieu-star4" class="fa-regular fa-star"></i>
-                  <i id="lieu-star5" class="fa-regular fa-star"></i>
+                    <i id="lieu-star1" class="fa-regular fa-star"></i>
+                    <i id="lieu-star2" class="fa-regular fa-star"></i>
+                    <i id="lieu-star3" class="fa-regular fa-star"></i>
+                    <i id="lieu-star4" class="fa-regular fa-star"></i>
+                    <i id="lieu-star5" class="fa-regular fa-star"></i>
                 </div>
-              </div>
-              <div class="organisation">
+            </div>
+            <div class="organisation">
                 <h3>Organisation</h3>
                 <div class="stars">
-                  <i id="organisation-star1" class="fa-regular fa-star"></i>
-                  <i id="organisation-star2" class="fa-regular fa-star"></i>
-                  <i id="organisation-star3" class="fa-regular fa-star"></i>
-                  <i id="organisation-star4" class="fa-regular fa-star"></i>
-                  <i id="organisation-star5" class="fa-regular fa-star"></i>
+                    <i id="organisation-star1" class="fa-regular fa-star"></i>
+                    <i id="organisation-star2" class="fa-regular fa-star"></i>
+                    <i id="organisation-star3" class="fa-regular fa-star"></i>
+                    <i id="organisation-star4" class="fa-regular fa-star"></i>
+                    <i id="organisation-star5" class="fa-regular fa-star"></i>
                 </div>
-              </div>
-              <div class="cond_plongee">
+            </div>
+            <div class="cond_plongee">
                 <h3>Conditions de plongée</h3>
                 <div class="stars">
-                  <i id="conditions-star1" class="fa-regular fa-star"></i>
-                  <i id="conditions-star2" class="fa-regular fa-star"></i>
-                  <i id="conditions-star3" class="fa-regular fa-star"></i>
-                  <i id="conditions-star4" class="fa-regular fa-star"></i>
-                  <i id="conditions-star5" class="fa-regular fa-star"></i>
+                    <i id="conditions-star1" class="fa-regular fa-star"></i>
+                    <i id="conditions-star2" class="fa-regular fa-star"></i>
+                    <i id="conditions-star3" class="fa-regular fa-star"></i>
+                    <i id="conditions-star4" class="fa-regular fa-star"></i>
+                    <i id="conditions-star5" class="fa-regular fa-star"></i>
                 </div>
-              </div>
+            </div>
 
         </modal>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         <modal id="dive_rapport">
             <div class="general_plannification_container">
                 <h1 class="title_rapport_plannif">Plannification</h1>
@@ -584,12 +564,12 @@
 
         <modal id="menuModal">
             <div class="menu_content">
-                <a href="">Tableau de Bord</a>
+                <a href="/dashboard">Tableau de Bord</a>
                 <a class=active href="">Plannification</a>
-                <a href="">Statistiques</a>
+                <!-- <a href="">Statistiques</a> -->
                 <a href="">Mon profil</a>
-                <a href="">Liste des Lieux</a>
-                <a href="">Liste des Utilisateurs</a>
+                <a class=club_only href="/location_list">Liste des Lieux</a>
+                <a class=club_only href="/create_user">Liste des Utilisateurs</a>
             </div>
         </modal>
 

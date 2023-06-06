@@ -3,6 +3,8 @@ const bodyParser = require("body-parser");
 const session = require("express-session");
 const Keycloak = require("keycloak-connect");
 const { body, validationResult } = require("express-validator");
+require('dotenv').config();
+
 const app = express();
 const http = require("http").Server(app);
 const path = require("path");
@@ -14,7 +16,7 @@ const Keycloak_module = require("./model/Keycloak/keycloak");
 const memoryStore = new session.MemoryStore();
 const keycloak = new Keycloak({ store: memoryStore });
 
-const hostname = process.env.HOSTNAME;
+const hostname = process.env.IP_HOSTNAME;
 const port = 3000;
 
 app.use(bodyParser.json());

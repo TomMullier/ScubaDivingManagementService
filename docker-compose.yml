@@ -1,0 +1,61 @@
+version: '3'
+
+volumes:
+  mysql_data:
+    driver: local
+  keycloak_data:
+    driver: local
+
+networks:
+  sdms_net:
+
+services:
+  mysql:
+    image: mysql:5.7
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - sdms_net
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DOCKER_MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${DOCKER_MYSQL_USER}
+      MYSQL_PASSWORD: ${DOCKER_MYSQL_PASSWORD}
+      MYSQL_HOST : ${DOCKER_MYSQL_HOST}
+      MYSQL_DATABASE: ${DOCKER_MYSQL_DATABASE}
+    ports:
+      - "3306:3306"
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    volumes:
+      - keycloak_data:/opt/keycloak
+      - ./keycloak_import:/opt/keycloak/data/import
+    networks:
+      - sdms_net
+    environment:
+      DB_VENDOR: MYSQL
+      DB_ADDR: mysql
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: ${DOCKER_DB_PASSWORD}
+      KEYCLOAK_USER: ${DOCKER_KEYCLOAK_USER}
+      KEYCLOAK_PASSWORD: ${DOCKER_KEYCLOAK_PASSWORD}
+      KEYCLOAK_ADMIN: ${DOCKER_KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${DOCKER_KEYCLOAK_ADMIN_PASSWORD}
+    ports:
+      - 8080:8080
+    depends_on:
+      - mysql
+    command: ["start-dev", "--import-realm"]
+  
+  app:
+    build:
+      context: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app:z
+    networks:
+      - sdms_net
+    depends_on:
+      - keycloak

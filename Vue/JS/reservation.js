@@ -14,6 +14,7 @@ import {
 } from "./class/Event.js";
 
 
+
 let calendar;
 let eventClicked;
 let html_memory;
@@ -69,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
         pencil.classList.add("fa-pencil-alt");
         pencil.style.opacity = "0";
         html_memory = info.el.innerHTML;
-        info.el.innerHTML="";
+        info.el.innerHTML = "";
         info.el.appendChild(pencil);
         setTimeout(function () {
           pencil.style.opacity = "1";
@@ -82,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (my_role == "club") {
         document.querySelector(".fa-pencil-alt").style.opacity = "0";
         setTimeout(function () {
-        info.el.innerHTML = html_memory;
+          info.el.innerHTML = html_memory;
         }, 200);
       }
     },
@@ -201,6 +202,9 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelector(".listOfUser ul").appendChild(li);
       });
 
+      // Display ratings
+      displayRatings(eventClicked);
+
 
 
 
@@ -233,8 +237,6 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   calendar.render();
-
-
 
 
   // Filtres
@@ -295,6 +297,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 var eventsFilteredTime = [];
 var eventsFilteredPrice = [];
+
+
 
 
 //! RESERVATION 
@@ -645,50 +649,71 @@ let G_stars = [];
 let L_stars = [];
 let O_stars = [];
 let C_stars = [];
-document.querySelectorAll(".rating").forEach(function (avis) {
-  avis.addEventListener("click", function () {
-    modals.closeCurrent();
-    setTimeout(function () {
-      modals.show("rating", function () {
-        menutoggle.classList.remove('active');
-      });
-      menutoggle.classList.toggle('active');
-      menutoggle.classList.toggle('close-modal');
-      G_stars = [...document.querySelector(".general").getElementsByClassName("rating__star")];
-      L_stars = [...document.querySelector(".location_rating").getElementsByClassName("rating__star")];
-      O_stars = [...document.querySelector(".orga_rating").getElementsByClassName("rating__star")];
-      C_stars = [...document.querySelector(".conditions_rating").getElementsByClassName("rating__star")];
-      general_r = getNote(G_stars);
-      location_r = getNote(L_stars);
-      orga_r = getNote(O_stars);
-      conditions_r = getNote(C_stars);
+let avis = document.querySelector(".rating")
+avis.addEventListener("click", function () {
+  modals.closeCurrent();
+  setTimeout(function () {
+    modals.show("rating", function () {
+      menutoggle.classList.remove('active');
+    });
+    menutoggle.classList.toggle('active');
+    menutoggle.classList.toggle('close-modal');
+    G_stars = [...document.querySelector(".general").getElementsByClassName("rating__star")];
+    L_stars = [...document.querySelector(".location_rating").getElementsByClassName("rating__star")];
+    O_stars = [...document.querySelector(".orga_rating").getElementsByClassName("rating__star")];
+    C_stars = [...document.querySelector(".conditions_rating").getElementsByClassName("rating__star")];
+    general_r = getNote(G_stars);
+    location_r = getNote(L_stars);
+    orga_r = getNote(O_stars);
+    conditions_r = getNote(C_stars);
+    if (document.querySelector(".validate_rating").getAttribute('listener') !== 'true') {
+      document.querySelector(".validate_rating").setAttribute('listener', 'true');
       document.querySelector(".validate_rating").addEventListener("click", function () {
-        console.log("FINAL RATE :")
+        modals.closeCurrent();
+        console.log("FINAL RATE:")
         console.log(finalRate())
+        // Get location of event clicked
+        let location = eventClicked.extendedProps.location;
+        // in location array, find the event clicked location and add the rate
+        locations.forEach(function (location_) {
+          if (location_.name == location) {
+            location_.rate.addRate(finalRate());
+            console.log("Location rate updated :");
+            console.log(location_.rate);
+          }
+        });
+        // reset stars
+        document.querySelectorAll(".rating__star").forEach(function (star) {
+          star.className = starClassInactive;
+        });
         modals.closeCurrent();
       });
-    }, 500);
-  });
+    }
+  }, 500);
 });
+
 
 const starClassActive = "rating__star fas fa-star";
 const starClassInactive = "rating__star far fa-star";
 let ret_ = 0;
 
 function getNote(stars) {
-  let i;
+  let i = 0;
   let starsLength = stars.length;
   stars.map((star) => {
-    star.addEventListener("click", () => {
-      i = stars.indexOf(star);
-      ret_ = i + 1;
-      if (star.className === starClassInactive) {
-        for (i; i >= 0; --i) stars[i].className = starClassActive;
-      } else {
-        for (i; i < starsLength; ++i) stars[i].className = starClassInactive;
-      }
-      return ret_;
-    });
+    if (star.getAttribute('listener') !== 'true') {
+      star.setAttribute('listener', 'true');
+      star.addEventListener("click", () => {
+        i = stars.indexOf(star);
+        ret_ = i + 1;
+        if (star.className === starClassInactive) {
+          for (i; i >= 0; --i) stars[i].className = starClassActive;
+        } else {
+          for (i; i < starsLength; ++i) stars[i].className = starClassInactive;
+        }
+        return ret_;
+      });
+    }
   });
 }
 
@@ -723,15 +748,32 @@ function finalRate() {
     }
   });
   let finaleRateObject = {
-    "general": general,
-    "location": location,
-    "orga": orga,
-    "conditions": conditions
+    "generalRate": general,
+    "locationRate": location,
+    "organisationRate": orga,
+    "conditionsRate": conditions
   }
   return finaleRateObject;
 }
 
-document.querySelector(".validate_rating").addEventListener("click", function () {
 
-  modals.closeCurrent();
-});
+function displayRatings(event) {
+  // Get location of event clicked
+  let location = event.extendedProps.location;
+  // in location array, find the event clicked location and check if one note is at 0
+  locations.forEach(function (location_) {
+    if (location_.name == location) {
+      if (location_.rate.generalRate == 0 || location_.rate.locationRate == 0 || location_.rate.organisationRate == 0 || location_.rate.conditionsRate == 0) {
+        document.querySelector(".displayRating_container").style.display = "none";
+        return;
+      } else {
+        document.querySelector(".displayRating_container").style.display = "flex";
+        document.querySelector(".general_display").innerHTML = location_.rate.getMeanRate()[0] + "/5";
+        document.querySelector(".location_display").innerHTML = location_.rate.getMeanRate()[1] + "/5";
+        document.querySelector(".orga_display").innerHTML = location_.rate.getMeanRate()[2] + "/5";
+        document.querySelector(".conditions_display").innerHTML = location_.rate.getMeanRate()[3] + "/5";
+      }
+    }
+  });
+
+}

@@ -24,4 +24,22 @@ emergencyButton.addEventListener("click", function () {
   menutoggle.classList.toggle('close-modal');
 });
 
+
+//ouvrir la modale de création de topic
+var createButton = document.getElementById("create_button");
+var topicModal = document.getElementById("create_topic");
+
+createButton.addEventListener("click", function () {
+  modals.show("create_topic", function () {
+    menutoggle.classList.remove('active');
+  });
+  menutoggle.classList.toggle('active');
+  menutoggle.classList.toggle('close-modal');
+});
+
   
+
+
+
+
+

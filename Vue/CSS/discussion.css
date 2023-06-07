@@ -244,20 +244,21 @@ body {
   height: auto;
 }
 #menuModal .logout_button a {
-  color: #f2574a;
+  color: #BDC7D7;
   font-size: 20px;
   font-family: 'Montserrat', sans-serif;
   margin-bottom: 20px;
   text-decoration: none;
   text-transform: uppercase;
-  padding: 10px 20px;
+  padding: 10px 0;
   border-radius: 25px;
   transition: 0.2s;
 }
 #menuModal .logout_button a:hover {
-  border: 2px solid #f2574a;
-  background-color: #f2574a;
-  color: white;
+  color: #f2574a;
+}
+#menuModal .logout_button a:hover:before {
+  content: "> ";
 }
 #menuModal .menu_content {
   display: flex;
@@ -505,6 +506,14 @@ body {
 }
 .discussion .reply .toolbar .toolbar-select {
   padding: 4px;
+}
+.discussion .reply .toolbar .toolbar-color {
+  padding: 4px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
 }
 .discussion .reply textarea {
   width: 100%;

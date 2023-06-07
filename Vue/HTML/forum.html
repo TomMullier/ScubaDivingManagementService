@@ -80,11 +80,31 @@
   <div id="modals">
     <modal id="create_topic">
       <form>
-        <label for="topic-title">Titre :</label>
+        <div class="topic-title">
+          <h1>Titre</h1>
         <input type="text" id="topic-title" required>
-
-        <label for="topic-content">Contenu :</label>
-        <textarea id="topic-content" rows="6" required></textarea>
+      </div>
+        <div class="toolbar">
+          <button class="toolbar-button" data-format="bold">
+              <i class="fa-solid fa-bold"></i>
+          </button>
+          <button class="toolbar-button" data-format="italic">
+              <i class="fa-solid fa-italic"></i>
+          </button>
+          <button class="toolbar-button" data-format="underline">
+            <i class="fa-solid fa-underline"></i>
+          </button>
+          <button class="toolbar-color" data-format="color">
+            <i class="fa-sharp fa-solid fa-palette"></i>
+          </button>
+          <select class="toolbar-select" data-format="size">
+              <option value="">Taille</option>
+              <option value="small">Petit</option>
+              <option value="medium">Moyen</option>
+              <option value="large">Grand</option>
+        </select>
+      </div>
+        <textarea id="topic-content" placeholder="Rédigez votre message" rows="6" required></textarea>
 
 
         <button type="submit">Créer</button>

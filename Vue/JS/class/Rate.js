@@ -37,6 +37,9 @@ class Rate {
                 mean.push(mean_ / this.conditionsRate.length);
                 return mean;
         }
+        getNumberOfRate(){
+                return this.generalRate.length;
+        }
 
 }
 

@@ -508,7 +508,7 @@ body {
   max-height: 80vh;
   max-width: 80vw;
 }
-#create_topic .topic-content {
+#create_topic #topic-content {
   width: 100%;
   height: 150px;
   padding: 12px 20px;
@@ -518,6 +518,48 @@ body {
   background-color: #f8f8f8;
   resize: none;
   font-family: 'Montserrat', sans-serif;
+}
+#create_topic #topic-title {
+  width: 100%;
+  height: 50px;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  resize: none;
+  font-family: 'Montserrat', sans-serif;
+}
+#create_topic #create_topic h1 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+#create_topic #create_topic h3 {
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+#create_topic .toolbar {
+  display: flex;
+  margin-bottom: 10px;
+  align-items: left;
+}
+#create_topic .toolbar .toolbar-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-right: 5px;
+}
+#create_topic .toolbar .toolbar-select {
+  padding: 4px;
+}
+#create_topic .toolbar .toolbar-color {
+  padding: 4px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
 }
 @keyframes topSlideIn {
   0% {

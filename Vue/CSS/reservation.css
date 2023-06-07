@@ -776,6 +776,15 @@ body {
   color: #BDC7D7;
   font-family: 'Montserrat', sans-serif;
 }
+#eventModal .modal-wrapper .numberOfRatings p {
+  margin: 0;
+  padding: 0;
+  color: #BDC7D7;
+  font-size: 15px;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  margin-bottom: 20px;
+}
 #eventModal .modal-wrapper .displayRating_container {
   display: flex;
   flex-direction: row;
@@ -784,7 +793,6 @@ body {
   width: 100%;
   height: auto;
   margin-top: 20px;
-  margin-bottom: 20px;
 }
 #eventModal .modal-wrapper .displayRating_container div {
   display: flex;

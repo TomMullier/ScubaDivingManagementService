@@ -765,13 +765,17 @@ function displayRatings(event) {
     if (location_.name == location) {
       if (location_.rate.generalRate == 0 || location_.rate.locationRate == 0 || location_.rate.organisationRate == 0 || location_.rate.conditionsRate == 0) {
         document.querySelector(".displayRating_container").style.display = "none";
+        document.querySelector(".numberOfRatings").style.display = "none";
+        
         return;
       } else {
         document.querySelector(".displayRating_container").style.display = "flex";
+        document.querySelector(".numberOfRatings").style.display = "flex";
         document.querySelector(".general_display").innerHTML = location_.rate.getMeanRate()[0] + "/5";
         document.querySelector(".location_display").innerHTML = location_.rate.getMeanRate()[1] + "/5";
         document.querySelector(".orga_display").innerHTML = location_.rate.getMeanRate()[2] + "/5";
         document.querySelector(".conditions_display").innerHTML = location_.rate.getMeanRate()[3] + "/5";
+        document.querySelector(".numberOfRatings_display").innerHTML = location_.rate.getNumberOfRate() + " avis";
       }
     }
   });

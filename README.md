@@ -8,5 +8,5 @@ $ docker compose down
 ```
 
 - changer IP SDMS-realm.json
-- remplir .env
-- récupérer keycloak.json
+- remplir .env (ip)
+- récupérer keycloak.json (modif ip accès)

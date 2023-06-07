@@ -616,5 +616,5 @@ app.delete("/auth/club/locations", keycloak.protect(), function (req, res) {
 
 http.listen(port, hostname, (err) => {
     if (err) console.error(err);
-    else console.log(`Server running at http://${hostname}:${port}`);
+    else console.log(`Server running at http://${process.env.IP_PERSO}:${port}`);
 });

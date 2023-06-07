@@ -1,15 +1,218 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
+
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../../CSS/global.css">
+  <link rel="stylesheet" href="../../CSS/my_profile.css">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css">
+  <link rel="stylesheet" href="../../CSS/modal.css" />
+  <!-- <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.7/index.global.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/typescript/4.0.5/typescript.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.js"></script>
+  <script type=module src="../JS/@fullcalendar/core/locales/fr.js"></script>
+  <script type=module src='https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@6.1.7/index.global.min.js'> </script>-->
+  <script src="https://kit.fontawesome.com/b89837f3ad.js" crossorigin="anonymous"></script>
+
+
+
+
+
+  <title>Mon Profil</title>
 </head>
+
 <body>
-    <h1>Account infos</h1>
-    <h2 id="modify">Modif info</h2>
-    
-    <script type="module" src="../../js/user/account.js"></script>
+  <div class="menu_button_container">
+    <div class="toggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+  <div id="menutoggle"></div>
+  <button id="emergencyButton"><i class="fa-solid fa-truck-medical"></i></button>
+
+
+  <div class="title_container">
+    <h1>Mon profil</h1>
+  </div>
+
+  <div class="container_global">
+    <div class="profile_container_card">
+      <div class="profile-image">
+        <img id="profile_picture" src="" alt="Profile Image">
+      </div>
+      <div class="profile-info">
+        <h1 class="name">NOM</h1>
+        <div class="birth">
+          <i class="fa-solid fa-birthday-cake"></i>
+          <p>Né le <span class='birthdate'></span></p>
+        </div>
+        <div class="licence">
+          <i class="fa-solid fa-id-card"></i>
+          <p>Licence n°<span class="licence_number"></span></p>
+        </div>
+
+        <div class="profile-details">
+          <div class="email-contain">
+            <div>
+              <i class="fa-solid fa-envelope"></i>
+              <p>Adresse Mail : </p>
+            </div>
+            <input type="email" class=email value="" title="Cliquer pour modifier">
+          </div>
+
+          <div class="phone-contain">
+            <div>
+              <i class="fa-solid fa-phone"></i>
+              <p>Numéro de téléphone :</p>
+            </div>
+            <input type="tel" value="" class="phone" title="Cliquer pour modifier">
+          </div>
+        </div>
+      </div>
+      <div class="save_button_infos" style="display:none">
+        Sauvegarder
+      </div>
+    </div>
+
+    <div class="info-container">
+      <div class="info-section">
+        <div class="name_container">
+          <h1>Identité</h1>
+          <div>
+            <div class="info-item">
+              <h2 class="info-title">Nom</h2>
+              <input type="text" id="nom" value="" class="info-input name_identity" readonly>
+            </div>
+
+            <div class="info-item">
+              <h2 class="info-title">Prénom</h2>
+              <input type="text" id="prenom" value="" class="info-input firstname_identity" readonly>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:none" class="modify_password">
+          <h1>Mot de passe</h1>
+          <div class="modify_password_container">
+            <div class="info-item">
+              <h2 class="info-title">Ancien mot de passe</h2>
+              <input type="password" id="password" placeholder="Mot de passe" class="info-input">
+            </div>
+
+            <div class="new_pass">
+              <div class="info-item">
+                <h2 class="info-title">Nouveau mot de passe</h2>
+                <input type="password" id="password" placeholder="Nouveau mot de passe" class="info-input">
+              </div>
+              <div class="info-item">
+                <h2 class="info-title">Confirmation</h2>
+                <input type="password" id="password" placeholder="Confirmation" class="info-input">
+              </div>
+            </div>
+
+          </div>
+          <div class="save_button_infos">
+            Sauvegarder
+          </div>
+        </div>
+        <div class="qualif_doc_container">
+
+          <div class="qualif_niveau">
+            <h1>Qualifications</h1>
+            <div>
+              <div class="info-item">
+                <h2 class="info-title">Qualification Plongeur</h2>
+                <input type="text" id="qualif" readonly placeholder="Qualification Plongeur">
+              </div>
+
+              <div class="info-item">
+                <h2 class="info-title">Qualification d'Instructeur</h2>
+                <input type="text" id="qualif_instruc" placeholder="Qualification d'Instructeur" class="info-input"
+                  readonly>
+              </div>
+              <div class="info-item">
+                <h2 class="info-title">Niveau de plongée NOX</h2>
+                <input type="text" id="niveau" placeholder="Niveau de plongée NOX" class="info-input" readonly>
+              </div>
+              <div class="info-item">
+                <h2 class="info-title">Qualification Additionnelle</h2>
+                <input type="text" id="qualif_add" placeholder="Qualification Additionnelle" class="info-input"
+                  readonly>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="documents_container">
+            <h1>Documents</h1>
+            <form>
+              <div class="info-item">
+                <h2 class="info-title">Photo de profil</h2>
+                <input type="file" id="profile_picture_upload" class="info-input">
+              </div>
+              <div class="info-item">
+                <h2 class="info-title">Certificat Médical</h2>
+                <input type="file" id="certif" class="info-input">
+              </div>
+              <button class="save_button_infos">
+                Sauvegarder
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+
+    <div id="modals" style="display:flex;">
+      <modal id="validation_save">
+        <div class="top">
+          <h1 id="txt_title" class="save_title">Sauvegarde</h1>
+          <h3>Les modifications ont bien été sauvegardées</h3>
+        </div>
+      </modal>
+
+
+      <modal id="menuModal">
+
+        <div class="menu_content">
+          <a href="/auth/dashboard">Tableau de Bord</a>
+          <a href="/auth/planning">Plannification</a>
+          <!-- <a href="">Statistiques</a> -->
+          <a class=user_only class=active href="/auth/user/account">Mon profil</a>
+          <a class="club_only" href="/auth/club/locations">Liste des Lieux</a>
+          <a class=club_only href="/auth/club/club_members">Liste des Utilisateurs</a>
+        </div>
+        <div class="logout_button">
+          <a href="/logout">Déconnexion</a>
+        </div>
+      </modal>
+      <modal id="emergencyModal">
+
+        <div class="top">
+          <h1 id="txt_title" class="title">APPEL SOS</h1>
+          <h3>Appuyez une nouvelle fois pour demander du secours</h3>
+          <h3>Tap once again to call for emergency help</h3>
+        </div>
+        <div id="txt_descr" class="fields-container">
+          <h3>
+            <a id="callButton"><i class="fa-solid fa-truck-medical"></i></a>
+          </h3>
+        </div>
+      </modal>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="../../JS/modal.js"></script>
+    <script type=module src="../../JS/user/profile.js"></script>
 </body>
+
 </html>

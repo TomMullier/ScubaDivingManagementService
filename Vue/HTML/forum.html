@@ -82,16 +82,16 @@
       <form>
         <div class="topic-title">
           <h1>Titre</h1>
-        <input type="text" id="topic-title" required>
+        <input type="text" id="topic-title">
       </div>
         <div class="toolbar">
-          <button class="toolbar-button" data-format="bold">
+          <button class="toolbar-button" id="bold" data-format="bold">
               <i class="fa-solid fa-bold"></i>
           </button>
-          <button class="toolbar-button" data-format="italic">
+          <button class="toolbar-button" id="italic" data-format="italic">
               <i class="fa-solid fa-italic"></i>
           </button>
-          <button class="toolbar-button" data-format="underline">
+          <button class="toolbar-button" id="underline" data-format="underline">
             <i class="fa-solid fa-underline"></i>
           </button>
           <button class="toolbar-color" data-format="color">
@@ -104,10 +104,13 @@
               <option value="large">Grand</option>
         </select>
       </div>
-        <textarea id="topic-content" placeholder="Rédigez votre message" rows="6" required></textarea>
+        <textarea id="topic-content" placeholder="Rédigez votre message" rows="6"></textarea>
 
 
-        <button type="submit">Créer</button>
+        <div class="create_post_button" id="create_post_button">
+          <i class="fa-solid fa-plus"></i>
+          <p>Créer un poste</p>
+        </div>
       </form>
 
     </modal>

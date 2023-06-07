@@ -38,7 +38,27 @@ createButton.addEventListener("click", function () {
 });
 
   
+function applyTextStyle(e) {
+  const textarea = document.getElementById('topic-content');
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const selectedText = textarea.value.substring(start, end);
 
+  if (e.target.id === "bold") {
+    document.execCommand('bold', false, null);
+  }
+  if (e.target.id === "italic") {
+    document.execCommand('italic', false, null);
+  }
+  if (e.target.id === "underline") {
+    document.execCommand('underline', false, null);
+  }
+}
+
+const toolbarButtons = document.querySelectorAll('.toolbar-button');
+toolbarButtons.forEach(function (button) {
+  button.addEventListener('click', applyTextStyle);
+});
 
 
 

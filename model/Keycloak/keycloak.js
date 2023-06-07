@@ -1,7 +1,7 @@
 require('dotenv').config()
 const axios = require('axios');
 const qs = require('qs');
-axios.defaults.baseURL = 'http://127.0.0.1:8080'
+axios.defaults.baseURL = `http://${process.env.IP_PERSO}:8080`
 
 let dataClient = {
     grant_type: 'password',

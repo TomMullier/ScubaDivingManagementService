@@ -11,4 +11,4 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["nodemon", "."]
+CMD ["nodemon", "--legacy-watch", "."]

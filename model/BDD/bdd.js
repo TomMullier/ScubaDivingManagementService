@@ -1,4 +1,4 @@
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const { v4: uuidv4 } = require('uuid');
 
 if (process.env.NODE_ENV !== 'production') {
@@ -32,7 +32,7 @@ class BDD {
             userData.Id_Diver = uuidv4();
             delete userData.password;
         }
-        let query = 'INSERT INTO diver SET ?';
+        let query = 'INSERT INTO Diver SET ?';
         this.con.query(query, [userData], (err, result) => {
             if (err) {
                 console.log(err);
@@ -46,7 +46,7 @@ class BDD {
     }
 
     getUsersList(callback) {
-        const query = 'SELECT Lastname, Firstname, Mail, Phone FROM diver';
+        const query = 'SELECT Lastname, Firstname, Mail, Phone FROM Diver';
         this.con.query(query, (err, result) => {
             if (err) {
                 console.log(err);
@@ -60,7 +60,7 @@ class BDD {
         const data = {
             Mail: mail
         };
-        const query = 'SELECT * FROM diver WHERE ?';
+        const query = 'SELECT * FROM Diver WHERE ?';
         this.con.query(query, [data], (err, result) => {
             if (err || !result[0]) {
                 if (err) console.log(err);
@@ -77,7 +77,7 @@ class BDD {
         const data = {
             Id_Diver: id
         };
-        const query = 'SELECT * FROM diver WHERE ?';
+        const query = 'SELECT * FROM Diver WHERE ?';
         this.con.query(query, [data], (err, result) => {
             if (err || !result[0]) {
                 if (err) console.log(err);
@@ -91,7 +91,7 @@ class BDD {
     }
 
     modifUser(data, callback) {
-        const query = 'UPDATE diver SET ? WHERE Id_Diver = ?'
+        const query = 'UPDATE Diver SET ? WHERE Id_Diver = ?'
         this.con.query(query, [data, data.Id_Diver], (err, result) => {
             if (err) {
                 console.log(err);
@@ -107,7 +107,7 @@ class BDD {
         const data = {
             Mail: userMail
         };
-        const query = 'DELETE FROM diver WHERE ?';
+        const query = 'DELETE FROM Diver WHERE ?';
         this.con.query(query, [data], (err, result) => {
             if (err) {
                 console.log(err);
@@ -124,9 +124,8 @@ class BDD {
     /* -------------------------------------------------------------------------- */
 
     createDiveSite(data, callback) {
-        console.log(data);
         data.Id_Dive_Site = uuidv4();
-        let query = 'INSERT INTO dive_site SET ?';
+        let query = 'INSERT INTO Dive_Site SET ?';
         this.con.query(query, [data], (err, result) => {
             if (err) {
                 console.log(err);
@@ -139,7 +138,7 @@ class BDD {
     }
 
     getDiveSiteList(callback) {
-        const query = 'SELECT * FROM dive_site';
+        const query = 'SELECT * FROM Dive_Site';
         this.con.query(query, (err, result) => {
             if (err) {
                 console.log(err);
@@ -150,7 +149,7 @@ class BDD {
     }
 
     getDiveSiteInfoByName(data, callback) {
-        const query = 'SELECT * FROM dive_site WHERE ?';
+        const query = 'SELECT * FROM Dive_Site WHERE ?';
         this.con.query(query, [data], (err, result) => {
             if (err || !result[0]) {
                 if (err) console.log(err);
@@ -164,7 +163,7 @@ class BDD {
     }
 
     getDiveSiteInfoById(data, callback) {
-        const query = 'SELECT * FROM dive_site WHERE ?';
+        const query = 'SELECT * FROM Dive_Site WHERE ?';
         this.con.query(query, [data], (err, result) => {
             if (err || !result[0]) {
                 if (err) console.log(err);
@@ -178,7 +177,7 @@ class BDD {
     }
 
     modifDiveSite(data, callback) {
-        const query = 'UPDATE dive_site SET ? WHERE Id_Dive_Site = ?'
+        const query = 'UPDATE Dive_Site SET ? WHERE Id_Dive_Site = ?'
         this.con.query(query, [data, data.Id_Dive_Site], (err, result) => {
             if (err) {
                 console.log(err);
@@ -191,7 +190,7 @@ class BDD {
     }
 
     deleteDiveSite(data, callback) {
-        const query = 'DELETE FROM dive_site WHERE ?';
+        const query = 'DELETE FROM Dive_Site WHERE ?';
         this.con.query(query, [data], (err, result) => {
             if (err) {
                 console.log(err);
@@ -209,7 +208,7 @@ class BDD {
     /* -------------------------------------------------------------------------- */
 
     createEmergencyPlan(data, callback) {
-        let query = 'INSERT INTO emergency_plan SET ?';
+        let query = 'INSERT INTO Emergency_Plan SET ?';
         this.con.query(query, [data], (err, result) => {
             if (err) {
                 console.log(err);
@@ -222,7 +221,7 @@ class BDD {
     }
 
     getEmergencyPlan(data, callback) {
-        const query = 'SELECT * FROM emergency_plan WHERE ?';
+        const query = 'SELECT * FROM Emergency_Plan WHERE ?';
         this.con.query(query, [data], (err, result) => {
             if (err || !result[0]) {
                 if (err) console.log(err);
@@ -237,7 +236,7 @@ class BDD {
     }
 
     modifEmergencyPlan(data, callback) {
-        const query = 'UPDATE emergency_plan SET ? WHERE Id_Emergency_Plan = ?'
+        const query = 'UPDATE Emergency_Plan SET ? WHERE Id_Emergency_Plan = ?'
         this.con.query(query, [data, data.Id_Emergency_Plan], (err, result) => {
             if (err) {
                 console.log(err);
@@ -250,7 +249,7 @@ class BDD {
     }
 
     deleteEmergencyPlan(data, callback) {
-        const query = 'DELETE FROM emergency_plan WHERE ?';
+        const query = 'DELETE FROM Emergency_Plan WHERE ?';
         this.con.query(query, [data], (err, result) => {
             if (err) {
                 console.log(err);
@@ -270,7 +269,7 @@ class BDD {
     createEvent(data, callback) {
         data.Id_Planned_Dive = uuidv4();
         console.log(data);
-        let query = 'INSERT INTO planned_dive SET ?';
+        let query = 'INSERT INTO Planned_Dive SET ?';
         this.con.query(query, [data], (err, result) => {
             if (err) {
                 console.log(err);
@@ -283,7 +282,7 @@ class BDD {
     }
 
     getPlanning(callback) {
-        const query = 'SELECT * FROM planned_dive';
+        const query = 'SELECT * FROM Planned_Dive';
         this.con.query(query, (err, result) => {
             if (err) {
                 console.log(err);
@@ -297,7 +296,7 @@ class BDD {
     }
 
     getEvent(data, callback) {
-        const query = 'SELECT * FROM planned_dive WHERE Start_Date = ? AND End_Date = ? AND Diver_Price = ? AND Instructor_Price = ? AND Comments = ? AND Special_Needs = ? AND Status = ? AND Max_Divers = ? AND Dive_Type = ? AND Dive_Site_Id_Dive_Site = ?';
+        const query = 'SELECT * FROM Planned_Dive WHERE Start_Date = ? AND End_Date = ? AND Diver_Price = ? AND Instructor_Price = ? AND Comments = ? AND Special_Needs = ? AND Status = ? AND Max_Divers = ? AND Dive_Type = ? AND Dive_Site_Id_Dive_Site = ?';
         this.con.query(query, [data.Start_Date, data.End_Date, data.Diver_Price, data.Instructor_Price, data.Comments, data.Special_Needs, data.Status, data.Max_Divers, data.Dive_Type, data.Dive_Site_Id_Dive_Site], (err, result) => {
             if (err || !result[0]) {
                 if (err) console.log(err);
@@ -310,7 +309,7 @@ class BDD {
     }
 
     modifEvent(data, callback) {
-        const query = 'UPDATE planned_dive SET ? WHERE Id_Planned_Dive = ?'
+        const query = 'UPDATE Planned_Dive SET ? WHERE Id_Planned_Dive = ?'
         this.con.query(query, [data, data.Id_Planned_Dive], (err, result) => {
             if (err) {
                 console.log(err);
@@ -323,7 +322,7 @@ class BDD {
     }
 
     deleteEvent(data, callback) {
-        const query = 'DELETE FROM planned_dive WHERE Id_Planned_Dive = ?'
+        const query = 'DELETE FROM Planned_Dive WHERE Id_Planned_Dive = ?'
         this.con.query(query, [data.Id_Planned_Dive], (err, result) => {
             if (err) {
                 console.log(err);
@@ -340,7 +339,7 @@ class BDD {
     /* -------------------------------------------------------------------------- */
 
     getRegistration(data, callback) {
-        const query = 'SELECT * FROM dive_registration WHERE Diver_Id_Diver = ? AND Planned_Dive_Id_Planned_Dive = ?';
+        const query = 'SELECT * FROM Dive_Registration WHERE Diver_Id_Diver = ? AND Planned_Dive_Id_Planned_Dive = ?';
         this.con.query(query, [data.Diver_Id_Diver, data.Planned_Dive_Id_Planned_Dive], (err, result) => {
             if (err || !result[0]) {
                 if (err) console.log(err);
@@ -353,7 +352,7 @@ class BDD {
     }
 
     getDiversRegistered(callback) {
-        const query = 'SELECT diver.*, dive_registration.Planned_Dive_Id_Planned_Dive FROM dive_registration INNER JOIN diver ON diver.Id_Diver = dive_registration.Diver_Id_Diver';
+        const query = 'SELECT Diver.*, Dive_Registration.Planned_Dive_Id_Planned_Dive FROM Dive_Registration INNER JOIN Diver ON Diver.Id_Diver = Dive_Registration.Diver_Id_Diver';
         this.con.query(query, (err, result) => {
             if (err || !result[0]) {
                 if (err) console.log(err);
@@ -365,7 +364,7 @@ class BDD {
     }
 
     getRegistrationList(data, callback) {
-        const query = 'SELECT planned_dive.* FROM dive_registration INNER JOIN planned_dive ON planned_dive.Id_Planned_Dive = dive_registration.Planned_Dive_Id_Planned_Dive WHERE dive_registration.Diver_Id_Diver = ?';
+        const query = 'SELECT Planned_Dive.* FROM Dive_Registration INNER JOIN Planned_Dive ON Planned_Dive.Id_Planned_Dive = Dive_Registration.Planned_Dive_Id_Planned_Dive WHERE Dive_Registration.Diver_Id_Diver = ?';
         this.con.query(query, [data], (err, result) => {
             if (err || !result[0]) {
                 if (err) console.log(err);
@@ -380,7 +379,7 @@ class BDD {
     }
 
     createRegistration(data, callback) {
-        let query = 'INSERT INTO dive_registration SET ?';
+        let query = 'INSERT INTO Dive_Registration SET ?';
         this.con.query(query, [data], (err, result) => {
             if (err) {
                 console.log(err);
@@ -393,7 +392,7 @@ class BDD {
     }
 
     deleteRegistration(data, callback) {
-        let query = 'DELETE FROM dive_registration WHERE Diver_Id_Diver = ? AND Planned_Dive_Id_Planned_Dive = ?';
+        let query = 'DELETE FROM Dive_Registration WHERE Diver_Id_Diver = ? AND Planned_Dive_Id_Planned_Dive = ?';
         this.con.query(query, [data.Diver_Id_Diver, data.Planned_Dive_Id_Planned_Dive], (err, result) => {
             if (err) {
                 console.log(err);

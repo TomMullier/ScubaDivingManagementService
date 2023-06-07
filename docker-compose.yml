@@ -11,9 +11,11 @@ networks:
 
 services:
   mysql:
-    image: mysql:5.7
+    build:
+      context: ./model/BDD
     volumes:
       - mysql_data:/var/lib/mysql
+      # - ./model/BDD:/docker-entrypoint-initdb.d
     networks:
       - sdms_net
     environment:
@@ -43,7 +45,7 @@ services:
       KEYCLOAK_ADMIN: ${DOCKER_KEYCLOAK_ADMIN}
       KEYCLOAK_ADMIN_PASSWORD: ${DOCKER_KEYCLOAK_ADMIN_PASSWORD}
     ports:
-      - 8080:8080
+      - "8080:8080"
     depends_on:
       - mysql
     command: ["start-dev", "--import-realm"]

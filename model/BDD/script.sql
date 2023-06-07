@@ -1,3 +1,6 @@
+CREATE DATABASE  IF NOT EXISTS `sdms_bdd` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `sdms_bdd`;
+
 CREATE TABLE Dive_Site(
    Id_Dive_Site CHAR(36)  NOT NULL,
    Site_Name VARCHAR(50)  NOT NULL,

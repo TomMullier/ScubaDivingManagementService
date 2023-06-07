@@ -1,9 +1,9 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require("body-parser");
 const session = require("express-session");
 const Keycloak = require("keycloak-connect");
 const { body, validationResult } = require("express-validator");
-require('dotenv').config();
 
 const app = express();
 const http = require("http").Server(app);
@@ -362,6 +362,7 @@ app.post('/auth/club/club_members', keycloak.protect(),
     body("Birthdate").trim().escape(),
     body("password").trim().escape(),
     async function (req, res) {
+        const pass = req.body.password;
         if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(422).json({ errors: errors.array() });
@@ -373,7 +374,7 @@ app.post('/auth/club/club_members', keycloak.protect(),
                     return res.json({ created: true });
                 } else {
                     //delete user in keycloak   
-                    await Keycloak_module.deleteUser(req.body.Mail);
+                    await Keycloak_module.deleteUser(req.body.Mail, getUserName(req), pass);
                     return res.json({ created: false });
                 }
             })

@@ -9,4 +9,4 @@ RUN npm i -g nodemon
 
 COPY . .
 
-CMD ["nodemon", "."]
+CMD ["nodemon", "--legacy-watch", "."]

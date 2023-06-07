@@ -208,7 +208,8 @@ body {
 
 #menuModal {
     &[aria-hidden="true"] .modal-wrapper {
-        animation: SlideRight 0.4s both;
+        animation: SlideRight 0.4s bot
+        h;
     }
 
     &[aria-hidden="true"] {
@@ -228,7 +229,31 @@ body {
         animation: SlideLeft 0.4s both;
 
     }
-
+    .logout_button{
+        bottom: 0px;
+        margin: 0 auto;
+        margin-bottom: 60px;
+        width:100%;
+        height: auto;
+        a{
+            color: @grey;
+            font-size: 20px;
+            font-family: @body_font;
+            margin-bottom: 20px;
+            text-decoration: none;
+            text-transform: uppercase;
+            padding: 10px 0;
+            border-radius: 25px;
+            transition: 0.2s;
+            &:hover{
+                color:@orange
+            }
+            
+            &:hover:before{
+                content: "> ";
+            }
+        }
+    }
     .menu_content {
         display: flex;
         flex-direction: column;

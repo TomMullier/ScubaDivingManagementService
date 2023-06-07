@@ -16,6 +16,7 @@ import {
 
 let calendar;
 let eventClicked;
+let html_memory;
 document.addEventListener('DOMContentLoaded', function () {
   let slider2 = document.getElementById("priceSlider");
   var slider = document.getElementById("timeSlider");
@@ -57,6 +58,34 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     ],
     events: [],
+    eventMouseEnter: function (info) {
+      // Element HTML -> info.el
+      // Evénement -> info.event
+
+      // If role is club, on hover place a little pencil on the event
+      if (my_role == "club") {
+        let pencil = document.createElement("I");
+        pencil.classList.add("fas");
+        pencil.classList.add("fa-pencil-alt");
+        pencil.style.opacity = "0";
+        html_memory = info.el.innerHTML;
+        info.el.innerHTML="";
+        info.el.appendChild(pencil);
+        setTimeout(function () {
+          pencil.style.opacity = "1";
+        }, 0);
+      }
+    },
+    eventMouseLeave: function (info) {
+      // Element HTML -> info.el
+      // Evénement -> info.event
+      if (my_role == "club") {
+        document.querySelector(".fa-pencil-alt").style.opacity = "0";
+        setTimeout(function () {
+        info.el.innerHTML = html_memory;
+        }, 200);
+      }
+    },
     eventClick: function (info) {
       // Element HTML -> info.el
       // Evénement -> info.event
@@ -179,10 +208,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
       if (new Date(eventClicked.end) < new Date()) {
         button.style.display = "none";
-        document.querySelector(".rating").style.display = "flex";
+        if (my_role == "user") {
+          document.querySelector(".rating").style.display = "flex";
+        }
       } else {
         button.style.display = "flex";
         document.querySelector(".rating").style.display = "none";
+      }
+      if (new Date(eventClicked.start) <= new Date() && my_role == "dp") {
+        document.querySelector(".edit_rapport").style.display = "flex";
+      } else {
+        document.querySelector(".edit_rapport").style.display = "none";
       }
     },
 

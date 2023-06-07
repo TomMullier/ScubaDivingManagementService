@@ -58,21 +58,7 @@
         </div>
 
         <div class="list_container">
-                <div class="list_item">
-                        <h1 class="list_title">JUNIA ISEN Lille</h1>
-                        <h2 class="adress">41 Boulevard Vauban, 59000 Lille</h2>
-                        <div class="coordinate">
-
-                                <h2 class="latitude"><i class="fa-solid fa-map-marker"></i> Latitude : 50.636565</h2>
-                                <h2 class="longitude"><i class="fa-solid fa-map-marker"></i> Longitude : 3.069910</h2>
-                        </div>
-                        <a href="" class="phone"><i class="fa-solid fa-phone"></i>03 20 30 40 50</a>
-                        <a href="" class="web"><i class="fa-solid fa-at"></i> Site Web</a>
-                        <div class="button_container">
-                                <button class="edit_button"><i class="fa-solid fa-pencil"></i></button>
-                                <button class="delete_button"><i class="fa-solid fa-trash"></i></button>
-                        </div>
-                </div>
+                
 
         </div>
 
@@ -85,8 +71,8 @@
                                 <h3 id="txt_descr">Voulez-vous vraiment supprimer ce lieu ?</h3>
                         </div>
                         <div class="bottom">
-                                <div id="validateButton">Valider</div>
-                                <div id="cancelButton">Annuler</div>
+                                <div id="validateButton" class="close-modal">Valider</div>
+                                <div id="cancelButton" class="close-modal">Annuler</div>
                         </div>
                 </modal>
                 <modal id="create_location">
@@ -124,16 +110,19 @@
                                 
                                 <div class="adress_container">
                                         <label for="adress_container">Adresse</label>
+                                        
                                         <h3>
-                                                <label for="country">Pays</label>
-                                                <select id="country" name="country">
-                                                        <option value="" selected="selected">Sélectionnez un pays
-                                                        </option>
-                                                </select>
+                                                <label for="streetNumber">Numéro de rue</label>
+                                                <input type="text" id="streetNumber" name="streetNumber" placeholder="Numéro">
                                         </h3>
                                         <h3>
                                                 <label for="street">Rue</label>
                                                 <input type="text" id="street" name="street" placeholder="Rue">
+                                        </h3>
+                                        <h3>
+                                                <label for="adress_complement">Complément d'adresse</label>
+                                                <input type="text" id="adress_complement" name="adress_complement"
+                                                        placeholder="Complément d'adresse">
                                         </h3>
                                         <h3>
                                                 <label for="postalCode">Code postal</label>
@@ -145,9 +134,11 @@
                                                 <input type="text" id="city" name="city" placeholder="Ville">
                                         </h3>
                                         <h3>
-                                                <label for="adress_complement">Complément d'adresse</label>
-                                                <input type="text" id="adress_complement" name="adress_complement"
-                                                        placeholder="Complément d'adresse">
+                                                <label for="country">Pays</label>
+                                                <select id="country" name="country">
+                                                        <option value="" selected="selected">Sélectionnez un pays
+                                                        </option>
+                                                </select>
                                         </h3>
                                 </div>
 
@@ -173,19 +164,19 @@
                         </div>
 
                         <div class="button_container">
-                                <button class="create_button">Créer</button>
-                                <button class="cancel_button">Annuler</button>
+                                <button id="validate_creation" class="create_button close-modal">Créer</button>
+                                <button class="cancel_button close-modal">Annuler</button>
                         </div>
                 </modal>
 
                 <modal id="menuModal">
                         <div class="menu_content">
-                                <a href="">Tableau de Bord</a>
-                                <a href="">Plannification</a>
-                                <a href="">Statistiques</a>
-                                <a href="">Mon profil</a>
-                                <a class=active href="">Liste des Lieux</a>
-                                <a href="">Liste des Utilisateurs</a>
+                                <a href="/dashboard">Tableau de Bord</a>
+                                <a href="/reservation">Plannification</a>
+                                <!-- <a href="">Statistiques</a> -->
+                                <a href="/profile">Mon profil</a>
+                                <a class=active href="/location">Liste des Lieux</a>
+                                <a href="/create_account">Liste des Utilisateurs</a>
                         </div>
                 </modal>
                 <modal id="emergencyModal">

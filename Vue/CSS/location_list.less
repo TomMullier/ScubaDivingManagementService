@@ -568,160 +568,160 @@
                         }
                 }
         }
+}
 
-        #confirm_delete {
-                .modal-wrapper {
+#confirm_delete {
+        .modal-wrapper {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-direction: column;
+                width: auto;
+                height: auto;
+                background-color: white;
+                border-radius: 10px;
+                padding: 20px;
+
+
+                .top {
                         display: flex;
                         justify-content: center;
                         align-items: center;
                         flex-direction: column;
-                        width: auto;
+                        width: 100%;
                         height: auto;
-                        background-color: white;
-                        border-radius: 10px;
-                        padding: 20px;
+                        margin-bottom: 20px;
+                        margin-top: 20px;
 
-
-                        .top {
-                                display: flex;
-                                justify-content: center;
-                                align-items: center;
-                                flex-direction: column;
-                                width: 100%;
-                                height: auto;
-                                margin-bottom: 20px;
-                                margin-top: 20px;
-
-                                h1 {
-                                        color: @orange;
-                                        font-size: 20px;
-                                        margin-bottom: 30px;
-                                        font-family: @body_font;
-                                        text-align: center;
-                                        text-transform: uppercase;
-                                }
-
-                                h3 {
-                                        color: @dark_blue;
-                                        font-size: 15px;
-                                        margin: 0%;
-                                        font-family: @body_font;
-                                        text-align: center;
-                                        // text-transform: uppercase;
-                                }
+                        h1 {
+                                color: @orange;
+                                font-size: 20px;
+                                margin-bottom: 30px;
+                                font-family: @body_font;
+                                text-align: center;
+                                text-transform: uppercase;
                         }
 
-                        .fields-container {
-                                display: flex;
-                                justify-content: center;
-                                align-items: center;
-                                flex-direction: column;
-                                width: 100%;
-                                height: auto;
-
-                                input {
-                                        width: 200px;
-                                        height: 30px;
-                                        border-radius: 0px;
-                                        border: none;
-                                        border-bottom: 1px solid @dark_blue;
-                                        padding: 0 10px;
-                                        font-family: @body_font;
-                                        font-size: 15px;
-                                        outline: none;
-                                        transition: all 0.2s;
-
-                                        &:focus {
-                                                border: 1px solid @orange;
-                                                border-radius: 10px;
-                                        }
-                                }
+                        h3 {
+                                color: @dark_blue;
+                                font-size: 15px;
+                                margin: 0%;
+                                font-family: @body_font;
+                                text-align: center;
+                                // text-transform: uppercase;
                         }
+                }
 
-                        .bottom {
-                                display: flex;
-                                justify-content: center;
-                                align-items: center;
-                                flex-direction: row;
-                                width: 100%;
-                                height: auto;
-                                margin-bottom: 20px;
+                .fields-container {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        flex-direction: column;
+                        width: 100%;
+                        height: auto;
 
-                                #validateButton {
-                                        display: flex;
-                                        justify-content: center;
-                                        align-items: center;
-                                        width: auto;
-                                        height: auto;
-                                        margin-top: 20px;
-                                        margin-bottom: 20px;
-                                        padding: 10px 10px;
-                                        width: 200px;
-                                        background-color: @orange;
-                                        color: white;
-                                        font-family: @body_font;
-                                        font-size: 15px;
-                                        text-align: center;
-                                        text-transform: uppercase;
-                                        transition: all 0.2s;
-                                        border-radius: 20px;
-                                        border: none;
+                        input {
+                                width: 200px;
+                                height: 30px;
+                                border-radius: 0px;
+                                border: none;
+                                border-bottom: 1px solid @dark_blue;
+                                padding: 0 10px;
+                                font-family: @body_font;
+                                font-size: 15px;
+                                outline: none;
+                                transition: all 0.2s;
 
-                                        &:hover {
-                                                cursor: pointer;
-                                                background-color: darken(@orange, 10%);
-                                                box-shadow: 0 0px 20px rgba(0, 0, 0, 0.08);
-                                        }
-
-                                        i {
-                                                font-size: 20px;
-                                        }
-
-                                        .loading_gif {
-                                                width: 20px;
-                                                height: 20px;
-                                        }
-                                }
-
-                                #cancelButton {
-                                        display: flex;
-                                        justify-content: center;
-                                        align-items: center;
-                                        width: auto;
-                                        height: auto;
-                                        margin-top: 20px;
-                                        margin-bottom: 20px;
-                                        padding: 10px 10px;
-                                        width: 200px;
-                                        background-color: white;
-                                        color: @orange;
-                                        font-family: @body_font;
-                                        font-size: 15px;
-                                        text-align: center;
-                                        text-transform: uppercase;
-                                        transition: all 0.2s;
-                                        border-radius: 20px;
-                                        border: none;
+                                &:focus {
                                         border: 1px solid @orange;
-                                        margin-left: 20px;
-
-                                        &:hover {
-                                                cursor: pointer;
-                                                background-color: darken(white, 10%);
-                                                box-shadow: 0 0px 20px rgba(0, 0, 0, 0.08);
-                                        }
-
-                                        i {
-                                                font-size: 20px;
-                                        }
-
-                                        .loading_gif {
-                                                width: 20px;
-                                                height: 20px;
-                                        }
+                                        border-radius: 10px;
                                 }
                         }
                 }
 
+                .bottom {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        flex-direction: row;
+                        width: 100%;
+                        height: auto;
+                        margin-bottom: 20px;
+
+                        #validateButton {
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                width: auto;
+                                height: auto;
+                                margin-top: 20px;
+                                margin-bottom: 20px;
+                                padding: 10px 10px;
+                                width: 200px;
+                                background-color: @orange;
+                                color: white;
+                                font-family: @body_font;
+                                font-size: 15px;
+                                text-align: center;
+                                text-transform: uppercase;
+                                transition: all 0.2s;
+                                border-radius: 20px;
+                                border: none;
+
+                                &:hover {
+                                        cursor: pointer;
+                                        background-color: darken(@orange, 10%);
+                                        box-shadow: 0 0px 20px rgba(0, 0, 0, 0.08);
+                                }
+
+                                i {
+                                        font-size: 20px;
+                                }
+
+                                .loading_gif {
+                                        width: 20px;
+                                        height: 20px;
+                                }
+                        }
+
+                        #cancelButton {
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                width: auto;
+                                height: auto;
+                                margin-top: 20px;
+                                margin-bottom: 20px;
+                                padding: 10px 10px;
+                                width: 200px;
+                                background-color: white;
+                                color: @orange;
+                                font-family: @body_font;
+                                font-size: 15px;
+                                text-align: center;
+                                text-transform: uppercase;
+                                transition: all 0.2s;
+                                border-radius: 20px;
+                                border: none;
+                                border: 1px solid @orange;
+                                margin-left: 20px;
+
+                                &:hover {
+                                        cursor: pointer;
+                                        background-color: darken(white, 10%);
+                                        box-shadow: 0 0px 20px rgba(0, 0, 0, 0.08);
+                                }
+
+                                i {
+                                        font-size: 20px;
+                                }
+
+                                .loading_gif {
+                                        width: 20px;
+                                        height: 20px;
+                                }
+                        }
+                }
         }
+
 }

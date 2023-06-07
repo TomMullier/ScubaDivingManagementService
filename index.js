@@ -53,6 +53,9 @@ app.get("/location", function (req, res) {
 app.get("/forum", function (req, res) {
     res.sendFile(path.join(__dirname + "/Vue/HTML/forum.html"));
 });
+app.get("/discussion", function (req, res) {
+    res.sendFile(path.join(__dirname + "/Vue/HTML/discussion.html"));
+});
 
 app.use(express.static(path.join(__dirname, "Vue")));
 app.listen(4200, (err) => {

@@ -190,99 +190,6 @@ body {
     color: #f2574a;
   }
 }
-.message_add {
-  width: 80%;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border: #f2574a 2px solid;
-  background-color: #f2574a;
-  border-radius: 10px;
-  padding: 0 20px;
-  margin-bottom: 20px;
-  margin-top: 20px;
-  transition: 0.2s;
-  color: white;
-}
-.message_add h1 {
-  text-transform: uppercase;
-  font-size: 15px;
-  font-family: 'Montserrat', sans-serif;
-}
-.message_add:hover {
-  background-color: white;
-  color: #f2574a;
-  cursor: pointer;
-}
-#importantMessageModal .modal-wrapper {
-  background-color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 10px;
-  z-index: 9999;
-  flex-direction: column;
-  box-shadow: none;
-  width: auto;
-  height: auto;
-  overflow-y: visible;
-  padding: 50px;
-}
-#importantMessageModal .modal-wrapper .top {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-#importantMessageModal .modal-wrapper .top .title {
-  color: #120B8F;
-  font-size: 20px;
-  text-transform: uppercase;
-  font-family: 'Montserrat', sans-serif;
-  line-height: 0;
-  margin-top: 20px;
-}
-#importantMessageModal .modal-wrapper #txt_descr {
-  margin-top: 10px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-#importantMessageModal .modal-wrapper #txt_descr textarea {
-  width: 100%;
-  height: 100px;
-  border: solid 2px #120B8F;
-  outline: none;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 15px;
-  padding: 10px;
-  resize: none;
-  border-radius: 10px;
-}
-#importantMessageModal .modal-wrapper .validate_message {
-  width: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-  color: #f2574a;
-  border: #f2574a 2px solid;
-  padding: 10px 20px;
-  border-radius: 10px;
-  font-size: 15px;
-  font-family: 'Montserrat', sans-serif;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: 0.2s;
-  font-weight: bold;
-}
-#importantMessageModal .modal-wrapper .validate_message:hover {
-  background-color: #f2574a;
-  color: white;
-}
 .menu_button_container {
   display: flex;
   flex-direction: row;
@@ -888,7 +795,7 @@ body {
   cursor: pointer;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
 }
-#create_location #confirm_delete .modal-wrapper {
+#confirm_delete .modal-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -899,7 +806,7 @@ body {
   border-radius: 10px;
   padding: 20px;
 }
-#create_location #confirm_delete .modal-wrapper .top {
+#confirm_delete .modal-wrapper .top {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -909,7 +816,7 @@ body {
   margin-bottom: 20px;
   margin-top: 20px;
 }
-#create_location #confirm_delete .modal-wrapper .top h1 {
+#confirm_delete .modal-wrapper .top h1 {
   color: #f2574a;
   font-size: 20px;
   margin-bottom: 30px;
@@ -917,14 +824,14 @@ body {
   text-align: center;
   text-transform: uppercase;
 }
-#create_location #confirm_delete .modal-wrapper .top h3 {
+#confirm_delete .modal-wrapper .top h3 {
   color: #120B8F;
   font-size: 15px;
   margin: 0%;
   font-family: 'Montserrat', sans-serif;
   text-align: center;
 }
-#create_location #confirm_delete .modal-wrapper .fields-container {
+#confirm_delete .modal-wrapper .fields-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -932,7 +839,7 @@ body {
   width: 100%;
   height: auto;
 }
-#create_location #confirm_delete .modal-wrapper .fields-container input {
+#confirm_delete .modal-wrapper .fields-container input {
   width: 200px;
   height: 30px;
   border-radius: 0px;
@@ -944,11 +851,11 @@ body {
   outline: none;
   transition: all 0.2s;
 }
-#create_location #confirm_delete .modal-wrapper .fields-container input:focus {
+#confirm_delete .modal-wrapper .fields-container input:focus {
   border: 1px solid #f2574a;
   border-radius: 10px;
 }
-#create_location #confirm_delete .modal-wrapper .bottom {
+#confirm_delete .modal-wrapper .bottom {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -957,7 +864,7 @@ body {
   height: auto;
   margin-bottom: 20px;
 }
-#create_location #confirm_delete .modal-wrapper .bottom #validateButton {
+#confirm_delete .modal-wrapper .bottom #validateButton {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -977,19 +884,19 @@ body {
   border-radius: 20px;
   border: none;
 }
-#create_location #confirm_delete .modal-wrapper .bottom #validateButton:hover {
+#confirm_delete .modal-wrapper .bottom #validateButton:hover {
   cursor: pointer;
   background-color: #ef2b1a;
   box-shadow: 0 0px 20px rgba(0, 0, 0, 0.08);
 }
-#create_location #confirm_delete .modal-wrapper .bottom #validateButton i {
+#confirm_delete .modal-wrapper .bottom #validateButton i {
   font-size: 20px;
 }
-#create_location #confirm_delete .modal-wrapper .bottom #validateButton .loading_gif {
+#confirm_delete .modal-wrapper .bottom #validateButton .loading_gif {
   width: 20px;
   height: 20px;
 }
-#create_location #confirm_delete .modal-wrapper .bottom #cancelButton {
+#confirm_delete .modal-wrapper .bottom #cancelButton {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1011,15 +918,15 @@ body {
   border: 1px solid #f2574a;
   margin-left: 20px;
 }
-#create_location #confirm_delete .modal-wrapper .bottom #cancelButton:hover {
+#confirm_delete .modal-wrapper .bottom #cancelButton:hover {
   cursor: pointer;
   background-color: #e6e6e6;
   box-shadow: 0 0px 20px rgba(0, 0, 0, 0.08);
 }
-#create_location #confirm_delete .modal-wrapper .bottom #cancelButton i {
+#confirm_delete .modal-wrapper .bottom #cancelButton i {
   font-size: 20px;
 }
-#create_location #confirm_delete .modal-wrapper .bottom #cancelButton .loading_gif {
+#confirm_delete .modal-wrapper .bottom #cancelButton .loading_gif {
   width: 20px;
   height: 20px;
 }

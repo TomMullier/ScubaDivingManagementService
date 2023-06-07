@@ -153,16 +153,19 @@
 
           <div class="documents_container">
             <h1>Documents</h1>
-            <div>
+            <form>
+              <div class="info-item">
+                <h2 class="info-title">Photo de profil</h2>
+                <input type="file" id="profile_picture_upload" class="info-input">
+              </div>
               <div class="info-item">
                 <h2 class="info-title">Certificat Médical</h2>
                 <input type="file" id="certif" class="info-input">
               </div>
-
-            </div>
-            <div class="save_button_infos">
-              Sauvegarder
-            </div>
+              <button class="save_button_infos">
+                Sauvegarder
+              </button>
+            </form>
           </div>
         </div>
       </div>
@@ -189,6 +192,9 @@
           <a class=active href="/profile">Mon profil</a>
           <a class="club_only" href="/location_list">Liste des Lieux</a>
           <a class=club_only href="/create_user">Liste des Utilisateurs</a>
+        </div>
+        <div class="logout_button">
+          <a href="/logout">Déconnexion</a>
         </div>
       </modal>
       <modal id="emergencyModal">

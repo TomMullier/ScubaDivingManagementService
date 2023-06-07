@@ -6,7 +6,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="../CSS/global.css">
-        <link rel="stylesheet" href="../CSS/forum.css">
+        <link rel="stylesheet" href="../CSS/discussion.css">
 
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css">
@@ -49,9 +49,8 @@
     <div class="main">
 
         <div class="top_bar">
-            <div class="create_button">
-                <i class="fa-solid fa-plus"></i>
-                <p>Créer un poste</p>
+            <div class="titre_post">
+              <h2>TITRE  DU POSTE</h2>
             </div>
             <div class="search_bar_container">
                     <input id="searchbar" type="text" placeholder="Rechercher dans le forum">
@@ -60,22 +59,63 @@
         </div>
     
 
-    <div class="posts">
-        <h2>Posts</h2>
-        <div class="post">
-          <h3>Titre du post</h3>
-          <p>Auteur du post - Date</p>
-        </div>
-        <div class="post">
-          <h3>Titre du post</h3>
-          <p>Auteur du post - Date</p>
-        </div>
-        <div class="post">
-            <h3>Titre du post</h3>
-            <p>Auteur du post - Date</p>
+        <div class="discussion">
+          <div class="message">
+            <div class="avatar">
+              <img src="../img/fish.png" alt="Profil utilisateur 1">
+            </div>
+            <div class="content">
+              <div class="author">Utilisateur 1</div>
+              <div class="text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+              <div class="date">10 mai 2023</div>
+            </div>
           </div>
-    </div>
-</div>
+          <div class="message">
+            <div class="avatar">
+              <img src="../img/whale.png" alt="Profil utilisateur 2">
+            </div>
+            <div class="content">
+              <div class="author">Utilisateur 2</div>
+              <div class="text">Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
+              <div class="date">12 mai 2023</div>
+            </div>
+          </div>
+        
+          <div class="reply">
+            <div class="toolbar">
+                <button class="toolbar-button" data-format="bold">
+                    <i class="fa-solid fa-bold"></i>
+                </button>
+                <button class="toolbar-button" data-format="italic">
+                    <i class="fa-solid fa-italic"></i>
+                </button>
+                <button class="toolbar-button" data-format="underline">
+                  <i class="fa-solid fa-underline"></i>
+              </button>
+                <select class="toolbar-select" data-format="size">
+                    <option value="">Taille</option>
+                    <option value="small">Petit</option>
+                    <option value="medium">Moyen</option>
+                    <option value="large">Grand</option>
+              </select>
+            </div>
+            <textarea placeholder="Répondre à la discussion..."></textarea>
+            <div class="bottom_bar">
+              <div class="answer_button">
+                <i class="fa-solid fa-reply"></i>
+                <p>Répondre</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+            
+          
+        
+
+          
+          
+  </div>
 </div>
 
 
@@ -108,7 +148,7 @@
     <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="../JS/modal.js"></script>
-    <script type=module src="../JS/forum.js"></script>
+    <script type=module src="../JS/discussion.js"></script>
 </body>
 
 </html>

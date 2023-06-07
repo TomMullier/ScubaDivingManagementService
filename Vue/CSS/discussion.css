@@ -219,7 +219,7 @@ body {
   }
 }
 #menuModal[aria-hidden="true"] .modal-wrapper {
-  animation: SlideRight 0.4s both;
+  animation: SlideRight 0.4s bot h;
 }
 #menuModal[aria-hidden="true"] {
   animation: fadeOut 0.4s both;
@@ -235,6 +235,29 @@ body {
   align-items: left;
   border-radius: 10px;
   animation: SlideLeft 0.4s both;
+}
+#menuModal .logout_button {
+  bottom: 0px;
+  margin: 0 auto;
+  margin-bottom: 60px;
+  width: 100%;
+  height: auto;
+}
+#menuModal .logout_button a {
+  color: #f2574a;
+  font-size: 20px;
+  font-family: 'Montserrat', sans-serif;
+  margin-bottom: 20px;
+  text-decoration: none;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  border-radius: 25px;
+  transition: 0.2s;
+}
+#menuModal .logout_button a:hover {
+  border: 2px solid #f2574a;
+  background-color: #f2574a;
+  color: white;
 }
 #menuModal .menu_content {
   display: flex;
@@ -388,6 +411,22 @@ body {
   margin-bottom: 20px;
   margin-top: 20px;
 }
+.top_bar .titre_post {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  width: auto;
+  height: auto;
+  margin-left: 20px;
+}
+.top_bar .titre_post h2 {
+  margin: 0;
+  padding: 0;
+  font-size: 20px;
+  font-family: 'Montserrat', sans-serif;
+  color: #120B8F;
+}
 .top_bar .search_bar_container {
   display: flex;
   flex-direction: row;
@@ -418,12 +457,11 @@ body {
   font-size: 18px;
   margin-left: 10px;
 }
-.create_button {
+.answer_button {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: row;
-  width: 20%;
   height: auto;
   color: white;
   font-size: 15px;
@@ -432,44 +470,78 @@ body {
   background-color: #f2574a;
   padding: 0px 20px;
   border-radius: 30px;
+  margin-top: 20px;
 }
-.create_button i {
+.answer_button i {
   margin-right: 10px;
 }
-.create_button p {
+.answer_button p {
   margin: 0;
   padding: 10px 0;
 }
 .create_button:hover {
   cursor: pointer;
 }
-.posts {
-  margin-top: 50px;
-}
-.posts .post {
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
+.discussion {
   padding: 10px;
+  margin-left: 10%;
+  margin-right: 10%;
+}
+.discussion .reply {
+  display: flex;
+  flex-direction: column;
+  margin-top: 5%;
+}
+.discussion .reply .toolbar {
+  display: flex;
   margin-bottom: 10px;
-  transition: background-color 0.3s, transform 0.3s;
+  align-items: left;
 }
-.posts .post:hover {
-  background-color: #f5f5f5;
-  transform: scale(1.005);
+.discussion .reply .toolbar .toolbar-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-right: 5px;
 }
-.posts .post h3 {
-  font-size: 18px;
-  margin-bottom: 5px;
+.discussion .reply .toolbar .toolbar-select {
+  padding: 4px;
 }
-.posts .post p {
-  margin-bottom: 5px;
+.discussion .reply textarea {
+  width: 100%;
+  height: 150px;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  resize: none;
+  font-family: 'Montserrat', sans-serif;
 }
-.posts .post a {
-  color: #333;
-  text-decoration: none;
+.discussion .message {
+  display: flex;
+  margin-bottom: 10px;
 }
-.posts .post a:hover {
-  text-decoration: underline;
+.discussion .message .avatar {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+}
+.discussion .message .avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+.discussion .message .content {
+  flex: 1;
+}
+.discussion .message .content .author {
+  font-weight: bold;
+}
+.discussion .message .content .text {
+  margin-top: 5px;
+}
+.discussion .message:not(:last-child) {
+  border-bottom: 1px solid #ddd;
 }
 @keyframes topSlideIn {
   0% {

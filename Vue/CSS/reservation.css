@@ -451,6 +451,19 @@ body {
   font-family: 'Montserrat', sans-serif;
   font-size: 13px;
 }
+#calendar i {
+  margin: auto auto;
+  color: white;
+  font-size: fit-content;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  transition: 0.2s;
+  opacity: 0;
+}
 #createEventButton {
   position: fixed;
   bottom: 110px;

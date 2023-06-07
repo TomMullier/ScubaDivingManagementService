@@ -127,6 +127,8 @@ addImportantMessageButton.addEventListener("click", function () {
   modals.show("importantMessageModal", function () {
     menutoggle.classList.remove('active');
     document.querySelector("#textarea_important").value = "";
+    // document.getElementById("important_text").innerText == "";
+    // document.querySelector(".message").style.display = "none";
   });
   document.querySelector("#textarea_important").focus();
   menutoggle.classList.toggle('active');
@@ -137,6 +139,9 @@ addImportantMessageButton.addEventListener("click", function () {
     if (message !== "") {
       document.querySelector(".message").style.display = "flex";
       document.querySelector("#important_text").innerText = message;
+    } else {
+      document.querySelector(".message").style.display = "none";
+      document.querySelector("#important_text").innerText = "";
     }
     modals.closeCurrent();
   })

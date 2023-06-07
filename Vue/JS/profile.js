@@ -50,7 +50,8 @@ save_buttons.forEach(function (button) {
 });
 
 document.addEventListener("DOMContentLoaded", function () {
-  document.querySelector('#profile_picture').src = "../img/profile_pictures/" + me.firstname + me.lastname + me.licenceNumber + ".jpg";
+  // document.querySelector('#profile_picture').src = "../img/profile_pictures/" + me.firstname + me.lastname + me.licenceNumber + ".jpg";
+  checkForPP();
   document.querySelector(".name").innerHTML = me.firstname + " " + me.lastname;
   document.querySelector(".licence_number").innerHTML = me.licenceNumber;
   document.querySelector(".birthdate").innerHTML = new Date(me.birthdate).toLocaleDateString();
@@ -71,8 +72,6 @@ document.addEventListener("DOMContentLoaded", function () {
   if(me.additionnalQualification!=""){
     document.querySelector("#qualif_add").value = me.additionnalQualification;
   }
-
-
 });
 
 document.querySelector(".phone").addEventListener("input", function () {
@@ -90,3 +89,18 @@ document.querySelector(".email").addEventListener("input", function () {
     document.querySelector(".save_button_infos").style.display = "none";
   }
 });
+
+
+
+
+//! Profile picture
+
+let profile_picture_name = me.firstname + me.lastname + me.licenceNumber;
+
+function checkForPP(){
+  // try {
+  //   document.querySelector('#profile_picture').src = "../../Model/user-data/" + me.firstname+me.lastname+"/"+ profile_picture_name + ".jpg";
+  // } catch (error) {
+  //   document.querySelector('#profile_picture').src = "../../Model/user-data/default.jpg";
+  // }
+}

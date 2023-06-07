@@ -95,7 +95,6 @@ app.get('/auth/dashboard/get_info', keycloak.protect(), function (req, res) {
         if (userInfo === undefined) return res.json({ username: username });
 
         Database.getRegistrationList(userInfo.Id_Diver, (registrationList) => {
-            if (!registrationList) return res.json({ username: username });
             return res.json({ userInfo: userInfo, registrationList: registrationList });
         });
     })

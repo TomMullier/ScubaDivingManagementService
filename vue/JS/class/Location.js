@@ -1,5 +1,5 @@
 class Location {
-        constructor(name, lat, lng, trackType, trackNumber, trackName, zipCode, cityName, country, additional ="", phone, url, rate) {
+        constructor(name, lat, lng, trackType, trackNumber, trackName, zipCode, cityName, country, additional ="", phone, url, rate, SOS_Tel_Number, Emergency_Plan, Post_Accident_Procedure) {
                 this.name = name;
                 this.lat = lat;
                 this.lng = lng;
@@ -13,6 +13,9 @@ class Location {
                 this.phone = phone;
                 this.url = url;
                 this.rate = rate;
+                this.SOS_Tel_Number = SOS_Tel_Number;
+                this.Emergency_Plan = Emergency_Plan;
+                this.Post_Accident_Procedure = Post_Accident_Procedure;
         }
 }
 

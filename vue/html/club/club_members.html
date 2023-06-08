@@ -2,39 +2,293 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../../CSS/global.css">
+        <link rel="stylesheet" href="../../CSS/create_account.css">
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css">
+        <link rel="stylesheet" href="../../CSS/modal.css" />
+        
+        <script src="https://kit.fontawesome.com/b89837f3ad.js" crossorigin="anonymous"></script>
+
+
+
+
+
+        <title>Liste des utilisateurs</title>
 </head>
 
 <body>
-    <h1>Club members</h1>
+        <div class="menu_button_container">
+                <div class="toggle">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                </div>
+        </div>
+        <div id="menutoggle"></div>
+        <button id="emergencyButton"><i class="fa-solid fa-truck-medical"></i></button>
 
-    <h2>FORM</h2>
-    <form id="signup_form" style="display: flex; flex-direction: column;">
-        <input type="text" name="lastname" placeholder="lastname">
-        <input type="text" name="firstname" placeholder="firstname">
-        <input type="email" name="mail" placeholder="mail">
-        <input type="tel" name="phone" placeholder="phone" maxlength="10" Pattern="^9[0-9]{7}">
-        <input type="text" name="diver_qualif" placeholder="diver_qualif">
-        <input type="text" name="instru_qualif" placeholder="instru_qualif">
-        <input type="text" name="nox_lvl" placeholder="nox_lvl">
-        <input type="text" name="additional_qualif" placeholder="additional_qualif">
-        <input type="text" name="license_nb" placeholder="license_nb">
-        <label for="license_expi">license_expi</label><input type="date" name="license_expi" placeholder="license_expi">
-        <label for="medic_certif_expi">medic_certif_expi</label><input type="date" name="medic_certif_expi"
-            placeholder="medic_certif_expi">
-        <label for="birthdate">birthdate</label><input type="date" name="birthdate" placeholder="birthdate">
-        <br>
-        <input type="password" name="password">
-        <button id="btn-submit">SUBMIT</button>
-    </form>
 
-    <h2>LISTE</h2>
-    <ul id="listMembers"></ul>
+        <div class="title_container">
+                <h1>Liste des utilisateurs</h1>
+        </div>
 
-    <script type="module" src="../../js/club/club_members.js"></script>
+        <div class="global_container">
+                <div class="top_bar">
+                        <div class="search_bar_container">
+                                <input id="searchbar" type="text" placeholder="Rechercher un utilisateur">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                        </div>
+                        <div class="filter_container">
+                                <div class="filter_button">
+                                        <i class="fa-solid fa-filter"></i>
+                                        <p>Filtrer</p>
+                                </div>
+                                <div class="filter_options">
+                                        <div class="filter_option">
+                                                <input type="checkbox" name="diver" id="diver">
+                                                <label for="diver">Plongeur</label>
+                                        </div>
+                                        <div class="filter_option">
+                                                <input type="checkbox" name="instructor" id="instructor">
+                                                <label for="instructor">Instructeur</label>
+                                        </div>
+                                        <div class="filter_option">
+                                                <input type="checkbox" name="admin" id="admin">
+                                                <label for="admin">Administrateur</label>
+                                        </div>
+                                </div>
+                        </div>
+                        <div class="create_button">
+                                <i class="fa-solid fa-plus"></i>
+                                <p>Créer un compte</p>
+                        </div>
+                </div>
+                <div class="list_container">
+                </div>
+        </div>
+
+
+
+
+        <div id="modals" style="display:flex;">
+                <modal id="confirm_delete">
+                        <div class="top">
+                                <h1 id="txt_title" class="title">Sécurité</h1>
+                                <h3 id="txt_descr">Veuillez entrer votre mot de passe pour confirmer la suppression du
+                                        compte</h3>
+                        </div>
+                        <div class="fields-container">
+                                <h3>
+                                        <input type="password" name="password" placeholder="Mot de passe" id="password_delete">
+                                </h3>
+                        </div>
+                        <div class="bottom">
+                                <div id="validateButton">Valider</div>
+                                <div id="cancelButton" class="close-modal">Annuler</div>
+                        </div>
+                </modal>
+                <modal id=user-info>
+                        <div class="image_container">
+                                <img src="" id="profile_show" alt="Profile Picture">
+                        </div>
+                        <div class="general_info">
+                                <h1 id=name_show class="name"></h1>
+                                <h2 id=mail_show class="mail"></h2>
+                                <h2 id=phone_show class="phone"></h2>
+                                <h2 id=birthdate_show class="birthdate"></h2>
+                        </div>
+                        <div class="qualifications_container_display">
+                                <h2>Qualifications</h2>
+                                <div>
+                                        <label for="diver_qualif">Qualification de
+                                                plongeur</label>
+                                        <input disabled type="text" id=diver_qualif_show name="diver_qualif"
+                                                placeholder="Qualification de Plongeur">
+                                </div>
+                                <div>
+                                        <label for="instru_qualif">Qualification
+                                                d'instructeur</label>
+                                        <input disabled type="text" id="instru_qualif_show" name="instru_qualif"
+                                                placeholder="Qualification d'Instructeur">
+                                </div>
+                                <div>
+                                        <label for="nox_lvl">Certification NITROX</label>
+                                        <input disabled type="text" name="nox_lvl" id="nitrox_qualif_show"
+                                                placeholder="Certification NITROX">
+                                </div>
+                                <div>
+                                        <label for="additional_qualif">Qualification
+                                                additionnelle</label>
+                                        <input disabled type="text" id=additionnal_qualif_show name="additional_qualif"
+                                                placeholder="Qualification Additionnelle">
+                                </div>
+                                <div>
+                                        <label for="license_nb">Numéro de licence</label>
+                                        <input disabled type="text" id="licence_show" name="license_nb"
+                                                placeholder="Numéro de Licence">
+                                </div>
+                                <div>
+                                        <label for="license_expi">Date d'expiration de la
+                                                licence</label>
+                                        <input disabled type="date" name="license_expi" id="licence_date_show"
+                                                placeholder="Licence">
+                                </div>
+                                <div>
+                                        <label for="medic_certif_expi">Date d'expiration du
+                                                certificat médical</label>
+                                        <input disabled type="date" id="medic_date_show" name="medic_certif_expi"
+                                                placeholder="Certificat Médical">
+                                </div>
+                        </div>
+                </modal>
+                <modal id="create_user">
+                        <h1 id="modify_create_title">Créer un compte</h1>
+                        <div class="form_container">
+                                <form id="signup_form">
+                                        <div class="container">
+
+                                                <div class="name_container">
+                                                        <h2>Identité</h2>
+                                                        <div>
+                                                                <label for="lastname">Nom</label>
+                                                                <input id=lastname type="text" name="lastname"
+                                                                        placeholder="Nom">
+                                                        </div>
+                                                        <div>
+                                                                <label for="firstname">Prénom</label>
+                                                                <input id=firstname type="text" name="firstname"
+                                                                        placeholder="Prénom">
+                                                        </div>
+                                                        <div>
+                                                                <label for="mail">Adresse mail</label>
+                                                                <input id=mail type="email" name="mail"
+                                                                        placeholder="Adresse Mail">
+                                                        </div>
+                                                        <div>
+                                                                <label for="phone">Numéro de téléphone</label>
+                                                                <input id=phone type="tel" name="phone"
+                                                                        placeholder="Numéro de Téléphone">
+                                                        </div>
+                                                        <div>
+                                                                <label for="birthdate">Date de naissance</label>
+                                                                <input id=birthdate type="date" name="birthdate"
+                                                                        placeholder="Date de Naissance">
+                                                        </div>
+
+                                                </div>
+                                                <div class="qualifications_container">
+                                                        <h2>Qualifications</h2>
+                                                        <div>
+                                                                <label for="diver_qualif">Qualification de
+                                                                        plongeur</label>
+                                                                <input id="diver_qualif" type="text" name="diver_qualif"
+                                                                        placeholder="Qualification de Plongeur">
+                                                        </div>
+                                                        <div>
+                                                                <label for="instru_qualif">Qualification
+                                                                        d'instructeur</label>
+                                                                <input id="instru_qualif" type="text"
+                                                                        name="instru_qualif"
+                                                                        placeholder="Qualification d'Instructeur">
+                                                        </div>
+                                                        <div>
+                                                                <label for="nox_lvl">Certification NITROX</label>
+                                                                <input id="nitrox_qualif" type="text" name="nox_lvl"
+                                                                        placeholder="Certification NITROX">
+                                                        </div>
+                                                        <div>
+                                                                <label for="additional_qualif">Qualification
+                                                                        additionnelle</label>
+                                                                <input id="additionnal_qualif" type="text"
+                                                                        name="additional_qualif"
+                                                                        placeholder="Qualification Additionnelle">
+                                                        </div>
+                                                        <div>
+                                                                <label for="license_nb">Numéro de licence</label>
+                                                                <input id="licence" type="text" name="license_nb"
+                                                                        placeholder="Numéro de Licence">
+                                                        </div>
+                                                        <div>
+                                                                <label for="license_expi">Date d'expiration de la
+                                                                        licence</label>
+                                                                <input id=licence_date type="date" name="license_expi"
+                                                                        placeholder="Licence">
+                                                        </div>
+                                                        <div>
+                                                                <label for="medic_certif_expi">Date d'expiration du
+                                                                        certificat médical</label>
+                                                                <input id="medic_date" type="date"
+                                                                        name="medic_certif_expi"
+                                                                        placeholder="Certificat Médical">
+                                                        </div>
+                                                </div>
+                                        </div>
+                                        <!-- <input type="password" name="password"> -->
+                                        <div id="btn-submit">Créer le compte</div>
+
+                                </form>
+                        </div>
+                </modal>
+                <modal id="confirmation_creation">
+                        <div class="top">
+                                <h1 id="txt_title" class="title">Sécurité</h1>
+                                <h3 id="txt_descr">Veuillez entrer votre mot de passe pour confirmer la
+                                        création/modification du
+                                        compte</h3>
+                        </div>
+                        <div class="fields-container">
+                                <h3>
+                                        <input type="password" name="password" placeholder="Mot de passe" id="password_create">
+                                </h3>
+                        </div>
+                        <div class="bottom">
+                                <div id="validateButton_creation">Valider</div>
+                                <div id="cancelButton" class="close-modal">Annuler</div>
+                        </div>
+                </modal>
+
+                <modal id="user_created">
+                        <div class="top">
+                                <h1 id="txt_title_user_created" class="save_title">Succès</h1>
+                                <h3 id="txt_descr_user_created">Le compte a été créé avec succès</h3>
+                        </div>
+                </modal>
+                <modal id="menuModal">
+                        <div class="menu_content">
+                                <a href="/auth/dashboard">Tableau de Bord</a>
+                                <a href="/auth/planning">Plannification</a>
+                                <!-- <a href="">Statistiques</a> -->
+                                <a class="user_only" href="/auth/user/account">Mon profil</a>
+                                <a class="club_only" href="/auth/club/locations">Liste des Lieux</a>
+                                <a class="club_only active" href="/auth/club/club_members">Liste des Utilisateurs</a>
+                        </div>
+                        <div class="logout_button">
+                                <a href="/logout">Déconnexion</a>
+                        </div>
+                </modal>
+                <modal id="emergencyModal">
+
+                        <div class="top">
+                                <h1 id="txt_title" class="title">APPEL SOS</h1>
+                                <h3>Appuyez une nouvelle fois pour demander du secours</h3>
+                                <h3>Tap once again to call for emergency help</h3>
+                        </div>
+                        <div id="txt_descr" class="fields-container">
+                                <h3>
+                                        <a id="callButton"><i class="fa-solid fa-truck-medical"></i></a>
+                                </h3>
+                        </div>
+                </modal>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="../../JS/modal.js"></script>
+        <script type=module src="../../JS/club/create_account.js"></script>
 </body>
 
 </html>

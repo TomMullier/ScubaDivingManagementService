@@ -237,7 +237,7 @@ async function deleteUser(mail, clientUsername = "", clientPassword = "") {
     return deleteUser;
 }
 
-async function modifyUser(oldMail, newMail, clientUsername = "", clientPassword = "") {
+async function modifyUser(oldMail, newMail, firstname, lastname, clientUsername = "", clientPassword = "") {
     if (clientUsername != "" && clientPassword != "") {
         dataClient.username = clientUsername;
         dataClient.password = clientPassword;
@@ -258,7 +258,7 @@ async function modifyUser(oldMail, newMail, clientUsername = "", clientPassword 
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${adminToken}`
         },
-        data: JSON.stringify({ "email": newMail })
+        data: JSON.stringify({ "email": newMail, "firstName": firstname, "lastName":lastname })
     };
     const modifUser = await axios.request(config)
         .then((response) => {

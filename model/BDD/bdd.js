@@ -46,7 +46,7 @@ class BDD {
     }
 
     getUsersList(callback) {
-        const query = 'SELECT Lastname, Firstname, Mail, Phone FROM Diver';
+        const query = 'SELECT * FROM Diver';
         this.con.query(query, (err, result) => {
             if (err) {
                 console.log(err);
@@ -138,7 +138,7 @@ class BDD {
     }
 
     getDiveSiteList(callback) {
-        const query = 'SELECT * FROM Dive_Site';
+        const query = 'SELECT * FROM Dive_Site INNER JOIN Emergency_Plan ON Dive_Site.Id_Dive_Site = Emergency_Plan.Dive_Site_Id_Dive_Site';
         this.con.query(query, (err, result) => {
             if (err) {
                 console.log(err);
@@ -268,7 +268,6 @@ class BDD {
 
     createEvent(data, callback) {
         data.Id_Planned_Dive = uuidv4();
-        console.log(data);
         let query = 'INSERT INTO Planned_Dive SET ?';
         this.con.query(query, [data], (err, result) => {
             if (err) {
@@ -296,6 +295,7 @@ class BDD {
     }
 
     getEvent(data, callback) {
+        console.log(data);
         const query = 'SELECT * FROM Planned_Dive WHERE Start_Date = ? AND End_Date = ? AND Diver_Price = ? AND Instructor_Price = ? AND Comments = ? AND Special_Needs = ? AND Status = ? AND Max_Divers = ? AND Dive_Type = ? AND Dive_Site_Id_Dive_Site = ?';
         this.con.query(query, [data.Start_Date, data.End_Date, data.Diver_Price, data.Instructor_Price, data.Comments, data.Special_Needs, data.Status, data.Max_Divers, data.Dive_Type, data.Dive_Site_Id_Dive_Site], (err, result) => {
             if (err || !result[0]) {
@@ -352,7 +352,7 @@ class BDD {
     }
 
     getDiversRegistered(callback) {
-        const query = 'SELECT Diver.*, Dive_Registration.Planned_Dive_Id_Planned_Dive FROM Dive_Registration INNER JOIN Diver ON Diver.Id_Diver = Dive_Registration.Diver_Id_Diver';
+        const query = 'SELECT Diver.*,Dive_Registration.Planned_Dive_Id_Planned_Dive, Dive_Registration.Diver_Role FROM Dive_Registration INNER JOIN Diver ON Diver.Id_Diver = Dive_Registration.Diver_Id_Diver';
         this.con.query(query, (err, result) => {
             if (err || !result[0]) {
                 if (err) console.log(err);
@@ -403,6 +403,19 @@ class BDD {
             }
         })
     }
+
+    deleteRegistrationEvent(data, callback){
+        let query = 'DELETE FROM Dive_Registration WHERE Planned_Dive_Id_Planned_Dive = ?';
+        this.con.query(query, data, (err, result) => {
+            if (err) {
+                console.log(err);
+                callback(false);
+            } else {
+                console.log("Registration deleted ");
+                callback(true);
+            }
+        })
+    }
 }
 
 /* -------------------------------------------------------------------------- */
@@ -417,11 +430,11 @@ function dateFormat(event) {
 
 function getDateFormat(badDate) {
     badDate += '';
-    badDate = new Date(badDate).toLocaleString()
-    const day = badDate.split(' ')[0].split("/")[0];
-    const month = badDate.split(' ')[0].split("/")[1];
-    const year = badDate.split(' ')[0].split("/")[2];
-    const hour = badDate.split(' ')[1];
+    badDate = new Date(badDate).toLocaleString('en-US', { hour12: false })
+    const day = badDate.split(', ')[0].split("/")[0];
+    const month = badDate.split(', ')[0].split("/")[1];
+    const year = badDate.split(', ')[0].split("/")[2];
+    const hour = badDate.split(', ')[1];
     return year + "-" + month + "-" + day + " " + hour;
 }
 

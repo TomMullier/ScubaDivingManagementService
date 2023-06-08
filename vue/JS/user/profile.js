@@ -3,7 +3,7 @@ import {
 } from "../class/User.js";
 
 let my_role;
-fetch('/auth/dashboard')
+fetch('/auth/user/account')
   .then(response => {
     const userType = response.headers.get('userType');
     console.log("User Role :" + userType);

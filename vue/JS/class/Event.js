@@ -12,7 +12,7 @@ class Event {
                 this.location = location;
                 this.comment = comment;
                 this.needs = needs;
-                this.title = diveType + " à " + location;
+                this.title = diveType + " à " + location.Site_Name;
                 this.open = open;
                 this.max = max;
                 this.users = [];
@@ -24,10 +24,11 @@ class Event {
                         this.backgroundColor = "#4caf50";
                         this.borderColor = "#4caf50";
                 }
-        }
+        } 
 
         addUser(user) {
-                this.users.push(user);
+                if(user == undefined) return
+                this.users= user;
         }
 
         getUsers() {

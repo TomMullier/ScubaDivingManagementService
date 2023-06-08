@@ -1,14 +1,694 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="stylesheet" href="../CSS/global.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css">
+    <link rel="stylesheet" href="../CSS/modal.css" />
+    <link rel="stylesheet" href="../CSS/reservation.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.7/index.global.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typescript/4.0.5/typescript.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.js"></script>
+    <script type=module src="../JS/@fullcalendar/core/locales/fr.js"></script>
+    <script type=module src='https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@6.1.7/index.global.min.js'></script>
+    <script src="https://kit.fontawesome.com/b89837f3ad.js" crossorigin="anonymous"></script>
+
+    <title>Plannification</title>
 </head>
+
 <body>
-    <h1>PLANNING</h1>
-    <h2>CLUB ACCESS</h2>
-    <script type="module" src="../js/planning.js"></script>
+    <div class="menu_button_container">
+        <div class="toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+    <div id="menutoggle"></div>
+    <button id="emergencyButton"><i class="fa-solid fa-truck-medical"></i></button>
+    <button id="createEventButton" class="club_only"><i class="fa-solid fa-plus"></i></button>
+    <div class="title_container">
+        <h1>Plannification des plongées</h1>
+    </div>
+    <div class="instructions_container">
+        <h2><span class="orange prenom"></span>, cliquez sur un évènement pour en avoir toutes les informations :</h2>
+    </div>
+
+    <div class="top_bar_container">
+        <div class="filter_container">
+            <div class="filter_duration">
+                <p><i class="fa-solid fa-clock"></i>Filtrer par durée maximum : </i></p>
+                <input type="range" min="0" max="150" step="30" value="150" class="slider" id="timeSlider">
+                <label for="timeSlider" id="timeLabel">Illimité</label>
+            </div>
+            <div class="filter_price">
+                <p><i class="fa-solid fa-euro-sign"></i>Filtrer par prix maximum : </i></p>
+                <input type="range" min="0" max="150" step="10" value="150" class="slider" id="priceSlider">
+                <label for="priceSlider" id="priceLabel">Illimité</label>
+
+            </div>
+        </div>
+        <div class="switch_container">
+            <p class="switch_title">Basculer sur la vue Liste</p>
+            <input id='checkbox_list' class="apple-switch" type="checkbox">
+        </div>
+    </div>
+
+    <div id="calendar"></div>
+    <div class="legend_container">
+        <div class="legend">
+            <div class="legend_item green_border">
+                <div class="legend_color green_full"></div>
+                <p>Créneau disponible</p>
+            </div>
+            <div class="legend_item orange_border">
+                <div class="legend_color orange_full"></div>
+                <p>Créneau réservé</p>
+            </div>
+            <div class="legend_item grey_border">
+                <div class="legend_color grey_full"></div>
+                <p>Créneau passé</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="modals" style="display:flex;">
+        <modal id="modifyEventModal">
+            <h1 class="createEventTitle">Modifier un évènement</h1>
+            <div class="container_create_event">
+                <div class="left">
+                    <div class="date_container">
+                        <h3>Date de l'évènement</h3>
+                        <input type="date" id="eventDateInput_modify" name="eventDateInput" value="">
+                    </div>
+                    <div class="time_container">
+                        <h3>Heure de début</h3>
+                        <input type="time" id="eventStartInput_modify" name="eventStartInput" value="00:00">
+                    </div>
+                    <div class="time_container">
+                        <h3>Heure de fin</h3>
+                        <input type="time" id="eventEndInput_modify" name="eventEndInput" value="00:00">
+                    </div>
+                    <div class="location_container">
+                        <h3>Lieu de l'évènement</h3>
+                        <div class="search_location">
+                            <input type="text" id="eventLocationInput_modify" name="eventLocationInput"
+                                placeholder="Rechercher" value="">
+                            <div class="location_list_dropdown" style="display:none">
+                                <h4 class="location_item">Nevada</h4>
+                                <h4 class="location_item">New York</h4>
+                                <h4 class="location_item">Los Angeles</h4>
+                                <h4 class="location_item">Chicago</h4>
+                                <h4 class="location_item">Houston</h4>
+                                <h4 class="location_item">Philadelphia</h4>
+                                <h4 class="location_item">Phoenix</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="price_container">
+                        <h3>Prix plongeurs</h3>
+                        <input type="number" id="eventPriceInputDiver_modify" name="eventPriceInput" placeholder="Prix"
+                            value="" min="0">
+                    </div>
+                    <div class="price_container">
+                        <h3>Prix instructeur</h3>
+                        <input type="number" id="eventPriceInputInstructor_modify" name="eventPriceInput"
+                            placeholder="Prix" value="" min="0">
+                    </div>
+                </div>
+                <div class="right">
+                    <div>
+                        <h3>Nombre de plongeurs</h3>
+                        <input type="number" id="eventDiverNumberInput_modify" name="eventDiverNumberInput"
+                            placeholder="Nombre de plongeurs" min="0" max="50" value="">
+                    </div>
+                    <div>
+                        <h3>Type de plongée</h3>
+                        <select id="eventTypeInput_modify" name="eventTypeInput">
+                            <option value="Exploration">Exploration</option>
+                            <option value="Technique">Technique</option>
+                            <select>
+                    </div>
+                    <div>
+                        <h3>Directeur de Plongée</h3>
+                        <div class="search_location_DP">
+                            <input type="text" id="eventDPInput_modify" name="eventDPInput" placeholder="Rechercher"
+                                value="">
+                            <div class="DP_list_dropdown" style="display:none">
+                                <h4 class="DP_item">Tom</h4>
+                                <h4 class="DP_item">Marcel</h4>
+                                <h4 class="DP_item">Alan</h4>
+                                <h4 class="DP_item">Enguerrand</h4>
+                                <h4 class="DP_item">Maxime</h4>
+                                <h4 class="DP_item">Maxime D</h4>
+                                <h4 class="DP_item">Elen</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>Evenement privé</h3>
+                        <input type="checkbox" id="eventPrivateInput_modify" class="apple-switch"
+                            name="eventPrivateInput" value="">
+                    </div>
+                    <div>
+                        <h3>Plongeurs obligatoires</h3>
+                        <div class="search_location_diver">
+                            <input type="text" id="eventDiverInput_modify" name="eventDiverInput"
+                                placeholder="Rechercher (0 inscrits)" value="">
+                            <div class="diver_list_dropdown" style="display:none">
+                                <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Tom</h4>
+                                <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Marcel</h4>
+                                <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Alan</h4>
+                                <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Enguerrand</h4>
+                                <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Maxime</h4>
+                                <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Maxime D</h4>
+                                <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Elen</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="comment">
+                <h3>Commentaire</h3>
+                <textarea id="eventComment_modify" name="eventComment" value="" placeholder="Commentaire"></textarea>
+            </div>
+            <div class="needs">
+                <h3>Besoins spécifiques</h3>
+                <input type="text" id="eventNeedInput_modify" name="eventNeedInput" placeholder="Besoins" value="">
+            </div>
+            <div class="create_event_button">
+                Modifier l'évènement
+            </div>
+            <button type="submit" class="delete_event_button">
+                Supprimer l'évènement
+            </button>
+        </modal>
+        <modal id="createEventModal">
+            <h1 class="createEventTitle">Planifier un évènement</h1>
+            <form action="">
+                <div class="container_create_event">
+                    <div class="left">
+                        <div class="date_container">
+                            <h3>Date de l'évènement</h3>
+                            <input required type="date" id="eventDateInput" name="eventDateInput" value="">
+                        </div>
+                        <div class="time_container">
+                            <h3>Heure de début</h3>
+                            <input required type="time" id="eventStartInput" name="eventStartInput" value="00:00">
+                        </div>
+                        <div class="time_container">
+                            <h3>Heure de fin</h3>
+                            <input required type="time" id="eventEndInput" name="eventEndInput" value="00:00">
+                        </div>
+                        <div class="location_container">
+                            <h3>Lieu de l'évènement</h3>
+                            <div class="search_location">
+                                <input required type="text" id="eventLocationInput" name="eventLocationInput"
+                                    placeholder="Rechercher" value="">
+                                <div class="location_list_dropdown" id=location_list_dropdown_create></div>
+                            </div>
+                        </div>
+                        <div class="price_container">
+                            <h3>Prix plongeurs</h3>
+                            <input required type="number" id="eventPriceInputDiver" name="eventPriceInput"
+                                placeholder="Prix" value="" min="0">
+                        </div>
+                        <div class="price_container">
+                            <h3>Prix instructeur</h3>
+                            <input required type="number" id="eventPriceInputInstructor" name="eventPriceInput"
+                                placeholder="Prix" value="" min="0">
+                        </div>
+                    </div>
+                    <div class="right">
+                        <div>
+                            <h3>Nombre de plongeurs</h3>
+                            <input required type="number" id="eventDiverNumberInput" name="eventDiverNumberInput"
+                                min="0" max="50" placeholder="Nombre de plongeurs" value="">
+                        </div>
+                        <div>
+                            <h3>Type de plongée</h3>
+                            <select id="eventTypeInput" name="eventTypeInput">
+                                <option value="Exploration">Exploration</option>
+                                <option value="Technique">Technique</option>
+                                <select>
+                        </div>
+                        <div>
+                            <h3>Directeur de Plongée</h3>
+                            <div class="search_location_DP">
+                                <input type="text" id="eventDPInput" name="eventDPInput" placeholder="Rechercher"
+                                    value="">
+                                <div class="DP_list_dropdown" style="display:none">
+                                    <h4 class="DP_item">Tom</h4>
+                                    <h4 class="DP_item">Marcel</h4>
+                                    <h4 class="DP_item">Alan</h4>
+                                    <h4 class="DP_item">Enguerrand</h4>
+                                    <h4 class="DP_item">Maxime</h4>
+                                    <h4 class="DP_item">Maxime D</h4>
+                                    <h4 class="DP_item">Elen</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3>Evenement privé</h3>
+                            <input type="checkbox" id="eventPrivateInput" class="apple-switch" name="eventPrivateInput"
+                                value="">
+                        </div>
+                        <div>
+                            <h3>Plongeurs obligatoires</h3>
+                            <div class="search_location_diver">
+                                <input type="text" id="eventDiverInput" name="eventDiverInput"
+                                    placeholder="Rechercher (0 inscrits)" value="">
+                                <div class="diver_list_dropdown" style="display:none">
+                                    <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Alan</h4>
+                                    <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Enguerrand</h4>
+                                    <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Maxime</h4>
+                                    <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Maxime D</h4>
+                                    <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Elen</h4>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="comment">
+                    <h3>Commentaire</h3>
+                    <textarea id="eventComment" name="eventComment" value="" placeholder="Commentaire"></textarea>
+                </div>
+                <div class="needs">
+                    <h3>Besoins spécifiques</h3>
+                    <input type="text" id="eventNeedInput" name="eventNeedInput" placeholder="Besoins" value="">
+                </div>
+                <button type="submit" class="create_event_button">
+                    Plannifier l'évènement
+                </button>
+                
+            </form>
+        </modal>
+
+        <modal id="rating">
+            <div class="top">
+                <h1>
+                    Votre avis nous intéresse !
+                </h1>
+            </div>
+            <div class="rating_container">
+                <div class="rating_item">
+                    <h3>Note générale</h3>
+                    <div class="rating_stars general">
+                        <i class="rating__star far fa-star"></i>
+                        <i class="rating__star far fa-star"></i>
+                        <i class="rating__star far fa-star"></i>
+                        <i class="rating__star far fa-star"></i>
+                        <i class="rating__star far fa-star"></i>
+                    </div>
+                </div>
+                <div class="rating_item">
+                    <h3>Lieu de la plongée</h3>
+                    <div class="rating_stars location_rating">
+                        <i class="rating__star far fa-star"></i>
+                        <i class="rating__star far fa-star"></i>
+                        <i class="rating__star far fa-star"></i>
+                        <i class="rating__star far fa-star"></i>
+                        <i class="rating__star far fa-star"></i>
+                    </div>
+                </div>
+                <div class="rating_item">
+                    <h3>Organisation</h3>
+                    <div class="rating_stars orga_rating">
+                        <i class="rating__star far fa-star"></i>
+                        <i class="rating__star far fa-star"></i>
+                        <i class="rating__star far fa-star"></i>
+                        <i class="rating__star far fa-star"></i>
+                        <i class="rating__star far fa-star"></i>
+                    </div>
+                </div>
+                <div class="rating_item">
+                    <h3>Conditions de plongée</h3>
+                    <div class="rating_stars conditions_rating">
+                        <i class="rating__star far fa-star"></i>
+                        <i class="rating__star far fa-star"></i>
+                        <i class="rating__star far fa-star"></i>
+                        <i class="rating__star far fa-star"></i>
+                        <i class="rating__star far fa-star"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="validate_rating">
+                <h3>Valider</h3>
+            </div>
+        </modal>
+        <modal id="dive_rapport">
+            <div class="general_plannification_container">
+                <h1 class="title_rapport_plannif">Plannification</h1>
+                <div class="date_container">
+                    <h3>Date de la plongée </h3>
+                    <input type="date" id="date" name="date" value="">
+                </div>
+                <div class="time_container">
+                    <h3>Heure de la plongée </h3>
+                    <input type="time" id="time" name="time" value="">
+                </div>
+                <div class="location_container">
+                    <h3>Lieu de la plongée </h3>
+                    <input type="text" id="location" name="location" value="">
+                </div>
+                <div class="map_dive"></div>
+
+                <div class="plongeurs_container">
+                    <h1>Plongeurs</h1>
+                    <div class="nombre_plongeurs">
+                        <h3>Nombre de plongeurs</h3>
+                        <input type="number" id="number" min="0" max="50" name="number" value="">
+                    </div>
+                    <div class="nombre_plongeurs">
+                        <h3>Directeur de Plongée</h3>
+                        <input type="text" value="">
+                    </div>
+                </div>
+                <div class="next_button_infos">
+                    Suivant
+                </div>
+
+            </div>
+
+            <div id="palanquees-container" class="parametres-container">
+                <h1>Palanquée 1</h1>
+                <h2>Paramètres</h2>
+                <div class="metres-prevus">
+                    <h3>Profondeur prévue</h3>
+                    <select name="metres-prevus" id="metres-prevus">
+                        <option value="">--Please choose an option--</option>
+                        <option value="20">20m</option>
+                        <option value="20">40m</option>
+                        <option value="20">60m</option>
+                        <option value="20">80m</option>
+                    </select>
+                </div>
+                <div class="metres-realises">
+                    <h3>Profondeur réalisée</h3>
+                    <input type="number" id="metres" name="metres" value="">
+                </div>
+                <div class="temps-prevu">
+                    <h3>Temps prévu</h3>
+                    <input type="time" id="duree-prevu" name="duree-prevu" step="1">
+                </div>
+                <div class="temps-realise">
+                    <h3>Temps réalisé</h3>
+                    <input type="time" id="duree-realise" name="duree-realise" step="1">
+                </div>
+                <div class="departure temps-realise">
+                    <h3>Heure de départ</h3>
+                    <input type="time" id="heure-depart" name="heure-depart" step="1">
+                </div>
+                <div class="arrival temps-realise">
+                    <h3>Heure de retour</h3>
+                    <input type="time" id="heure-arrivee" name="heure-arrivee" step="1">
+                </div>
+                <div class="next_button_infos">
+                    Suivant
+                </div>
+            </div>
+
+            <div class="diver">
+                <select id="name" class="diver-name">
+                    <option value="" selected disabled>Sélectionnez un nom</option>
+                    <option value="John">John</option>
+                    <option value="Alice">Alice</option>
+                    <option value="Bob">Bob</option>
+                </select>
+                <select name="" id="" class="level-diver">
+                    <option value="">Niveau</option>
+                    <option value="">1</option>
+                    <option value="">2</option>
+                    <option value="">3</option>
+                    <option value="">4</option>
+                </select>
+                <div class="diver-parameters">
+                    <select>
+                        <option value="">Fonction</option>
+                        <option value="">ezqsrdtfcygvuhbijnk</option>
+                        <option value="">dxtfchgvjbkn</option>
+                        <option value="">fcghgvjbkn</option>
+                        <option value="">fdxgchv</option>
+                    </select>
+                    <select>
+                        <option value="">Plongée</option>
+                        <option value="">Technique</option>
+                        <option value="">Exploration</option>
+                    </select>
+                    <select>
+                        <option value="">Nitrox %</option>
+                        <option value="">21</option>
+                        <option value="">32</option>
+                        <option value="">36</option>
+                    </select>
+                </div>
+            </div>
+            <div class="diver">
+                <select id="name" class="diver-name">
+                    <option value="" selected disabled>Sélectionnez un nom</option>
+                    <option value="John">John</option>
+                    <option value="Alice">Alice</option>
+                    <option value="Bob">Bob</option>
+                </select>
+                <select name="" id="" class="level-diver">
+                    <option value="">Niveau</option>
+                    <option value="">1</option>
+                    <option value="">2</option>
+                    <option value="">3</option>
+                    <option value="">4</option>
+                </select>
+                <div class="diver-parameters">
+                    <select>
+                        <option value="">Fonction</option>
+                        <option value="">ezqsrdtfcygvuhbijnk</option>
+                        <option value="">dxtfchgvjbkn</option>
+                        <option value="">fcghgvjbkn</option>
+                        <option value="">fdxgchv</option>
+                    </select>
+                    <select>
+                        <option value="">Plongée</option>
+                        <option value="">Technique</option>
+                        <option value="">Exploration</option>
+                    </select>
+                    <select>
+                        <option value="">Nitrox %</option>
+                        <option value="">21</option>
+                        <option value="">32</option>
+                        <option value="">36</option>
+                    </select>
+                </div>
+            </div>
+            <div class="diver">
+                <select id="name" class="diver-name">
+                    <option value="" selected disabled>Sélectionnez un nom</option>
+                    <option value="John">John</option>
+                    <option value="Alice">Alice</option>
+                    <option value="Bob">Bob</option>
+                </select>
+                <select name="" id="" class="level-diver">
+                    <option value="">Niveau</option>
+                    <option value="">1</option>
+                    <option value="">2</option>
+                    <option value="">3</option>
+                    <option value="">4</option>
+                </select>
+                <div class="diver-parameters">
+                    <select>
+                        <option value="">Fonction</option>
+                        <option value="">ezqsrdtfcygvuhbijnk</option>
+                        <option value="">dxtfchgvjbkn</option>
+                        <option value="">fcghgvjbkn</option>
+                        <option value="">fdxgchv</option>
+                    </select>
+                    <select>
+                        <option value="">Plongée</option>
+                        <option value="">Technique</option>
+                        <option value="">Exploration</option>
+                    </select>
+                    <select>
+                        <option value="">Nitrox %</option>
+                        <option value="">21</option>
+                        <option value="">32</option>
+                        <option value="">36</option>
+                    </select>
+                </div>
+            </div>
+            <div class="diver">
+                <select id="name" class="diver-name">
+                    <option value="" selected disabled>Sélectionnez un nom</option>
+                    <option value="John">John</option>
+                    <option value="Alice">Alice</option>
+                    <option value="Bob">Bob</option>
+                </select>
+                <select name="" id="" class="level-diver">
+                    <option value="">Niveau</option>
+                    <option value="">1</option>
+                    <option value="">2</option>
+                    <option value="">3</option>
+                    <option value="">4</option>
+                </select>
+                <div class="diver-parameters">
+                    <select>
+                        <option value="">Fonction</option>
+                        <option value="">ezqsrdtfcygvuhbijnk</option>
+                        <option value="">dxtfchgvjbkn</option>
+                        <option value="">fcghgvjbkn</option>
+                        <option value="">fdxgchv</option>
+                    </select>
+                    <select>
+                        <option value="">Plongée</option>
+                        <option value="">Technique</option>
+                        <option value="">Exploration</option>
+                    </select>
+                    <select>
+                        <option value="">Nitrox %</option>
+                        <option value="">21</option>
+                        <option value="">32</option>
+                        <option value="">36</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="next_button_infos add_palanquee">
+                Ajouter une palanquée
+            </div>
+
+            <div class="next_button_infos save_rapport">
+                Enregistrer le rapport
+            </div>
+
+        </modal>
+
+
+
+
+
+        <modal id="menuModal">
+            <div class="menu_content">
+                <a href="/auth/dashboard">Tableau de Bord</a>
+                <a class=active href="/auth/planning">Plannification</a>
+                <!-- <a href="">Statistiques</a> -->
+                <a class=user_only href="/auth/user/account">Mon profil</a>
+                <a class=club_only href="/auth/club/locations">Liste des Lieux</a>
+                <a class=club_only href="/auth/club/club_members">Liste des Utilisateurs</a>
+            </div>
+            <div class="logout_button">
+                <a href="/logout">Déconnexion</a>
+            </div>
+        </modal>
+
+        <modal id="eventModal">
+            <!-- TITRE -->
+            <h2 id="eventTitle"></h2>
+            <div class="global" id="global-view">
+                <div class="left" id="left_bar">
+                    <div class="timeline_bar" id="timeline_view">
+                        <div class="start_container">
+                            <div class="orange_circle"></div>
+                            <p id="eventStart"></p>
+                        </div>
+                        <div class="end_container">
+                            <div class="orange_circle"></div>
+                            <p id="eventEnd"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="right">
+                    <a href="" target=”_blank” id="eventLocation"> <i class="fa-solid fa-location-dot"></i> Junia
+                        ISEN Lille<br>41 Boulevard
+                        Vauban<br>59000 Lille</a>
+                    <p id="eventDuration"><i class="fa-solid fa-clock"></i>Durée estimée : <span
+                            class="event_duration"></span></p>
+
+                    <p id="eventPriceDiver">Plongeur : 30,00 € </p>
+                    <p id="eventPriceInstructor">Instructeur : 15,00 € </p>
+                    <p id="comment"></p>
+                    <p id="needs"></p>
+                    <div class="displayRating_container">
+                        <div class="general">
+                            <p>Général</p>
+                            <span>
+                                <i class="fa-solid fa-star"></i>
+                                <label class="general_display" for="">*/5</label>
+                            </span>
+                        </div>
+                        <div class="location">
+                            <p>Lieu</p>
+                            <span>
+                                <i class="fa-solid fa-star"></i>
+                                <label class="location_display" for="">*/5</label>    
+                            </span>
+                        </div>
+                        <div class="orga">
+                            <p>Organisation</p>
+                            <span>
+                                <i class="fa-solid fa-star"></i>
+                                <label class="orga_display" for="">*/5</label>    
+                            </span>
+                        </div>
+                        <div class="conditions">
+                            <p>Conditions</p>
+                            <span>
+                                <i class="fa-solid fa-star"></i>
+                                <label class="conditions_display" for="">*/5</label>    
+                            </span>
+                        </div>
+                    </div>
+                    <div class="numberOfRatings">
+                        <p>Nombre d'avis : <span class="numberOfRatings_display"></span></p>
+                    </div>
+                    <div id="reserveButton" class="reserveButton">S'inscrire</div>
+                    <span class="dp_only edit_rapport">
+                        <i class="fa-solid fa-file-circle-plus"></i>
+                    </span>
+                    <span class="user_only rating">
+                        <i class="fa-solid fa-star"></i>
+                    </span>
+                    <!-- <div id="dereserveButton">Se désinscrire</div> -->
+                </div>
+                <div class="listOfUser">
+                    <h3>Liste des Inscrits</h3>
+                    <h5 class="restant"><span id="places_left"></span> places restantes</h5>
+                    <ul id="display_users">
+                        <li class=DP id="DP_Display_Modal"></li>
+                        <li></li>
+                    </ul>
+                </div>
+            </div>
+
+        </modal>
+
+
+
+        <modal id="emergencyModal">
+
+            <div class="top">
+                <h1 id="txt_title" class="title">APPEL SOS</h1>
+                <h3>Appuyez une nouvelle fois pour demander du secours</h3>
+                <h3>Tap once again to call for emergency help</h3>
+            </div>
+            <div id="txt_descr" class="fields-container">
+                <h3>
+                    <a id="callButton"><i class="fa-solid fa-truck-medical"></i></a>
+                </h3>
+            </div>
+        </modal>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="../JS/modal.js"></script>
+    <script type=module src="../JS/reservation.js"></script>
 </body>
+
 </html>

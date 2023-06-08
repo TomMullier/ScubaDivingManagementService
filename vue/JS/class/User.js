@@ -1,5 +1,5 @@
 class User {
-        constructor(lastname, firstname, mail, phone, diverQualification, instructorQualification, noxLevel, additionnalQualification, licenceNumber, licenceExpiration, medicalExpiration, birthdate ) {
+        constructor(lastname, firstname, mail, phone, diverQualification, instructorQualification, noxLevel, additionnalQualification, licenceNumber, licenceExpiration, medicalExpiration, birthdate) {
                 this.lastname = lastname;
                 this.firstname = firstname;
                 this.mail = mail;
@@ -11,7 +11,7 @@ class User {
                 this.licenceNumber = licenceNumber;
                 this.licenceExpiration = licenceExpiration;
                 this.medicalExpiration = medicalExpiration;
-                this.birthdate = birthdate+"T00:00:00";
+                this.birthdate = birthdate;
         }
 }
 

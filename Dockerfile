@@ -2,6 +2,11 @@ FROM node:latest
 
 WORKDIR /app
 
+# Set timezone
+ENV TZ=Europe/Paris
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends tzdata iputils-ping && apt-get clean
+
 COPY package*.json .
 
 RUN npm install

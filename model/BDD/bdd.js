@@ -382,10 +382,11 @@ class BDD {
         let query = 'INSERT INTO Dive_Registration SET ?';
         this.con.query(query, [data], (err, result) => {
             if (err) {
-                console.log(err);
+                // console.log(err);
+                console.log("\t->Error creating registration");
                 callback(false);
             } else {
-                console.log("Registration correctly inserted ");
+                console.log("\t->Registration correctly inserted ");
                 callback(true);
             }
         })
@@ -398,20 +399,20 @@ class BDD {
                 console.log(err);
                 callback(false);
             } else {
-                console.log("Registration deleted ");
+                console.log("User correctly unregistered from event");
                 callback(true);
             }
         })
     }
 
-    deleteRegistrationEvent(data, callback){
+    deleteAllRegistration(data, callback) {
         let query = 'DELETE FROM Dive_Registration WHERE Planned_Dive_Id_Planned_Dive = ?';
-        this.con.query(query, data, (err, result) => {
+        this.con.query(query, [data], (err, result) => {
             if (err) {
                 console.log(err);
                 callback(false);
             } else {
-                console.log("Registration deleted ");
+                console.log("All registrations deleted");
                 callback(true);
             }
         })
@@ -438,63 +439,6 @@ function getDateFormat(badDate) {
     return year + "-" + month + "-" + day + " " + hour;
 }
 
-
-
-//Dive_Team
-function CreateDiveTeam(Max_Depth, Max_Duration, Actual_Depth, Max_Duration, Actual_Depth, Actual_Duration, Dive_Type, Sequence_Number, Start_Time, Stop_Time, Comment, Id_Diver, Id_Dive) {
-    tmpUID = randomUUID();
-    tmpREQ = `INSERT INTO Dive_Team (Id_Dive_Team,Max_Depth,Max_Duration,Actual_Depth,Actual_Duration,Dive_Type,Sequence_number,Start_Time,Stop_Time,Comment,Diver_Id_Diver,Dive_Id_Dive) value ("` + tmpUID + `", "` + Max_Depth + `", "` + Max_Duration + `", "` + Actual_Depth + `", "` + Actual_Duration + `", "` + Dive_Type + `", "` + Sequence_Number + `", "` + Start_Time + `", "` + Stop_Time + `", "` + Comment + `", "` + Id_Diver + `", "` + Id_Dive + `");`;
-    Requete(tmpREQ);
-}
-function UpdateDiveTeam(Id_Dive_Team, Max_Depth, Max_Duration, Actual_Depth, Actual_Duration, Dive_Type, Sequence_Number, Start_Time, Stop_Time, Comment) {
-    tmpREQ = `UPDATE Dive_Team set Max_Depth ="` + Max_Depth + `",Max_Duration ="` + Max_Duration + `",Actual_Depth ="` + Actual_Depth + `",Actual_Duration="` + Actual_Duration + `",Dive_Type ="` + Dive_Type + `",Sequence_Number ="` + Sequence_Number + `",Start_Time ="` + Start_Time + `",Stop_Time ="` + Stop_Time + `",Comment ="` + Comment + `" WHERE Id_Dive_Team ="` + Id_Dive_Team + `";`;
-    Requete(tmpREQ);
-}
-function DeleteDiveTeam(Id_Dive_Team) {
-    tmpREQ = `DELETE from Dive_Team WHERE Id_Dive_Team ="` + Id_Dive_Team + `";`;
-    Requete(tmpREQ);
-}
-
-//Dive_Team_Member
-function CreateDiveTeamMember(Id_Diver, Id_Dive_Team, Temporary_Diver_Qualification, Current_Diver_Qualification, Diver_Role, Current_Instructor_Qualification, Nox_Percentage, Comment, Paid_Amount) {
-    tmpREQ = `INSERT INTO Dive_Team_Member(Diver_Id_Diver,Dive_Team_Id_Dive_Team,Temporary_Diver_Qualification,Current_Diver_Qualification,Diver_Role,Current_Instructor_Qualification,Nox_Percentage,Comment,Paid_Amount) value ("` + Id_Diver + `", "` + Id_Dive_Team + `", "` + Temporary_Diver_Qualification + `", "` + Current_Diver_Qualification + `", "` + Diver_Role + `", "` + Current_Instructor_Qualification + `", "` + Nox_Percentage + `", "` + Comment + `", "` + Paid_Amount + `");`;
-    Requete(tmpREQ);
-}
-function UpdateDiveTeamMember(Id_Diver, Id_Dive_Team, Temporary_Diver_Qualification, Current_Diver_Qualification, Diver_Role, Current_Instructor_Qualification, Nox_Percentage, Comment, Paid_Amount) {
-    tmpREQ = `UPDATE Dive_Team_Member set Temporary_Diver_Qualification="` + Temporary_Diver_Qualification + `",Current_Diver_Qualification="` + Current_Diver_Qualification + `",Diver_Role="` + Diver_Role + `",Current_Instructor_Qualification="` + Current_Instructor_Qualification + `",Nox_Percentage ="` + Nox_Percentage + `",Comment="` + Comment + `",Paid_Amount="` + Paid_Amount + `" WHERE Diver_Id_Diver ="` + Id_Diver + `" AND Dive_Team_Id_Dive_Team ="` + Id_Dive_Team + `";`;
-    Requete(tmpREQ);
-}
-function DeleteDiveTeamMember(Id_Diver, Id_Dive_Team) {
-    tmpREQ = `DELETE from Dive_Team_Member WHERE Diver_Id_Diver ="` + Id_Diver + `" AND Dive_Team_Id_Dive_Team ="` + Id_Dive_Team + `";`;
-    Requete(tmpREQ);
-}
-
-//Dive_Team_Composition
-function CreateDiveTeamComposition(Dive_Type, Diver_Age, Dive_Guide_Qualification, Max_Diver, Additional_Diver) {
-    tmpUID = randomUUID();
-    tmpREQ = `INSERT into Dive_Team_Composition(Id_Dive_Team_Composition,Dive_Type,Diver_Age,Dive_Guide_Qualification,Max_Diver,Additional_Diver) value ("` + tmpUID + `", "` + Dive_Type + `", "` + Diver_Age + `", "` + Dive_Guide_Qualification + `", "` + Max_Diver + `", "` + Additional_Diver + `");`;
-    Requete(tmpREQ);
-}
-function UpdateDiveTeamComposition(Id_Dive_Team_Composition, Dive_Type, Diver_Age, Dive_Guide_Qualification, Max_Diver, Additional_Diver) {
-    tmpREQ = `UPDATE Dive_Team_Composition set Dive_Type ="` + Dive_Type + `",Diver_Age="` + Diver_Age + `",Dive_Guide_Qualification="` + Dive_Guide_Qualification + `",Max_Diver="` + Max_Diver + `",Additional_Diver="` + Additional_Diver + `" WHERE Id_Dive_Team_Composition ="` + Id_Dive_Team_Composition`";`;
-    Requete(tmpREQ);
-}
-function DeleteDiveTeamComposition(Id_Dive_Team_Composition) {
-    tmpREQ = `DELETE from Dive_Team_Composition WHERE Id_Dive_Team_Composition ="` + Id_Dive_Team_Composition + `";`;
-    Requete(tmpREQ);
-}
-
-//Max_Depth_for_Qualification
-function CreateMaxDepthForQualification(Diver_Qualification, Diver_Age, Guided_Diver_Depth, Autonomous_Diver_Depth) {
-    tmpUID = randomUUID();
-    tmpREQ = `INSERT into Max_Depth_for_Qualification value("` + tmpUID + `", "` + Diver_Qualification + `", "` + Diver_Age + `", "` + Guided_Diver_Depth + `", "` + Autonomous_Diver_Depth + `");`;
-    Requete(tmpREQ);
-}
-
-function DeleteMaxDepthForQualification(Id_Max_Depth_for_Qualification) {
-    tmpREQ = `DELETE from Max_Depth_for_Qualification WHERE Id_Max_Depth_for_Qualification ="` + Id_Max_Depth_for_Qualification + `";`
-    Requete(tmpREQ);
-}
 
 
 

@@ -24,11 +24,15 @@ class Event {
                         this.backgroundColor = "#4caf50";
                         this.borderColor = "#4caf50";
                 }
-        } 
+        }
 
         addUser(user) {
-                if(user == undefined) return
-                this.users= user;
+                if (user == undefined) return;
+                if (typeof (user) == "string") {
+                        this.users.push(user);
+                } else {
+                        this.users = user;
+                }
         }
 
         getUsers() {

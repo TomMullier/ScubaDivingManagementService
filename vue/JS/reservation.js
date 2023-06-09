@@ -107,7 +107,6 @@ function addEvent(event, usersToRegister) {
       if (!res.created) {
         // Tom fait quelque chose, l'event n'a pas été créé
       } else {
-        console.log(event.dp, usersToRegister);
         let registrationInfo = {
           Personnal_Comment: "Registered by club",
           Car_Pooling_Seat_Offered: 0,
@@ -117,7 +116,8 @@ function addEvent(event, usersToRegister) {
         register(event, registrationInfo, event.dp) // dp = mail
         if (usersToRegister.length > 0) {
           registrationInfo.Diver_Role = "Diver";
-          usersToRegister.forEach(function (user) {
+          console.log(usersToRegister, typeof (usersToRegister));
+          usersToRegister.forEach(user => {
             register(event, registrationInfo, user); // user = mail
           });
         }
@@ -146,11 +146,8 @@ function getEvent(event) {
 }
 
 /* ------------------------------ MODIFY EVENT ------------------------------ */
-function updateEvent(event) {
-  event.Dive_Site_Id_Dive_Site = event.Location.Id_Dive_Site;
-  delete event.users;
-  delete event.title;
-  delete event.Location;
+function updateEvent(oldEvent, event, usersToRegister) {
+  event.oldEvent = oldEvent;
   fetch('/auth/planning', {
       method: 'PUT',
       headers: {
@@ -158,10 +155,37 @@ function updateEvent(event) {
       },
       body: JSON.stringify(event)
     }).then(res => res.json())
-    .then(res => {
+    .then(async res => {
       console.log(res)
+      if (!res.modified) {
+        // Tom fait quelque chose, l'event n'a pas été créé
+      } else {
+        delete event.oldEvent;
+        console.log("ici1");
+        let isDeleted = await deleteAllRegistration(event);
+        console.log(isDeleted);
+        console.log("ici2");
+        if (isDeleted) {
+          console.log(event.dp, usersToRegister);
+          let registrationInfo = {
+            Personnal_Comment: "Registered by club",
+            Car_Pooling_Seat_Offered: 0,
+            Car_Pooling_Seat_Request: "n",
+            Diver_Role: "DP"
+          }
+          register(event, registrationInfo, event.dp) // dp = mail
+          if (usersToRegister.length > 0) {
+            registrationInfo.Diver_Role = "Diver";
+            console.log(usersToRegister, typeof (usersToRegister));
+            usersToRegister.forEach(user => {
+             register(event, registrationInfo, user); // user = mail
+            });
+          }
+        }
+      }
     })
 }
+
 
 /* ------------------------------ DELETE EVENT ------------------------------ */
 function deleteEvent(event) {
@@ -189,6 +213,10 @@ function deleteEvent(event) {
 
 /* -------------------------------- REGISTER -------------------------------- */
 function register(event, registrationInfo, userInfo = "") {
+  console.log("uyhgqsdfkjhqsdkhjlqsdflhiu<sdfiug<sdfiuyg<sdfkjhg<qsfkjhqerkuygZD");
+  console.log(event);
+  console.log(registrationInfo);
+  console.log(userInfo);
   let data = {
     ...event,
     ...registrationInfo,
@@ -206,11 +234,8 @@ function register(event, registrationInfo, userInfo = "") {
     })
 }
 
+/* ------------------------------- UNREGISTER ------------------------------- */
 function unregister(event, registrationInfo) {
-  event.Dive_Site_Id_Dive_Site = event.Location.Id_Dive_Site;
-  delete event.users;
-  delete event.title;
-  delete event.Location;
   let data = {
     ...event,
     ...registrationInfo
@@ -226,6 +251,28 @@ function unregister(event, registrationInfo) {
       console.log(res)
     })
 }
+
+/* ------------------------- DELETE ALL REGISTRATION ------------------------ */
+async function deleteAllRegistration(event) {
+  return new Promise((resolve, reject) => {
+    fetch('/auth/planning/registration/all', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(event)
+      }).then(res => res.json())
+      .then(res => {
+        if (res.deleted) resolve(true);
+        else resolve(false);
+      })
+  })
+}
+
+
+
+
+
 
 
 let calendar;
@@ -254,7 +301,7 @@ function setEvents(ev_) {
     },
     height: 'auto',
     initialView: 'timeGridWeek',
-    slotMinTime: '01:00:00', // Heure de début (10h)
+    slotMinTime: '09:00:00', // Heure de début (10h)
     slotMaxTime: '19:00:00',
     views: {
       timeGridWeek: {
@@ -280,7 +327,7 @@ function setEvents(ev_) {
       // Evénement -> info.event
 
       // If role is club, on hover place a little pencil on the event
-      if (my_role == "club") {
+      if (my_role == "club" && new Date(info.event.end) > new Date()) {
         let pencil = document.createElement("I");
         pencil.classList.add("fas");
         pencil.classList.add("fa-pencil-alt");
@@ -296,7 +343,7 @@ function setEvents(ev_) {
     eventMouseLeave: function (info) {
       // Element HTML -> info.el
       // Evénement -> info.event
-      if (my_role == "club") {
+      if (my_role == "club" && new Date(info.event.end) > new Date()) {
         document.querySelector(".fa-pencil-alt").style.opacity = "0";
         setTimeout(function () {
           info.el.innerHTML = html_memory;
@@ -306,7 +353,7 @@ function setEvents(ev_) {
     eventClick: function (info) {
       // Element HTML -> info.el
       // Evénement -> info.event
-      if (my_role == "club") {
+      if (my_role == "club" && new Date(info.event.end) > new Date()) {
         edit_event(info);
         return;
       }
@@ -621,6 +668,7 @@ create_event_button.addEventListener("click", function () {
   });
   menutoggle.classList.toggle('active');
   menutoggle.classList.toggle('close-modal');
+  // document.querySelector("#evenDateInput").value = new Date();
   let location_dropdown = document.querySelector("#location_list_dropdown_create");
   location_dropdown.innerHTML = "";
   console.log("les lieux de max")
@@ -696,6 +744,38 @@ function setDiversListsHTML() {
     diver_item.innerHTML = "<input type='checkbox' class='checkbox_item'>" + diver.Firstname + " " + diver.Lastname;
     diver_item.appendChild(hidden);
     diver_DD.appendChild(diver_item);
+  });
+}
+
+function setDiversListsHTML_Edit() {
+  // Set DP list in HTML
+  let DP_list = document.querySelector("#modifyEventModal .DP_list_dropdown");
+  DP_list.innerHTML = "";
+  let diver_DD = document.querySelector("#modifyEventModal .diver_list_dropdown");
+  diver_DD.innerHTML = "";
+  allDivers.forEach(function (diver) {
+    if (diver.Diver_Qualification == "P5") {
+      let DP_item = document.createElement("H4");
+      let hidden = document.createElement("H4");
+      hidden.style.display = "none";
+      hidden.id = "DP_mail";
+      hidden.className = diver.Mail;
+      DP_item.classList.add("DP_item");
+      DP_item.innerText = diver.Firstname + " " + diver.Lastname;
+      DP_item.appendChild(hidden);
+      DP_list.appendChild(DP_item);
+    } else {
+
+      let diver_item = document.createElement("H4");
+      diver_item.classList.add("diver_item");
+      let hidden = document.createElement("H4");
+      hidden.style.display = "none";
+      hidden.className = diver.Mail;
+      hidden.id = "diver_mail";
+      diver_item.innerHTML = "<input type='checkbox' class='checkbox_item'>" + diver.Firstname + " " + diver.Lastname;
+      diver_item.appendChild(hidden);
+      diver_DD.appendChild(diver_item);
+    }
   });
 }
 
@@ -854,7 +934,7 @@ validate_event.addEventListener("click", function (e) {
   console.log("Evenement à créer :");
   console.log(data);
   addEvent(data, usersToRegister);
-  document.location.reload();
+  // document.location.reload();
 
 
 });
@@ -865,6 +945,145 @@ function setUserInfos() {
 
 //! EVENT EDITION
 
+let search_diver_edit = document.querySelector("#eventDiverInput_modify");
+
+search_diver_edit.addEventListener("click", function () {
+  detectDivers_edit();
+  let dps = document.querySelectorAll("#modifyEventModal .diver_item");
+  document.querySelector("#modifyEventModal .diver_list_dropdown").style.display = "none";
+
+  dps.forEach(function (dp) {
+    if (dp.querySelector("input").checked) {
+      console.log(dp)
+      dp.style.display = "flex";
+      document.querySelector("#modifyEventModal .diver_list_dropdown").style.display = "flex";
+    } else {
+      dp.style.display = "none";
+    }
+  });
+});
+
+search_diver_edit.addEventListener("input", function checkInputDiver_edit() {
+  detectDivers();
+  let search = search_diver_edit.value;
+  let divers = document.querySelectorAll("#modifyEventModal .diver_item");
+  divers.forEach(function (diver) {
+
+    diver.querySelector("input").addEventListener("click", function () {
+      document.querySelector("#modifyEventModal .diver_list_dropdown").style.display = "none";
+      search_diver_edit.value = "";
+
+      checkInputDiver_edit();
+    });
+    if (diver.innerText.toLowerCase().includes(search.toLowerCase())) {
+      diver.style.display = "flex";
+      document.querySelector("#modifyEventModal .diver_list_dropdown").style.display = "flex";
+    } else {
+      if (diver.querySelector("input").checked) {
+        diver.style.display = "flex";
+      } else {
+        diver.style.display = "none";
+      }
+    }
+
+  });
+
+  let display = false;
+  divers.forEach(function (diver) {
+    if (diver.style.display == "flex") {
+      display = true;
+    }
+  });
+  if (search_diver_edit.value == "") {
+    display = false;
+  }
+  if (display) {
+    document.querySelector("#modifyEventModal .diver_list_dropdown").style.display = "flex";
+  } else {
+    document.querySelector("#modifyEventModal .diver_list_dropdown").style.display = "none";
+  }
+});
+
+function detectDivers_edit() {
+  let divers = document.querySelectorAll("#modifyEventModal .diver_item");
+  let number_of_diver = 0;
+  divers.forEach(function (diver) {
+    if (diver.querySelector(".checkbox_item").checked) {
+      number_of_diver++;
+    }
+  });
+  console.log("Number "+number_of_diver);
+  search_diver_edit.placeholder = "Rechercher" + " (" + number_of_diver + " inscrits)";
+}
+
+let search_dp_edit = document.querySelector("#eventDPInput_modify");
+search_dp_edit.addEventListener("input", function () {
+  let search = search_dp_edit.value;
+  let dps = document.querySelectorAll("#modifyEventModal .DP_item");
+  dps.forEach(function (dp) {
+    if (dp.innerText.toLowerCase().includes(search.toLowerCase())) {
+      dp.style.display = "flex";
+      document.querySelector("#modifyEventModal .DP_list_dropdown").style.display = "flex";
+      dp.addEventListener("click", function () {
+        search_dp_edit.value = dp.innerText;
+        dp_mail = dp.querySelector("#DP_mail").className;
+        document.querySelector("#modifyEventModal .DP_list_dropdown").style.display = "none";
+      });
+    } else {
+      dp.style.display = "none";
+    }
+
+  });
+  let display = false;
+  dps.forEach(function (dp) {
+    if (dp.style.display == "flex") {
+      display = true;
+    }
+  });
+  if (search_dp_edit.value == "") {
+    display = false;
+  }
+  if (display) {
+    document.querySelector("#modifyEventModal .DP_list_dropdown").style.display = "flex";
+  } else {
+    document.querySelector("#modifyEventModal .DP_list_dropdown").style.display = "none";
+  }
+});
+
+let search_location_edit = document.querySelector("#eventLocationInput_modify");
+
+search_location_edit.addEventListener("input", function () {
+  let search = search_location_edit.value;
+  let location_ = document.querySelectorAll(".location_item");
+  location_.forEach(function (location) {
+    if (location.innerText.toLowerCase().includes(search.toLowerCase())) {
+      document.querySelector("#modifyEventModal .location_list_dropdown").style.display = "flex";
+      location.style.display = "flex";
+      location.addEventListener("click", function () {
+        search_location_edit.value = location.innerText;
+        document.querySelector("#modifyEventModal .location_list_dropdown").style.display = "none";
+      });
+    } else {
+      location.style.display = "none";
+    }
+
+  });
+  let display = false;
+  location_.forEach(function (location) {
+    if (location.style.display == "flex") {
+      display = true;
+    }
+  });
+  if (search_location_edit.value == "") {
+    display = false;
+  }
+  if (display) {
+    document.querySelector("#modifyEventModal  .location_list_dropdown").style.display = "flex";
+  } else {
+    document.querySelector("#modifyEventModal  .location_list_dropdown").style.display = "none";
+  }
+});
+
 function edit_event(info) {
   // Open modale
   modals.show("modifyEventModal", function () {
@@ -872,6 +1091,29 @@ function edit_event(info) {
   });
   menutoggle.classList.toggle('active');
   menutoggle.classList.toggle('close-modal');
+  let oldEvent = {
+    Start_Date: info.event.start,
+    End_Date: info.event.end,
+    Diver_Price: info.event._def.extendedProps.divePrice,
+    Instructor_Price: info.event._def.extendedProps.InstructorPrice,
+    Special_Needs: info.event._def.extendedProps.needs,
+    Status: info.event._def.extendedProps.open,
+    Max_Divers: info.event._def.extendedProps.max,
+    Dive_Type: info.event._def.extendedProps.diveType,
+    Comments: info.event._def.extendedProps.comment,
+    Site_Name: info.event._def.extendedProps.location.Site_Name,
+  }
+  console.log("Old Event")
+  console.log(oldEvent);
+
+  let location_dropdown_edit = document.querySelector("#modifyEventModal .location_list_dropdown");
+  location_dropdown_edit.innerHTML = "";
+  locations.forEach(function (location) {
+    let location_item = document.createElement("H4");
+    location_item.classList.add("location_item");
+    location_item.innerText = location.name;
+    location_dropdown_edit.appendChild(location_item);
+  });
 
   // Remplir les champs avec les valeurs de info
   document.querySelector("#eventDateInput_modify").value = info.event.start.toISOString().slice(0, 10);
@@ -884,33 +1126,24 @@ function edit_event(info) {
   document.querySelector("#eventNeedInput_modify").value = info.event.extendedProps.needs;
   document.querySelector("#eventDiverNumberInput_modify").value = info.event.extendedProps.max;
   document.querySelector("#eventTypeInput_modify").value = info.event.extendedProps.diveType;
+  console.log("MES USERS ")
+  console.log(info.event._def.extendedProps.users);
+  setDiversListsHTML_Edit();
   info.event._def.extendedProps.users.forEach(function (user) {
     if (user.Diver_Role == "DP") {
       document.querySelector("#eventDPInput_modify").value = user.Firstname + " " + user.Lastname;
     } else {
       let diver_item = document.querySelectorAll("#modifyEventModal .diver_item");
       diver_item.forEach(function (diver) {
-        if (diver.innerText == user.Firstname + " " + user.Lastname) {
-          diver.querySelector("input").checked = true;
+        if (diver.innerText === (user.Firstname + " " + user.Lastname) && user.Diver_Role != "DP") {
+          diver.querySelector(".checkbox_item").checked = true;
         }
       });
     }
   });
-  document.querySelector("#eventDiverInput_modify").placeholder = "Rechercher" + " (" + info.event.extendedProps.users.length + " inscrits)";
-  document.querySelector("#eventPrivateInput_modify").checked = new Boolean(info.event.extendedProps.open);
-
-  let diverList = [];
-  info.event.extendedProps.users.forEach(function (user) {
-    diverList.push(user);
-  });
-  let diver_item = document.querySelectorAll("#modifyEventModal .diver_item");
-  diver_item.forEach(function (diver) {
-    if (diverList.includes(diver.innerText)) {
-      diver.querySelector("input").checked = true;
-    } else {
-      diver.querySelector("input").checked = false;
-    }
-  });
+  let numberToDisplay = info.event.extendedProps.users.length - 1
+  document.querySelector("#eventDiverInput_modify").placeholder = "Rechercher" + " (" + numberToDisplay + " inscrits)";
+  document.querySelector("#eventPrivateInput_modify").checked = info.event.extendedProps.open === "true" ? true : false;
 
   //! SUPPRESSION EVENT
   document.querySelector(".delete_event_button").addEventListener("click", function () {
@@ -954,14 +1187,44 @@ function edit_event(info) {
     let dp_ = document.querySelector("#eventDPInput_modify").value;
     let private_ = document.querySelector("#eventPrivateInput_modify").checked;
     let diverList = [];
+    // serach in all users for the mail corresponding to DP
+    allDivers.forEach(function (diver) {
+      if (diver.Firstname + " " + diver.Lastname == dp_) {
+        dp_mail = diver.Mail;
+      }
+    });
     let event_to_create = new Event(begin, end, divePrice, instructorPrice, location, comment, needs, private_, max, 0, type);
     document.querySelectorAll("#modifyEventModal .diver_item").forEach(function (diver) {
-      if (diver.querySelector("input").checked) {
-        event_to_create.addUser(diver.innerText);
-      }
+      allDivers.forEach(function (diver_) {
+        if (diver_.Mail == diver.querySelector("#diver_mail").className && diver_.Mail != dp_mail) {
+          if (diver.querySelector("input").checked) {
+            event_to_create.addUser(diver_.Mail);
+          }
+        }
+      });
+      // event_to_create.addUser(dp_mail);
     });
     console.log("Evenement à créer :");
     console.log(event_to_create);
+    let data = {
+      Start_Date: begin,
+      End_Date: end,
+      Diver_Price: divePrice,
+      Instructor_Price: instructorPrice,
+      Special_Needs: needs,
+      Status: private_,
+      Max_Divers: max,
+      Dive_Type: type,
+      Comments: comment,
+      Site_Name: location,
+      dp: dp_mail, // MAIL
+    }
+    console.log("Edit event pour Max :")
+    console.log(data);
+    console.log(event_to_create.users)
+    updateEvent(oldEvent, data, event_to_create.users);
+    // document.location.reload();
+
   });
 }
 

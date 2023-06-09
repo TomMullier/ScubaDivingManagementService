@@ -51,8 +51,11 @@ fetch('/auth/dashboard/get_info', {
     if (res.userInfo && res.userInfo.length != 0) {
       me = new User(userInfo.Lastname, userInfo.Firstname, userInfo.Mail, userInfo.Phone, userInfo.Diver_Qualification, userInfo.Instructor_Qualification, userInfo.Nox_Level, userInfo.Additional_Qualifications, userInfo.License_Number, userInfo.License_Expiration_Date, userInfo.Medical_Certificate_Expiration_Date, userInfo.Birthdate);
       console.log(me)
-      setUserInfos();
     }
+    if (res.username) {
+      me = res.username;
+    }
+    setUserInfos();
     if (res.registrationList && res.registrationList.length != 0) {
       let events_ = res.registrationList;
       events = [];
@@ -196,7 +199,7 @@ addImportantMessageButton.addEventListener("click", function () {
   document.querySelector(".validate_message").addEventListener("click", function () {
     let message = document.querySelector("#textarea_important").value;
     document.querySelector("#textarea_important").value = "";
-    if (message !== "") {
+    if (message != "") {
       document.querySelector(".message").style.display = "flex";
       document.querySelector("#important_text").innerText = message;
     } else {
@@ -220,6 +223,19 @@ function getTitle(event) {
 }
 
 function setUserInfos() {
+  if (my_role == "club") {
+    document.querySelector(".right .name").innerText = me.split("@")[0];
+    document.querySelector(".name").innerHTML = "<b>Nom du club : </b>" + me.split("@")[0];
+    document.querySelector(".phone").style.display = "none";
+    document.querySelector(".birth").style.display = "none";
+    document.querySelector(".email").style.display = "none";
+    document.querySelector(".level").style.display = "none";
+    document.querySelector(".level_text").style.display = "none";
+
+    document.querySelector(".photo_container").style.display = "none";
+    document.querySelector("#my_profile_picture").style.display = "none";
+    return;
+  }
   document.querySelector(".name").innerHTML = "<b>Nom : </b>" + me.firstname + " " + me.lastname;
   document.querySelector(".phone").innerHTML = "<b>Téléphone : </b>" + me.phone;
   let birthdate = new Date(me.birthdate);

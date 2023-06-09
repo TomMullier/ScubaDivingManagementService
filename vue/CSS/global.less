@@ -15,6 +15,7 @@ body {
     font-size: 14px;
     line-height: 1.42857143;
     color: #333;
+    width: 100%;
     background-color: #fff;
 }
 
@@ -109,7 +110,9 @@ body {
                 font-size: 50px;
                 text-transform: uppercase;
                 font-family: @body_font;
-                line-height: 0;
+                text-align: center;
+                align-self: center;
+                margin:0;
             }
 
             h3 {
@@ -117,7 +120,9 @@ body {
                 font-size: 15px;
                 text-transform: uppercase;
                 font-family: @body_font;
-                line-height: 0;
+                text-align: center;
+                align-self: center;
+                margin:0;
             }
         }
 
@@ -148,7 +153,7 @@ body {
 
     }
 
-    background-color: #f2584aec;
+    background-color: #f2584a;
 }
 
 @keyframes Blink {
@@ -291,6 +296,10 @@ body {
 
 .toggle {
     position: fixed;
+    top:0;
+    left: 0;
+    margin-top:35px;
+    margin-left: calc(10% - 35px);
     width: 70px;
     height: 70px;
     background: transparent;

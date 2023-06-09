@@ -78,7 +78,7 @@ app.get('/login', keycloak.protect(), function (req, res) {
             res.redirect("/auth/dashboard");
         } else res.redirect('/logout');
     } else {
-        console.log("Aucun rôle valide");
+        console.log("User tried to connect without valid roles");
         res.redirect('/logout');
     }
 });
@@ -94,7 +94,6 @@ app.get('/auth/dashboard', keycloak.protect(), function (req, res) {
     else res.redirect('/logout');
 });
 
-
 app.get('/auth/dashboard/get_info', keycloak.protect(), function (req, res) {
     let username = req.kauth.grant.access_token.content.preferred_username;
     if (checkUser(req, "CLUB")) {
@@ -109,14 +108,13 @@ app.get('/auth/dashboard/get_info', keycloak.protect(), function (req, res) {
             if (userInfo === undefined) return res.json({
                 username: username
             });
-
             Database.getRegistrationList(userInfo.Id_Diver, (registrationList) => {
                 return res.json({
                     userInfo: userInfo,
                     registrationList: registrationList
                 });
             });
-        })
+        });
     }
 });
 
@@ -150,46 +148,60 @@ app.post('/auth/planning', keycloak.protect(),
         if (!errors.isEmpty()) return res.status(422).json({
             errors: errors.array()
         });
+        console.log("--- Trying to create event --'");
         Database.getUserInfoByMail(req.body.dp, infoDp => {
-            if (infoDp.Diver_Qualification != "P5") return res.json({
-                created: false,
-                comment: "DP is not P5"
-            })
+            if (infoDp.Diver_Qualification != "P5") {
+                console.log("\t->Error, DP is not P5");
+                return res.json({
+                    created: false,
+                    comment: "DP is not P5"
+                })
+            }
             delete req.body.dp;
             let Site_Name = req.body.Site_Name;
             delete req.body.Site_Name;
 
-            console.log("Creating event");
             req.body.Start_Date = getDateFormat(new Date(req.body.Start_Date));
             req.body.End_Date = getDateFormat(new Date(req.body.End_Date));
-
             Database.getDiveSiteInfoByName({
                 Site_Name: Site_Name
             }, siteInfo => {
-                if (siteInfo == undefined) return res.json({
-                    created: false,
-                    comment: "Dive Site doesn't exist"
-                })
+                if (siteInfo == undefined) {
+                    console.log("\t->Error, Dive Site doesn't exist");
+                    return res.json({
+                        created: false,
+                        comment: "Dive Site doesn't exist"
+                    })
+                }
                 req.body.Dive_Site_Id_Dive_Site = siteInfo.Id_Dive_Site;
                 Database.getEvent(req.body, (event) => {
-                    if (event) return res.json({
-                        created: false,
-                        comment: "Event already exist"
-                    });
-                    Database.createEvent(req.body, (isInserted) => {
-                        if (!isInserted) return res.json({
+                    if (event) {
+                        console.log("\t->Error, Event already exist");
+                        return res.json({
                             created: false,
-                            comment: "Impossible to add Event"
+                            comment: "Event already exist"
                         });
-                        else return res.json({
-                            created: true,
-                            comment: "Event added"
-                        });
+                    }
+                    Database.createEvent(req.body, (isInserted) => {
+                        if (!isInserted) {
+                            console.log("\t->Error, impossible to add Event");
+                            return res.json({
+                                created: false,
+                                comment: "Impossible to add Event"
+                            });
+                        }
+                        else {
+                            console.log("\t->Event added");
+                            return res.json({
+                                created: true,
+                                comment: "Event added"
+                            });
+                        }
                     });
                 });
             });
-        })
-    })
+        });
+    });
 
 /* ---------------------------------- READ ---------------------------------- */
 
@@ -243,15 +255,18 @@ app.put('/auth/planning', keycloak.protect(),
         req.body.End_Date = getDateFormat(new Date(req.body.End_Date).toLocaleString());
         req.body.oldEvent.Start_Date = getDateFormat(new Date(req.body.oldEvent.Start_Date).toLocaleString());
         req.body.oldEvent.End_Date = getDateFormat(new Date(req.body.oldEvent.End_Date).toLocaleString());
-        console.log("Modifying event");
 
         let oldEvent = req.body.oldEvent;
         delete req.body.oldEvent;
+        console.log("--- Trying to modify event ---");
         Database.getUserInfoByMail(req.body.dp, infoDp => {
-            if (infoDp && infoDp.Diver_Qualification !== "P5") return res.json({
-                modified: false,
-                comment: "DP is not P5"
-            })
+            if (infoDp && infoDp.Diver_Qualification !== "P5") {
+                console.log("\t->Error, DP is not P5");
+                return res.json({
+                    modified: false,
+                    comment: "DP is not P5"
+                })
+            }
             delete req.body.dp;
 
             let Site_Name = req.body.Site_Name;
@@ -259,31 +274,43 @@ app.put('/auth/planning', keycloak.protect(),
             Database.getDiveSiteInfoByName({
                 Site_Name: Site_Name
             }, siteInfo => {
-                if (siteInfo == undefined) return res.json({
-                    modified: false,
-                    comment: "Dive Site doesn't exist"
-                })
+                if (siteInfo == undefined) {
+                    console.log("\t->Error, Dive Site doesn't exist");
+                    return res.json({
+                        modified: false,
+                        comment: "Dive Site doesn't exist"
+                    })
+                }
                 oldEvent.Dive_Site_Id_Dive_Site = siteInfo.Id_Dive_Site;
                 Database.getEvent(oldEvent, (event) => {
-                    if (event === undefined) return res.json({
-                        modified: false,
-                        comment: "Event doesn't exist"
-                    })
+                    if (event === undefined) {
+                        console.log("\t->Error, Event doesn't exist");
+                        return res.json({
+                            modified: false,
+                            comment: "Event doesn't exist"
+                        })
+                    }
                     req.body.Id_Planned_Dive = event.Id_Planned_Dive;
                     Database.modifEvent(req.body, (modified) => {
-                        if (modified) return res.json({
-                            modified: true,
-                            comment: "Event modified"
-                        });
-                        else return res.json({
-                            modified: false,
-                            comment: "Impossible to modify Event"
-                        });
+                        if (modified) {
+                            console.log("\t->Event modified");
+                            return res.json({
+                                modified: true,
+                                comment: "Event modified"
+                            });
+                        }
+                        else {
+                            console.log("\t->Error, impossible to modify Event");
+                            return res.json({
+                                modified: false,
+                                comment: "Impossible to modify Event"
+                            });
+                        }
                     });
                 });
-            })
-        })
-    })
+            });
+        });
+    });
 
 /* --------------------------------- DELETE --------------------------------- */
 app.delete('/auth/planning', keycloak.protect(), function (req, res) {
@@ -292,25 +319,38 @@ app.delete('/auth/planning', keycloak.protect(), function (req, res) {
     req.body.Start_Date = getDateFormat(new Date(req.body.Start_Date).toLocaleString());
     req.body.End_Date = getDateFormat(new Date(req.body.End_Date).toLocaleString());
 
+    console.log("--- Trying to delete event ---");
     Database.getEvent(req.body, (event) => {
-        if (event === undefined) return res.json({
-            deleted: false,
-            comment: "Event doesn't exist"
-        })
-        Database.deleteAllRegistration(event.Id_Planned_Dive, deleted => {
-            if (!deleted) return res.json({
+        if (event === undefined) {
+            console.log("\t->Error, Event doesn't exist");
+            return res.json({
                 deleted: false,
-                comment: "Impossible to delete users"
+                comment: "Event doesn't exist"
             })
-            Database.deleteEvent(event, (deleted) => {
-                if (deleted) return res.json({
-                    deleted: true,
-                    comment: "Event deleted"
-                });
-                else return res.json({
+        }
+        Database.deleteAllRegistration(event.Id_Planned_Dive, deleted => {
+            if (!deleted) {
+                console.log("\t->Error, impossible to delete all registrations");
+                return res.json({
                     deleted: false,
-                    comment: "Impossible to delete Event"
-                });
+                    comment: "Impossible to delete users"
+                })
+            }
+            Database.deleteEvent(event, (deleted) => {
+                if (deleted) {
+                    console.log("\t->Event deleted");
+                    return res.json({
+                        deleted: true,
+                        comment: "Event deleted"
+                    });
+                }
+                else {
+                    console.log("\t->Error, impossible to delete Event");
+                    return res.json({
+                        deleted: false,
+                        comment: "Impossible to delete Event"
+                    });
+                }
             });
         })
 
@@ -356,126 +396,170 @@ app.post('/auth/planning/registration', keycloak.protect(),
 
         req.body.Start_Date = getDateFormat(new Date(req.body.Start_Date).toLocaleString());
         req.body.End_Date = getDateFormat(new Date(req.body.End_Date).toLocaleString());
+
+        console.log("--- Trying to register user ---");
         Database.getUserInfoByMail(userMail, (userInfo) => {
-            if (userInfo === undefined || userInfo.Id_Diver === null) return res.json({
-                registered: false,
-                comment: "User doesn't exist"
-            })
+            if (userInfo === undefined || userInfo.Id_Diver === null) {
+                console.log("\t->Error, User doesn't exist");
+                return res.json({
+                    registered: false,
+                    comment: "User doesn't exist"
+                })
+            }
             data.Diver_Id_Diver = userInfo.Id_Diver;
             Database.getDiveSiteInfoByName({
                 Site_Name: req.body.Site_Name
             }, (locationInfo) => {
-                if (locationInfo === undefined) return res.json({
-                    registered: false,
-                    comment: "Location doesn't exist"
-                })
+                if (locationInfo === undefined) {
+                    console.log("\t->Error, Location doesn't exist");
+                    return res.json({
+                        registered: false,
+                        comment: "Location doesn't exist"
+                    })
+                }
                 req.body.Dive_Site_Id_Dive_Site = locationInfo.Id_Dive_Site;
                 delete req.body.Site_Name;
                 Database.getEvent(req.body, (eventInfo) => {
-                    if (eventInfo === undefined) return res.json({
-                        registered: false,
-                        comment: "Event doesn't exist"
-                    })
+                    if (eventInfo === undefined) {
+                        console.log("\t->Error, Event doesn't exist");
+                        return res.json({
+                            registered: false,
+                            comment: "Event doesn't exist"
+                        })
+                    }
                     data.Planned_Dive_Id_Planned_Dive = eventInfo.Id_Planned_Dive;
                     Database.getRegistration({
                         Diver_Id_Diver: userInfo.Id_Diver,
                         Planned_Dive_Id_Planned_Dive: eventInfo.Id_Planned_Dive
                     }, (registration) => {
-                        if (registration) return res.json({
-                            registered: false,
-                            comment: "Registration already exist"
-                        })
-                        console.log(`Trying to register ${userInfo.Firstname} ${userInfo.Lastname}`);
-                        Database.createRegistration(data, (created) => {
-                            if (created) return res.json({
-                                registered: true,
-                                comment: "Registration added"
-                            })
-                            else return res.json({
+                        if (registration) {
+                            console.log("\t->Error, User is already register");
+                            return res.json({
                                 registered: false,
-                                comment: "Impossible to add Registration"
+                                comment: "Registration already exist"
                             })
-                        })
-                    })
-                })
-            })
-        })
-    })
+                        }
+                        Database.createRegistration(data, (created) => {
+                            if (created) {
+                                console.log(`\t->${userInfo.Firstname} ${userInfo.Lastname} registered`);
+                                return res.json({
+                                    registered: true,
+                                    comment: "Registration added"
+                                })
+                            }
+                            else {
+                                console.log("\t->Error, impossible to register user");
+                                return res.json({
+                                    registered: false,
+                                    comment: "Impossible to add Registration"
+                                });
+                            }
+                        });
+                    });
+                });
+            });
+        });
+    });
 
 /* --------------------------------- DELETE --------------------------------- */
 app.delete('/auth/planning/registration', keycloak.protect(), function (req, res) {                             //! A MERGE
     let username = req.kauth.grant.access_token.content.preferred_username;
+    console.log("--- Trying to delete registration ---");
     Database.getUserInfoByMail(username, (userInfo) => {
-        if (userInfo === undefined || userInfo.Id_Diver === null) return res.json({
-            deleted: false,
-            comment: "User doesn't exist"
-        })
-        Database.getEvent(req.body, (eventInfo) => {
-            if (eventInfo === undefined) return res.json({
+        if (userInfo === undefined || userInfo.Id_Diver === null) {
+            console.log("\t->Error, User doesn't exist");
+            return res.json({
                 deleted: false,
-                comment: "Event doesn't exist"
+                comment: "User doesn't exist"
             })
+        }
+        Database.getEvent(req.body, (eventInfo) => {
+            if (eventInfo === undefined) {
+                console.log("\t->Error, Event doesn't exist");
+                return res.json({
+                    deleted: false,
+                    comment: "Event doesn't exist"
+                })
+            }
             Database.getRegistration({
                 Diver_Id_Diver: userInfo.Id_Diver,
                 Planned_Dive_Id_Planned_Dive: eventInfo.Id_Planned_Dive
             }, (registration) => {
-                if (registration === undefined) return res.json({
-                    deleted: false,
-                    comment: "User is not register"
-                })
+                if (registration === undefined) {
+                    console.log("\t->Error, User is not register");
+                    return res.json({
+                        deleted: false,
+                        comment: "User is not register"
+                    })
+                }
                 Database.deleteRegistration({
                     Diver_Id_Diver: userInfo.Id_Diver,
                     Planned_Dive_Id_Planned_Dive: eventInfo.Id_Planned_Dive
                 }, (deleted) => {
-                    if (deleted) return res.json({
-                        deleted: true,
-                        comment: "Registration deleted"
-                    })
-                    else return res.json({
-                        deleted: false,
-                        comment: "Impossible to delete Registration"
-                    })
-                })
-            })
-        })
-    })
-})
+                    if (deleted) {
+                        console.log("\t->Registration deleted");
+                        return res.json({
+                            deleted: true,
+                            comment: "Registration deleted"
+                        })
+                    } else {
+                        console.log("\t->Error, impossible to delete registration");
+                        return res.json({
+                            deleted: false,
+                            comment: "Impossible to delete Registration"
+                        });
+                    }
+                });
+            });
+        });
+    });
+});
 
 app.delete('/auth/planning/registration/all', keycloak.protect(), function (req, res) {
     if (!checkUser(req, "CLUB")) return res.sendStatus(401);
-    console.log("Deleting all registrations in DB");
     req.body.Start_Date = getDateFormat(new Date(req.body.Start_Date).toLocaleString());
     req.body.End_Date = getDateFormat(new Date(req.body.End_Date).toLocaleString());
-    console.log(req.body);
+    console.log("--- Trying to delete all registrations ---");
     Database.getDiveSiteInfoByName({
         Site_Name: req.body.Site_Name
     }, (locationInfo) => {
-        if (locationInfo === undefined) return res.json({
-            deleted: false,
-            comment: "Location doesn't exist"
-        })
+        if (locationInfo === undefined) {
+            console.log("\t->Error, Location doesn't exist");
+            return res.json({
+                deleted: false,
+                comment: "Location doesn't exist"
+            })
+        }
         req.body.Dive_Site_Id_Dive_Site = locationInfo.Id_Dive_Site;
         delete req.body.Site_Name;
         delete req.body.dp;
 
         Database.getEvent(req.body, (event) => {
-            if (event === undefined) return res.json({
-                deleted: false,
-                comment: "Event doesn't exist"
-            })
-            Database.deleteAllRegistration(event.Id_Planned_Dive, deleted => {
-                if (deleted) return res.json({
-                    deleted: true,
-                    comment: "All registrations deleted"
-                })
-                else return res.json({
+            if (event === undefined) {
+                console.log("\t->Error, Event doesn't exist");
+                return res.json({
                     deleted: false,
-                    comment: "Impossible to delete all registrations"
+                    comment: "Event doesn't exist"
                 })
-            })
-        })
-    })
-})
+            }
+            Database.deleteAllRegistration(event.Id_Planned_Dive, deleted => {
+                if (deleted) {
+                    console.log("\t->All registrations deleted");
+                    return res.json({
+                        deleted: true,
+                        comment: "All registrations deleted"
+                    });
+                } else {
+                    console.log("\t->Error, impossible to delete all registrations");
+                    return res.json({
+                        deleted: false,
+                        comment: "Impossible to delete all registrations"
+                    });
+                }
+            });
+        });
+    });
+});
 
 /* -------------------------------------------------------------------------- */
 /*                                   ACCOUNT                                  */
@@ -554,23 +638,30 @@ app.post('/auth/club/club_members', keycloak.protect(),
         if (!errors.isEmpty()) return res.status(422).json({
             errors: errors.array()
         });
+        console.log("--- Trying to create user ---");
         let responseKc = await Keycloak_module.createUser(req.body, getUserName(req));
         if (responseKc) {
-            console.log("Now stocking in DB");
+            console.log("\t->User created in KC");
             Database.createUser(req.body, true, async (created) => {
                 if (created) {
+                    console.log("\t->User created in DB");
+                    console.log("\t->User correctly created");
                     return res.json({
                         created: true
                     });
                 } else {
-                    //delete user in keycloak   
-                    await Keycloak_module.deleteUser(req.body.Mail, getUserName(req), pass);
+                    console.log("\t->Error while creating user in DB");
+                    let isDel = await Keycloak_module.deleteUser(req.body.Mail, getUserName(req), pass);
+                    if (!isDel) console.error("\t->Error while deleting user in KC");
+                    else console.log("\t->User deleted in KC");
                     return res.json({
                         created: false
                     });
                 }
             })
         } else {
+            console.log("\t->Error while creating user in KC");
+            console.log("\t->User not created");
             return res.json({
                 created: false
             });
@@ -608,41 +699,59 @@ app.put('/auth/club/club_members', keycloak.protect(),
         });
         let clientPassword = req.body.password;
         delete req.body.password;
+        console.log("--- Trying to modify user ---");
         Database.getUserInfoByMail(req.body.oldMail, (userInfo) => {
-            if (userInfo === undefined) return res.json({
-                modified: false,
-                comment: "User doesn't exist"
-            })
+            if (userInfo === undefined) {
+                console.log("\t->Error, User doesn't exist");
+                return res.json({
+                    modified: false,
+                    comment: "User doesn't exist"
+                })
+            }
             req.body.Id_Diver = userInfo.Id_Diver;
             let userOldMail = req.body.oldMail;
             delete req.body.oldMail;
-            console.log("Modifying user in DB");
             Database.modifUser(req.body, async (updated) => {
-                if (!updated) res.json({
-                    modified: false,
-                    comment: "Impossible to update user in DB"
-                })
+                if (!updated) {
+                    console.log("\t->Error, impossible to update user in DB");
+                    return res.json({
+                        modified: false,
+                        comment: "Impossible to update user in DB"
+                    })
+                }
                 const modifKc = await Keycloak_module.modifyUser(userOldMail, req.body.Mail, req.body.Firstname, req.body.Lastname, getUserName(req), clientPassword)
-                if (modifKc) return res.json({
-                    modified: true,
-                    comment: "User modified"
-                })
+                if (modifKc) {
+                    console.log("\t->User modified in KC");
+                    console.log("\t->User correctly modified");
+                    return res.json({
+                        modified: true,
+                        comment: "User modified"
+                    })
+                }
 
-                console.log("ERROR, setting old info of user in DB");
+                console.log("\t->Error, impossible to update user in KC");
                 Database.modifUser(userInfo, (isInser) => {
-                    if (isInser) return res.json({
-                        modified: false,
-                        comment: "Error while modifying, success to cancel all modifications"
-                    });
-                    else return res.json({
-                        modified: false,
-                        comment: "Error while modifying, impossible to cancel all modifications"
-                    });
+                    if (isInser) {
+                        console.log("\t->User modified in DB");
+                        console.log("\t->Error, impossible to update user in KC, success to cancel all modifications");
+                        return res.json({
+                            modified: false,
+                            comment: "Error while modifying, success to cancel all modifications"
+                        });
+                    }
+                    else {
+                        console.log("\t->Error, impossible to update user in DB");
+                        console.log("\t->Error, impossible to update user in KC, impossible to cancel all modifications");
+                        return res.json({
+                            modified: false,
+                            comment: "Error while modifying, impossible to cancel all modifications"
+                        });
+                    }
                 })
             })
         })
     })
-
+//! REPRENDRE ICI
 /* --------------------------------- DELETE --------------------------------- */
 app.delete('/auth/club/club_members', keycloak.protect(),                                   // USE
     body("Mail").trim().escape().exists(),
@@ -736,32 +845,38 @@ app.post("/auth/club/locations", keycloak.protect(),
         delete req.body.Post_Accident_Procedure;
 
         console.log("Creating location in DB");
-        Database.createDiveSite(req.body, (idLoc) => {
-            if (idLoc === undefined) return res.json({
+        Database.getDiveSiteInfoByName({ Site_Name: req.body.Site_Name }, (siteInfo) => {
+            if (siteInfo !== undefined) return res.json({
                 created: false,
-                comment: "Impossible to add Location"
-            })
-            dataEmergency.Id_Emergency_Plan = idLoc;
-            dataEmergency.Dive_Site_Id_Dive_Site = idLoc;
-            Database.createEmergencyPlan(dataEmergency, (creaEm) => {
-                if (creaEm) return res.json({
-                    created: true,
-                    comment: "Location and Emergency Plan added"
+                comment: "Location already exist"
+            });
+            Database.createDiveSite(req.body, (idLoc) => {
+                if (idLoc === undefined) return res.json({
+                    created: false,
+                    comment: "Impossible to add Location"
                 })
-                else {
-                    Database.deleteDiveSite({
-                        Site_Name: req.body.Site_Name
-                    }, (delLoc) => {
-                        if (delLoc) return res.json({
-                            created: false,
-                            comment: "Impossible to add Emergency Plan"
-                        })
-                        else return res.json({
-                            created: false,
-                            comment: "Impossible to add Emergency Plan and Location"
-                        })
+                dataEmergency.Id_Emergency_Plan = idLoc;
+                dataEmergency.Dive_Site_Id_Dive_Site = idLoc;
+                Database.createEmergencyPlan(dataEmergency, (creaEm) => {
+                    if (creaEm) return res.json({
+                        created: true,
+                        comment: "Location and Emergency Plan added"
                     })
-                }
+                    else {
+                        Database.deleteDiveSite({
+                            Site_Name: req.body.Site_Name
+                        }, (delLoc) => {
+                            if (delLoc) return res.json({
+                                created: false,
+                                comment: "Impossible to add Emergency Plan"
+                            })
+                            else return res.json({
+                                created: false,
+                                comment: "Impossible to add Emergency Plan and Location"
+                            })
+                        })
+                    }
+                })
             })
         })
     })

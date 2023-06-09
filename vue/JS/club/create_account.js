@@ -45,12 +45,10 @@ fetch('/auth/club/get_club_members', {
     },
 }).then(res => res.json())
     .then(users => {
-        console.log("All users :")
         console.log(users);
         users.forEach(user => {
             all_user.push(new User(user.Lastname, user.Firstname, user.Mail, user.Phone, user.Diver_Qualification, user.Instructor_Qualification, user.Nox_Level, user.Additional_Qualifications, user.License_Number, user.License_Expiration_Date, user.Medical_Certificate_Expiration_Date, user.Birthdate));
         });
-        console.log(all_user);
         displayUsers();
 
 

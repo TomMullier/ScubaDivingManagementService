@@ -1,7 +1,6 @@
 /* -------------------------------------------------------------------------- */
 /*                                   IMPORT                                   */
 /* -------------------------------------------------------------------------- */
-
 import {
   frLocale
 } from './@fullcalendar/core/locales/fr.js';
@@ -67,7 +66,6 @@ fetch('/auth/user/account/get_info', {
     let userInfo = res
     if (res) {
       me = new User(userInfo.Lastname, userInfo.Firstname, userInfo.Mail, userInfo.Phone, userInfo.Diver_Qualification, userInfo.Instructor_Qualification, userInfo.Nox_Level, userInfo.Additional_Qualifications, userInfo.License_Number, userInfo.License_Expiration_Date, userInfo.Medical_Certificate_Expiration_Date, userInfo.Birthdate);
-      console.log(me)
       setUserInfos();
     }
 
@@ -148,12 +146,8 @@ function updateEvent(oldEvent, event, usersToRegister) {
         // L'event n'a pas été modifié
       } else {
         delete event.oldEvent;
-        console.log("ici1");
         let isDeleted = await deleteAllRegistration(event);
-        console.log(isDeleted);
-        console.log("ici2");
         if (isDeleted) {
-          console.log(event.dp, usersToRegister);
           let registrationInfo = {
             Personnal_Comment: "Registered by club",
             Car_Pooling_Seat_Offered: 0,
@@ -163,7 +157,6 @@ function updateEvent(oldEvent, event, usersToRegister) {
           register(event, registrationInfo, event.dp) // dp = mail
           if (usersToRegister.length > 0) {
             registrationInfo.Diver_Role = "Diver";
-            console.log(usersToRegister, typeof (usersToRegister));
             usersToRegister.forEach(user => {
              register(event, registrationInfo, user); // user = mail
             });
@@ -253,8 +246,6 @@ let eventClicked;
 let html_memory;
 
 function setEvents(ev_) {
-  console.log("Mes events")
-  console.log(ev_)
   let slider2 = document.getElementById("priceSlider");
   var slider = document.getElementById("timeSlider");
 
@@ -457,10 +448,6 @@ function setEvents(ev_) {
       // displayRatings(eventClicked);
 
 
-
-
-
-
       if (new Date(eventClicked.end) < new Date()) {
         button.style.display = "none";
         if (my_role == "user") {
@@ -644,8 +631,6 @@ create_event_button.addEventListener("click", function () {
   // document.querySelector("#evenDateInput").value = new Date();
   let location_dropdown = document.querySelector("#location_list_dropdown_create");
   location_dropdown.innerHTML = "";
-  console.log("les lieux de max")
-  console.log(locations);
   locations.forEach(function (location) {
     let location_item = document.createElement("H4");
     location_item.classList.add("location_item");
@@ -695,7 +680,6 @@ function setDiversListsHTML() {
   DP_list.innerHTML = "";
   let diver_DD = document.querySelector("#createEventModal .diver_list_dropdown");
   diver_DD.innerHTML = "";
-  console.log(allDivers);
   allDivers.forEach(function (diver) {
     if (diver.Diver_Qualification == "P5") {
       let DP_item = document.createElement("H4");
@@ -877,7 +861,6 @@ validate_event.addEventListener("click", function (e) {
   let private_ = document.querySelector("#eventPrivateInput").checked;
   let diverList = [];
   let event_to_create = new Event(begin, end, divePrice, instructorPrice, location, comment, needs, private_, max, 0, type);
-  // find diver corresponding to dp_ name
 
   document.querySelectorAll("#createEventModal .diver_item").forEach(function (diver) {
     allDivers.forEach(function (diver_) {
@@ -887,7 +870,6 @@ validate_event.addEventListener("click", function (e) {
         }
       }
     });
-    // event_to_create.addUser(dp_mail);
   });
   let data = {
     Start_Date: begin,
@@ -901,15 +883,10 @@ validate_event.addEventListener("click", function (e) {
     Comments: comment,
     Site_Name: location,
     dp: dp_mail, // MAIL
-    //users : event_to_create.users // MAIL
   }
   let usersToRegister = event_to_create.users;
-  console.log("Evenement à créer :");
-  console.log(data);
   addEvent(data, usersToRegister);
-  // document.location.reload();
-
-
+  document.location.reload();
 });
 
 function setUserInfos() {
@@ -927,7 +904,6 @@ search_diver_edit.addEventListener("click", function () {
 
   dps.forEach(function (dp) {
     if (dp.querySelector("input").checked) {
-      console.log(dp)
       dp.style.display = "flex";
       document.querySelector("#modifyEventModal .diver_list_dropdown").style.display = "flex";
     } else {
@@ -1076,8 +1052,6 @@ function edit_event(info) {
     Comments: info.event._def.extendedProps.comment,
     Site_Name: info.event._def.extendedProps.location.Site_Name,
   }
-  console.log("Old Event")
-  console.log(oldEvent);
 
   let location_dropdown_edit = document.querySelector("#modifyEventModal .location_list_dropdown");
   location_dropdown_edit.innerHTML = "";
@@ -1099,8 +1073,7 @@ function edit_event(info) {
   document.querySelector("#eventNeedInput_modify").value = info.event.extendedProps.needs;
   document.querySelector("#eventDiverNumberInput_modify").value = info.event.extendedProps.max;
   document.querySelector("#eventTypeInput_modify").value = info.event.extendedProps.diveType;
-  console.log("MES USERS ")
-  console.log(info.event._def.extendedProps.users);
+
   setDiversListsHTML_Edit();
   info.event._def.extendedProps.users.forEach(function (user) {
     if (user.Diver_Role == "DP") {
@@ -1175,10 +1148,7 @@ function edit_event(info) {
           }
         }
       });
-      // event_to_create.addUser(dp_mail);
     });
-    console.log("Evenement à créer :");
-    console.log(event_to_create);
     let data = {
       Start_Date: begin,
       End_Date: end,
@@ -1192,15 +1162,10 @@ function edit_event(info) {
       Site_Name: location,
       dp: dp_mail, // MAIL
     }
-    console.log("Edit event pour Max :")
-    console.log(data);
-    console.log(event_to_create.users)
     updateEvent(oldEvent, data, event_to_create.users);
-    // document.location.reload();
-
+    document.location.reload();
   });
 }
-
 
 
 //! AVIS

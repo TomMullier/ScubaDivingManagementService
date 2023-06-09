@@ -28,7 +28,6 @@ fetch('/auth/club/get_locations', {
         sites.forEach(function (site) {
             locations.push(new Location(site.Site_Name, site.Gps_Latitude, site.Gps_Longitude, site.Track_Type, site.Track_Number, site.Track_Name, site.Zip_Code, site.City_Name, site.Country_Name, site.Additional_Address, site.Tel_Number, site.Information_URL, [], site.SOS_Tel_Number, site.Emergency_Plan, site.Post_Accident_Procedure));
         });
-        console.log(locations);
         updateDisplayLocations();
     })
 
@@ -246,7 +245,6 @@ function updateDisplayLocations() {
         list_item += '</div><a href="" class="phone"><i class="fa-solid fa-phone"></i>' + loc.phone + '</a>';
         list_item += '<a href="' + loc.url + '" class="web"><i class="fa-solid fa-at"></i> Site Web</a><div class="button_container"><button class="edit_button"><i class="fa-solid fa-pencil"></i></button><button class="delete_button"><i class="fa-solid fa-trash"></i></button></div></div>';
         container_location.innerHTML += list_item;
-        console.log(loc)
     });
 
     list_item = document.querySelectorAll(".list_item");

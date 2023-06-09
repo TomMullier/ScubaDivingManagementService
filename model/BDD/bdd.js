@@ -20,7 +20,7 @@ class BDD {
 
         this.con.connect(function (err) {
             if (err) throw err;
-            console.log("DB connected!");
+            console.log("DB connected !");
         });
     }
 
@@ -36,10 +36,8 @@ class BDD {
         this.con.query(query, [userData], (err, result) => {
             if (err) {
                 console.log(err);
-                console.log("Deleting user in Keycloak");
                 callback(false);
             } else {
-                console.log("User correctly inserted ");
                 callback(true);
             }
         })

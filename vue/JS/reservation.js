@@ -1,3 +1,7 @@
+/* -------------------------------------------------------------------------- */
+/*                                   IMPORT                                   */
+/* -------------------------------------------------------------------------- */
+
 import {
   frLocale
 } from './@fullcalendar/core/locales/fr.js';
@@ -13,9 +17,21 @@ import {
 import {
   Location
 } from "./class/Location.js";
-// import { dp } from './@fullcalendar/core/internal-common.js';
 
+/* -------------------------------------------------------------------------- */
+/*                              GLOBAL VARIABLES                              */
+/* -------------------------------------------------------------------------- */
 let my_role;
+let me;
+let events = [];
+let locations = [];
+let allDivers = [];
+
+/* -------------------------------------------------------------------------- */
+/*                                   REQUEST                                  */
+/* -------------------------------------------------------------------------- */
+
+/* -------------------------------- USERTYPE -------------------------------- */
 fetch('/auth/planning')
   .then(response => {
     const userType = response.headers.get('userType');
@@ -39,7 +55,7 @@ fetch('/auth/planning')
     }
   });
 
-let me;
+/* -------------------------------- USERINFO -------------------------------- */
 fetch('/auth/user/account/get_info', {
     method: 'GET',
     headers: {
@@ -58,10 +74,6 @@ fetch('/auth/user/account/get_info', {
   })
 
 /* ------------------------------ GET PLANNING ------------------------------ */
-
-let events = [];
-let locations = [];
-let allDivers = [];
 fetch('/auth/planning/get_planning', {
     method: 'GET',
     headers: {
@@ -90,11 +102,6 @@ fetch('/auth/planning/get_planning', {
 
 /* ------------------------------ CREATE EVENT ------------------------------ */
 function addEvent(event, usersToRegister) {
-  console.log(event);
-  // event.Dive_Site_Id_Dive_Site = event.Location.Id_Dive_Site;
-  // delete event.users;
-  // delete event.title;
-  // delete event.Location;
   fetch('/auth/planning', {
       method: 'POST',
       headers: {
@@ -105,7 +112,7 @@ function addEvent(event, usersToRegister) {
     .then(res => {
       console.log(res)
       if (!res.created) {
-        // Tom fait quelque chose, l'event n'a pas été créé
+        // L'event n'a pas été créé
       } else {
         let registrationInfo = {
           Personnal_Comment: "Registered by club",
@@ -125,26 +132,6 @@ function addEvent(event, usersToRegister) {
     })
 }
 
-
-
-/* -------------------------------- GET EVENT ------------------------------- */
-function getEvent(event) {
-  event.Dive_Site_Id_Dive_Site = event.Location.Id_Dive_Site;
-  delete event.users;
-  delete event.title;
-  delete event.Location;
-  fetch('/auth/planning/get_event', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(event)
-    }).then(res => res.json())
-    .then(res => {
-      console.log(res)
-    })
-}
-
 /* ------------------------------ MODIFY EVENT ------------------------------ */
 function updateEvent(oldEvent, event, usersToRegister) {
   event.oldEvent = oldEvent;
@@ -158,7 +145,7 @@ function updateEvent(oldEvent, event, usersToRegister) {
     .then(async res => {
       console.log(res)
       if (!res.modified) {
-        // Tom fait quelque chose, l'event n'a pas été créé
+        // L'event n'a pas été modifié
       } else {
         delete event.oldEvent;
         console.log("ici1");
@@ -186,13 +173,8 @@ function updateEvent(oldEvent, event, usersToRegister) {
     })
 }
 
-
 /* ------------------------------ DELETE EVENT ------------------------------ */
 function deleteEvent(event) {
-  // event.Dive_Site_Id_Dive_Site = event.Location.Id_Dive_Site;
-  // delete event.users;
-  // delete event.title;
-  // delete event.Location;
   fetch('/auth/planning', {
       method: 'DELETE',
       headers: {
@@ -205,18 +187,8 @@ function deleteEvent(event) {
     })
 }
 
-
-
-/* -------------------------------------------------------------------------- */
-/*                                REGISTRATION                                */
-/* -------------------------------------------------------------------------- */
-
 /* -------------------------------- REGISTER -------------------------------- */
 function register(event, registrationInfo, userInfo = "") {
-  console.log("uyhgqsdfkjhqsdkhjlqsdflhiu<sdfiug<sdfiuyg<sdfkjhg<qsfkjhqerkuygZD");
-  console.log(event);
-  console.log(registrationInfo);
-  console.log(userInfo);
   let data = {
     ...event,
     ...registrationInfo,
@@ -235,6 +207,7 @@ function register(event, registrationInfo, userInfo = "") {
 }
 
 /* ------------------------------- UNREGISTER ------------------------------- */
+//! A MERGE
 function unregister(event, registrationInfo) {
   let data = {
     ...event,
@@ -272,9 +245,9 @@ async function deleteAllRegistration(event) {
 
 
 
-
-
-
+/* -------------------------------------------------------------------------- */
+/*                                    CODE                                    */
+/* -------------------------------------------------------------------------- */
 let calendar;
 let eventClicked;
 let html_memory;

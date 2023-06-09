@@ -73,23 +73,6 @@ class BDD {
         })
     }
 
-    getUserInfoById(id, callback) {
-        const data = {
-            Id_Diver: id
-        };
-        const query = 'SELECT * FROM Diver WHERE ?';
-        this.con.query(query, [data], (err, result) => {
-            if (err || !result[0]) {
-                if (err) console.log(err);
-                console.log("Can't get user info");
-                callback(undefined);
-            } else {
-                console.log("Getting user info DB");
-                callback(result[0]);
-            }
-        })
-    }
-
     modifUser(data, callback) {
         const query = 'UPDATE Diver SET ? WHERE Id_Diver = ?'
         this.con.query(query, [data, data.Id_Diver], (err, result) => {
@@ -162,20 +145,6 @@ class BDD {
         })
     }
 
-    getDiveSiteInfoById(data, callback) {
-        const query = 'SELECT * FROM Dive_Site WHERE ?';
-        this.con.query(query, [data], (err, result) => {
-            if (err || !result[0]) {
-                if (err) console.log(err);
-                console.log("Can't get location info");
-                callback(undefined);
-            } else {
-                console.log("Sending location info");
-                callback(result[0]);
-            }
-        })
-    }
-
     modifDiveSite(data, callback) {
         const query = 'UPDATE Dive_Site SET ? WHERE Id_Dive_Site = ?'
         this.con.query(query, [data, data.Id_Dive_Site], (err, result) => {
@@ -216,21 +185,6 @@ class BDD {
             } else {
                 console.log("Emergency plan correctly inserted ");
                 callback(true);
-            }
-        })
-    }
-
-    getEmergencyPlan(data, callback) {
-        const query = 'SELECT * FROM Emergency_Plan WHERE ?';
-        this.con.query(query, [data], (err, result) => {
-            if (err || !result[0]) {
-                if (err) console.log(err);
-                console.log("Can't get location info");
-                callback(undefined);
-            } else {
-                console.log("Sending location info");
-                let res = result[0];
-                callback(res);
             }
         })
     }
@@ -438,8 +392,6 @@ function getDateFormat(badDate) {
     const hour = badDate.split(', ')[1];
     return year + "-" + month + "-" + day + " " + hour;
 }
-
-
 
 
 module.exports = {

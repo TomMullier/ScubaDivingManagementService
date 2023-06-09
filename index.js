@@ -88,25 +88,10 @@ app.get('/login', keycloak.protect(), function (req, res) {
 /* -------------------------------------------------------------------------- */
 
 app.get('/auth/dashboard', keycloak.protect(), function (req, res) {
-    if (checkUser(req, "CLUB")) {
-        res.sendFile(__dirname + "/vue/html/dashboard.html", {
-            headers: {
-                'userType': 'club'
-            }
-        });
-    } else if (checkUser(req, "DP")) {
-        res.sendFile(__dirname + "/vue/html/dashboard.html", {
-            headers: {
-                'userType': 'dp'
-            }
-        });
-    } else if (checkUser(req, "USER")) {
-        res.sendFile(__dirname + "/vue/html/dashboard.html", {
-            headers: {
-                'userType': 'user'
-            }
-        });
-    } else res.redirect('/logout');
+    if (checkUser(req, "CLUB")) res.sendFile(__dirname + "/vue/html/dashboard.html", { headers: { 'userType': 'club' } });
+    else if (checkUser(req, "DP")) res.sendFile(__dirname + "/vue/html/dashboard.html", { headers: { 'userType': 'dp' } });
+    else if (checkUser(req, "USER")) res.sendFile(__dirname + "/vue/html/dashboard.html", { headers: { 'userType': 'user' } });
+    else res.redirect('/logout');
 });
 
 
@@ -134,30 +119,15 @@ app.get('/auth/dashboard/get_info', keycloak.protect(), function (req, res) {
 /*                                  PLANNING                                  */
 /* -------------------------------------------------------------------------- */
 
-app.get('/auth/planning', keycloak.protect(), function (req, res) {
-    if (checkUser(req, "CLUB")) {
-        res.sendFile(__dirname + "/vue/html/planning.html", {
-            headers: {
-                'userType': 'club'
-            }
-        });
-    } else if (checkUser(req, "DP")) {
-        res.sendFile(__dirname + "/vue/html/planning.html", {
-            headers: {
-                'userType': 'dp'
-            }
-        });
-    } else if (checkUser(req, "USER")) {
-        res.sendFile(__dirname + "/vue/html/planning.html", {
-            headers: {
-                'userType': 'user'
-            }
-        });
-    } else res.redirect('/auth/dashboard');
+app.get('/auth/planning', keycloak.protect(), function (req, res) {                                                                     
+    if (checkUser(req, "CLUB")) res.sendFile(__dirname + "/vue/html/planning.html", { headers: { 'userType': 'club' } });
+    else if (checkUser(req, "DP")) res.sendFile(__dirname + "/vue/html/planning.html", { headers: { 'userType': 'dp' } });
+    else if (checkUser(req, "USER")) res.sendFile(__dirname + "/vue/html/planning.html", { headers: { 'userType': 'user' } });
+    else res.redirect('/auth/dashboard');
 })
 
 /* --------------------------------- CREATE --------------------------------- */
-app.post('/auth/planning', keycloak.protect(),
+app.post('/auth/planning', keycloak.protect(),                                                                      
     body("Start_Date").trim().escape(),
     body("End_Date").trim().escape(),
     body("Diver_Price").trim().escape(),
@@ -216,29 +186,9 @@ app.post('/auth/planning', keycloak.protect(),
         })
     })
 
-
 /* ---------------------------------- READ ---------------------------------- */
-app.post('/auth/planning/get_event', keycloak.protect(), function (req, res) {
-    if (!checkUser(req, "CLUB")) return res.sendStatus(401);
-    console.log("Getting planning in DB");
-    req.body.Start_Date = getDateFormat(new Date(req.body.Start_Date).toLocaleString());
-    req.body.End_Date = getDateFormat(new Date(req.body.End_Date).toLocaleString());
-    Database.getEvent(req.body, (event) => {
-        Database.getDiveSiteInfoById({
-            Id_Dive_Site: event.Dive_Site_Id_Dive_Site
-        }, (location) => {
-            if (location === undefined) return res.json({
-                event: event,
-                location: undefined
-            })
-            event.Location = location;
-            delete event.Dive_Site_Id_Dive_Site;
-            return res.json(event);
-        })
-    });
-})
 
-app.get('/auth/planning/get_planning', keycloak.protect(), function (req, res) {
+app.get('/auth/planning/get_planning', keycloak.protect(), function (req, res) {                                    
     Database.getPlanning((allEvents) => {
         Database.getDiveSiteList((allLocations) => {
             Database.getDiversRegistered((allDivers) => {
@@ -266,7 +216,7 @@ app.get('/auth/planning/get_planning', keycloak.protect(), function (req, res) {
 })
 
 /* --------------------------------- UPDATE --------------------------------- */
-app.put('/auth/planning', keycloak.protect(),
+app.put('/auth/planning', keycloak.protect(),                                                               
     body("Start_Date").trim().escape(),
     body("End_Date").trim().escape(),
     body("Diver_Price").trim().escape(),
@@ -331,7 +281,7 @@ app.put('/auth/planning', keycloak.protect(),
     })
 
 /* --------------------------------- DELETE --------------------------------- */
-app.delete('/auth/planning', keycloak.protect(), function (req, res) {
+app.delete('/auth/planning', keycloak.protect(), function (req, res) {                              
     if (!checkUser(req, "CLUB")) return res.sendStatus(401);
     console.log("Deleting planning in DB");
     req.body.Start_Date = getDateFormat(new Date(req.body.Start_Date).toLocaleString());
@@ -363,8 +313,9 @@ app.delete('/auth/planning', keycloak.protect(), function (req, res) {
 })
 
 /* ------------------------------ REGISTRATION ------------------------------ */
+
 /* --------------------------------- CREATE --------------------------------- */
-app.post('/auth/planning/registration', keycloak.protect(),
+app.post('/auth/planning/registration', keycloak.protect(),                                                     
     body("Start_Date").trim().escape(),
     body("End_Date").trim().escape(),
     body("Diver_Price").trim().escape(),
@@ -446,11 +397,8 @@ app.post('/auth/planning/registration', keycloak.protect(),
         })
     })
 
-/* --------------------------------- UPDATE --------------------------------- */
-
-
 /* --------------------------------- DELETE --------------------------------- */
-app.delete('/auth/planning/registration', keycloak.protect(), function (req, res) {
+app.delete('/auth/planning/registration', keycloak.protect(), function (req, res) {                             //! A MERGE
     let username = req.kauth.grant.access_token.content.preferred_username;
     Database.getUserInfoByMail(username, (userInfo) => {
         if (userInfo === undefined || userInfo.Id_Diver === null) return res.json({
@@ -488,530 +436,457 @@ app.delete('/auth/planning/registration', keycloak.protect(), function (req, res
     })
 })
 
-app.delete('/auth/planning/registration/all', keycloak.protect(), function (req, res) {
-            if (!checkUser(req, "CLUB")) return res.sendStatus(401);
-            console.log("Deleting all registrations in DB");
-            req.body.Start_Date = getDateFormat(new Date(req.body.Start_Date).toLocaleString());
-            req.body.End_Date = getDateFormat(new Date(req.body.End_Date).toLocaleString());
-            console.log(req.body);
-            Database.getDiveSiteInfoByName({
-                Site_Name: req.body.Site_Name
-            }, (locationInfo) => {
-                if (locationInfo === undefined) return res.json({
-                    deleted: false,
-                    comment: "Location doesn't exist"
-                })
-                req.body.Dive_Site_Id_Dive_Site = locationInfo.Id_Dive_Site;
-                delete req.body.Site_Name;
-                delete req.body.dp;
+app.delete('/auth/planning/registration/all', keycloak.protect(), function (req, res) {                                 
+    if (!checkUser(req, "CLUB")) return res.sendStatus(401);
+    console.log("Deleting all registrations in DB");
+    req.body.Start_Date = getDateFormat(new Date(req.body.Start_Date).toLocaleString());
+    req.body.End_Date = getDateFormat(new Date(req.body.End_Date).toLocaleString());
+    console.log(req.body);
+    Database.getDiveSiteInfoByName({
+        Site_Name: req.body.Site_Name
+    }, (locationInfo) => {
+        if (locationInfo === undefined) return res.json({
+            deleted: false,
+            comment: "Location doesn't exist"
+        })
+        req.body.Dive_Site_Id_Dive_Site = locationInfo.Id_Dive_Site;
+        delete req.body.Site_Name;
+        delete req.body.dp;
 
-                Database.getEvent(req.body, (event) => {
-                    if (event === undefined) return res.json({
-                        deleted: false,
-                        comment: "Event doesn't exist"
-                    })
-                    Database.deleteAllRegistration(event.Id_Planned_Dive, deleted => {
-                        if (deleted) return res.json({
-                            deleted: true,
-                            comment: "All registrations deleted"
-                        })
-                        else return res.json({
-                            deleted: false,
-                            comment: "Impossible to delete all registrations"
-                        })
-                    })
+        Database.getEvent(req.body, (event) => {
+            if (event === undefined) return res.json({
+                deleted: false,
+                comment: "Event doesn't exist"
+            })
+            Database.deleteAllRegistration(event.Id_Planned_Dive, deleted => {
+                if (deleted) return res.json({
+                    deleted: true,
+                    comment: "All registrations deleted"
+                })
+                else return res.json({
+                    deleted: false,
+                    comment: "Impossible to delete all registrations"
                 })
             })
         })
+    })
+})
 
-            /* ---------------------------------- USER ---------------------------------- */
+/* -------------------------------------------------------------------------- */
+/*                                   ACCOUNT                                  */
+/* -------------------------------------------------------------------------- */
 
-            app.get('/auth/user/statistics', keycloak.protect(), function (req, res) {
-                if (checkUser(req, "DP")) {
-                    res.sendFile(__dirname + "/vue/html/user/statistics.html", {
-                        headers: {
-                            'userType': 'dp'
-                        }
+app.get('/auth/user/account', keycloak.protect(), function (req, res) {                                             
+    if (checkUser(req, "DP")) {
+        res.sendFile(__dirname + "/vue/html/user/account.html", { headers: { 'userType': 'dp' } });
+    } else if (checkUser(req, "USER")) {
+        res.sendFile(__dirname + "/vue/html/user/account.html", { headers: { 'userType': 'user' } });
+    } else res.redirect('/auth/dashboard');
+})
+
+/* ---------------------------------- READ ---------------------------------- */
+app.get('/auth/user/account/get_info', keycloak.protect(), function (req, res) {                                    
+    let username = req.kauth.grant.access_token.content.preferred_username;
+    if (checkUser(req, 'CLUB')) return res.json({ username: username });
+    Database.getUserInfoByMail(username, (userInfo) => {
+        if (userInfo === undefined) return res.status(404).json({ comment: "Impossible to find user" });
+        return res.json(userInfo);
+    })
+})
+
+/* --------------------------------- UPDATE --------------------------------- */
+// app.get('/auth/user/account/modif', keycloak.protect(),                                                      //TODO
+//     // body("Mail").trim().escape(),
+//     // body("Phone").trim().escape(),
+//     // body("Medical_Certificate_Expiration_Date").trim().escape(),
+//     // body("password").trim().escape(),
+//     function (req, res) {
+//         console.log("ici"); 
+//         res.redirect(`http://10.224.1.186:8080/realms/SDMS/account`)
+//     })
+
+/* -------------------------------------------------------------------------- */
+/*                                  PALANQUEE                                 */
+/* -------------------------------------------------------------------------- */
+// app.get('/auth/dp/scuba_file', keycloak.protect(), function (req, res) {                                         //TODO
+//     if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
+//     res.sendFile(__dirname + "/vue/html/dp/scuba_file.html", {headers: {'userType': 'dp'}});
+// })
+
+// app.get('/auth/dp/incident_rapport', keycloak.protect(), function (req, res) {                                   //TODO
+//     if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
+//     res.download(__dirname + "/vue/rapport_incident.pdf", {headers: { 'userType': 'dp' }});
+// })
+
+/* -------------------------------------------------------------------------- */
+/*                                CLUB MEMBERS                                */
+/* -------------------------------------------------------------------------- */
+
+app.get('/auth/club/club_members', keycloak.protect(), function (req, res) {                                            
+    if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
+    res.sendFile(__dirname + "/vue/html/club/club_members.html", { headers: { 'userType': 'club' } });
+})
+
+/* --------------------------------- CREATE --------------------------------- */
+app.post('/auth/club/club_members', keycloak.protect(),                                                                 
+    body("Lastname").trim().escape(),
+    body("Firstname").trim().escape(),
+    body("Mail").trim().escape().toLowerCase(),
+    body("Phone").trim().escape(),
+    body("Diver_Qualification").trim().escape(),
+    body("Instructor_Qualification").trim().escape(),
+    body("Nox_Level").trim().escape(),
+    body("Additional_Qualifications").trim().escape(),
+    body("License_Number").trim().escape(),
+    body("License_Expiration_Date").trim().escape(),
+    body("Medical_Certificate_Expiration_Date").trim().escape(),
+    body("Birthdate").trim().escape(),
+    body("password").trim().escape().exists(),
+    async function (req, res) {
+        const pass = req.body.password;
+        if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(422).json({
+            errors: errors.array()
+        });
+        let responseKc = await Keycloak_module.createUser(req.body, getUserName(req));
+        if (responseKc) {
+            console.log("Now stocking in DB");
+            Database.createUser(req.body, true, async (created) => {
+                if (created) {
+                    return res.json({
+                        created: true
                     });
-                } else if (checkUser(req, "USER")) {
-                    res.sendFile(__dirname + "/vue/html/user/statistics.html", {
-                        headers: {
-                            'userType': 'user'
-                        }
+                } else {
+                    //delete user in keycloak   
+                    await Keycloak_module.deleteUser(req.body.Mail, getUserName(req), pass);
+                    return res.json({
+                        created: false
                     });
-                } else res.redirect('/auth/dashboard');
+                }
             })
+        } else {
+            return res.json({
+                created: false
+            });
+        }
+    })
 
-            /* -------------------------------------------------------------------------- */
-            /*                                   ACCOUNT                                  */
-            /* -------------------------------------------------------------------------- */
+/* ---------------------------------- READ ---------------------------------- */
+app.get('/auth/club/get_club_members', keycloak.protect(), async function (req, res) {                              
+    if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
+    Database.getUsersList((users) => {
+        return res.json(users);
+    });
+})
 
-            app.get('/auth/user/account', keycloak.protect(), function (req, res) {
-                if (checkUser(req, "DP")) {
-                    res.sendFile(__dirname + "/vue/html/user/account.html", {
-                        headers: {
-                            'userType': 'dp'
-                        }
-                    });
-                } else if (checkUser(req, "USER")) {
-                    res.sendFile(__dirname + "/vue/html/user/account.html", {
-                        headers: {
-                            'userType': 'user'
-                        }
-                    });
-                } else res.redirect('/auth/dashboard');
+/* --------------------------------- UPDATE --------------------------------- */
+app.put('/auth/club/club_members', keycloak.protect(),                                      
+    body("oldMail").trim().escape(),
+    body("Firstname").trim().escape(),
+    body("Lastname").trim().escape(),
+    body("Mail").trim().escape(),
+    body("Phone").trim().escape(),
+    body("Diver_Qualification").trim().escape(),
+    body("Instructor_Qualification").trim().escape(),
+    body("Nox_Level").trim().escape(),
+    body("Additional_Qualifications").trim().escape(),
+    body("License_Number").trim().escape(),
+    body("License_Expiration_Date").trim().escape(),
+    body("Medical_Certificate_Expiration_Date").trim().escape(),
+    body("password").trim().escape().exists(),
+    function (req, res) {
+        if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(422).json({
+            errors: errors.array()
+        });
+        let clientPassword = req.body.password;
+        delete req.body.password;
+        Database.getUserInfoByMail(req.body.oldMail, (userInfo) => {
+            if (userInfo === undefined) return res.json({
+                modified: false,
+                comment: "User doesn't exist"
             })
-
-            /* ---------------------------------- READ ---------------------------------- */
-            app.get('/auth/user/account/get_info', keycloak.protect(), function (req, res) {
-                let username = req.kauth.grant.access_token.content.preferred_username;
-                if (checkUser(req, 'CLUB')) return res.json({
-                    username: username
-                });
-                Database.getUserInfoByMail(username, (userInfo) => {
-                    if (userInfo === undefined) return res.status(404).json({
-                        comment: "Impossible to find user"
-                    });
-                    return res.json(userInfo);
+            req.body.Id_Diver = userInfo.Id_Diver;
+            let userOldMail = req.body.oldMail;
+            delete req.body.oldMail;
+            console.log("Modifying user in DB");
+            Database.modifUser(req.body, async (updated) => {
+                if (!updated) res.json({
+                    modified: false,
+                    comment: "Impossible to update user in DB"
                 })
-            })
-
-            /* --------------------------------- UPDATE --------------------------------- */
-            // app.get('/auth/user/account/modif', keycloak.protect(),
-            //     // body("Mail").trim().escape(),
-            //     // body("Phone").trim().escape(),
-            //     // body("Medical_Certificate_Expiration_Date").trim().escape(),
-            //     // body("password").trim().escape(),
-            //     function (req, res) {
-            //         console.log("ici");
-            //         res.redirect(`http://10.224.1.186:8080/realms/SDMS/account`)
-            //     })
-
-            /* -------------------------------------------------------------------------- */
-            /*                                  PALANQUEE                                 */
-            /* -------------------------------------------------------------------------- */
-            app.get('/auth/dp/scuba_file', keycloak.protect(), function (req, res) {
-                if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
-                res.sendFile(__dirname + "/vue/html/dp/scuba_file.html", {
-                    headers: {
-                        'userType': 'dp'
-                    }
-                });
-            })
-
-            app.get('/auth/dp/incident_rapport', keycloak.protect(), function (req, res) {
-                if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
-                res.download(__dirname + "/vue/rapport_incident.pdf", {
-                    headers: {
-                        'userType': 'dp'
-                    }
-                });
-            })
-
-            /* -------------------------------------------------------------------------- */
-            /*                                CLUB MEMBERS                                */
-            /* -------------------------------------------------------------------------- */
-
-            app.get('/auth/club/club_members', keycloak.protect(), function (req, res) {
-                if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
-                res.sendFile(__dirname + "/vue/html/club/club_members.html", {
-                    headers: {
-                        'userType': 'club'
-                    }
-                });
-            })
-
-            /* --------------------------------- CREATE --------------------------------- */
-            app.post('/auth/club/club_members', keycloak.protect(),
-                body("Lastname").trim().escape(),
-                body("Firstname").trim().escape(),
-                body("Mail").trim().escape().toLowerCase(),
-                body("Phone").trim().escape(),
-                body("Diver_Qualification").trim().escape(),
-                body("Instructor_Qualification").trim().escape(),
-                body("Nox_Level").trim().escape(),
-                body("Additional_Qualifications").trim().escape(),
-                body("License_Number").trim().escape(),
-                body("License_Expiration_Date").trim().escape(),
-                body("Medical_Certificate_Expiration_Date").trim().escape(),
-                body("Birthdate").trim().escape(),
-                body("password").trim().escape().exists(),
-                async function (req, res) {
-                    const pass = req.body.password;
-                    if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
-                    const errors = validationResult(req);
-                    if (!errors.isEmpty()) return res.status(422).json({
-                        errors: errors.array()
-                    });
-                    let responseKc = await Keycloak_module.createUser(req.body, getUserName(req));
-                    if (responseKc) {
-                        console.log("Now stocking in DB");
-                        Database.createUser(req.body, true, async (created) => {
-                            if (created) {
-                                return res.json({
-                                    created: true
-                                });
-                            } else {
-                                //delete user in keycloak   
-                                await Keycloak_module.deleteUser(req.body.Mail, getUserName(req), pass);
-                                return res.json({
-                                    created: false
-                                });
-                            }
-                        })
-                    } else {
-                        return res.json({
-                            created: false
-                        });
-                    }
-                })
-
-            /* ---------------------------------- READ ---------------------------------- */
-            app.get('/auth/club/get_club_members', keycloak.protect(), async function (req, res) {
-                if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
-                Database.getUsersList((users) => {
-                    return res.json(users);
-                });
-            })
-
-            app.post('/auth/club/get_member_info', keycloak.protect(), function (req, res) {
-                if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
-                Database.getUserInfoByMail(req.body.Mail, (userInfo) => {
-                    userInfo.License_Expiration_Date = new Date(userInfo.License_Expiration_Date).toISOString().split('T')[0]
-                    userInfo.Medical_Certificate_Expiration_Date = new Date(userInfo.Medical_Certificate_Expiration_Date).toISOString().split('T')[0]
-                    return res.json(userInfo)
-                })
-            })
-
-            /* --------------------------------- UPDATE --------------------------------- */
-            app.put('/auth/club/club_members', keycloak.protect(),
-                body("oldMail").trim().escape(),
-                body("Firstname").trim().escape(),
-                body("Lastname").trim().escape(),
-                body("Mail").trim().escape(),
-                body("Phone").trim().escape(),
-                body("Diver_Qualification").trim().escape(),
-                body("Instructor_Qualification").trim().escape(),
-                body("Nox_Level").trim().escape(),
-                body("Additional_Qualifications").trim().escape(),
-                body("License_Number").trim().escape(),
-                body("License_Expiration_Date").trim().escape(),
-                body("Medical_Certificate_Expiration_Date").trim().escape(),
-                body("password").trim().escape().exists(),
-                function (req, res) {
-                    if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
-                    const errors = validationResult(req);
-                    if (!errors.isEmpty()) return res.status(422).json({
-                        errors: errors.array()
-                    });
-                    let clientPassword = req.body.password;
-                    delete req.body.password;
-                    Database.getUserInfoByMail(req.body.oldMail, (userInfo) => {
-                        if (userInfo === undefined) return res.json({
-                            modified: false,
-                            comment: "User doesn't exist"
-                        })
-                        req.body.Id_Diver = userInfo.Id_Diver;
-                        let userOldMail = req.body.oldMail;
-                        delete req.body.oldMail;
-                        console.log("Modifying user in DB");
-                        Database.modifUser(req.body, async (updated) => {
-                            if (!updated) res.json({
-                                modified: false,
-                                comment: "Impossible to update user in DB"
-                            })
-                            const modifKc = await Keycloak_module.modifyUser(userOldMail, req.body.Mail, req.body.Firstname, req.body.Lastname, getUserName(req), clientPassword)
-                            if (modifKc) return res.json({
-                                modified: true,
-                                comment: "User modified"
-                            })
-
-                            console.log("ERROR, setting old info of user in DB");
-                            Database.modifUser(userInfo, (isInser) => {
-                                if (isInser) return res.json({
-                                    modified: false,
-                                    comment: "Error while modifying, success to cancel all modifications"
-                                });
-                                else return res.json({
-                                    modified: false,
-                                    comment: "Error while modifying, impossible to cancel all modifications"
-                                });
-                            })
-                        })
-                    })
+                const modifKc = await Keycloak_module.modifyUser(userOldMail, req.body.Mail, req.body.Firstname, req.body.Lastname, getUserName(req), clientPassword)
+                if (modifKc) return res.json({
+                    modified: true,
+                    comment: "User modified"
                 })
 
-            /* --------------------------------- DELETE --------------------------------- */
-            app.delete('/auth/club/club_members', keycloak.protect(),
-                body("Mail").trim().escape().exists(),
-                body("password").trim().escape().exists(),
-                async function (req, res) {
-                    if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
-                    console.log("Getting user info in DB");
-
-                    Database.getUserInfoByMail(req.body.Mail, (userInfo) => {
-                        if (userInfo === undefined) return res.json({
-                            deleted: false,
-                            comment: "User doesn't exist"
-                        })
-                        console.log("Deleting user in DB");
-
-                        Database.deleteUser(req.body.Mail, async (isDelDb) => {
-                            if (!isDelDb) return res.json({
-                                deleted: false,
-                                comment: "Impossible to delete user in DB"
-                            })
-                            console.log("Deleting user in KC");
-
-                            const isDelKc = await Keycloak_module.deleteUser(req.body.Mail, getUserName(req), req.body.password);
-                            if (isDelKc) return res.json({
-                                deleted: true,
-                                comment: "User deleted"
-                            })
-
-                            console.log("ERROR, adding user in DB");
-                            Database.createUser(userInfo, false, (isInser) => {
-                                if (isInser) return res.json({
-                                    deleted: false,
-                                    comment: "Error while deleting, success to cancel all modifications"
-                                });
-                                else return res.json({
-                                    deleted: false,
-                                    comment: "Error while deleting, impossible to cancel all modifications"
-                                });
-                            })
-                        })
-                    })
-                })
-
-            /* -------------------------------------------------------------------------- */
-            /*                                  LOCATIONS                                 */
-            /* -------------------------------------------------------------------------- */
-
-            app.get('/auth/club/locations', keycloak.protect(), function (req, res) {
-                if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
-                res.sendFile(__dirname + "/vue/html/club/locations.html", {
-                    headers: {
-                        'userType': 'club'
-                    }
-                });
-            })
-
-            /* --------------------------------- CREATE --------------------------------- */
-            app.post("/auth/club/locations", keycloak.protect(),
-                body("Site_Name").trim().escape(), // Location
-                body("Gps_Latitude").trim().escape().isNumeric(),
-                body("Gps_Longitude").trim().escape().isNumeric(),
-                body("Track_Type").trim().escape(),
-                body("Track_Number").trim().escape(),
-                body("Track_Name").trim().escape(),
-                body("Zip_Code").trim().escape(),
-                body("City_Name").trim().escape(),
-                body("Country_Name").trim().escape(),
-                body("Additional_Address").trim().escape(),
-                body("Tel_Number").trim().escape().isLength({
-                    min: 10,
-                    max: 10
-                }),
-                body("Information_URL").trim().escape(),
-                body("SOS_Tel_Number").trim().escape().isLength({
-                    min: 10,
-                    max: 10
-                }), // Emergency
-                body("Emergency_Plan").trim().escape(), //     /
-                body("Post_Accident_Procedure").trim().escape(), //     /
-                function (req, res) {
-                    if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
-                    const errors = validationResult(req);
-                    if (!errors.isEmpty()) return res.status(422).json({
-                        errors: errors.array()
+                console.log("ERROR, setting old info of user in DB");
+                Database.modifUser(userInfo, (isInser) => {
+                    if (isInser) return res.json({
+                        modified: false,
+                        comment: "Error while modifying, success to cancel all modifications"
                     });
-
-                    const dataEmergency = {
-                        SOS_Tel_Number: req.body.SOS_Tel_Number,
-                        Emergency_Plan: req.body.Emergency_Plan,
-                        Post_Accident_Procedure: req.body.Post_Accident_Procedure,
-                        Version: 0
-                    }
-                    delete req.body.SOS_Tel_Number;
-                    delete req.body.Emergency_Plan;
-                    delete req.body.Post_Accident_Procedure;
-
-                    console.log("Creating location in DB");
-                    Database.createDiveSite(req.body, (idLoc) => {
-                        if (idLoc === undefined) return res.json({
-                            created: false,
-                            comment: "Impossible to add Location"
-                        })
-                        dataEmergency.Id_Emergency_Plan = idLoc;
-                        dataEmergency.Dive_Site_Id_Dive_Site = idLoc;
-                        Database.createEmergencyPlan(dataEmergency, (creaEm) => {
-                            if (creaEm) return res.json({
-                                created: true,
-                                comment: "Location and Emergency Plan added"
-                            })
-                            else {
-                                Database.deleteDiveSite({
-                                    Site_Name: req.body.Site_Name
-                                }, (delLoc) => {
-                                    if (delLoc) return res.json({
-                                        created: false,
-                                        comment: "Impossible to add Emergency Plan"
-                                    })
-                                    else return res.json({
-                                        created: false,
-                                        comment: "Impossible to add Emergency Plan and Location"
-                                    })
-                                })
-                            }
-                        })
-                    })
-                })
-
-            /* ---------------------------------- READ ---------------------------------- */
-            app.get("/auth/club/get_locations", keycloak.protect(), function (req, res) {
-                if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
-                console.log("Getting all locations in DB");
-                Database.getDiveSiteList((locations) => {
-                    return res.json(locations);
-                });
-            })
-
-            app.post("/auth/club/get_location_info", keycloak.protect(), function (req, res) {
-                if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
-                console.log("Getting location info in DB");
-                Database.getDiveSiteInfoByName(req.body, (siteInfo) => {
-                    Database.getEmergencyPlan({
-                        Id_Emergency_Plan: siteInfo.Id_Dive_Site
-                    }, (emergencyInfo) => {
-                        return res.json({
-                            siteInfo: siteInfo,
-                            emergencyPlanInfo: emergencyInfo
-                        });
-                    })
-                })
-            })
-
-            /* --------------------------------- UPDATE --------------------------------- */
-            app.put("/auth/club/locations", keycloak.protect(),
-                body("Site_Name").trim().escape(),
-                body("Gps_Latitude").trim().escape().isNumeric(),
-                body("Gps_Longitude").trim().escape().isNumeric(),
-                body("Track_Type").trim().escape(),
-                body("Track_Number").trim().escape(),
-                body("Track_Name").trim().escape(),
-                body("Zip_Code").trim().escape(),
-                body("City_Name").trim().escape(),
-                body("Country_Name").trim().escape(),
-                body("Additional_Address").trim().escape(),
-                body("Tel_Number").trim().escape().isLength({
-                    min: 10,
-                    max: 10
-                }),
-                body("Information_URL").trim().escape(),
-                body("SOS_Tel_Number").trim().escape().isLength({
-                    min: 10,
-                    max: 10
-                }), // Emergency
-                body("Emergency_Plan").trim().escape(), //     /
-                body("Post_Accident_Procedure").trim().escape(), //     /
-                function (req, res) {
-                    if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
-                    const errors = validationResult(req);
-                    if (!errors.isEmpty()) return res.status(422).json({
-                        errors: errors.array()
+                    else return res.json({
+                        modified: false,
+                        comment: "Error while modifying, impossible to cancel all modifications"
                     });
+                })
+            })
+        })
+    })
 
-                    const dataEmergency = {
-                        Id_Emergency_Plan: "",
-                        Dive_Site_Id_Dive_Site: "",
-                        SOS_Tel_Number: req.body.SOS_Tel_Number,
-                        Emergency_Plan: req.body.Emergency_Plan,
-                        Post_Accident_Procedure: req.body.Post_Accident_Procedure,
-                        Version: "1"
-                    }
-                    delete req.body.Dive_Site_Id_Dive_Site;
-                    delete req.body.SOS_Tel_Number;
-                    delete req.body.Emergency_Plan;
-                    delete req.body.Post_Accident_Procedure;
-                    delete req.body.Version;
+/* --------------------------------- DELETE --------------------------------- */
+app.delete('/auth/club/club_members', keycloak.protect(),                                   // USE
+    body("Mail").trim().escape().exists(),
+    body("password").trim().escape().exists(),
+    async function (req, res) {
+        if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
+        console.log("Getting user info in DB");
 
-                    console.log("Modifying location in DB");
-                    Database.getDiveSiteInfoByName({
+        Database.getUserInfoByMail(req.body.Mail, (userInfo) => {
+            if (userInfo === undefined) return res.json({
+                deleted: false,
+                comment: "User doesn't exist"
+            })
+            console.log("Deleting user in DB");
+
+            Database.deleteUser(req.body.Mail, async (isDelDb) => {
+                if (!isDelDb) return res.json({
+                    deleted: false,
+                    comment: "Impossible to delete user in DB"
+                })
+                console.log("Deleting user in KC");
+
+                const isDelKc = await Keycloak_module.deleteUser(req.body.Mail, getUserName(req), req.body.password);
+                if (isDelKc) return res.json({
+                    deleted: true,
+                    comment: "User deleted"
+                })
+
+                console.log("ERROR, adding user in DB");
+                Database.createUser(userInfo, false, (isInser) => {
+                    if (isInser) return res.json({
+                        deleted: false,
+                        comment: "Error while deleting, success to cancel all modifications"
+                    });
+                    else return res.json({
+                        deleted: false,
+                        comment: "Error while deleting, impossible to cancel all modifications"
+                    });
+                })
+            })
+        })
+    })
+
+/* -------------------------------------------------------------------------- */
+/*                                  LOCATIONS                                 */
+/* -------------------------------------------------------------------------- */
+
+app.get('/auth/club/locations', keycloak.protect(), function (req, res) {
+    if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
+    res.sendFile(__dirname + "/vue/html/club/locations.html", { headers: { 'userType': 'club' } });
+})
+
+/* --------------------------------- CREATE --------------------------------- */
+app.post("/auth/club/locations", keycloak.protect(),                                                    
+    body("Site_Name").trim().escape(), // Location
+    body("Gps_Latitude").trim().escape().isNumeric(),
+    body("Gps_Longitude").trim().escape().isNumeric(),
+    body("Track_Type").trim().escape(),
+    body("Track_Number").trim().escape(),
+    body("Track_Name").trim().escape(),
+    body("Zip_Code").trim().escape(),
+    body("City_Name").trim().escape(),
+    body("Country_Name").trim().escape(),
+    body("Additional_Address").trim().escape(),
+    body("Tel_Number").trim().escape().isLength({
+        min: 10,
+        max: 10
+    }),
+    body("Information_URL").trim().escape(),
+    body("SOS_Tel_Number").trim().escape().isLength({
+        min: 10,
+        max: 10
+    }), // Emergency
+    body("Emergency_Plan").trim().escape(), //     /
+    body("Post_Accident_Procedure").trim().escape(), //     /
+    function (req, res) {
+        if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(422).json({
+            errors: errors.array()
+        });
+
+        const dataEmergency = {
+            SOS_Tel_Number: req.body.SOS_Tel_Number,
+            Emergency_Plan: req.body.Emergency_Plan,
+            Post_Accident_Procedure: req.body.Post_Accident_Procedure,
+            Version: 0
+        }
+        delete req.body.SOS_Tel_Number;
+        delete req.body.Emergency_Plan;
+        delete req.body.Post_Accident_Procedure;
+
+        console.log("Creating location in DB");
+        Database.createDiveSite(req.body, (idLoc) => {
+            if (idLoc === undefined) return res.json({
+                created: false,
+                comment: "Impossible to add Location"
+            })
+            dataEmergency.Id_Emergency_Plan = idLoc;
+            dataEmergency.Dive_Site_Id_Dive_Site = idLoc;
+            Database.createEmergencyPlan(dataEmergency, (creaEm) => {
+                if (creaEm) return res.json({
+                    created: true,
+                    comment: "Location and Emergency Plan added"
+                })
+                else {
+                    Database.deleteDiveSite({
                         Site_Name: req.body.Site_Name
-                    }, (siteInfo) => {
-                        if (siteInfo === undefined) return res.json({
-                            modified: false,
-                            comment: "Location doesn't exist"
-                        });
-                        req.body.Id_Dive_Site = siteInfo.Id_Dive_Site;
-                        dataEmergency.Id_Emergency_Plan = siteInfo.Id_Dive_Site;
-                        dataEmergency.Dive_Site_Id_Dive_Site = siteInfo.Id_Dive_Site;
-                        Database.modifDiveSite(req.body, (isUpdateSite) => {
+                    }, (delLoc) => {
+                        if (delLoc) return res.json({
+                            created: false,
+                            comment: "Impossible to add Emergency Plan"
+                        })
+                        else return res.json({
+                            created: false,
+                            comment: "Impossible to add Emergency Plan and Location"
+                        })
+                    })
+                }
+            })
+        })
+    })
+
+/* ---------------------------------- READ ---------------------------------- */
+app.get("/auth/club/get_locations", keycloak.protect(), function (req, res) {                               
+    if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
+    console.log("Getting all locations in DB");
+    Database.getDiveSiteList((locations) => {
+        return res.json(locations);
+    });
+})
+
+/* --------------------------------- UPDATE --------------------------------- */
+app.put("/auth/club/locations", keycloak.protect(),                                             
+    body("Site_Name").trim().escape(),
+    body("Gps_Latitude").trim().escape().isNumeric(),
+    body("Gps_Longitude").trim().escape().isNumeric(),
+    body("Track_Type").trim().escape(),
+    body("Track_Number").trim().escape(),
+    body("Track_Name").trim().escape(),
+    body("Zip_Code").trim().escape(),
+    body("City_Name").trim().escape(),
+    body("Country_Name").trim().escape(),
+    body("Additional_Address").trim().escape(),
+    body("Tel_Number").trim().escape().isLength({
+        min: 10,
+        max: 10
+    }),
+    body("Information_URL").trim().escape(),
+    body("SOS_Tel_Number").trim().escape().isLength({
+        min: 10,
+        max: 10
+    }), // Emergency
+    body("Emergency_Plan").trim().escape(), //     /
+    body("Post_Accident_Procedure").trim().escape(), //     /
+    function (req, res) {
+        if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(422).json({
+            errors: errors.array()
+        });
+
+        const dataEmergency = {
+            Id_Emergency_Plan: "",
+            Dive_Site_Id_Dive_Site: "",
+            SOS_Tel_Number: req.body.SOS_Tel_Number,
+            Emergency_Plan: req.body.Emergency_Plan,
+            Post_Accident_Procedure: req.body.Post_Accident_Procedure,
+            Version: "1"
+        }
+        delete req.body.Dive_Site_Id_Dive_Site;
+        delete req.body.SOS_Tel_Number;
+        delete req.body.Emergency_Plan;
+        delete req.body.Post_Accident_Procedure;
+        delete req.body.Version;
+
+        console.log("Modifying location in DB");
+        Database.getDiveSiteInfoByName({
+            Site_Name: req.body.Site_Name
+        }, (siteInfo) => {
+            if (siteInfo === undefined) return res.json({
+                modified: false,
+                comment: "Location doesn't exist"
+            });
+            req.body.Id_Dive_Site = siteInfo.Id_Dive_Site;
+            dataEmergency.Id_Emergency_Plan = siteInfo.Id_Dive_Site;
+            dataEmergency.Dive_Site_Id_Dive_Site = siteInfo.Id_Dive_Site;
+            Database.modifDiveSite(req.body, (isUpdateSite) => {
+                if (!isUpdateSite) return res.json({
+                    modified: false,
+                    comment: "Impossible to update Location"
+                });
+                Database.modifEmergencyPlan(dataEmergency, (isUpdateEm) => {
+                    if (isUpdateEm) return res.json({
+                        modified: true,
+                        comment: "Location and Emergency Plan updated"
+                    });
+                    else {
+                        Database.modifDiveSite(siteInfo, (isUpdateSite) => {
                             if (!isUpdateSite) return res.json({
                                 modified: false,
-                                comment: "Impossible to update Location"
+                                comment: "Impossible to cancel update of Location"
                             });
-                            Database.modifEmergencyPlan(dataEmergency, (isUpdateEm) => {
-                                if (isUpdateEm) return res.json({
-                                    modified: true,
-                                    comment: "Location and Emergency Plan updated"
-                                });
-                                else {
-                                    Database.modifDiveSite(siteInfo, (isUpdateSite) => {
-                                        if (!isUpdateSite) return res.json({
-                                            modified: false,
-                                            comment: "Impossible to cancel update of Location"
-                                        });
-                                        else return res.json({
-                                            modified: false,
-                                            comment: "Impossible to update Emergency Plan"
-                                        });
-                                    })
-                                }
-                            })
-                        })
-                    });
-                })
-
-            /* --------------------------------- DELETE --------------------------------- */
-            app.delete("/auth/club/locations", keycloak.protect(), function (req, res) {
-                if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
-                console.log("Deleting location in DB");
-                Database.getDiveSiteInfoByName(req.body, (siteInfo) => {
-                    Database.deleteEmergencyPlan({
-                        Id_Emergency_Plan: siteInfo.Id_Dive_Site
-                    }, (isDelete) => {
-                        if (!isDelete) return res.json({
-                            deleted: false,
-                            comment: "Impossible to delete Emergency Plan"
-                        });
-                        Database.deleteDiveSite(req.body, (isDelete) => {
-                            if (isDelete) return res.json({
-                                deleted: true,
-                                comment: "Location and Emergency Plan deleted"
+                            else return res.json({
+                                modified: false,
+                                comment: "Impossible to update Emergency Plan"
                             });
-                            else {
-                                Database.createEmergencyPlan(siteInfo, (isCreate) => {
-                                    if (!isCreate) return res.json({
-                                        deleted: false,
-                                        comment: "Impossible to recreate Emergency Plan"
-                                    });
-                                    else return res.json({
-                                        deleted: false,
-                                        comment: "Impossible to delete Location"
-                                    });
-                                })
-                            }
                         })
-                    })
+                    }
                 })
             })
+        });
+    })
 
-
-
-
-            http.listen(port, hostname, (err) => {
-                if (err) console.error(err);
-                else console.log(`Server running at http://${process.env.IP_PERSO}:${port}`);
+/* --------------------------------- DELETE --------------------------------- */
+app.delete("/auth/club/locations", keycloak.protect(), function (req, res) {                        
+    if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
+    console.log("Deleting location in DB");
+    Database.getDiveSiteInfoByName(req.body, (siteInfo) => {
+        Database.deleteEmergencyPlan({
+            Id_Emergency_Plan: siteInfo.Id_Dive_Site
+        }, (isDelete) => {
+            if (!isDelete) return res.json({
+                deleted: false,
+                comment: "Impossible to delete Emergency Plan"
             });
+            Database.deleteDiveSite(req.body, (isDelete) => {
+                if (isDelete) return res.json({
+                    deleted: true,
+                    comment: "Location and Emergency Plan deleted"
+                });
+                else {
+                    Database.createEmergencyPlan(siteInfo, (isCreate) => {
+                        if (!isCreate) return res.json({
+                            deleted: false,
+                            comment: "Impossible to recreate Emergency Plan"
+                        });
+                        else return res.json({
+                            deleted: false,
+                            comment: "Impossible to delete Location"
+                        });
+                    })
+                }
+            })
+        })
+    })
+})
+
+http.listen(port, hostname, (err) => {
+    if (err) console.error(err);
+    else console.log(`Server running at http://${process.env.IP_PERSO}:${port}`);
+});

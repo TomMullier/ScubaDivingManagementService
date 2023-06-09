@@ -1,3 +1,6 @@
+/* -------------------------------------------------------------------------- */
+/*                                   IMPORT                                   */
+/* -------------------------------------------------------------------------- */
 import {
   frLocale
 } from './@fullcalendar/core/locales/fr.js';
@@ -10,7 +13,18 @@ import {
   Event
 } from './class/Event.js';
 
+/* -------------------------------------------------------------------------- */
+/*                              GLOBAL VARIABLES                              */
+/* -------------------------------------------------------------------------- */
 let my_role;
+let me;
+let events = [];
+
+/* -------------------------------------------------------------------------- */
+/*                                   REQUEST                                  */
+/* -------------------------------------------------------------------------- */
+
+/* -------------------------------- USERTYPE -------------------------------- */
 fetch('/auth/dashboard')
   .then(response => {
     const userType = response.headers.get('userType');
@@ -34,11 +48,7 @@ fetch('/auth/dashboard')
     }
   });
 
-
-
-
-let me;
-let events = [];
+/* ------------------------- GET USER INFO + EVENTS ------------------------- */
 fetch('/auth/dashboard/get_info', {
     method: 'GET',
     headers: {
@@ -66,7 +76,9 @@ fetch('/auth/dashboard/get_info', {
 
 
 
-
+/* -------------------------------------------------------------------------- */
+/*                                    CODE                                    */
+/* -------------------------------------------------------------------------- */
 
 document.addEventListener('DOMContentLoaded', function () {
   //!document.querySelector('#my_profile_picture').src = "../img/profile_pictures/" + me.firstname + me.lastname + me.licenceNumber + ".jpg";

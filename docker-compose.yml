@@ -61,3 +61,4 @@ services:
       - sdms_net
     depends_on:
       - keycloak
+      - mysql

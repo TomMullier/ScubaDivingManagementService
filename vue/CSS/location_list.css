@@ -983,8 +983,3 @@ body {
     margin-bottom: 20px;
   }
 }
-@media screen and (max-width: 1450px) {
-  #create_location .modal-wrapper .fields-container {
-    flex-wrap: wrap;
-  }
-}

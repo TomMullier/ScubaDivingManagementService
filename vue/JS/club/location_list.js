@@ -346,4 +346,12 @@ function updateDisplayLocations() {
                         });
                 })
         });
+        loadingClose();
 };
+
+function loadingClose() {
+        document.querySelector(".loading_animation").style.opacity = "0";
+        setTimeout(function () {
+                document.querySelector(".loading_animation").style.display = "none";
+        }, 500);
+}

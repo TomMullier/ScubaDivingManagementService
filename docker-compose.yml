@@ -28,6 +28,7 @@ services:
       - "3306:3306"
 
   keycloak:
+    container_name: ck-theme_keycloak
     image: quay.io/keycloak/keycloak:latest
     volumes:
       - keycloak_data:/opt/keycloak

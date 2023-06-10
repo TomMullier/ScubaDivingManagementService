@@ -34,6 +34,10 @@
     <div id="menutoggle"></div>
     <button id="emergencyButton"><i class="fa-solid fa-truck-medical"></i></button>
     <button id="createEventButton" class="club_only"><i class="fa-solid fa-plus"></i></button>
+    <div class="loading_animation">
+        <img src="../img/double_loading.svg" alt="">
+        <p>Chargement...</p>
+    </div>
     <div class="title_container">
         <h1>Plannification des plongées</h1>
     </div>
@@ -244,7 +248,7 @@
                         <div>
                             <h3>Directeur de Plongée</h3>
                             <div class="search_location_DP">
-                                <input type="text" id="eventDPInput" name="eventDPInput" placeholder="Rechercher"
+                                <input required type="text" id="eventDPInput" name="eventDPInput" placeholder="Rechercher"
                                     value="">
                                 <div class="DP_list_dropdown" style="display:none">
                                     <h4 class="DP_item">Tom</h4>
@@ -290,7 +294,7 @@
                 <button type="submit" class="create_event_button">
                     Plannifier l'évènement
                 </button>
-                
+
             </form>
         </modal>
 
@@ -589,7 +593,7 @@
 
         <modal id="eventModal">
             <!-- TITRE -->
-            <h2 id="eventTitle"></h2>
+            <div id="eventTitle"></div>
             <div class="global" id="global-view">
                 <div class="left" id="left_bar">
                     <div class="timeline_bar" id="timeline_view">
@@ -626,21 +630,21 @@
                             <p>Lieu</p>
                             <span>
                                 <i class="fa-solid fa-star"></i>
-                                <label class="location_display" for="">*/5</label>    
+                                <label class="location_display" for="">*/5</label>
                             </span>
                         </div>
                         <div class="orga">
                             <p>Organisation</p>
                             <span>
                                 <i class="fa-solid fa-star"></i>
-                                <label class="orga_display" for="">*/5</label>    
+                                <label class="orga_display" for="">*/5</label>
                             </span>
                         </div>
                         <div class="conditions">
                             <p>Conditions</p>
                             <span>
                                 <i class="fa-solid fa-star"></i>
-                                <label class="conditions_display" for="">*/5</label>    
+                                <label class="conditions_display" for="">*/5</label>
                             </span>
                         </div>
                     </div>

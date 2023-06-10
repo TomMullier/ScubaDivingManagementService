@@ -158,7 +158,16 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   document.querySelector(".event_list").style.height = "calc(" + $("#calendar").height() + "px + 30px)";
+
+  loadingClose();
 });
+
+function loadingClose() {
+  document.querySelector(".loading_animation").style.opacity = "0";
+  setTimeout(function () {
+    document.querySelector(".loading_animation").style.display = "none";
+  } , 500);
+}
 
 //boutton menu
 let menutoggle = document.querySelector('.toggle')

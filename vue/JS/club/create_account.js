@@ -201,7 +201,14 @@ function displayUsers() {
                         }
                 });
         });
+        loadingClose();
 };
+function loadingClose() {
+        document.querySelector(".loading_animation").style.opacity = "0";
+        setTimeout(function () {
+                document.querySelector(".loading_animation").style.display = "none";
+        }, 500);
+}
 
 //bouton d'urgence
 var emergencyButton = document.getElementById("emergencyButton");

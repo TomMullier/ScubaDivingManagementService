@@ -374,6 +374,7 @@ body {
   align-items: flex-end;
   height: 100vh;
   width: 100%;
+  background-color: transparent;
 }
 .top_container img {
   width: 40%;
@@ -715,4 +716,102 @@ body {
 }
 .footer_container .footerbottom .socials a:hover {
   color: white;
+}
+@media screen and (max-width: 1024px) {
+  .top_container img {
+    width: 80%;
+    opacity: 0.5;
+  }
+  .top_container nav {
+    width: calc(100% - 200px);
+    z-index: 999;
+  }
+  .top_container .title_container {
+    z-index: 999;
+    width: calc(100% - 200px);
+  }
+  .fonctionnalites_container div {
+    flex-direction: column;
+    align-items: center;
+  }
+  .fonctionnalites_container div .card {
+    width: 80%;
+  }
+  .desc_container {
+    margin-top: 100px;
+  }
+  .underlife_container .img_container {
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  .underlife_container .img_container .img1 {
+    margin: 0px;
+    width: 100%;
+    margin-bottom: 25px;
+  }
+  .underlife_container .img_container .img2 {
+    margin: 0px;
+    width: 40%;
+  }
+  .underlife_container .img_container .img3 {
+    margin: 0px;
+    width: 40%;
+  }
+  .footer_container .footer_top {
+    width: 80%;
+  }
+  .footer_container .footerbottom {
+    width: 80%;
+  }
+  .top_container nav ul li a {
+    font-size: 20px;
+  }
+}
+@media screen and (max-width: 700px) {
+  .top_container .title_container {
+    width: 100%;
+    transform: scale(0.8);
+    margin-right: 0px;
+  }
+  .top_container nav ul li.hide {
+    display: none;
+  }
+  .top_container nav {
+    width: fit-content;
+    margin-right: 50px;
+  }
+  .top_container .title_container p {
+    display: none;
+  }
+  .desc_container .desc p span.hidden {
+    display: none;
+  }
+  .desc_container .desc {
+    transform: translateY(-40%) scale(0.8);
+  }
+  .underlife_container .img_container .img2 {
+    margin: 0px;
+    width: 35%;
+  }
+  .underlife_container .img_container .img3 {
+    margin: 0px;
+    width: 35%;
+  }
+  .fonctionnalites_container .card {
+    height: auto;
+  }
+  .desc_container .desc {
+    position: relative;
+    width: 80%;
+    margin: 0 auto;
+    margin-top: 10px;
+    transform: translateY(0%) scale(1);
+  }
+  .desc_container {
+    margin-top: 10px;
+  }
+  .fonctionnalites_container h1,
+  .underlife_container h1 {
+    transform: scale(0.8);
+  }
 }

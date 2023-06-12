@@ -991,7 +991,7 @@ body {
 #createEventModal .modal-wrapper,
 #modifyEventModal .modal-wrapper {
   width: 100%;
-  height: auto;
+  height: 100%;
   background-color: white;
   border-radius: 10px;
   font-family: 'Montserrat', sans-serif;
@@ -1226,6 +1226,58 @@ body {
 #modifyEventModal .modal-wrapper .right div .search_location_DP input {
   width: 100%;
 }
+#createEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .DP_item,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .DP_item,
+#createEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .DP_item,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .DP_item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding-left: 10px;
+}
+#createEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .DP_item:hover,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .DP_item:hover,
+#createEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .DP_item:hover,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .DP_item:hover {
+  cursor: pointer;
+  background-color: #dde2ea;
+  color: #f2574a;
+}
+#createEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .DP_item div,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .DP_item div,
+#createEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .DP_item div,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .DP_item div {
+  margin: 0;
+  padding: 0;
+  color: #120B8F;
+  font-size: 15px;
+  font-family: 'Montserrat', sans-serif;
+  text-align: left;
+  text-transform: uppercase;
+  margin-right: 20px;
+  font-weight: bold;
+}
+#createEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .DP_item h4,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .DP_item h4,
+#createEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .DP_item h4,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .DP_item h4 {
+  margin: 0;
+  padding: 0;
+  color: #BDC7D7;
+  font-size: 15px;
+  font-family: 'Montserrat', sans-serif;
+  text-align: left;
+  text-transform: none;
+}
+#createEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .DP_item h4:hover,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .DP_item h4:hover,
+#createEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .DP_item h4:hover,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .DP_item h4:hover {
+  cursor: pointer;
+  background-color: #dde2ea;
+  color: #BDC7D7;
+}
 #createEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown,
 #modifyEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown,
 #createEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown,
@@ -1305,6 +1357,57 @@ body {
   width: auto;
   height: auto;
 }
+#createEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .diver_item .info_contain,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .diver_item .info_contain,
+#createEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .diver_item .info_contain,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .diver_item .info_contain,
+#createEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown .diver_item .info_contain,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown .diver_item .info_contain,
+#createEventModal .modal-wrapper .right div .search_location_DP .diver_list_dropdown .diver_item .info_contain,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .diver_list_dropdown .diver_item .info_contain {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding-left: 10px;
+}
+#createEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .diver_item .info_contain h4,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .diver_item .info_contain h4,
+#createEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .diver_item .info_contain h4,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .diver_item .info_contain h4,
+#createEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown .diver_item .info_contain h4,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown .diver_item .info_contain h4,
+#createEventModal .modal-wrapper .right div .search_location_DP .diver_list_dropdown .diver_item .info_contain h4,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .diver_list_dropdown .diver_item .info_contain h4 {
+  margin: 0;
+  padding: 0;
+  color: #BDC7D7;
+  font-size: 15px;
+  font-family: 'Montserrat', sans-serif;
+  text-align: left;
+  text-transform: none;
+}
+#createEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .diver_item .info_contain .name_contain,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .diver_item .info_contain .name_contain,
+#createEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .diver_item .info_contain .name_contain,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .diver_item .info_contain .name_contain,
+#createEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown .diver_item .info_contain .name_contain,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown .diver_item .info_contain .name_contain,
+#createEventModal .modal-wrapper .right div .search_location_DP .diver_list_dropdown .diver_item .info_contain .name_contain,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .diver_list_dropdown .diver_item .info_contain .name_contain {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 0;
+  padding: 0;
+  color: #120B8F;
+  font-size: 15px;
+  font-family: 'Montserrat', sans-serif;
+  text-align: left;
+  text-transform: uppercase;
+  margin-right: 20px;
+}
 #createEventModal .comment,
 #modifyEventModal .comment,
 #createEventModal .needs,
@@ -1377,6 +1480,13 @@ body {
   transition: 0.2s;
   text-transform: uppercase;
   margin-bottom: 20px;
+}
+#createEventModal .create_event_button img,
+#modifyEventModal .create_event_button img {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  padding: 0;
 }
 #createEventModal .create_event_button:hover,
 #modifyEventModal .create_event_button:hover {

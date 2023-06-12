@@ -30,6 +30,7 @@ class BDD {
     /*                                CLUB MEMBERS                                */
     /* -------------------------------------------------------------------------- */
     createUser(userData, isNew, callback) {
+        userData.Lastname = escapeHtml(userData.Lastname);
         if (isNew) {
             userData.Id_Diver = uuidv4();
             delete userData.password;
@@ -51,6 +52,12 @@ class BDD {
             if (err) {
                 console.log(err);
             } else {
+                result.forEach(user => {
+                    user.Lastname = desEscapeHtml(user.Lastname);
+                    user.Birthdate = getDateFormat(user.Birthdate);
+                    user.License_Expiration_Date = getDateFormat(user.License_Expiration_Date);
+                    user.Medical_Certificate_Expiration_Date = getDateFormat(user.Medical_Certificate_Expiration_Date);
+                })
                 return callback(result);
             }
         })
@@ -64,23 +71,22 @@ class BDD {
         this.con.query(query, [data], (err, result) => {
             if (err || !result[0]) {
                 if (err) console.log(err);
-                console.log("Can't get user info");
                 callback(undefined);
             } else {
-                console.log("Getting user info DB");
+                result[0].Lastname = desEscapeHtml(result[0].Lastname)
                 callback(result[0]);
             }
         })
     }
 
     modifUser(data, callback) {
+        data.Lastname = escapeHtml(data.Lastname);
         const query = 'UPDATE Diver SET ? WHERE Id_Diver = ?'
         this.con.query(query, [data, data.Id_Diver], (err, result) => {
             if (err) {
                 console.log(err);
                 return callback(false)
             } else {
-                console.log("User info modified");
                 return callback(true);
             }
         })
@@ -108,13 +114,18 @@ class BDD {
 
     createDiveSite(data, callback) {
         data.Id_Dive_Site = uuidv4();
+        data.Site_Name = escapeHtml(data.Site_Name);
+        data.Track_Name = escapeHtml(data.Track_Name);
+        data.City_Name = escapeHtml(data.City_Name);
+        data.Country_Name = escapeHtml(data.Country_Name);
+        data.Additional_Address = escapeHtml(data.Additional_Address);
+        data.Information_URL = escapeHtml(data.Information_URL);
         let query = 'INSERT INTO Dive_Site SET ?';
         this.con.query(query, [data], (err, result) => {
             if (err) {
                 console.log(err);
                 callback(undefined);
             } else {
-                console.log("Site correctly inserted ");
                 callback(data.Id_Dive_Site);
             }
         })
@@ -126,20 +137,35 @@ class BDD {
             if (err) {
                 console.log(err);
             } else {
+                result.forEach(site => {
+                    site.Site_Name = desEscapeHtml(site.Site_Name);
+                    site.Track_Name = desEscapeHtml(site.Track_Name);
+                    site.City_Name = desEscapeHtml(site.City_Name);
+                    site.Country_Name = desEscapeHtml(site.Country_Name);
+                    site.Additional_Address = desEscapeHtml(site.Additional_Address);
+                    site.Information_URL = desEscapeHtml(site.Information_URL);
+                    site.Emergency_Plan = desEscapeHtml(site.Emergency_Plan);
+                    site.Post_Accident_Procedure = desEscapeHtml(site.Post_Accident_Procedure);
+                })
                 return callback(result);
             }
         })
     }
+
 
     getDiveSiteInfoByName(data, callback) {
         const query = 'SELECT * FROM Dive_Site WHERE ?';
         this.con.query(query, [data], (err, result) => {
             if (err || !result[0]) {
                 if (err) console.log(err);
-                console.log("Can't get location info");
                 callback(undefined);
             } else {
-                console.log("Sending location info");
+                result[0].Site_Name = desEscapeHtml(result[0].Site_Name);
+                result[0].Track_Name = desEscapeHtml(result[0].Track_Name);
+                result[0].City_Name = desEscapeHtml(result[0].City_Name);
+                result[0].Country_Name = desEscapeHtml(result[0].Country_Name);
+                result[0].Additional_Address = desEscapeHtml(result[0].Additional_Address);
+                result[0].Information_URL = desEscapeHtml(result[0].Information_URL);
                 callback(result[0]);
             }
         })
@@ -151,10 +177,14 @@ class BDD {
             this.con.query(query, [data], (err, result) => {
                 if (err || !result[0]) {
                     if (err) console.log(err);
-                    console.log("Can't get location info");
                     callback(undefined);
                 } else {
-                    console.log("Sending location info");
+                    result[0].Site_Name = desEscapeHtml(result[0].Site_Name);
+                    result[0].Track_Name = desEscapeHtml(result[0].Track_Name);
+                    result[0].City_Name = desEscapeHtml(result[0].City_Name);
+                    result[0].Country_Name = desEscapeHtml(result[0].Country_Name);
+                    result[0].Additional_Address = desEscapeHtml(result[0].Additional_Address);
+                    result[0].Information_URL = desEscapeHtml(result[0].Information_URL);
                     callback(result[0]);
                 }
             })
@@ -162,26 +192,35 @@ class BDD {
     }
 
     modifDiveSite(data, callback) {
+        data.Site_Name = escapeHtml(data.Site_Name);
+        data.Track_Name = escapeHtml(data.Track_Name);
+        data.City_Name = escapeHtml(data.City_Name);
+        data.Country_Name = escapeHtml(data.Country_Name);
+        data.Additional_Address = escapeHtml(data.Additional_Address);
+        data.Information_URL = escapeHtml(data.Information_URL);
         const query = 'UPDATE Dive_Site SET ? WHERE Id_Dive_Site = ?'
         this.con.query(query, [data, data.Id_Dive_Site], (err, result) => {
             if (err) {
                 console.log(err);
                 return callback(false)
             } else {
-                console.log("Location info modified");
                 return callback(true);
             }
         })
     }
 
     deleteDiveSite(data, callback) {
+        data.Site_Name = escapeHtml(data.Site_Name);
+        data.City_Name = escapeHtml(data.City_Name);
+        data.Country_Name = escapeHtml(data.Country_Name);
+        data.Additional_Address = escapeHtml(data.Additional_Address);
+        data.Information_URL = escapeHtml(data.Information_URL);
         const query = 'DELETE FROM Dive_Site WHERE ?';
         this.con.query(query, [data], (err, result) => {
             if (err) {
                 console.log(err);
                 return callback(false)
             } else {
-                console.log("Delete locatin OK");
                 return callback(true);
             }
         })
@@ -193,26 +232,28 @@ class BDD {
     /* -------------------------------------------------------------------------- */
 
     createEmergencyPlan(data, callback) {
+        data.Emergency_Plan = escapeHtml(data.Emergency_Plan);
+        data.Post_Accident_Procedure = escapeHtml(data.Post_Accident_Procedure);
         let query = 'INSERT INTO Emergency_Plan SET ?';
         this.con.query(query, [data], (err, result) => {
             if (err) {
                 console.log(err);
                 callback(false);
             } else {
-                console.log("Emergency plan correctly inserted ");
                 callback(true);
             }
         })
     }
 
     modifEmergencyPlan(data, callback) {
+        data.Emergency_Plan = escapeHtml(data.Emergency_Plan);
+        data.Post_Accident_Procedure = escapeHtml(data.Post_Accident_Procedure);
         const query = 'UPDATE Emergency_Plan SET ? WHERE Id_Emergency_Plan = ?'
         this.con.query(query, [data, data.Id_Emergency_Plan], (err, result) => {
             if (err) {
                 console.log(err);
                 return callback(false)
             } else {
-                console.log("Location info modified");
                 return callback(true);
             }
         })
@@ -225,7 +266,6 @@ class BDD {
                 console.log(err);
                 return callback(false)
             } else {
-                console.log("Delete locatin OK");
                 return callback(true);
             }
         })
@@ -238,13 +278,14 @@ class BDD {
 
     createEvent(data, callback) {
         data.Id_Planned_Dive = uuidv4();
+        data.Special_Needs = escapeHtml(data.Special_Needs);
+        data.Comments = escapeHtml(data.Comments)
         let query = 'INSERT INTO Planned_Dive SET ?';
         this.con.query(query, [data], (err, result) => {
             if (err) {
                 console.log(err);
                 callback(false);
             } else {
-                console.log("Event correctly inserted ");
                 callback(true);
             }
         })
@@ -258,6 +299,8 @@ class BDD {
             } else {
                 result.forEach(event => {
                     event = dateFormat(event);
+                    event.Comments = desEscapeHtml(event.Comments);
+                    event.Special_Needs = desEscapeHtml(event.Special_Needs);
                 });
                 return callback(result);
             }
@@ -265,26 +308,31 @@ class BDD {
     }
 
     getEvent(data, callback) {
+        data.Comments = escapeHtml(data.Comments);
+        data.Special_Needs = escapeHtml(data.Special_Needs);
         const query = 'SELECT * FROM Planned_Dive WHERE Start_Date = ? AND End_Date = ? AND Diver_Price = ? AND Instructor_Price = ? AND Comments = ? AND Special_Needs = ? AND Status = ? AND Max_Divers = ? AND Dive_Type = ? AND Dive_Site_Id_Dive_Site = ?';
-        this.con.query(query, [data.Start_Date, data.End_Date, data.Diver_Price, data.Instructor_Price, data.Comments, data.Special_Needs, (data.Status+""), data.Max_Divers, data.Dive_Type, data.Dive_Site_Id_Dive_Site], (err, result) => {
+        this.con.query(query, [data.Start_Date, data.End_Date, data.Diver_Price, data.Instructor_Price, data.Comments, data.Special_Needs, (data.Status + ""), data.Max_Divers, data.Dive_Type, data.Dive_Site_Id_Dive_Site], (err, result) => {
             if (err || !result[0]) {
                 if (err) console.log(err);
                 callback(undefined);
             } else {
                 result[0] = dateFormat(result[0]);
+                result[0].Comments = desEscapeHtml(result[0].Comments);
+                result[0].Special_Needs = desEscapeHtml(result[0].Special_Needs);
                 return callback(result[0]);
             }
         })
     }
 
     modifEvent(data, callback) {
+        data.Comments = escapeHtml(data.Comments);
+        data.Special_Needs = escapeHtml(data.Special_Needs);
         const query = 'UPDATE Planned_Dive SET ? WHERE Id_Planned_Dive = ?'
         this.con.query(query, [data, data.Id_Planned_Dive], (err, result) => {
             if (err) {
                 console.log(err);
                 return callback(false)
             } else {
-                console.log("Event info modified");
                 return callback(true);
             }
         })
@@ -297,7 +345,6 @@ class BDD {
                 console.log(err);
                 return callback(false)
             } else {
-                console.log("Event deleted");
                 return callback(true);
             }
         })
@@ -306,6 +353,18 @@ class BDD {
     /* -------------------------------------------------------------------------- */
     /*                                REGISTRATION                                */
     /* -------------------------------------------------------------------------- */
+    createRegistration(data, callback) {
+        data.Personal_Comment = escapeHtml(data.Personal_Comment);
+        let query = 'INSERT INTO Dive_Registration SET ?';
+        this.con.query(query, [data], (err, result) => {
+            if (err) {
+                console.log(err);
+                callback(false);
+            } else {
+                callback(true);
+            }
+        })
+    }
 
     getRegistration(data, callback) {
         const query = 'SELECT * FROM Dive_Registration WHERE Diver_Id_Diver = ? AND Planned_Dive_Id_Planned_Dive = ?';
@@ -314,6 +373,7 @@ class BDD {
                 if (err) console.log(err);
                 callback(undefined);
             } else {
+                result[0].Personal_Comment = desEscapeHtml(result[0].Personal_Comment)
                 result[0] = dateFormat(result[0]);
                 return callback(result[0]);
             }
@@ -340,23 +400,10 @@ class BDD {
                 callback(undefined);
             } else {
                 result.forEach(event => {
+                    event.Personal_Comment = desEscapeHtml(event.Personal_Comment)
                     event = dateFormat(event);
                 });
                 return callback(result);
-            }
-        })
-    }
-
-    createRegistration(data, callback) {
-        let query = 'INSERT INTO Dive_Registration SET ?';
-        this.con.query(query, [data], (err, result) => {
-            if (err) {
-                // console.log(err);
-                console.log("\t->Error creating registration");
-                callback(false);
-            } else {
-                console.log("\t->Registration correctly inserted ");
-                callback(true);
             }
         })
     }
@@ -368,7 +415,6 @@ class BDD {
                 console.log(err);
                 callback(false);
             } else {
-                console.log("User correctly unregistered from event");
                 callback(true);
             }
         })
@@ -381,7 +427,6 @@ class BDD {
                 console.log(err);
                 callback(false);
             } else {
-                console.log("All registrations deleted");
                 callback(true);
             }
         })
@@ -410,6 +455,23 @@ function getDateFormat(badDate) {
     return year + "-" + month + "-" + day + " " + hour;
 }
 
+function escapeHtml(text) {
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function desEscapeHtml(text) {
+    return text
+        .replace("&amp;", /&/g)
+        .replace("&lt;", /</g)
+        .replace("&gt;", />/g)
+        .replace("&quot;", /"/g)
+        .replace("&#039;", /'/g);
+}
 
 module.exports = {
     BDD

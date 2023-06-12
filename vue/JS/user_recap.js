@@ -62,7 +62,6 @@ function getInfo() {
             let userInfo = res.userInfo
             if (res.userInfo && res.userInfo.length != 0 && my_role != "club") {
                 me = new User(userInfo.Lastname, userInfo.Firstname, userInfo.Mail, userInfo.Phone, userInfo.Diver_Qualification, userInfo.Instructor_Qualification, userInfo.Nox_Level, userInfo.Additional_Qualifications, userInfo.License_Number, userInfo.License_Expiration_Date, userInfo.Medical_Certificate_Expiration_Date, userInfo.Birthdate);
-                console.log(me)
             } else if (my_role == "club") {
                 me = res.userInfo;
             }
@@ -71,10 +70,8 @@ function getInfo() {
                 let events_ = res.registrationList;
                 events = [];
                 events_.forEach(function (event) {
-                    console.log(event)
                     events.push(new Event(new Date(event.Start_Date), new Date(event.End_Date), event.Diver_Price, event.Instructor_Price, event.Location, event.Comment, event.Special_Needs, event.Status, event.Max_Divers, event.Dive_Type));
                 });
-                console.log(events)
             }
             startCalendar();
         })
@@ -270,7 +267,7 @@ function setUserInfos() {
     let HTMLlevel = document.querySelectorAll(".level p");
     document.querySelector(".right .name").innerText = me.firstname;
     HTMLlevel.forEach(function (element) {
-        if (parseInt(element.innerText.split("N")[1]) <= parseInt(level.split("N")[1])) {
+        if (parseInt(element.innerText.split("P")[1]) <= parseInt(level.split("P")[1])) {
             element.classList.add("active");
             element.classList.remove("not-active");
         } else {

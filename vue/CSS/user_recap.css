@@ -84,6 +84,36 @@ body {
   font-display: swap;
   src: url(https://fonts.gstatic.com/s/rubik/v26/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-2Y-1UA.ttf) format('truetype');
 }
+.loading_animation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: white;
+  z-index: 999999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  transition: 0.5s;
+  overflow: hidden;
+  opacity: 1;
+}
+.loading_animation img {
+  width: 100px;
+  height: 100px;
+}
+.loading_animation p {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 20px;
+  color: #120B8F;
+  margin-top: 20px;
+}
+.loading {
+  height: 20px;
+  width: 20px;
+}
 #emergencyButton {
   position: fixed;
   bottom: 20px;
@@ -778,6 +808,12 @@ body {
   }
   #calendar {
     width: 100%;
+  }
+  .profil_container .right h1 {
+    font-size: 30px;
+  }
+  #calendar .fc-button.fc-today-button {
+    margin-top: 10px;
   }
 }
 @media screen and (max-width: 700px) {

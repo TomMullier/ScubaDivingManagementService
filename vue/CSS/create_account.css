@@ -495,6 +495,7 @@ body {
   color: dodgerblue;
   vertical-align: middle;
   -webkit-appearance: none;
+  appearance: none;
   background: none;
   border: 0;
   outline: 0;
@@ -579,7 +580,6 @@ body {
 .global_container .list_container .user_item:hover {
   cursor: pointer;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
-  transform: scale(1.01);
   border-color: #f2574a;
 }
 .global_container .list_container .user_item .infos {

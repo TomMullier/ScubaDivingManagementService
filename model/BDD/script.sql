@@ -4,17 +4,17 @@ USE `sdms_bdd`;
 CREATE TABLE Dive_Site(
    Id_Dive_Site CHAR(36)  NOT NULL,
    Site_Name VARCHAR(50)  NOT NULL,
-   Gps_Latitude DECIMAL(11,8)  ,
-   Gps_Longitude DECIMAL(11,8)  ,
+   Gps_Latitude DECIMAL(8,5)  ,
+   Gps_Longitude DECIMAL(8,5)  ,
    Track_Type VARCHAR(50) ,
    Track_Number VARCHAR(50) ,
-   Track_Name VARCHAR(50) ,
+   Track_Name VARCHAR(256) ,
    Zip_Code VARCHAR(50) ,
-   City_Name VARCHAR(50) ,
-   Country_Name VARCHAR(50)  NOT NULL,
-   Additional_Address VARCHAR(50) ,
+   City_Name VARCHAR(256) ,
+   Country_Name VARCHAR(256)  NOT NULL,
+   Additional_Address VARCHAR(256) ,
    Tel_Number VARCHAR(50) ,
-   Information_URL VARCHAR(50) ,
+   Information_URL VARCHAR(256) ,
    CONSTRAINT PK_Dive_Site PRIMARY KEY(Id_Dive_Site)
 );
 #COMMENT ON TABLE Dive_Site IS 'Dive site';
@@ -32,14 +32,14 @@ CREATE TABLE Dive_Site(
 
 CREATE TABLE Diver(
    Id_Diver CHAR(36)  NOT NULL,
-   Lastname VARCHAR(50)  NOT NULL,
-   Firstname VARCHAR(50)  NOT NULL,
-   Mail VARCHAR(50) NOT NULL,
+   Lastname VARCHAR(256)  NOT NULL,
+   Firstname VARCHAR(256)  NOT NULL,
+   Mail VARCHAR(256) NOT NULL,
    Phone VARCHAR(10) NOT NULL,
    Diver_Qualification VARCHAR(50) ,
    Instructor_Qualification VARCHAR(50) ,
    Nox_Level CHAR(1) ,
-   Additional_Qualifications VARCHAR(50) ,
+   Additional_Qualifications VARCHAR(256) ,
    License_Number VARCHAR(20) ,
    License_Expiration_Date DATE,
    Medical_Certificate_Expiration_Date DATE,
@@ -67,8 +67,8 @@ CREATE TABLE Planned_Dive(
    Start_Date DATETIME NOT NULL,
    End_Date DATETIME NOT NULL,
    Max_Divers INT(50)  NOT NULL,
-   Comments VARCHAR(50) ,
-   Special_Needs VARCHAR(50) ,
+   Comments VARCHAR(1024) ,
+   Special_Needs VARCHAR(1024) ,
    Status CHAR(5) ,
    Diver_Price DECIMAL(15,2)  ,
    Instructor_Price DECIMAL(15,2)  ,
@@ -122,8 +122,8 @@ CREATE TABLE Max_Depth_for_Qualification(
 CREATE TABLE Emergency_Plan(
    Id_Emergency_Plan CHAR(36)  NOT NULL,
    SOS_Tel_Number VARCHAR(50) ,
-   Emergency_Plan VARCHAR(50)  NOT NULL,
-   Post_Accident_Procedure VARCHAR(50) ,
+   Emergency_Plan VARCHAR(1024)  NOT NULL,
+   Post_Accident_Procedure VARCHAR(1024) ,
    Version VARCHAR(50) ,
    Dive_Site_Id_Dive_Site CHAR(36)  NOT NULL,
    CONSTRAINT PK_Emergency_Plan PRIMARY KEY(Id_Emergency_Plan),
@@ -157,8 +157,8 @@ CREATE TABLE Dive(
    Begin_Date DATE NOT NULL,
    End_Date DATE NOT NULL,
    End_Time TIME NOT NULL,
-   Comment VARCHAR(50) ,
-   Surface_Security VARCHAR(50) ,
+   Comment VARCHAR(1024) ,
+   Surface_Security VARCHAR(1024) ,
    Dive_Price DECIMAL(15,2)  ,
    Instructor_Price DECIMAL(15,2)  ,
    Max_Ppo2 DECIMAL(4,2)  ,
@@ -179,7 +179,7 @@ CREATE TABLE Dive(
 #COMMENT ON COLUMN Dive.Surface_Security IS 'What kind of security suface provided. Could be something like SOS telephon number, person in charge to monitor the dive etc.';
 #COMMENT ON COLUMN Dive.Dive_Price IS 'Actual Price for diver, by default diver price from planned dive.';
 #COMMENT ON COLUMN Dive.Instructor_Price IS 'Actual Price for instructor. Some dive sites have pricing based on role: diver or instructor. By default instructor price from planned dive.';
-#COMMENT ON COLUMN Dive.Max_Ppo2 IS 'Maximum of Ppo2 that diver must follow. This has an impact on max of depth for diver diving with Nitrox. Could be a decision of Dive Director. In any case, Max Ppo2 shouldn't be greater tha 1.6 bar.';
+#COMMENT ON COLUMN Dive.Max_Ppo2 IS 'Maximum of Ppo2 that diver must follow. This has an impact on max of depth for diver diving with Nitrox. Could be a decision of Dive Director. In any case, Max Ppo2 shouldn t be greater tha 1.6 bar.';
 
 CREATE TABLE Dive_team(
    Id_Dive_Team CHAR(36)  NOT NULL,
@@ -191,7 +191,7 @@ CREATE TABLE Dive_team(
    Sequence_number SMALLINT NOT NULL,
    Start_Time TIME NOT NULL,
    Stop_Time VARCHAR(50)  NOT NULL,
-   Comment VARCHAR(50) ,
+   Comment VARCHAR(1024) ,
    Diver_Id_Diver CHAR(36) ,
    Dive_Id_Dive CHAR(36)  NOT NULL,
    CONSTRAINT PK_Dive_team PRIMARY KEY(Id_Dive_Team),
@@ -218,7 +218,7 @@ CREATE TABLE Dive_Team_Member(
    Diver_Role VARCHAR(50) ,
    Current_Instructorr_Qualification VARCHAR(50) ,
    Nox_Percentage SMALLINT,
-   Comment VARCHAR(50) ,
+   Comment VARCHAR(1024) ,
    Paid_Amount SMALLINT,
    CONSTRAINT PK_Dive_Team_Member PRIMARY KEY(Diver_Id_Diver, Dive_team_Id_Dive_Team),
    CONSTRAINT FK_Dive_Team_Member_Diver FOREIGN KEY(Diver_Id_Diver) REFERENCES Diver(Id_Diver),
@@ -238,7 +238,7 @@ CREATE TABLE Dive_Registration(
    Planned_Dive_Id_Planned_Dive CHAR(36) ,
    Diver_Role VARCHAR(50) ,
    Resgistration_Timestamp DATETIME,
-   Personal_Comment VARCHAR(50) ,
+   Personal_Comment VARCHAR(1024) ,
    Car_Pooling_Seat_Offered SMALLINT,
    Car_Pooling_Seat_Request CHAR(1) ,
    CONSTRAINT PK_Dive_Registration PRIMARY KEY(Diver_Id_Diver, Planned_Dive_Id_Planned_Dive),

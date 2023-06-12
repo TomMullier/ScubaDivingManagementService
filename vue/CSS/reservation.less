@@ -756,7 +756,7 @@
 #modifyEventModal {
     .modal-wrapper {
         width: 100%;
-        height: auto;
+        height: 100%;
         background-color: white;
         border-radius: 10px;
         font-family: @body_font;
@@ -990,6 +990,49 @@
                         width: 100%;
                     }
 
+                    .DP_list_dropdown {
+                        .DP_item {
+                            display: flex;
+                            flex-direction: column;
+                            align-items: flex-start;
+                            justify-content: center;
+                            padding-left: 10px;
+                            &:hover {
+                                cursor: pointer;
+                                background-color: lighten(@grey, 10%);
+                                color: @orange;
+                            }
+
+                            div {
+                                margin: 0;
+                                padding: 0;
+                                color: @dark_blue;
+                                font-size: 15px;
+                                font-family: @body_font;
+                                text-align: left;
+                                text-transform: uppercase;
+                                margin-right: 20px;
+                                font-weight: bold;
+                            }
+
+                            h4 {
+                                margin: 0;
+                                padding: 0;
+                                color: @grey;
+                                font-size: 15px;
+                                font-family: @body_font;
+                                text-align: left;
+                                text-transform: none;
+                                &:hover {
+                                    cursor: pointer;
+                                    background-color: lighten(@grey, 10%);
+                                    color: @grey;
+                                }
+                            }
+
+                        }
+                    }
+
                     .DP_list_dropdown,
                     .diver_list_dropdown {
                         position: absolute;
@@ -1036,6 +1079,39 @@
                             .checkbox_item {
                                 width: auto;
                                 height: auto;
+                            }
+
+                            .info_contain {
+                                display: flex;
+                                flex-direction: column;
+                                align-items: flex-start;
+                                justify-content: center;
+                                padding-left: 10px;
+
+                                h4 {
+                                    margin: 0;
+                                    padding: 0;
+                                    color: @grey;
+                                    font-size: 15px;
+                                    font-family: @body_font;
+                                    text-align: left;
+                                    text-transform: none;
+                                }
+
+                                .name_contain {
+                                    display: flex;
+                                    flex-direction: row;
+                                    align-items: center;
+                                    justify-content: flex-start;
+                                    margin: 0;
+                                    padding: 0;
+                                    color: @dark_blue;
+                                    font-size: 15px;
+                                    font-family: @body_font;
+                                    text-align: left;
+                                    text-transform: uppercase;
+                                    margin-right: 20px;
+                                }
                             }
                         }
                     }
@@ -1108,7 +1184,12 @@
         transition: 0.2s;
         text-transform: uppercase;
         margin-bottom: 20px;
-
+        img{
+            width: 20px;
+            height: 20px;
+            margin:0;
+            padding: 0;
+        }
         &:hover {
             background-color: @dark_orange;
         }
@@ -1946,7 +2027,8 @@
             }
         }
     }
-    #calendar{
+
+    #calendar {
         width: 100%;
         height: 100%;
     }
@@ -1964,106 +2046,135 @@
     .legend_container .legend {
         flex-direction: column;
         margin-right: 0;
-        .legend_item{
+
+        .legend_item {
             width: 100%;
             justify-content: space-between;
-            margin:0;
+            margin: 0;
             margin-bottom: 5px;
         }
     }
-    #eventModal .modal-wrapper #eventTitle{
+
+    #eventModal .modal-wrapper #eventTitle {
         text-align: center;
         padding: 10px 20px;
-        width:auto;
+        width: auto;
 
     }
-    .title_container h1{
+
+    .title_container h1 {
         transform: scale(0.8);
     }
-    #eventModal .modal-wrapper .global{
+
+    #eventModal .modal-wrapper .global {
         width: 100%;
         height: 100%;
         flex-direction: column;
-        .left{
-            width:80%;
+
+        .left {
+            width: 80%;
             margin: 0 auto;
             margin-bottom: 20px;
-            #timeline_view{
+
+            #timeline_view {
                 height: 2px;
-                width:calc(100% - 40px);
-                margin-left:0;
-                padding:0 20px;
+                width: calc(100% - 40px);
+                margin-left: 0;
+                padding: 0 20px;
                 flex-direction: row;
                 align-items: center;
-                .start_container, .end_container{
+
+                .start_container,
+                .end_container {
                     flex-direction: column;
-                    margin-left:0;
+                    margin-left: 0;
                     justify-content: left;
                     margin-top: 20px;
-                    #eventStart, #eventEnd{
+
+                    #eventStart,
+                    #eventEnd {
                         margin: 0;
                     }
                 }
             }
         }
-        .right{
-            width:80%;
+
+        .right {
+            width: 80%;
             margin: 0 auto;
             margin-top: 20px;
         }
-        .listOfUser{
-            width:80%;
+
+        .listOfUser {
+            width: 80%;
             margin: 0 auto;
             margin-top: 20px;
         }
     }
-    #createEventModal .modal-wrapper .container_create_event{
+
+    #createEventModal .modal-wrapper .container_create_event {
         flex-direction: column;
-        .left, .right{
+
+        .left,
+        .right {
             width: 100%;
             margin: 0 auto;
             margin-bottom: 20px;
         }
     }
-    #createEventModal{
+
+    #createEventModal {
         overflow-y: scroll;
         height: 100vh;
-        .modal-wrapper{
+
+        .modal-wrapper {
             height: 100vh;
             overflow-y: scroll;
             justify-content: flex-start;
         }
     }
-    #createEventModal .comment, #createEventModal .needs{
+
+    #createEventModal .comment,
+    #createEventModal .needs {
         width: calc(100% - 20px);
     }
-    #modifyEventModal .modal-wrapper .container_create_event{
+
+    #modifyEventModal .modal-wrapper .container_create_event {
         flex-direction: column;
-        .left, .right{
+
+        .left,
+        .right {
             width: 100%;
             margin: 0 auto;
             margin-bottom: 20px;
         }
     }
-    #modifyEventModal{
+
+    #modifyEventModal {
         overflow-y: scroll;
         height: 100vh;
-        .modal-wrapper{
+
+        .modal-wrapper {
             height: 100vh;
             overflow-y: scroll;
             justify-content: flex-start;
         }
     }
-    #modifyEventModal .comment, #modifyEventModal .needs{
+
+    #modifyEventModal .comment,
+    #modifyEventModal .needs {
         width: calc(100% - 20px);
     }
-    #createEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown{
-        width:calc(47% - 32px);
+
+    #createEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown {
+        width: calc(47% - 32px);
     }
-    #createEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown{
-        width:calc(47% - 32px);
+
+    #createEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown {
+        width: calc(47% - 32px);
     }
-    #createEventModal .modal-wrapper .left div .search_location .location_list_dropdown{
-        width:calc(47% - 32px);
+
+    #createEventModal .modal-wrapper .left div .search_location .location_list_dropdown {
+        width: calc(47% - 32px);
     }
 }

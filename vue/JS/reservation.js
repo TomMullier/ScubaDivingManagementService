@@ -1,7 +1,6 @@
 import {
   frLocale
 } from './@fullcalendar/core/locales/fr.js';
-
 import {
   Event
 } from "./class/Event.js";
@@ -84,8 +83,9 @@ fetch('/auth/planning/get_planning', {
     res.allEvents.forEach(function (event) {
       let e = new Event(new Date(event.Start_Date), new Date(event.End_Date), event.Diver_Price, event.Instructor_Price, event.Location, event.Comments, event.Special_Needs, event.Status, event.Max_Divers, event.Dive_Type);
       e.addUser(event.Users);
+      if (my_role == "club") e.startEditable = true;
+      else e.startEditable = false;
       events.push(e);
-
     });
 
     setEvents(events);
@@ -296,7 +296,7 @@ function setEvents(ev_) {
 
   calendar = new FullCalendar.Calendar(calendarEl, {
     // Options du calendrier
-
+    editable: true,
     locale: frLocale,
     headerToolbar: {
       left: 'prev,next today',
@@ -329,6 +329,51 @@ function setEvents(ev_) {
       }
     ],
     events: [],
+    eventChange: function (info) {
+      let data = {
+        Start_Date: info.event.start,
+        End_Date: info.event.end,
+        Diver_Price: info.event.extendedProps.divePrice,
+        Instructor_Price: info.event.extendedProps.InstructorPrice,
+        Special_Needs: info.event.extendedProps.needs,
+        Status: info.event.extendedProps.open,
+        Max_Divers: info.event.extendedProps.max,
+        Dive_Type: info.event.extendedProps.diveType,
+        Comments: info.event.extendedProps.comment,
+        Site_Name: info.event.extendedProps.location.Site_Name,
+      }
+      // Use find to get the dp (user with role DP)
+      let dp = info.event.extendedProps.users.find(user => user.Diver_Role == "DP");
+      data.dp = dp.Mail;
+      let oldData = {
+        Start_Date: info.oldEvent.start,
+        End_Date: info.oldEvent.end,
+        Diver_Price: info.oldEvent.extendedProps.divePrice,
+        Instructor_Price: info.oldEvent.extendedProps.InstructorPrice,
+        Special_Needs: info.oldEvent.extendedProps.needs,
+        Status: info.oldEvent.extendedProps.open,
+        Max_Divers: info.oldEvent.extendedProps.max,
+        Dive_Type: info.oldEvent.extendedProps.diveType,
+        Comments: info.oldEvent.extendedProps.comment,
+        Site_Name: info.oldEvent.extendedProps.location.Site_Name,
+      }
+      // Use find to get the dp (user with role DP)
+      let oldDp = info.oldEvent.extendedProps.users.find(user => user.Diver_Role == "DP");
+      oldData.dp = oldDp.Mail;
+      console.log("Old");
+      console.log(oldData);
+      console.log("New");
+      console.log(data);
+      let usersToRegister = [];
+      info.event.extendedProps.users.forEach(function (user) {
+        if (user.Diver_Role == "Diver") {
+          usersToRegister.push(user.Mail);
+        }
+      });
+      console.log(usersToRegister);
+      updateEvent(oldData, data, usersToRegister);
+      document.location.reload();
+    },
     eventMouseEnter: function (info) {
       // Element HTML -> info.el
       // Evénement -> info.event
@@ -951,7 +996,7 @@ validate_event.addEventListener("click", function (e) {
 
   document.querySelectorAll("#createEventModal .diver_item").forEach(function (diver) {
     allDivers.forEach(function (diver_) {
-      if (diver_.Mail == diver.querySelector("#diver_mail").className && diver_.Mail != dp_mail ) {
+      if (diver_.Mail == diver.querySelector("#diver_mail").className && diver_.Mail != dp_mail) {
         if (diver.querySelector("input").checked) {
           event_to_create.addUser(diver_.Mail);
         }

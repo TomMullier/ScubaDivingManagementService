@@ -96,6 +96,7 @@ create_button.addEventListener("click", function () {
         document.querySelector("#create_location").querySelectorAll("input").forEach(function (input) {
                 input.value = "";
         });
+        document.querySelector("#name").disabled = false;
         document.querySelector("#create_location .title").innerHTML = "Créer un lieu";
         document.querySelector("#create_location h3").innerHTML = "Remplissez les champs ci-dessous pour créer un lieu";
         document.querySelector("#create_location .create_button").innerHTML = "Créer";
@@ -272,6 +273,7 @@ function updateDisplayLocations() {
                         document.querySelector("#create_location").querySelectorAll("input").forEach(function (input) {
                                 input.value = "";
                         });
+                        document.querySelector("#name").disabled = true;
                         document.querySelector("#create_location .title").innerHTML = "Modifier un lieu";
                         document.querySelector("#create_location h3").innerHTML = "Modifiez les champs ci-dessous pour modifier un lieu";
                         document.querySelector("#create_location .create_button").innerHTML = "Modifier";

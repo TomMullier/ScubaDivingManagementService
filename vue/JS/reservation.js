@@ -4,7 +4,6 @@
 import {
   frLocale
 } from './@fullcalendar/core/locales/fr.js';
-
 import {
   Event
 } from "./class/Event.js";
@@ -64,10 +63,14 @@ fetch('/auth/user/account/get_info', {
   .then(res => {
     console.log(res)
     let userInfo = res
-    if (res) {
+    if (res.Lastname) {
       me = new User(userInfo.Lastname, userInfo.Firstname, userInfo.Mail, userInfo.Phone, userInfo.Diver_Qualification, userInfo.Instructor_Qualification, userInfo.Nox_Level, userInfo.Additional_Qualifications, userInfo.License_Number, userInfo.License_Expiration_Date, userInfo.Medical_Certificate_Expiration_Date, userInfo.Birthdate);
-      setUserInfos();
+      // setUserInfos();
     }
+    if (res.username) {
+      me = res.username.split("@")[0];
+    }
+    setUserInfos();
 
   })
 
@@ -90,8 +93,9 @@ fetch('/auth/planning/get_planning', {
     res.allEvents.forEach(function (event) {
       let e = new Event(new Date(event.Start_Date), new Date(event.End_Date), event.Diver_Price, event.Instructor_Price, event.Location, event.Comments, event.Special_Needs, event.Status, event.Max_Divers, event.Dive_Type);
       e.addUser(event.Users);
+      if (my_role == "club") e.startEditable = true;
+      else e.startEditable = false;
       events.push(e);
-
     });
 
     setEvents(events);
@@ -158,7 +162,7 @@ function updateEvent(oldEvent, event, usersToRegister) {
           if (usersToRegister.length > 0) {
             registrationInfo.Diver_Role = "Diver";
             usersToRegister.forEach(user => {
-             register(event, registrationInfo, user); // user = mail
+              register(event, registrationInfo, user); // user = mail
             });
           }
         }
@@ -256,7 +260,7 @@ function setEvents(ev_) {
 
   calendar = new FullCalendar.Calendar(calendarEl, {
     // Options du calendrier
-
+    editable: true,
     locale: frLocale,
     headerToolbar: {
       left: 'prev,next today',
@@ -264,11 +268,14 @@ function setEvents(ev_) {
       right: ''
     },
     height: 'auto',
-    initialView: 'timeGridWeek',
     slotMinTime: '09:00:00', // Heure de début (10h)
     slotMaxTime: '19:00:00',
     views: {
       timeGridWeek: {
+        nowIndicator: true,
+        allDaySlot: false
+      },
+      timeGridDay: {
         nowIndicator: true,
         allDaySlot: false
       }
@@ -286,6 +293,51 @@ function setEvents(ev_) {
       }
     ],
     events: [],
+    eventChange: function (info) {
+      let data = {
+        Start_Date: info.event.start,
+        End_Date: info.event.end,
+        Diver_Price: info.event.extendedProps.divePrice,
+        Instructor_Price: info.event.extendedProps.InstructorPrice,
+        Special_Needs: info.event.extendedProps.needs,
+        Status: info.event.extendedProps.open,
+        Max_Divers: info.event.extendedProps.max,
+        Dive_Type: info.event.extendedProps.diveType,
+        Comments: info.event.extendedProps.comment,
+        Site_Name: info.event.extendedProps.location.Site_Name,
+      }
+      // Use find to get the dp (user with role DP)
+      let dp = info.event.extendedProps.users.find(user => user.Diver_Role == "DP");
+      data.dp = dp.Mail;
+      let oldData = {
+        Start_Date: info.oldEvent.start,
+        End_Date: info.oldEvent.end,
+        Diver_Price: info.oldEvent.extendedProps.divePrice,
+        Instructor_Price: info.oldEvent.extendedProps.InstructorPrice,
+        Special_Needs: info.oldEvent.extendedProps.needs,
+        Status: info.oldEvent.extendedProps.open,
+        Max_Divers: info.oldEvent.extendedProps.max,
+        Dive_Type: info.oldEvent.extendedProps.diveType,
+        Comments: info.oldEvent.extendedProps.comment,
+        Site_Name: info.oldEvent.extendedProps.location.Site_Name,
+      }
+      // Use find to get the dp (user with role DP)
+      let oldDp = info.oldEvent.extendedProps.users.find(user => user.Diver_Role == "DP");
+      oldData.dp = oldDp.Mail;
+      console.log("Old");
+      console.log(oldData);
+      console.log("New");
+      console.log(data);
+      let usersToRegister = [];
+      info.event.extendedProps.users.forEach(function (user) {
+        if (user.Diver_Role == "Diver") {
+          usersToRegister.push(user.Mail);
+        }
+      });
+      console.log(usersToRegister);
+      updateEvent(oldData, data, usersToRegister);
+      document.location.reload();
+    },
     eventMouseEnter: function (info) {
       // Element HTML -> info.el
       // Evénement -> info.event
@@ -365,7 +417,8 @@ function setEvents(ev_) {
 
       // Location
       setTimeout(function () {
-        document.querySelector("#timeline_view").style.height = "calc(" + $("#global-view").height() + "px - 40px)";
+        if (window.innerWidth > 900)
+          document.querySelector("#timeline_view").style.height = "calc(" + $("#global-view").height() + "px - 40px)";
       }, 0);
       let adress = eventClicked.extendedProps.location.Site_Name;
       document.querySelector("#eventLocation").innerText = adress;
@@ -465,6 +518,9 @@ function setEvents(ev_) {
     },
 
   });
+
+  // Check if screen wicth sup or inf to 900px
+  checkScreenSize();
   events.forEach(function (event) {
     if (event.start > new Date()) {
       event.backgroundColor = "#4CAF50";
@@ -472,6 +528,10 @@ function setEvents(ev_) {
       event.backgroundColor = "grey";
     }
     calendar.addEvent(event);
+  });
+
+  window.addEventListener("resize", function () {
+    checkScreenSize();
   });
 
   calendar.render();
@@ -530,7 +590,25 @@ function setEvents(ev_) {
       }
     });
   });
+  loadingClose();
 };
+
+function loadingClose() {
+  document.querySelector(".loading_animation").style.opacity = "0";
+  setTimeout(function () {
+    document.querySelector(".loading_animation").style.display = "none";
+  }, 500);
+}
+
+function checkScreenSize() {
+  if (window.innerWidth > 900) {
+    calendar.initialView = 'timeGridWeek',
+      calendar.changeView('timeGridWeek');
+  } else {
+    calendar.initialView = 'timeGridDay';
+    calendar.changeView('timeGridDay');
+  }
+}
 
 
 var eventsFilteredTime = [];
@@ -570,6 +648,7 @@ list_checkbox.addEventListener("click", function () {
   } else {
     calendar.initialView = 'timeGridWeek';
     calendar.changeView('timeGridWeek');
+    checkScreenSize();
   }
 });
 
@@ -628,7 +707,16 @@ create_event_button.addEventListener("click", function () {
   });
   menutoggle.classList.toggle('active');
   menutoggle.classList.toggle('close-modal');
-  // document.querySelector("#evenDateInput").value = new Date();
+  document.querySelector("#createEventModal .container_create_event").querySelectorAll('input').forEach(function (input) {
+    if (input.getAttribute("required")) {
+      input.style.border = "1px solid #120B8F";
+    }
+  });
+  document.querySelector("#eventDateInput").value = new Date().toISOString().slice(0, 10);
+  document.querySelector("#eventStartInput").value = new Date().toLocaleString().slice(11, 16);
+  let end = new Date();
+  end.setHours(end.getHours() + 2);
+  document.querySelector("#eventEndInput").value = end.toLocaleString().slice(11, 16);
   let location_dropdown = document.querySelector("#location_list_dropdown_create");
   location_dropdown.innerHTML = "";
   locations.forEach(function (location) {
@@ -885,12 +973,49 @@ validate_event.addEventListener("click", function (e) {
     dp: dp_mail, // MAIL
   }
   let usersToRegister = event_to_create.users;
-  addEvent(data, usersToRegister);
-  document.location.reload();
+  console.log("Evenement à créer :");
+  console.log(data);
+  let validate_autho = true
+  for (const [key, value] of Object.entries(data)) {
+    if (value == "" && key != "Comments" && key != "Special_Needs" && key != "users" && key != "Status") {
+      console.log(key + " is empty");
+      validate_autho = false;
+    }
+  }
+  if (validate_autho) {
+    addEvent(data, usersToRegister);
+    validate_event.disabled = true;
+    validate_event.innerHTML = "<img src='../img/loading_animation.svg' alt='loading' class='loading'>";
+    validate_event.style.height = "40px";
+    setTimeout(function () {
+      document.location.reload();
+    }, 1000);
+  } else {
+    validate_event.innerHTML = "Tous les champs ne sont pas remplis";
+    document.querySelector("#createEventModal .container_create_event").querySelectorAll('input').forEach(function (input) {
+      if (input.getAttribute("required")) {
+        input.style.border = "1px solid #120B8F";
+      }
+    });
+    document.querySelector("#createEventModal .container_create_event").querySelectorAll('input').forEach(function (input) {
+      if (input.value == "" && input.getAttribute("required")) {
+        input.style.border = "1px solid #f2574a";
+      }
+    });
+    setTimeout(function () {
+      validate_event.innerHTML = "Valider";
+
+    }, 2000);
+  }
+
 });
 
 function setUserInfos() {
-  document.querySelector(".prenom").innerText = me.firstname;
+  if (me.firstname) {
+    document.querySelector(".prenom").innerText = me.firstname;
+  } else {
+    document.querySelector(".prenom").innerText = me;
+  }
 }
 
 //! EVENT EDITION
@@ -961,7 +1086,7 @@ function detectDivers_edit() {
       number_of_diver++;
     }
   });
-  console.log("Number "+number_of_diver);
+  console.log("Number " + number_of_diver);
   search_diver_edit.placeholder = "Rechercher" + " (" + number_of_diver + " inscrits)";
 }
 
@@ -1087,7 +1212,7 @@ function edit_event(info) {
       });
     }
   });
-  let numberToDisplay = info.event.extendedProps.users.length - 1
+  let numberToDisplay = info.event.extendedProps.users.length != 0 ? info.event.extendedProps.users.length - 1 : 0;
   document.querySelector("#eventDiverInput_modify").placeholder = "Rechercher" + " (" + numberToDisplay + " inscrits)";
   document.querySelector("#eventPrivateInput_modify").checked = info.event.extendedProps.open === "true" ? true : false;
 
@@ -1162,8 +1287,38 @@ function edit_event(info) {
       Site_Name: location,
       dp: dp_mail, // MAIL
     }
-    updateEvent(oldEvent, data, event_to_create.users);
-    document.location.reload();
+    // document.location.reload();
+    let validate_autho = true
+    for (const [key, value] of Object.entries(data)) {
+      if (value == "") {
+        validate_autho = false;
+      }
+    }
+    if (validate_autho) {
+      updateEvent(oldEvent, data, event_to_create.users);
+      validate_event.disabled = true;
+      validate_event.innerHTML = "<img src='../img/loading_animation.svg' alt='loading' class='loading'>";
+      validate_event.style.height = "40px";
+      setTimeout(function () {
+        document.location.reload();
+      }, 1000);
+    } else {
+      validate_event.innerHTML = "Tous les champs ne sont pas remplis";
+      document.querySelector("#modifyEventModal .container_create_event").querySelectorAll('input').forEach(function (input) {
+        if (input.getAttribute("required")) {
+          input.style.border = "1px solid #120B8F";
+        }
+      });
+      document.querySelector("#modifyEventModal .container_create_event").querySelectorAll('input').forEach(function (input) {
+        if (input.value == "" && input.getAttribute("required")) {
+          input.style.border = "1px solid #f2574a";
+        }
+      });
+      setTimeout(function () {
+        validate_event.innerHTML = "Valider";
+      }, 2000);
+    }
+
   });
 }
 

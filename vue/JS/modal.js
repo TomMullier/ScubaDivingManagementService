@@ -6,7 +6,7 @@ function showTemplateModal(id){
     modal.style.display = "flex"
     modal.removeAttribute('aria-hidden')
     modal.setAttribute('aria-modal', 'true')
-    document.querySelector("body").style.overflow = "hidden"
+    // document.querySelector("body").style.overflow = "hidden"
 
     // Auto focus
     $('input:first').focus()

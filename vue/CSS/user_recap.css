@@ -14,6 +14,7 @@ body {
   font-size: 14px;
   line-height: 1.42857143;
   color: #333;
+  width: 100%;
   background-color: #fff;
 }
 @font-face {
@@ -119,7 +120,7 @@ body {
   transition: 0.2s;
 }
 #emergencyModal {
-  background-color: #f2584aec;
+  background-color: #f2584a;
 }
 #emergencyModal .modal-wrapper {
   background-color: transparent;
@@ -145,14 +146,18 @@ body {
   font-size: 50px;
   text-transform: uppercase;
   font-family: 'Montserrat', sans-serif;
-  line-height: 0;
+  text-align: center;
+  align-self: center;
+  margin: 0;
 }
 #emergencyModal .modal-wrapper .top h3 {
   color: #120B8F;
   font-size: 15px;
   text-transform: uppercase;
   font-family: 'Montserrat', sans-serif;
-  line-height: 0;
+  text-align: center;
+  align-self: center;
+  margin: 0;
 }
 #emergencyModal .modal-wrapper #txt_descr {
   margin-top: 50px;
@@ -219,7 +224,7 @@ body {
   }
 }
 #menuModal[aria-hidden="true"] .modal-wrapper {
-  animation: SlideRight 0.4s both;
+  animation: SlideRight 0.4s bot h;
 }
 #menuModal[aria-hidden="true"] {
   animation: fadeOut 0.4s both;
@@ -235,6 +240,30 @@ body {
   align-items: left;
   border-radius: 10px;
   animation: SlideLeft 0.4s both;
+}
+#menuModal .logout_button {
+  bottom: 0px;
+  margin: 0 auto;
+  margin-bottom: 60px;
+  width: 100%;
+  height: auto;
+}
+#menuModal .logout_button a {
+  color: #BDC7D7;
+  font-size: 20px;
+  font-family: 'Montserrat', sans-serif;
+  margin-bottom: 20px;
+  text-decoration: none;
+  text-transform: uppercase;
+  padding: 10px 0;
+  border-radius: 25px;
+  transition: 0.2s;
+}
+#menuModal .logout_button a:hover {
+  color: #f2574a;
+}
+#menuModal .logout_button a:hover:before {
+  content: "> ";
 }
 #menuModal .menu_content {
   display: flex;
@@ -264,6 +293,8 @@ body {
 }
 .toggle {
   position: fixed;
+  top: 0;
+  left: 0;
   width: 70px;
   height: 70px;
   background: transparent;
@@ -587,6 +618,7 @@ body {
   padding: 0 20px;
   margin-bottom: 20px;
   margin-top: 20px;
+  text-align: center;
 }
 .message h1 {
   color: #f2574a;
@@ -594,6 +626,7 @@ body {
   font-size: 20px;
   margin-bottom: 20px;
   font-family: 'Montserrat', sans-serif;
+  text-align: center;
 }
 .message .separator {
   width: 20%;
@@ -628,6 +661,7 @@ body {
   text-transform: uppercase;
   font-size: 15px;
   font-family: 'Montserrat', sans-serif;
+  text-align: center;
 }
 .message_add:hover {
   background-color: white;
@@ -659,8 +693,10 @@ body {
   font-size: 20px;
   text-transform: uppercase;
   font-family: 'Montserrat', sans-serif;
-  line-height: 0;
   margin-top: 20px;
+  text-align: center;
+  align-items: center;
+  align-self: center;
 }
 #importantMessageModal .modal-wrapper #txt_descr {
   margin-top: 10px;
@@ -729,4 +765,26 @@ body {
 #importantMessageModal .modal-wrapper .buttons_container .validate_message:hover {
   background-color: #f2574a;
   color: white;
+}
+@media screen and (max-width: 900px) {
+  .profil_container {
+    flex-direction: column-reverse;
+  }
+  .profil_container .left {
+    width: calc(80%);
+  }
+  .event_list {
+    display: none;
+  }
+  #calendar {
+    width: 100%;
+  }
+}
+@media screen and (max-width: 700px) {
+  .profil_container {
+    flex-direction: column-reverse;
+  }
+  .profil_container .left {
+    display: none;
+  }
 }

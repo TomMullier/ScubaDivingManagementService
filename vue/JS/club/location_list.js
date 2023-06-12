@@ -18,11 +18,11 @@ let locations = [];
 
 /* ------------------------------ GET SITE LIST ----------------------------- */
 fetch('/auth/club/get_locations', {
-    method: 'GET',
-    headers: {
-        'Content-Type': 'application/json'
-    },
-}).then(res => res.json())
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    }).then(res => res.json())
     .then(sites => {
         console.log(sites);
         sites.forEach(function (site) {
@@ -34,12 +34,12 @@ fetch('/auth/club/get_locations', {
 /* ----------------------------- CREATE LOCATION ---------------------------- */
 function createLocation(loc) {
     fetch('/auth/club/locations', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(loc)
-    }).then((res) => res.json())
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(loc)
+        }).then((res) => res.json())
         .then((res) => {
             console.log(res);
         });
@@ -48,12 +48,12 @@ function createLocation(loc) {
 /* -------------------------- MODIFY LCOATION INFO -------------------------- */
 function modifyLocation(data) {
     fetch('/auth/club/locations', {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    }).then(res => res.json())
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(res => res.json())
         .then(res => console.log(res))
 }
 
@@ -61,14 +61,14 @@ function modifyLocation(data) {
 function deleteLocation(target) {
     console.log(target);
     fetch('/auth/club/locations', {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            Site_Name: target
-        })
-    }).then((res) => res.json())
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                Site_Name: target
+            })
+        }).then((res) => res.json())
         .then((res) => {
             console.log(res);
         });
@@ -230,10 +230,10 @@ function updateDisplayLocations() {
 
     list_item.forEach(function (loc) {
         let delete_button = loc.querySelector(".delete_button");
-        delete_button.removeEventListener("click", function () { });
-        document.querySelector("#validateButton").removeEventListener("click", function () { });
+        delete_button.removeEventListener("click", function () {});
+        document.querySelector("#validateButton").removeEventListener("click", function () {});
         let edit_button = loc.querySelector(".edit_button");
-        edit_button.removeEventListener("click", function () { });
+        edit_button.removeEventListener("click", function () {});
     });
 
 
@@ -253,112 +253,126 @@ function updateDisplayLocations() {
         let delete_button = loc.querySelector(".delete_button");
         delete_button.addEventListener("click", function () {
             modals.show("confirm_delete", function () {
-                menutoggle.classList.remove('active');
-            });
-            menutoggle.classList.toggle('active');
-            menutoggle.classList.toggle('close-modal');
-
-            document.querySelector("#cancelButton").addEventListener("click", function () {
-                modals.closeCurrent();
-            });
-            document.querySelector("#validateButton").addEventListener("click", function () {
-                let name = loc.querySelector(".list_title").innerHTML;
-                let index = locations.findIndex(function (location) {
-                    return location.name == name;
+                document.querySelector("#name").disabled = false;
+                document.querySelector("#create_location .title").innerHTML = "Créer un lieu";
+                document.querySelector("#create_location h3").innerHTML = "Remplissez les champs ci-dessous pour créer un lieu";
+                document.querySelector("#create_location .create_button").innerHTML = "Créer";
+                modals.show("create_location", function () {
+                    menutoggle.classList.remove('active');
                 });
-                // locations.splice(index, 1);
-                console.log("Lieu supprimé :")
-                console.log(name);
-                deleteLocation(name);
-                // updateDisplayLocations();
-                // actualiser la page 
-                document.location.reload();
+                menutoggle.classList.toggle('active');
+                menutoggle.classList.toggle('close-modal');
 
-                modals.closeCurrent();
+                document.querySelector("#cancelButton").addEventListener("click", function () {
+                    modals.closeCurrent();
+                });
+                document.querySelector("#validateButton").addEventListener("click", function () {
+                    let name = loc.querySelector(".list_title").innerHTML;
+                    let index = locations.findIndex(function (location) {
+                        return location.name == name;
+                    });
+                    // locations.splice(index, 1);
+                    console.log("Lieu supprimé :")
+                    console.log(name);
+                    deleteLocation(name);
+                    // updateDisplayLocations();
+                    // actualiser la page 
+                    document.location.reload();
+
+                    modals.closeCurrent();
+                });
+
             });
+        });
 
+
+        list_item.forEach(function (loc) {
+            let edit_button = loc.querySelector(".edit_button");
+            edit_button.addEventListener("click", function () {
+                document.querySelector("#create_location").querySelectorAll("input").forEach(function (input) {
+                    input.value = "";
+                });
+                document.querySelector("#create_location .title").innerHTML = "Modifier un lieu";
+                document.querySelector("#create_location h3").innerHTML = "Modifiez les champs ci-dessous pour modifier un lieu";
+                document.querySelector("#create_location .create_button").innerHTML = "Modifier";
+                modals.show("create_location", function () {
+                    menutoggle.classList.remove('active');
+                });
+                menutoggle.classList.toggle('active');
+                menutoggle.classList.toggle('close-modal');
+                // fill input with location data
+                document.querySelector("#name").value = loc.querySelector(".list_title").innerHTML;
+                let data = locations.find(function (location) {
+                    return location.name == loc.querySelector(".list_title").innerHTML;
+                });
+                console.log("oqerhygfbqosjkdfhlbqefoivkqjdfh")
+                console.log(data);
+                document.querySelector("#latitude").value = data.lat;
+                document.querySelector("#longitude").value = data.lng;
+                document.querySelector("#street").value = data.trackType + " " + data.trackName;
+                document.querySelector("#streetNumber").value = data.trackNumber;
+                document.querySelector("#country").value = data.country;
+                document.querySelector("#postalCode").value = data.zipCode;
+                document.querySelector("#city").value = data.cityName;
+                document.querySelector("#adress_complement").value = data.additional;
+                document.querySelector("#phone").value = data.phone;
+                document.querySelector("#webMax").value = data.url;
+                document.querySelector("#sos_phone").value = data.SOS_Tel_Number;
+                document.querySelector("#plan_urgent").value = data.Emergency_Plan;
+                document.querySelector("#post_accident_procedure").value = data.Post_Accident_Procedure;
+
+                document.querySelector("#validate_creation").addEventListener("click", function () {
+                    let name = document.querySelector("#name").value;
+                    let lat = document.querySelector("#latitude").value;
+                    let lng = document.querySelector("#longitude").value;
+                    let total = document.querySelector("#street").value;
+                    let trackType = total.split(" ")[0];
+                    let trackName = total.replace(trackType, "");
+                    let trackNumber = document.querySelector("#streetNumber").value;
+                    let country = document.querySelector("#country").value;
+                    let zipCode = document.querySelector("#postalCode").value;
+                    let cityName = document.querySelector("#city").value;
+                    let complement = document.querySelector("#adress_complement").value;
+                    let phone = document.querySelector("#phone").value;
+                    let url_ = document.querySelector("#webMax").value;
+                    let SOS_Tel_Number = document.querySelector("#sos_phone").value;
+                    let Emergency_Plan = document.querySelector("#plan_urgent").value;
+                    let Post_Accident_Procedure = document.querySelector("#post_accident_procedure").value;
+
+                    let location = new Location(name, lat, lng, trackType, trackNumber, trackName, zipCode, cityName, country, complement, phone, url_, [], SOS_Tel_Number, Emergency_Plan, Post_Accident_Procedure);
+                    console.log("Lieu modifié :")
+                    console.log(location);
+                    let data = {
+                        Site_Name: name,
+                        Gps_Latitude: lat,
+                        Gps_Longitude: lng,
+                        Track_Type: trackType,
+                        Track_Number: trackNumber,
+                        Track_Name: trackName,
+                        Zip_Code: zipCode,
+                        City_Name: cityName,
+                        Country_Name: country,
+                        Additional_Address: complement,
+                        Tel_Number: phone,
+                        Information_URL: url_,
+                        SOS_Tel_Number: SOS_Tel_Number,
+                        Emergency_Plan: Emergency_Plan,
+                        Post_Accident_Procedure: Post_Accident_Procedure
+                    };
+                    modifyLocation(data);
+                    updateDisplayLocations();
+                    // actualiser la page
+                    document.location.reload();
+                });
+            })
         });
     });
+    loadingClose();
+}
 
-
-    list_item.forEach(function (loc) {
-        let edit_button = loc.querySelector(".edit_button");
-        edit_button.addEventListener("click", function () {
-            document.querySelector("#create_location").querySelectorAll("input").forEach(function (input) {
-                input.value = "";
-            });
-            document.querySelector("#create_location .title").innerHTML = "Modifier un lieu";
-            document.querySelector("#create_location h3").innerHTML = "Modifiez les champs ci-dessous pour modifier un lieu";
-            document.querySelector("#create_location .create_button").innerHTML = "Modifier";
-            modals.show("create_location", function () {
-                menutoggle.classList.remove('active');
-            });
-            menutoggle.classList.toggle('active');
-            menutoggle.classList.toggle('close-modal');
-            // fill input with location data
-            document.querySelector("#name").value = loc.querySelector(".list_title").innerHTML;
-            let data = locations.find(function (location) {
-                return location.name == loc.querySelector(".list_title").innerHTML;
-            });
-            console.log("oqerhygfbqosjkdfhlbqefoivkqjdfh")
-            console.log(data);
-            document.querySelector("#latitude").value = data.lat;
-            document.querySelector("#longitude").value = data.lng;
-            document.querySelector("#street").value = data.trackType + " " + data.trackName;
-            document.querySelector("#streetNumber").value = data.trackNumber;
-            document.querySelector("#country").value = data.country;
-            document.querySelector("#postalCode").value = data.zipCode;
-            document.querySelector("#city").value = data.cityName;
-            document.querySelector("#adress_complement").value = data.additional;
-            document.querySelector("#phone").value = data.phone;
-            document.querySelector("#webMax").value = data.url;
-            document.querySelector("#sos_phone").value = data.SOS_Tel_Number;
-            document.querySelector("#plan_urgent").value = data.Emergency_Plan;
-            document.querySelector("#post_accident_procedure").value = data.Post_Accident_Procedure;
-
-            document.querySelector("#validate_creation").addEventListener("click", function () {
-                let name = document.querySelector("#name").value;
-                let lat = document.querySelector("#latitude").value;
-                let lng = document.querySelector("#longitude").value;
-                let total = document.querySelector("#street").value;
-                let trackType = total.split(" ")[0];
-                let trackName = total.replace(trackType, "");
-                let trackNumber = document.querySelector("#streetNumber").value;
-                let country = document.querySelector("#country").value;
-                let zipCode = document.querySelector("#postalCode").value;
-                let cityName = document.querySelector("#city").value;
-                let complement = document.querySelector("#adress_complement").value;
-                let phone = document.querySelector("#phone").value;
-                let url_ = document.querySelector("#webMax").value;
-                let SOS_Tel_Number = document.querySelector("#sos_phone").value;
-                let Emergency_Plan = document.querySelector("#plan_urgent").value;
-                let Post_Accident_Procedure = document.querySelector("#post_accident_procedure").value;
-
-                let location = new Location(name, lat, lng, trackType, trackNumber, trackName, zipCode, cityName, country, complement, phone, url_, [], SOS_Tel_Number, Emergency_Plan, Post_Accident_Procedure);
-                console.log("Lieu modifié :")
-                console.log(location);
-                let data = {
-                    Site_Name: name,
-                    Gps_Latitude: lat,
-                    Gps_Longitude: lng,
-                    Track_Type: trackType,
-                    Track_Number: trackNumber,
-                    Track_Name: trackName,
-                    Zip_Code: zipCode,
-                    City_Name: cityName,
-                    Country_Name: country,
-                    Additional_Address: complement,
-                    Tel_Number: phone,
-                    Information_URL: url_,
-                    SOS_Tel_Number: SOS_Tel_Number,
-                    Emergency_Plan: Emergency_Plan,
-                    Post_Accident_Procedure: Post_Accident_Procedure
-                };
-                modifyLocation(data);
-                updateDisplayLocations();
-                // actualiser la page
-                document.location.reload();
-            });
-        })
-    });
-};
+function loadingClose() {
+    document.querySelector(".loading_animation").style.opacity = "0";
+    setTimeout(function () {
+        document.querySelector(".loading_animation").style.display = "none";
+    }, 500);
+}

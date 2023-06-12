@@ -52,39 +52,32 @@ fetch('/auth/dashboard')
 /* ------------------------- GET USER INFO + EVENTS ------------------------- */
 function getInfo() {
     fetch('/auth/dashboard/get_info', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }).then(res => res.json())
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json())
         .then(res => {
             console.log(res)
-            if (my_role == "club") {
-                // TODO : affichage données club
-                me = new User("", res.username, "", "", "", "", "", "", "", "", "", "");
-                setUserInfos();
-                let events_ = res.allEvents;
+            let userInfo = res.userInfo
+            if (res.userInfo && res.userInfo.length != 0) {
+                me = new User(userInfo.Lastname, userInfo.Firstname, userInfo.Mail, userInfo.Phone, userInfo.Diver_Qualification, userInfo.Instructor_Qualification, userInfo.Nox_Level, userInfo.Additional_Qualifications, userInfo.License_Number, userInfo.License_Expiration_Date, userInfo.Medical_Certificate_Expiration_Date, userInfo.Birthdate);
+                console.log(me)
+            }
+            if (res.username) {
+                me = res.username;
+            }
+            setUserInfos();
+            if (res.registrationList && res.registrationList.length != 0) {
+                let events_ = res.registrationList;
                 events = [];
                 events_.forEach(function (event) {
                     events.push(new Event(new Date(event.Start_Date), new Date(event.End_Date), event.Diver_Price, event.Instructor_Price, event.Location, event.Comment, event.Special_Needs, event.Status, event.Max_Divers, event.Dive_Type));
                 });
-            }
-            else {
-                let userInfo = res.userInfo
-                if (res.userInfo && res.userInfo.length != 0) {
-                    me = new User(userInfo.Lastname, userInfo.Firstname, userInfo.Mail, userInfo.Phone, userInfo.Diver_Qualification, userInfo.Instructor_Qualification, userInfo.Nox_Level, userInfo.Additional_Qualifications, userInfo.License_Number, userInfo.License_Expiration_Date, userInfo.Medical_Certificate_Expiration_Date, userInfo.Birthdate);
-                    setUserInfos();
-                }
-                if (res.registrationList && res.registrationList.length != 0) {
-                    let events_ = res.registrationList;
-                    events = [];
-                    events_.forEach(function (event) {
-                        events.push(new Event(new Date(event.Start_Date), new Date(event.End_Date), event.Diver_Price, event.Instructor_Price, event.Location, event.Comment, event.Special_Needs, event.Status, event.Max_Divers, event.Dive_Type));
-                    });
-                    console.log(events)
-                }
+                console.log(events)
             }
         })
+
 }
 
 
@@ -179,38 +172,17 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelector(".message").style.display = "none";
     }
 
-    let today = new Date();
-    if (startDate > today) {
-      startDate = startDate.toLocaleDateString();
-      if (startMinutes < 10) {
-        startMinutes = "0" + startMinutes;
-      }
-      if (endMinutes < 10) {
-        endMinutes = "0" + endMinutes;
-      }
+    document.querySelector(".event_list").style.height = "calc(" + $("#calendar").height() + "px + 30px)";
 
-
-      HTML += '<div class="event"><p class="date">' + startDate + '</p><p class="hour">De ' + startHour + 'h' + startMinutes + ' à ' + endHour + 'h' + endMinutes + '</p><p class="name">' + title + '</p></div>'
-    }
-  });
-  document.querySelector('#event-container').innerHTML = HTML;
-  calendar.render();
-  document.getElementById("planning").style.height = $('#calendar').height() + "px";
-
-  if (document.getElementById("important_text").innerText == "") {
-    document.querySelector(".message").style.display = "none";
-  }
-
-  document.querySelector(".event_list").style.height = "calc(" + $("#calendar").height() + "px + 30px)";
-
-  loadingClose();
+    loadingClose();
 });
 
+
 function loadingClose() {
-  document.querySelector(".loading_animation").style.opacity = "0";
-  setTimeout(function () {
-    document.querySelector(".loading_animation").style.display = "none";
-  } , 500);
+    document.querySelector(".loading_animation").style.opacity = "0";
+    setTimeout(function () {
+        document.querySelector(".loading_animation").style.display = "none";
+    }, 500);
 }
 
 //boutton menu
@@ -240,27 +212,27 @@ emergencyButton.addEventListener("click", function () {
 
 let addImportantMessageButton = document.querySelector(".message_add");
 addImportantMessageButton.addEventListener("click", function () {
-  modals.show("importantMessageModal", function () {
-    menutoggle.classList.remove('active');
-    document.querySelector("#textarea_important").value = "";
-    // document.getElementById("important_text").innerText == "";
-    // document.querySelector(".message").style.display = "none";
-  });
-  document.querySelector("#textarea_important").focus();
-  menutoggle.classList.toggle('active');
-  menutoggle.classList.toggle('close-modal');
-  document.querySelector(".validate_message").addEventListener("click", function () {
-    let message = document.querySelector("#textarea_important").value;
-    document.querySelector("#textarea_important").value = "";
-    if (message != "") {
-      document.querySelector(".message").style.display = "flex";
-      document.querySelector("#important_text").innerText = message;
-    } else {
-      document.querySelector(".message").style.display = "none";
-      document.querySelector("#important_text").innerText = "";
-    }
-    modals.closeCurrent();
-  })
+    modals.show("importantMessageModal", function () {
+        menutoggle.classList.remove('active');
+        document.querySelector("#textarea_important").value = "";
+        // document.getElementById("important_text").innerText == "";
+        // document.querySelector(".message").style.display = "none";
+    });
+    document.querySelector("#textarea_important").focus();
+    menutoggle.classList.toggle('active');
+    menutoggle.classList.toggle('close-modal');
+    document.querySelector(".validate_message").addEventListener("click", function () {
+        let message = document.querySelector("#textarea_important").value;
+        document.querySelector("#textarea_important").value = "";
+        if (message != "") {
+            document.querySelector(".message").style.display = "flex";
+            document.querySelector("#important_text").innerText = message;
+        } else {
+            document.querySelector(".message").style.display = "none";
+            document.querySelector("#important_text").innerText = "";
+        }
+        modals.closeCurrent();
+    })
 });
 
 
@@ -276,34 +248,34 @@ function getTitle(event) {
 }
 
 function setUserInfos() {
-  if (my_role == "club") {
-    document.querySelector(".right .name").innerText = me.split("@")[0];
-    document.querySelector(".name").innerHTML = "<b>Nom du club : </b>" + me.split("@")[0];
-    document.querySelector(".phone").style.display = "none";
-    document.querySelector(".birth").style.display = "none";
-    document.querySelector(".email").style.display = "none";
-    document.querySelector(".level").style.display = "none";
-    document.querySelector(".level_text").style.display = "none";
+    if (my_role == "club") {
+        document.querySelector(".right .name").innerText = me.split("@")[0];
+        document.querySelector(".name").innerHTML = "<b>Nom du club : </b>" + me.split("@")[0];
+        document.querySelector(".phone").style.display = "none";
+        document.querySelector(".birth").style.display = "none";
+        document.querySelector(".email").style.display = "none";
+        document.querySelector(".level").style.display = "none";
+        document.querySelector(".level_text").style.display = "none";
 
-    document.querySelector(".photo_container").style.display = "none";
-    document.querySelector("#my_profile_picture").style.display = "none";
-    return;
-  }
-  document.querySelector(".name").innerHTML = "<b>Nom : </b>" + me.firstname + " " + me.lastname;
-  document.querySelector(".phone").innerHTML = "<b>Téléphone : </b>" + me.phone;
-  let birthdate = new Date(me.birthdate);
-  document.querySelector(".birth").innerHTML = "<b>Date de naissance : </b>" + birthdate.toLocaleDateString();
-  document.querySelector(".email").innerHTML = "<b>Mail : </b>" + me.mail;
-  let level = me.diverQualification;
-  let HTMLlevel = document.querySelectorAll(".level p");
-  document.querySelector(".right .name").innerText = me.firstname;
-  HTMLlevel.forEach(function (element) {
-    if (parseInt(element.innerText.split("N")[1]) <= parseInt(level.split("N")[1])) {
-      element.classList.add("active");
-      element.classList.remove("not-active");
-    } else {
-      element.classList.remove("active");
-      element.classList.add("not-active");
+        document.querySelector(".photo_container").style.display = "none";
+        document.querySelector("#my_profile_picture").style.display = "none";
+        return;
     }
-  });
+    document.querySelector(".name").innerHTML = "<b>Nom : </b>" + me.firstname + " " + me.lastname;
+    document.querySelector(".phone").innerHTML = "<b>Téléphone : </b>" + me.phone;
+    let birthdate = new Date(me.birthdate);
+    document.querySelector(".birth").innerHTML = "<b>Date de naissance : </b>" + birthdate.toLocaleDateString();
+    document.querySelector(".email").innerHTML = "<b>Mail : </b>" + me.mail;
+    let level = me.diverQualification;
+    let HTMLlevel = document.querySelectorAll(".level p");
+    document.querySelector(".right .name").innerText = me.firstname;
+    HTMLlevel.forEach(function (element) {
+        if (parseInt(element.innerText.split("N")[1]) <= parseInt(level.split("N")[1])) {
+            element.classList.add("active");
+            element.classList.remove("not-active");
+        } else {
+            element.classList.remove("active");
+            element.classList.add("not-active");
+        }
+    });
 }

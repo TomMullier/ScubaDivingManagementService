@@ -1,5 +1,7 @@
 const mysql = require('mysql2');
-const { v4: uuidv4 } = require('uuid');
+const {
+    v4: uuidv4
+} = require('uuid');
 
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
@@ -143,6 +145,22 @@ class BDD {
         })
     }
 
+    async getDiveSiteInfoById(data, callback) {
+        return new Promise((resolve, reject) => {
+            const query = 'SELECT * FROM Dive_Site WHERE ?';
+            this.con.query(query, [data], (err, result) => {
+                if (err || !result[0]) {
+                    if (err) console.log(err);
+                    console.log("Can't get location info");
+                    callback(undefined);
+                } else {
+                    console.log("Sending location info");
+                    callback(result[0]);
+                }
+            })
+        })
+    }
+
     modifDiveSite(data, callback) {
         const query = 'UPDATE Dive_Site SET ? WHERE Id_Dive_Site = ?'
         this.con.query(query, [data, data.Id_Dive_Site], (err, result) => {
@@ -247,9 +265,8 @@ class BDD {
     }
 
     getEvent(data, callback) {
-        console.log(data);
         const query = 'SELECT * FROM Planned_Dive WHERE Start_Date = ? AND End_Date = ? AND Diver_Price = ? AND Instructor_Price = ? AND Comments = ? AND Special_Needs = ? AND Status = ? AND Max_Divers = ? AND Dive_Type = ? AND Dive_Site_Id_Dive_Site = ?';
-        this.con.query(query, [data.Start_Date, data.End_Date, data.Diver_Price, data.Instructor_Price, data.Comments, data.Special_Needs, data.Status, data.Max_Divers, data.Dive_Type, data.Dive_Site_Id_Dive_Site], (err, result) => {
+        this.con.query(query, [data.Start_Date, data.End_Date, data.Diver_Price, data.Instructor_Price, data.Comments, data.Special_Needs, (data.Status+""), data.Max_Divers, data.Dive_Type, data.Dive_Site_Id_Dive_Site], (err, result) => {
             if (err || !result[0]) {
                 if (err) console.log(err);
                 callback(undefined);
@@ -383,7 +400,9 @@ function dateFormat(event) {
 
 function getDateFormat(badDate) {
     badDate += '';
-    badDate = new Date(badDate).toLocaleString('en-US', { hour12: false })
+    badDate = new Date(badDate).toLocaleString('fr-FR', {
+        hour12: false
+    })
     const day = badDate.split(', ')[0].split("/")[0];
     const month = badDate.split(', ')[0].split("/")[1];
     const year = badDate.split(', ')[0].split("/")[2];

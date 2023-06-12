@@ -52,7 +52,7 @@ function getUserName(req) {
 
 function getDateFormat(badDate) {
     badDate += '';
-    badDate = new Date(badDate).toLocaleString('en-US', {
+    badDate = new Date(badDate).toLocaleString('fr-FR', {
         hour12: false
     })
     const day = badDate.split(', ')[0].split("/")[0].padStart(2, "0");
@@ -88,9 +88,21 @@ app.get('/login', keycloak.protect(), function (req, res) {
 /* -------------------------------------------------------------------------- */
 
 app.get('/auth/dashboard', keycloak.protect(), function (req, res) {
-    if (checkUser(req, "CLUB")) res.sendFile(__dirname + "/vue/html/dashboard.html", { headers: { 'userType': 'club' } });
-    else if (checkUser(req, "DP")) res.sendFile(__dirname + "/vue/html/dashboard.html", { headers: { 'userType': 'dp' } });
-    else if (checkUser(req, "USER")) res.sendFile(__dirname + "/vue/html/dashboard.html", { headers: { 'userType': 'user' } });
+    if (checkUser(req, "CLUB")) res.sendFile(__dirname + "/vue/html/dashboard.html", {
+        headers: {
+            'userType': 'club'
+        }
+    });
+    else if (checkUser(req, "DP")) res.sendFile(__dirname + "/vue/html/dashboard.html", {
+        headers: {
+            'userType': 'dp'
+        }
+    });
+    else if (checkUser(req, "USER")) res.sendFile(__dirname + "/vue/html/dashboard.html", {
+        headers: {
+            'userType': 'user'
+        }
+    });
     else res.redirect('/logout');
 });
 
@@ -98,21 +110,37 @@ app.get('/auth/dashboard/get_info', keycloak.protect(), function (req, res) {
     let username = req.kauth.grant.access_token.content.preferred_username;
     if (checkUser(req, "CLUB")) {
         Database.getPlanning((allEvents) => {
-            return res.json({
-                username: username,
-                allEvents: allEvents
+            Database.getDiveSiteList((allLocations) => {
+                allEvents.forEach(event => {
+                    event.Location = allLocations.filter(location => location.Id_Dive_Site === event.Dive_Site_Id_Dive_Site)[0];
+                });
+                return res.json({
+                    userInfo: username,
+                    registrationList: allEvents
+                });
             });
         });
     } else {
         Database.getUserInfoByMail(username, (userInfo) => {
             if (userInfo === undefined) return res.json({
-                username: username
+                userInfo: username
             });
+
             Database.getRegistrationList(userInfo.Id_Diver, (registrationList) => {
-                return res.json({
-                    userInfo: userInfo,
-                    registrationList: registrationList
-                });
+                if (registrationList === undefined) {
+                    return res.json({
+                        userInfo: userInfo
+                    });
+                }
+                Database.getDiveSiteList((allLocations) => {
+                    registrationList.forEach(event => {
+                        event.Location = allLocations.filter(location => location.Id_Dive_Site === event.Dive_Site_Id_Dive_Site)[0];
+                    });
+                    return res.json({
+                        userInfo: userInfo,
+                        registrationList: registrationList
+                    });
+                })
             });
         });
     }
@@ -123,9 +151,21 @@ app.get('/auth/dashboard/get_info', keycloak.protect(), function (req, res) {
 /* -------------------------------------------------------------------------- */
 
 app.get('/auth/planning', keycloak.protect(), function (req, res) {
-    if (checkUser(req, "CLUB")) res.sendFile(__dirname + "/vue/html/planning.html", { headers: { 'userType': 'club' } });
-    else if (checkUser(req, "DP")) res.sendFile(__dirname + "/vue/html/planning.html", { headers: { 'userType': 'dp' } });
-    else if (checkUser(req, "USER")) res.sendFile(__dirname + "/vue/html/planning.html", { headers: { 'userType': 'user' } });
+    if (checkUser(req, "CLUB")) res.sendFile(__dirname + "/vue/html/planning.html", {
+        headers: {
+            'userType': 'club'
+        }
+    });
+    else if (checkUser(req, "DP")) res.sendFile(__dirname + "/vue/html/planning.html", {
+        headers: {
+            'userType': 'dp'
+        }
+    });
+    else if (checkUser(req, "USER")) res.sendFile(__dirname + "/vue/html/planning.html", {
+        headers: {
+            'userType': 'user'
+        }
+    });
     else res.redirect('/auth/dashboard');
 })
 
@@ -189,8 +229,7 @@ app.post('/auth/planning', keycloak.protect(),
                                 created: false,
                                 comment: "Impossible to add Event"
                             });
-                        }
-                        else {
+                        } else {
                             console.log("\t->Event added");
                             return res.json({
                                 created: true,
@@ -223,10 +262,25 @@ app.get('/auth/planning/get_planning', keycloak.protect(), function (req, res) {
                             allUsers
                         })
                     })
-                } else return res.json({
-                    allEvents,
-                    allLocations
-                });
+                } else {
+                    let username = req.kauth.grant.access_token.content.preferred_username;
+                    // filtre les events pour retirer ceux fermés où l'utilisateur n'est pas inscrit
+                    allEvents = allEvents.filter(event => {
+                        if (event.Status === "true") {
+                            let isRegistered = false;
+                            event.Users.forEach(user => {
+                                if (user.Mail === username) isRegistered = true;
+                            });
+                            return isRegistered;
+                        } else return true;
+                    });
+                    return res.json({
+                        allEvents,
+                        allLocations
+                    });
+
+
+                }
             })
         })
     });
@@ -298,8 +352,7 @@ app.put('/auth/planning', keycloak.protect(),
                                 modified: true,
                                 comment: "Event modified"
                             });
-                        }
-                        else {
+                        } else {
                             console.log("\t->Error, impossible to modify Event");
                             return res.json({
                                 modified: false,
@@ -343,8 +396,7 @@ app.delete('/auth/planning', keycloak.protect(), function (req, res) {
                         deleted: true,
                         comment: "Event deleted"
                     });
-                }
-                else {
+                } else {
                     console.log("\t->Error, impossible to delete Event");
                     return res.json({
                         deleted: false,
@@ -446,8 +498,7 @@ app.post('/auth/planning/registration', keycloak.protect(),
                                     registered: true,
                                     comment: "Registration added"
                                 })
-                            }
-                            else {
+                            } else {
                                 console.log("\t->Error, impossible to register user");
                                 return res.json({
                                     registered: false,
@@ -462,8 +513,12 @@ app.post('/auth/planning/registration', keycloak.protect(),
     });
 
 /* --------------------------------- DELETE --------------------------------- */
-app.delete('/auth/planning/registration', keycloak.protect(), function (req, res) {                             //! A MERGE
+app.delete('/auth/planning/registration', keycloak.protect(), function (req, res) { //! A MERGE
     let username = req.kauth.grant.access_token.content.preferred_username;
+
+    req.body.Start_Date = getDateFormat(new Date(req.body.Start_Date).toLocaleString());
+    req.body.End_Date = getDateFormat(new Date(req.body.End_Date).toLocaleString());
+
     console.log("--- Trying to delete registration ---");
     Database.getUserInfoByMail(username, (userInfo) => {
         if (userInfo === undefined || userInfo.Id_Diver === null) {
@@ -473,42 +528,64 @@ app.delete('/auth/planning/registration', keycloak.protect(), function (req, res
                 comment: "User doesn't exist"
             })
         }
-        Database.getEvent(req.body, (eventInfo) => {
-            if (eventInfo === undefined) {
-                console.log("\t->Error, Event doesn't exist");
+        console.log(req.body);
+        Database.getDiveSiteInfoByName({
+            Site_Name: req.body.Site_Name
+        }, (locationInfo) => {
+            if (locationInfo === undefined) {
+                console.log("\t->Error, Location doesn't exist");
                 return res.json({
-                    deleted: false,
-                    comment: "Event doesn't exist"
+                    registered: false,
+                    comment: "Location doesn't exist"
                 })
             }
-            Database.getRegistration({
-                Diver_Id_Diver: userInfo.Id_Diver,
-                Planned_Dive_Id_Planned_Dive: eventInfo.Id_Planned_Dive
-            }, (registration) => {
-                if (registration === undefined) {
-                    console.log("\t->Error, User is not register");
+            req.body.Dive_Site_Id_Dive_Site = locationInfo.Id_Dive_Site;
+            delete req.body.Site_Name;
+
+            Database.getEvent(req.body, (eventInfo) => {
+                if (eventInfo === undefined) {
+                    console.log("\t->Error, Event doesn't exist");
                     return res.json({
                         deleted: false,
-                        comment: "User is not register"
+                        comment: "Event doesn't exist"
                     })
                 }
-                Database.deleteRegistration({
+                Database.getRegistration({
                     Diver_Id_Diver: userInfo.Id_Diver,
                     Planned_Dive_Id_Planned_Dive: eventInfo.Id_Planned_Dive
-                }, (deleted) => {
-                    if (deleted) {
-                        console.log("\t->Registration deleted");
-                        return res.json({
-                            deleted: true,
-                            comment: "Registration deleted"
-                        })
-                    } else {
-                        console.log("\t->Error, impossible to delete registration");
+                }, (registration) => {
+                    if (registration === undefined) {
+                        console.log("\t->Error, User is not register");
                         return res.json({
                             deleted: false,
-                            comment: "Impossible to delete Registration"
-                        });
+                            comment: "User is not register"
+                        })
                     }
+                    if (registration.Diver_Role === "DP") {
+                        console.log("\t->Error, DP can't unregister");
+                        return res.json({
+                            deleted: false,
+                            comment: "DP can't unregister"
+                        })
+                    }
+                    Database.deleteRegistration({
+                        Diver_Id_Diver: userInfo.Id_Diver,
+                        Planned_Dive_Id_Planned_Dive: eventInfo.Id_Planned_Dive
+                    }, (deleted) => {
+                        if (deleted) {
+                            console.log(`\t->${userInfo.Firstname} ${userInfo.Lastname} unregistered`);
+                            return res.json({
+                                deleted: true,
+                                comment: "Registration deleted"
+                            })
+                        } else {
+                            console.log("\t->Error, impossible to delete registration");
+                            return res.json({
+                                deleted: false,
+                                comment: "Impossible to delete Registration"
+                            });
+                        }
+                    });
                 });
             });
         });
@@ -567,18 +644,30 @@ app.delete('/auth/planning/registration/all', keycloak.protect(), function (req,
 
 app.get('/auth/user/account', keycloak.protect(), function (req, res) {
     if (checkUser(req, "DP")) {
-        res.sendFile(__dirname + "/vue/html/user/account.html", { headers: { 'userType': 'dp' } });
+        res.sendFile(__dirname + "/vue/html/user/account.html", {
+            headers: {
+                'userType': 'dp'
+            }
+        });
     } else if (checkUser(req, "USER")) {
-        res.sendFile(__dirname + "/vue/html/user/account.html", { headers: { 'userType': 'user' } });
+        res.sendFile(__dirname + "/vue/html/user/account.html", {
+            headers: {
+                'userType': 'user'
+            }
+        });
     } else res.redirect('/auth/dashboard');
 })
 
 /* ---------------------------------- READ ---------------------------------- */
 app.get('/auth/user/account/get_info', keycloak.protect(), function (req, res) {
     let username = req.kauth.grant.access_token.content.preferred_username;
-    if (checkUser(req, 'CLUB')) return res.json({ username: username });
+    if (checkUser(req, 'CLUB')) return res.json({
+        username: username
+    });
     Database.getUserInfoByMail(username, (userInfo) => {
-        if (userInfo === undefined) return res.status(404).json({ comment: "Impossible to find user" });
+        if (userInfo === undefined) return res.status(404).json({
+            comment: "Impossible to find user"
+        });
         return res.json(userInfo);
     })
 })
@@ -613,7 +702,11 @@ app.get('/auth/user/account/get_info', keycloak.protect(), function (req, res) {
 
 app.get('/auth/club/club_members', keycloak.protect(), function (req, res) {
     if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
-    res.sendFile(__dirname + "/vue/html/club/club_members.html", { headers: { 'userType': 'club' } });
+    res.sendFile(__dirname + "/vue/html/club/club_members.html", {
+        headers: {
+            'userType': 'club'
+        }
+    });
 })
 
 /* --------------------------------- CREATE --------------------------------- */
@@ -738,8 +831,7 @@ app.put('/auth/club/club_members', keycloak.protect(),
                             modified: false,
                             comment: "Error while modifying, success to cancel all modifications"
                         });
-                    }
-                    else {
+                    } else {
                         console.log("\t->Error, impossible to update user in DB");
                         console.log("\t->Error, impossible to update user in KC, impossible to cancel all modifications");
                         return res.json({
@@ -753,7 +845,7 @@ app.put('/auth/club/club_members', keycloak.protect(),
     })
 //! REPRENDRE ICI
 /* --------------------------------- DELETE --------------------------------- */
-app.delete('/auth/club/club_members', keycloak.protect(),                                   // USE
+app.delete('/auth/club/club_members', keycloak.protect(), // USE
     body("Mail").trim().escape().exists(),
     body("password").trim().escape().exists(),
     async function (req, res) {
@@ -801,7 +893,11 @@ app.delete('/auth/club/club_members', keycloak.protect(),                       
 
 app.get('/auth/club/locations', keycloak.protect(), function (req, res) {
     if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
-    res.sendFile(__dirname + "/vue/html/club/locations.html", { headers: { 'userType': 'club' } });
+    res.sendFile(__dirname + "/vue/html/club/locations.html", {
+        headers: {
+            'userType': 'club'
+        }
+    });
 })
 
 /* --------------------------------- CREATE --------------------------------- */
@@ -845,7 +941,9 @@ app.post("/auth/club/locations", keycloak.protect(),
         delete req.body.Post_Accident_Procedure;
 
         console.log("Creating location in DB");
-        Database.getDiveSiteInfoByName({ Site_Name: req.body.Site_Name }, (siteInfo) => {
+        Database.getDiveSiteInfoByName({
+            Site_Name: req.body.Site_Name
+        }, (siteInfo) => {
             if (siteInfo !== undefined) return res.json({
                 created: false,
                 comment: "Location already exist"

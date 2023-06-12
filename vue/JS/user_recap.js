@@ -60,24 +60,24 @@ function getInfo() {
         .then(res => {
             console.log(res)
             let userInfo = res.userInfo
-            if (res.userInfo && res.userInfo.length != 0) {
+            if (res.userInfo && res.userInfo.length != 0 && my_role != "club") {
                 me = new User(userInfo.Lastname, userInfo.Firstname, userInfo.Mail, userInfo.Phone, userInfo.Diver_Qualification, userInfo.Instructor_Qualification, userInfo.Nox_Level, userInfo.Additional_Qualifications, userInfo.License_Number, userInfo.License_Expiration_Date, userInfo.Medical_Certificate_Expiration_Date, userInfo.Birthdate);
                 console.log(me)
-            }
-            if (res.username) {
-                me = res.username;
+            } else if (my_role == "club") {
+                me = res.userInfo;
             }
             setUserInfos();
             if (res.registrationList && res.registrationList.length != 0) {
                 let events_ = res.registrationList;
                 events = [];
                 events_.forEach(function (event) {
+                    console.log(event)
                     events.push(new Event(new Date(event.Start_Date), new Date(event.End_Date), event.Diver_Price, event.Instructor_Price, event.Location, event.Comment, event.Special_Needs, event.Status, event.Max_Divers, event.Dive_Type));
                 });
                 console.log(events)
             }
+            startCalendar();
         })
-
 }
 
 
@@ -86,7 +86,7 @@ function getInfo() {
 /*                                    CODE                                    */
 /* -------------------------------------------------------------------------- */
 
-document.addEventListener('DOMContentLoaded', function () {
+function startCalendar() {
     //!document.querySelector('#my_profile_picture').src = "../img/profile_pictures/" + me.firstname + me.lastname + me.licenceNumber + ".jpg";
     var calendarEl = document.getElementById('calendar');
 
@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector(".event_list").style.height = "calc(" + $("#calendar").height() + "px + 30px)";
 
     loadingClose();
-});
+};
 
 
 function loadingClose() {

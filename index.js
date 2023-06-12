@@ -758,38 +758,50 @@ app.delete('/auth/club/club_members', keycloak.protect(),                       
     body("password").trim().escape().exists(),
     async function (req, res) {
         if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
-        console.log("Getting user info in DB");
+        console.log("--- Trying to delete user ---");
 
         Database.getUserInfoByMail(req.body.Mail, (userInfo) => {
-            if (userInfo === undefined) return res.json({
-                deleted: false,
-                comment: "User doesn't exist"
-            })
-            console.log("Deleting user in DB");
+            if (userInfo === undefined) {
+                console.log("\t->Error, User doesn't exist");
+                return res.json({
+                    deleted: false,
+                    comment: "User doesn't exist"
+                })
+            }
 
             Database.deleteUser(req.body.Mail, async (isDelDb) => {
-                if (!isDelDb) return res.json({
-                    deleted: false,
-                    comment: "Impossible to delete user in DB"
-                })
-                console.log("Deleting user in KC");
+                if (!isDelDb) {
+                    console.log("\t->Error, impossible to delete user in DB");
+                    return res.json({
+                        deleted: false,
+                        comment: "Impossible to delete user in DB"
+                    })
+                }
 
                 const isDelKc = await Keycloak_module.deleteUser(req.body.Mail, getUserName(req), req.body.password);
-                if (isDelKc) return res.json({
-                    deleted: true,
-                    comment: "User deleted"
-                })
-
-                console.log("ERROR, adding user in DB");
+                if (isDelKc) {
+                    console.log("\t->User deleted in KC");
+                    console.log("\t->User correctly deleted");
+                    return res.json({
+                        deleted: true,
+                        comment: "User deleted"
+                    })
+                }
                 Database.createUser(userInfo, false, (isInser) => {
-                    if (isInser) return res.json({
-                        deleted: false,
-                        comment: "Error while deleting, success to cancel all modifications"
-                    });
-                    else return res.json({
-                        deleted: false,
-                        comment: "Error while deleting, impossible to cancel all modifications"
-                    });
+                    if (isInser) {
+                        console.log("\t->Error, impossible to delete user in KC, success to cancel all modifications");
+                        return res.json({
+                            deleted: false,
+                            comment: "Error while deleting, success to cancel all modifications"
+                        });
+                    }
+                    else {
+                        console.log("\t->Error, impossible to delete user in KC, impossible to cancel all modifications");
+                        return res.json({
+                            deleted: false,
+                            comment: "Error while deleting, impossible to cancel all modifications"
+                        });
+                    }
                 })
             })
         })

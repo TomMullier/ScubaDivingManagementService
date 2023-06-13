@@ -77,6 +77,20 @@ function getInfo() {
             startCalendar();
         })
 }
+function getUserPP(user){
+    fetch('/auth/user_pp', {
+            method: 'POST',
+            headers: {
+                    'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(user)
+    }).then((res) => res.blob())
+    .then((imgBlob) => {
+            let res = URL.createObjectURL(imgBlob);
+            console.log(res);
+            document.querySelector("#my_profile_picture").src = res;
+    } );
+}
 
 
 
@@ -259,6 +273,7 @@ function setUserInfos() {
         document.querySelector("#my_profile_picture").style.display = "none";
         return;
     }
+    getUserPP(me);
     document.querySelector(".name").innerHTML = "<b>Nom : </b>" + me.firstname + " " + me.lastname;
     document.querySelector(".phone").innerHTML = "<b>Téléphone : </b>" + me.phone;
     let birthdate = new Date(me.birthdate);
@@ -267,6 +282,7 @@ function setUserInfos() {
     let level = me.diverQualification;
     let HTMLlevel = document.querySelectorAll(".level p");
     document.querySelector(".right .name").innerText = me.firstname;
+    
     HTMLlevel.forEach(function (element) {
         if (parseInt(element.innerText.split("P")[1]) <= parseInt(level.split("P")[1])) {
             element.classList.add("active");

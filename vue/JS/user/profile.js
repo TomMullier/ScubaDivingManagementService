@@ -41,11 +41,11 @@ fetch('/auth/user/account')
 
 /* ------------------------------ GET USER INFO ----------------------------- */
 fetch('/auth/user/account/get_info', {
-    method: 'GET',
-    headers: {
-        'Content-Type': 'application/json'
-    }
-}).then(res => res.json())
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(res => res.json())
     .then(res => {
         console.log(res)
         let userInfo = res
@@ -56,6 +56,35 @@ fetch('/auth/user/account/get_info', {
         }
 
     })
+
+function upload_pp(file) {
+    let formData = new FormData();
+    formData.append("file", file);
+    fetch('/auth/upload_pp', {
+            method: 'POST',
+            body: formData
+        }).then(res => res.json())
+        .then(res => {
+            console.log(res)
+            // document.location.reload();
+        })
+}
+
+function getUserPP(user) {
+    fetch('/auth/user_pp', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(user)
+        }).then((res) => res.blob())
+        .then((imgBlob) => {
+            let res = URL.createObjectURL(imgBlob);
+            console.log(res);
+            document.querySelector("#profile_picture").src = res;
+        });
+}
+
 
 
 
@@ -109,7 +138,15 @@ save_buttons.forEach(function (button) {
 
 function setUserInfos() {
     // document.querySelector('#profile_picture').src = "../img/profile_pictures/" + me.firstname + me.lastname + me.licenceNumber + ".jpg";
-    checkForPP();
+    // document.querySelector("#save_button_pp").addEventListener("click", function (e) {
+    //     e.preventDefault();
+    //     let file = document.querySelector("#profile_picture_upload").files[0];
+    //     // document.querySelector("#profile_picture_upload").files[0] = "";
+    //     if (file) {
+    //         upload_pp(file);
+    //     }
+    // });
+    getUserPP(me);
     document.querySelector(".name").innerHTML = me.firstname + " " + me.lastname;
     document.querySelector(".licence_number").innerHTML = me.licenceNumber;
     document.querySelector(".birthdate").innerHTML = new Date(me.birthdate).toLocaleDateString();

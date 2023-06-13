@@ -95,9 +95,20 @@ function deleteUser(target) {
                 });
 }
 
-function getBlankPP(){}
-
-function getUserPP(user){}
+function getUserPP(user){
+        fetch('/auth/user_pp', {
+                method: 'POST',
+                headers: {
+                        'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(user)
+        }).then((res) => res.blob())
+        .then((imgBlob) => {
+                let res = URL.createObjectURL(imgBlob);
+                console.log(res);
+                document.querySelector("#profile_show").src = res;
+        } );
+}
 
 
 
@@ -118,7 +129,10 @@ menutoggle.onclick = function () {
 }
 let oldMail;
 
+
+
 function displayUsers() {
+        
         let container = document.querySelector(".list_container");
         container.innerHTML = "";
         all_user.forEach(function (me) {
@@ -217,11 +231,8 @@ function displayUsers() {
                                 document.querySelector("#licence_date_show").value = get_user.licenceExpiration.split(" ")[0];
                                 document.querySelector("#medic_date_show").value = get_user.medicalExpiration.split(" ")[0];
 
-                                try{
-                                        getUserPP(get_user);
-                                }catch(e){
-                                        getBlankPP();
-                                }
+                                getUserPP(get_user);
+                                
                         }
                 });
         });
@@ -247,18 +258,18 @@ emergencyButton.addEventListener("click", function () {
         menutoggle.classList.toggle('close-modal');
 });
 
-let save_buttons = document.querySelectorAll(".save_button_infos");
+// let save_buttons = document.querySelectorAll(".save_button_infos");
 
-save_buttons.forEach(function (button) {
-        button.addEventListener("click", function () {
-                modals.show("validation_save");
-                // time out to close
-                setTimeout(function () {
-                        modals.closeCurrent();
-                }, 2000);
+// save_buttons.forEach(function (button) {
+//         button.addEventListener("click", function () {
+//                 modals.show("validation_save");
+//                 // time out to close
+//                 setTimeout(function () {
+//                         modals.closeCurrent();
+//                 }, 2000);
 
-        });
-});
+//         });
+// });
 
 
 

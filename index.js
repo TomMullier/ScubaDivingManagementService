@@ -3,13 +3,14 @@ const express = require('express');
 const bodyParser = require("body-parser");
 const session = require("express-session");
 const Keycloak = require("keycloak-connect");
+const fileUpload = require('express-fileupload');
+const Sharp = require('sharp');
+
 const {
     body,
     validationResult
 } = require("express-validator");
 const fs = require('fs');
-
-
 
 const app = express();
 const http = require("http").Server(app);
@@ -28,6 +29,10 @@ const keycloak = new Keycloak({
 
 const hostname = process.env.IP_HOSTNAME;
 const port = 3000;
+
+app.use(fileUpload({
+    useTempFiles: true
+}));
 
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "vue")));
@@ -84,6 +89,107 @@ app.get('/login', keycloak.protect(), function (req, res) {
     }
 });
 
+app.post('/auth/upload_pp', keycloak.protect(), function (req, res) {
+    //vérifie s'il y a une image dans la requête
+    if (!req.files || Object.keys(req.files).length === 0) {
+        console.log("No profile picture in the request");
+        return res.redirect('/auth/user/account');
+    }
+
+    // on recoit un jpg, stocke le dans le dossier img/userMail/userMail.jpg
+    let userMail = new String(req.kauth.grant.access_token.content.preferred_username);
+    userMail = userMail.replace(/@/g, "_").replace(/\./g, "_").replace(/-/g, "_");
+    console.log("Uploading profile picture for " + userMail);
+
+    // si le dossier n'existe pas, crée le
+    if (!fs.existsSync(__dirname + "/model/img/" + userMail)) {
+        fs.mkdirSync(__dirname + "/model/img/" + userMail);
+    }
+    const {
+        image
+    } = req.files;
+    if (!image) return res.sendStatus(400);
+
+
+
+    // Move the uploaded image to our upload folder
+    image.mv(__dirname + '/model/img/' + userMail + '/TOCROP' + userMail + '.jpg', function (err) {
+        if (err) {
+            console.log("Error while uploading profile picture for " + userMail);
+            console.log(err);
+        } else {
+            console.log("Profile picture uploaded for " + userMail);
+            cropToSquare(__dirname + '/model/img/' + userMail + '/TOCROP' + userMail + '.jpg')
+                .then(info => {
+                    console.log('Image recadrée avec succès:', info);
+                    fs.unlinkSync(__dirname + '/model/img/' + userMail + '/TOCROP' + userMail + '.jpg');
+                })
+                .catch(err => {
+                    console.error('Erreur lors du recadrage de l\'image:', err);
+                });
+                
+
+
+
+        }
+        return res.redirect('/auth/user/account');
+    });
+})
+
+function cropToSquare(imagePath) {
+    return new Promise((resolve, reject) => {
+        Sharp(imagePath)
+        .metadata()
+        .then(metadata => {
+            const {
+                width,
+                height
+            } = metadata;
+            const size = Math.min(width, height);
+            const x = Math.floor((width - size) / 2);
+            const y = Math.floor((height - size) / 2);
+            
+            let newPath = imagePath.replace("TOCROP", "");
+            Sharp(imagePath)
+            .extract({
+                left: x,
+                        top: y,
+                        width: size,
+                        height: size
+                    })
+                    .resize(500) // Définissez ici la taille souhaitée du carré
+                    .toFile(newPath, (err, info) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(info);
+                        }
+                    });
+            })
+            .catch(err => {
+                reject(err);
+            });
+    });
+}
+
+app.post('/auth/user_pp', keycloak.protect(), function (req, res) {
+    let userMail = new String(req.body.mail);
+    userMail = userMail.replace(/@/g, "_").replace(/\./g, "_").replace(/-/g, "_");
+    // send profile picture, located in the img folder, userMail to the front
+    // adapate en fonction de l'extension du fichier : png, jpg ou jpeg
+    if (fs.existsSync(__dirname + "/model/img/" + userMail + "/" + userMail + ".jpg")) {
+        fs.readFile(__dirname + "/model/img/" + userMail + "/" + userMail + ".jpg", (err, data) => {
+            if (err) {
+                console.log("No profile picture for " + userMail);
+            }
+            console.log("Sending profile picture for " + userMail);
+            res.setHeader("Content-Type", "image/jpg");
+            res.send(data);
+        });
+    } else {
+        console.log("No profile picture for " + userMail);
+    }
+})
 /* -------------------------------------------------------------------------- */
 /*                                  DASHBORAD                                 */
 /* -------------------------------------------------------------------------- */
@@ -843,17 +949,6 @@ app.get('/auth/user/account/get_info', keycloak.protect(), function (req, res) {
     })
 })
 
-/* --------------------------------- UPDATE --------------------------------- */
-// app.get('/auth/user/account/modif', keycloak.protect(),                                                      //TODO
-//     // body("Mail").trim().escape(),
-//     // body("Phone").trim().escape(),
-//     // body("Medical_Certificate_Expiration_Date").trim().escape(),
-//     // body("password").trim().escape(),
-//     function (req, res) {
-//         console.log("ici"); 
-//         res.redirect(`http://10.224.1.186:8080/realms/SDMS/account`)
-//     })
-
 /* -------------------------------------------------------------------------- */
 /*                                  PALANQUEE                                 */
 /* -------------------------------------------------------------------------- */
@@ -916,6 +1011,22 @@ app.post('/auth/club/club_members', keycloak.protect(),
                 if (created) {
                     console.log("\t->User created in DB");
                     console.log("\t->User correctly created");
+                    //? Créer le dossier
+                    //? tom_mullier_gmail_com.jpg/jpeg/png
+                    //? Creer le dossier
+                    //? Copier Blank.jpg dans le dossier
+                    //? Renommer Blank
+                    // avec fs, créer le dossier avec le mail de lutilisateur 
+                    try {
+                        let filename = req.body.Mail.replace(/@/g, "_").replace(/\./g, "_").replace(/-/g, "_");
+                        fs.mkdirSync(__dirname + "/model/img/" + filename);
+                        fs.copyFileSync(__dirname + "/model/img/blank_pp.png", __dirname + "/model/img/" + filename + "/" + filename + ".jpg");
+                        console.log("\t->User folder created");
+                    } catch (error) {
+                        console.log("\tL'image de profil de base n'a pas pu être créée")
+                        console.log(error);
+                    }
+
                     return res.json({
                         created: true
                     });

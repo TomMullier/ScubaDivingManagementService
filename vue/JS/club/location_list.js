@@ -28,11 +28,14 @@ fetch('/auth/club/get_locations', {
         sites.forEach(function (site) {
             locations.push(new Location(site.Site_Name, site.Gps_Latitude, site.Gps_Longitude, site.Track_Type, site.Track_Number, site.Track_Name, site.Zip_Code, site.City_Name, site.Country_Name, site.Additional_Address, site.Tel_Number, site.Information_URL, [], site.SOS_Tel_Number, site.Emergency_Plan, site.Post_Accident_Procedure));
         });
+        console.log("Locations :");
+        console.log(locations);
         updateDisplayLocations();
     })
 
 /* ----------------------------- CREATE LOCATION ---------------------------- */
 function createLocation(loc) {
+    console.log("iciiiiiiiiiiiiiiiiiiiiii");
     fetch('/auth/club/locations', {
             method: 'POST',
             headers: {
@@ -42,6 +45,7 @@ function createLocation(loc) {
         }).then((res) => res.json())
         .then((res) => {
             console.log(res);
+            document.location.reload();
         });
 }
 
@@ -175,22 +179,25 @@ create_button.addEventListener("click", function () {
         document.querySelector("#create_location").querySelectorAll("input").forEach(function (input) {
             if (input.value == "" && input.getAttribute("required")) {
                 auth = false;
+                console.log("Champ vide");
+                console.log(input);
             }
         });
 
-        if (!validatePhoneNumber(data.Tel_Number)) {
-            auth = false;
-            document.querySelector("#phone").style.border = "1px solid #f2574a";
-        }
+        // if (!validatePhoneNumber(data.Tel_Number)) {
+        //     console.log("Numéro de téléphone invalide");
+        //     auth = false;
+        //     document.querySelector("#phone").style.border = "1px solid #f2574a";
+        // }
 
         if (auth) {
             createLocation(data);
-            updateDisplayLocations();
+            // updateDisplayLocations();
             document.querySelector("#validate_creation").disabled = true;
             document.querySelector("#validate_creation").innerHTML = "<img src='../img/loading_animation.svg' alt='loading' class='loading'>";
             document.querySelector("#validate_creation").style.height = "40px";
             setTimeout(function () {
-                document.location.reload();
+                // document.location.reload();
             }, 1000);
         } else {
             document.querySelector("#create_location").innerHTML = "Certains champs ne sont pas remplis";
@@ -204,6 +211,7 @@ create_button.addEventListener("click", function () {
                     input.style.border = "1px solid #f2574a";
                 }
             });
+
             setTimeout(function () {
                 document.querySelector("#create_location").innerHTML = "Créer";
 
@@ -284,13 +292,19 @@ function updateDisplayLocations() {
 
 
     locations.forEach(function (loc) {
-        if (!loc.url.includes("http")) {
+        if (!loc.url.includes("http") && loc.url != "") {
             loc.url = "http://" + loc.url;
         }
         let list_item = '<div class="list_item"><h1 class="list_title">' + loc.name + '</h1><h2 class="adress">' + loc.trackNumber + " " + loc.trackType + " " + loc.trackName + ",<br>" + loc.zipCode + " " + loc.cityName + ",<br>" + loc.country + '</h2>';
         list_item += '<div class="coordinate"><h2 class="latitude"><i class="fa-solid fa-map-marker"></i> Latitude : ' + loc.lat + ' </h2><h2 class="longitude"><i class="fa-solid fa-map-marker"></i> Longitude : ' + loc.lng + '</h2>';
-        list_item += '</div><a href="" class="phone"><i class="fa-solid fa-phone"></i>' + loc.phone + '</a>';
-        list_item += '<a target="_blank" href="' + loc.url + '" class="web"><i class="fa-solid fa-at"></i> Site Web</a><div class="button_container"><button class="edit_button"><i class="fa-solid fa-pencil"></i></button><button class="delete_button"><i class="fa-solid fa-trash"></i></button></div></div>';
+        list_item += '</div>'
+        if (loc.phone != "") {
+            list_item += '<a href="" class="phone"><i class="fa-solid fa-phone"></i>' + loc.phone + '</a>';
+        }
+        if (loc.url != "") {
+            list_item += '<a target="_blank" href="' + loc.url + '" class="web"><i class="fa-solid fa-at"></i> Site Web</a>'
+        }
+        list_item += '<div class="button_container"><button class="edit_button"><i class="fa-solid fa-pencil"></i></button><button class="delete_button"><i class="fa-solid fa-trash"></i></button></div></div>';
         container_location.innerHTML += list_item;
     });
 
@@ -318,7 +332,7 @@ function updateDisplayLocations() {
                 deleteLocation(name);
                 // updateDisplayLocations();
                 // actualiser la page 
-                // document.location.reload();
+                document.location.reload();
                 modals.closeCurrent();
             });
 
@@ -409,10 +423,10 @@ function updateDisplayLocations() {
                     }
                 });
 
-                if (!validatePhoneNumber(data.Tel_Number)) {
-                    auth = false;
-                    document.querySelector("#phone").style.border = "1px solid #f2574a";
-                }
+                // if (!validatePhoneNumber(data.Tel_Number)) {
+                //     auth = false;
+                //     document.querySelector("#phone").style.border = "1px solid #f2574a";
+                // }
 
                 if (auth) {
                     modifyLocation(data);

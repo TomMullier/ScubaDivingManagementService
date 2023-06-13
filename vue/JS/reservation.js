@@ -15,6 +15,8 @@ import {
 import {
     Location
 } from "./class/Location.js";
+// import { cs } from './@fullcalendar/core/internal-common.js';
+// import { set } from 'express/lib/response.js';
 
 /* -------------------------------------------------------------------------- */
 /*                              GLOBAL VARIABLES                              */
@@ -33,7 +35,6 @@ let allDivers = [];
 fetch('/auth/planning')
     .then(response => {
         const userType = response.headers.get('userType');
-        console.log("User Role :" + userType);
         my_role = userType;
         // user, dp, club
         if (my_role != "club") {
@@ -61,7 +62,6 @@ fetch('/auth/user/account/get_info', {
         }
     }).then(res => res.json())
     .then(res => {
-        console.log(res)
         let userInfo = res
         if (res.Lastname) {
             me = new User(userInfo.Lastname, userInfo.Firstname, userInfo.Mail, userInfo.Phone, userInfo.Diver_Qualification, userInfo.Instructor_Qualification, userInfo.Nox_Level, userInfo.Additional_Qualifications, userInfo.License_Number, userInfo.License_Expiration_Date, userInfo.Medical_Certificate_Expiration_Date, userInfo.Birthdate);
@@ -84,13 +84,14 @@ fetch('/auth/planning/get_planning', {
     .then(res => {
         console.log(res)
         res.allLocations.forEach(function (location) {
-            locations.push(new Location(location.Site_Name, location.Latitude, location.Longitude, location.Track_Type, location.Track_Number, location.Track_Name, location.Zip_Code, location.City_Name, location.Country_Name, location.Additional_Address, location.Tel_Number, location.Information_URL, [], location.SOS_Tel_Number, location.Emergency_Plan, location.Post_Accident_Procedure));
+            locations.push(new Location(location.Site_Name, location.Latitude, location.Longitude, location.Track_Type, location.Track_Number, location.Track_Name, location.Zip_Code, location.City_Name, location.Country_Name, location.Additional_Address, location.Tel_Number, location.Information_URL, [location.General_Rate, location.Location_Rate, location.Organisation_Rate, location.Conditions_Rate, location.Rate_Number], location.SOS_Tel_Number, location.Emergency_Plan, location.Post_Accident_Procedure));
         });
         if (res.allUsers && my_role == "club") {
             allDivers = res.allUsers;
             setDiversListsHTML();
         }
         res.allEvents.forEach(function (event) {
+            console.log(event);
             let e = new Event(new Date(event.Start_Date), new Date(event.End_Date), event.Diver_Price, event.Instructor_Price, event.Location, event.Comments, event.Special_Needs, event.Status, event.Max_Divers, event.Dive_Type);
             e.addUser(event.Users);
             if (my_role == "club") e.startEditable = true;
@@ -103,6 +104,7 @@ fetch('/auth/planning/get_planning', {
 
 
 /* ------------------------------ CREATE EVENT ------------------------------ */
+
 function addEvent(event, usersToRegister) {
     fetch('/auth/planning', {
             method: 'POST',
@@ -166,6 +168,7 @@ function updateEvent(oldEvent, event, usersToRegister) {
                     }
                 }
             }
+            document.location.reload();
         })
 }
 
@@ -212,13 +215,13 @@ function register(
                 document.querySelector("#reserveButton").innerHTML = "Se désinscrire";
                 document.querySelector("#reserveButton").classList.add("unreserveButton");
                 document.querySelector("#reserveButton").classList.remove("reserveButton");
+                document.location.reload();
                 // eventClicked.setProp("backgroundColor", "#f2574a");
             }
         })
 }
 
 /* ------------------------------- UNREGISTER ------------------------------- */
-//! A MERGE
 function unregister(event, registrationInfo = {
     Personnal_Comment: "Registered by club",
     Car_Pooling_Seat_Offered: 0,
@@ -243,6 +246,7 @@ function unregister(event, registrationInfo = {
                 document.querySelector("#reserveButton").classList.add("reserveButton");
                 document.querySelector("#reserveButton").classList.remove("unreserveButton");
                 eventClicked.setProp("backgroundColor", "#4CAF50");
+                document.location.reload();
             }
         })
 }
@@ -262,6 +266,47 @@ async function deleteAllRegistration(event) {
                 else resolve(false);
             })
     })
+}
+
+/* ------------------------------ RATE LOCATION ----------------------------- */
+function rateLocation(data) {
+    fetch('/auth/planning/set_rate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(res => res.json())
+        .then(res => {
+            console.log(res)
+            if (!res.rated) {
+                // La note n'a pas été prise en compte
+            } else {
+
+            }
+            document.location.reload();
+        })
+}
+
+function hasVoted(event) {
+    fetch('/auth/planning/has_voted', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(event)
+        }).then(res => res.json())
+        .then(res => {
+            console.log(res)
+            if (my_role == "user") {
+                console.log(res.hasVoted);
+                if(res.hasVoted == 1){
+                    document.querySelector(".rating").style.display = "none";
+                }else{
+                    document.querySelector(".rating").style.display = "flex";
+                }
+            }
+        })
 }
 
 
@@ -350,19 +395,13 @@ function setEvents(ev_) {
             // Use find to get the dp (user with role DP)
             let oldDp = info.oldEvent.extendedProps.users.find(user => user.Diver_Role == "DP");
             oldData.dp = oldDp.Mail;
-            console.log("Old");
-            console.log(oldData);
-            console.log("New");
-            console.log(data);
             let usersToRegister = [];
             info.event.extendedProps.users.forEach(function (user) {
                 if (user.Diver_Role == "Diver") {
                     usersToRegister.push(user.Mail);
                 }
             });
-            console.log(usersToRegister);
             updateEvent(oldData, data, usersToRegister);
-            document.location.reload();
         },
         eventMouseEnter: function (info) {
             // Element HTML -> info.el
@@ -370,26 +409,27 @@ function setEvents(ev_) {
 
             // If role is club, on hover place a little pencil on the event
             if (my_role == "club" && new Date(info.event.start) > new Date()) {
-                let pencil = document.createElement("I");
-                pencil.classList.add("fas");
-                pencil.classList.add("fa-pencil-alt");
-                pencil.style.opacity = "0";
-                html_memory = info.el.innerHTML;
-                info.el.innerHTML = "";
-                info.el.appendChild(pencil);
-                setTimeout(function () {
-                    pencil.style.opacity = "1";
-                }, 0);
+                // let pencil = document.createElement("I");
+                // pencil.classList.add("fas");
+                // pencil.classList.add("fa-pencil-alt");
+                // pencil.style.opacity = "0";
+                // html_memory = info.el.innerHTML;
+                // info.el.innerHTML = "";
+                // info.el.appendChild(pencil);
+                // setTimeout(function () {
+                //     pencil.style.opacity = "1";
+                // }, 0);
+                info.el.title = "Cliquez pour modifier";
             }
         },
         eventMouseLeave: function (info) {
             // Element HTML -> info.el
             // Evénement -> info.event
             if (my_role == "club" && new Date(info.event.end) > new Date()) {
-                document.querySelector(".fa-pencil-alt").style.opacity = "0";
-                setTimeout(function () {
-                    info.el.innerHTML = html_memory;
-                }, 100);
+                // document.querySelector(".fa-pencil-alt").style.opacity = "0";
+                // setTimeout(function () {
+                //     info.el.innerHTML = html_memory;
+                // }, 100);
             }
         },
         eventClick: function (info) {
@@ -419,9 +459,6 @@ function setEvents(ev_) {
             }
             let dp_in_event = false;
             info.event.extendedProps.users.forEach(function (user) {
-                console.log(user.Diver_Role);
-                console.log(user.Mail);
-                console.log(me.mail);
                 if (user.Diver_Role == "DP" && user.Mail == me.mail) {
                     dp_in_event = true;
                 }
@@ -429,9 +466,20 @@ function setEvents(ev_) {
 
             if (new Date(eventClicked.start) < new Date()) {
                 button.style.display = "none";
-                if (my_role == "user") {
-                    document.querySelector(".rating").style.display = "flex";
+                let event = {
+                    Start_Date: eventClicked.start,
+                    End_Date: eventClicked.end,
+                    Diver_Price: eventClicked.extendedProps.divePrice,
+                    Instructor_Price: eventClicked.extendedProps.InstructorPrice,
+                    Special_Needs: eventClicked.extendedProps.needs,
+                    Status: eventClicked.extendedProps.open,
+                    Max_Divers: eventClicked.extendedProps.max,
+                    Dive_Type: eventClicked.extendedProps.diveType,
+                    Comments: eventClicked.extendedProps.comment,
+                    Site_Name: eventClicked.extendedProps.location.Site_Name,
                 }
+                hasVoted(event);
+                 
             } else {
                 button.style.display = "flex";
                 document.querySelector(".rating").style.display = "none";
@@ -442,7 +490,6 @@ function setEvents(ev_) {
                 document.querySelector(".edit_rapport").style.display = "none";
             }
             if (dp_in_event) {
-                console.log("DP in event");
                 document.querySelectorAll("#reserveButton").forEach(function (button) {
                     button.style.display = "none";
                 });
@@ -452,6 +499,7 @@ function setEvents(ev_) {
             if (info.event.extendedProps.max - info.event.extendedProps.users.length == 0) {
                 document.querySelector("#reserveButton").style.display = "none";
             }
+            displayRatings(eventClicked);
 
             menutoggle.classList.toggle('active');
             menutoggle.classList.toggle('close-modal');
@@ -526,7 +574,6 @@ function setEvents(ev_) {
             eventClicked.extendedProps.users.forEach(function (user) {
                 let li_ = document.createElement("li");
                 if (user.Diver_Role === "DP") {
-                    console.log(user);
                     li_.className = "DP";
                 }
                 li_.innerText = user.Firstname + " " + user.Lastname;
@@ -645,8 +692,6 @@ function setEvents(ev_) {
     events.forEach(function (event) {
         event.users.forEach(function (user) {
             if (user.Mail == me.mail) {
-                console.log(event);
-                console.log("Inscrit");
                 event.backgroundColor = "#f2574a";
                 return;
             }
@@ -760,7 +805,6 @@ emergencyButton.addEventListener("click", function () {
 let rapport_button = document.querySelector(".edit_rapport");
 rapport_button.addEventListener("click", function () {
     modals.closeCurrent();
-    // console.log(eventClicked);
     setTimeout(function () {
         modals.show("dive_rapport", function () {
             menutoggle.classList.remove('active');
@@ -816,11 +860,11 @@ search_location.addEventListener("click", function () {
 });
 search_location.addEventListener("focusout", function () {
     setTimeout(function () {
-    document.querySelector("#createEventModal .location_list_dropdown").style.display = "none";
-    let location_ = document.querySelectorAll(".location_item");
-    location_.forEach(function (location) {
-        location.style.display = "none";
-    });
+        document.querySelector("#createEventModal .location_list_dropdown").style.display = "none";
+        let location_ = document.querySelectorAll(".location_item");
+        location_.forEach(function (location) {
+            location.style.display = "none";
+        });
     }, 200);
 });
 search_location.addEventListener("input", function () {
@@ -1132,7 +1176,6 @@ validate_event.addEventListener("click", function (e) {
     let validate_autho = true
     for (const [key, value] of Object.entries(data)) {
         if (value == "" && key != "Comments" && key != "Special_Needs" && key != "users" && key != "Status") {
-            console.log(key + " is empty");
             validate_autho = false;
         }
     }
@@ -1141,8 +1184,10 @@ validate_event.addEventListener("click", function (e) {
         validate_event.disabled = true;
         validate_event.innerHTML = "<img src='../img/loading_animation.svg' alt='loading' class='loading'>";
         validate_event.style.height = "40px";
+        console.log("Event created");
+        console.log(data)
         setTimeout(function () {
-            document.location.reload();
+            // document.location.reload();
         }, 1000);
     } else {
         validate_event.innerHTML = "Tous les champs ne sont pas remplis";
@@ -1259,7 +1304,6 @@ function detectDivers_edit() {
             number_of_diver++;
         }
     });
-    console.log("Number " + number_of_diver);
     search_diver_edit.placeholder = "Rechercher" + " (" + number_of_diver + " inscrits)";
 }
 
@@ -1511,13 +1555,11 @@ function edit_event(info) {
             }
         }
         if (validate_autho) {
-            updateEvent(oldEvent, data, event_to_create.users);
             validate_event.disabled = true;
             validate_event.innerHTML = "<img src='../img/loading_animation.svg' alt='loading' class='loading'>";
             validate_event.style.height = "20px";
-            setTimeout(function () {
-                document.location.reload();
-            }, 1000);
+            updateEvent(oldEvent, data, event_to_create.users);
+
         } else {
             validate_event.innerHTML = "Tous les champs ne sont pas remplis";
             document.querySelector("#modifyEventModal .container_create_event").querySelectorAll('input').forEach(function (input) {
@@ -1554,6 +1596,7 @@ avis.addEventListener("click", function () {
     setTimeout(function () {
         modals.show("rating", function () {
             menutoggle.classList.remove('active');
+            displayRatings(eventClicked);
         });
         menutoggle.classList.toggle('active');
         menutoggle.classList.toggle('close-modal');
@@ -1571,14 +1614,37 @@ avis.addEventListener("click", function () {
                 modals.closeCurrent();
                 console.log("FINAL RATE:")
                 console.log(finalRate())
+                let final = finalRate();
                 // Get location of event clicked
                 let location = eventClicked.extendedProps.location;
                 // in location array, find the event clicked location and add the rate
+                let data;
+                let event = {
+                    Start_Date: eventClicked.start,
+                    End_Date: eventClicked.end,
+                    Diver_Price: eventClicked.extendedProps.divePrice,
+                    Instructor_Price: eventClicked.extendedProps.InstructorPrice,
+                    Special_Needs: eventClicked.extendedProps.needs,
+                    Status: eventClicked.extendedProps.open,
+                    Max_Divers: eventClicked.extendedProps.max,
+                    Dive_Type: eventClicked.extendedProps.diveType,
+                    Comments: eventClicked.extendedProps.comment,
+                }
                 locations.forEach(function (location_) {
-                    if (location_.name == location) {
-                        location_.rate.addRate(finalRate());
-                        console.log("Location rate updated :");
-                        console.log(location_.rate);
+                    console.log(location_)
+
+                    if (location_.name == location.Site_Name) {
+                        data = {
+                            "General_Rate": (location_.rate[0] * location_.rate[4] + final.generalRate) / (location_.rate[4] + 1),
+                            "Location_Rate": (location_.rate[1] * location_.rate[4] + final.locationRate) / (location_.rate[4] + 1),
+                            "Organisation_Rate": (location_.rate[2] * location_.rate[4] + final.organisationRate) / (location_.rate[4] + 1),
+                            "Conditions_Rate": (location_.rate[3] * location_.rate[4] + final.conditionsRate) / (location_.rate[4] + 1),
+                            "Site_Name": location_.name,
+                            "Event": event
+                        }
+                        console.log("Avis Envoyé :")
+                        console.log(data)
+                        rateLocation(data);
                     }
                 });
                 // reset stars
@@ -1659,10 +1725,12 @@ function finalRate() {
 function displayRatings(event) {
     // Get location of event clicked
     let location = event.extendedProps.location;
+    console.log(location)
     // in location array, find the event clicked location and check if one note is at 0
     locations.forEach(function (location_) {
         if (location_.name == location.Site_Name) {
-            if (location_.rate.generalRate == 0 || location_.rate.locationRate == 0 || location_.rate.organisationRate == 0 || location_.rate.conditionsRate == 0) {
+            console.log(location_)
+            if (location_.rate[4] == 0) {
                 document.querySelector(".displayRating_container").style.display = "none";
                 document.querySelector(".numberOfRatings").style.display = "none";
 
@@ -1670,11 +1738,11 @@ function displayRatings(event) {
             } else {
                 document.querySelector(".displayRating_container").style.display = "flex";
                 document.querySelector(".numberOfRatings").style.display = "flex";
-                document.querySelector(".general_display").innerHTML = location_.rate.getMeanRate()[0] + "/5";
-                document.querySelector(".location_display").innerHTML = location_.rate.getMeanRate()[1] + "/5";
-                document.querySelector(".orga_display").innerHTML = location_.rate.getMeanRate()[2] + "/5";
-                document.querySelector(".conditions_display").innerHTML = location_.rate.getMeanRate()[3] + "/5";
-                document.querySelector(".numberOfRatings_display").innerHTML = location_.rate.getNumberOfRate() + " avis";
+                document.querySelector(".general_display").innerHTML = Math.round(location_.rate[0] * 10) / 10 + "/5";
+                document.querySelector(".location_display").innerHTML = Math.round(location_.rate[1] * 10) / 10 + "/5";
+                document.querySelector(".orga_display").innerHTML = Math.round(location_.rate[2] * 10) / 10 + "/5";
+                document.querySelector(".conditions_display").innerHTML = Math.round(location_.rate[3] * 10) / 10 + "/5";
+                document.querySelector(".numberOfRatings_display").innerHTML = location_.rate[4] + " avis";
             }
         }
     });

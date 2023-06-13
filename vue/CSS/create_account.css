@@ -849,6 +849,8 @@ body {
   height: auto;
   margin-bottom: 20px;
 }
+.name_container div select,
+.qualifications_container div select,
 .name_container div input,
 .qualifications_container div input {
   width: 200px;
@@ -862,6 +864,8 @@ body {
   outline: none;
   transition: all 0.2s;
 }
+.name_container div select:focus,
+.qualifications_container div select:focus,
 .name_container div input:focus,
 .qualifications_container div input:focus {
   border: 1px solid #f2574a;

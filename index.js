@@ -7,6 +7,9 @@ const {
     body,
     validationResult
 } = require("express-validator");
+const fs = require('fs');
+
+
 
 const app = express();
 const http = require("http").Server(app);
@@ -65,9 +68,8 @@ function getDateFormat(badDate) {
 /* -------------------------------------------------------------------------- */
 /*                                   ROUTES                                   */
 /* -------------------------------------------------------------------------- */
-app.get('/', function (req, res) {
-    res.sendFile(__dirname + "/vue/html/index.html");
-});
+app.get('/', (req, res) => res.sendFile(__dirname + "/vue/html/index.html"));
+
 
 /* --------------------------------- COMMON --------------------------------- */
 app.get('/login', keycloak.protect(), function (req, res) {
@@ -112,7 +114,6 @@ app.get('/auth/dashboard/get_info', keycloak.protect(), function (req, res) {
             Database.getDiveSiteList((allLocations) => {
                 allEvents.forEach(event => {
                     event.Location = allLocations.filter(location => location.Id_Dive_Site === event.Dive_Site_Id_Dive_Site)[0];
-
                 });
                 return res.json({
                     userInfo: username,
@@ -181,7 +182,7 @@ app.post('/auth/planning', keycloak.protect(),
     body("Status").trim().escape(),
     body("Max_Divers").trim().escape(),
     body("Dive_Type").trim().escape(),
-    body("dp").trim().escape(), //mail
+    body("dp").trim().escape().exists(), //mail
     function (req, res) {
         if (!checkUser(req, "CLUB")) return res.sendStatus(401);
         const errors = validationResult(req);
@@ -190,6 +191,7 @@ app.post('/auth/planning', keycloak.protect(),
         });
         console.log("--- Trying to create event --'");
         Database.getUserInfoByMail(req.body.dp, infoDp => {
+            console.log("infoDP : ", infoDp);
             if (infoDp.Diver_Qualification != "P5") {
                 console.log("\t->Error, DP is not P5");
                 return res.json({
@@ -222,6 +224,8 @@ app.post('/auth/planning', keycloak.protect(),
                             comment: "Event already exist"
                         });
                     }
+
+
                     Database.createEvent(req.body, (isInserted) => {
                         if (!isInserted) {
                             console.log("\t->Error, impossible to add Event");
@@ -242,18 +246,117 @@ app.post('/auth/planning', keycloak.protect(),
         });
     });
 
+app.post('/auth/planning/set_rate', keycloak.protect(),
+    body("Site_Name").trim(),
+    body("General_Rate").trim().escape(),
+    body("Location_Rate").trim().escape(),
+    body("Organisation_Rate").trim().escape(),
+    body("Conditions_Rate").trim().escape(),
+    function (req, res) {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(422).json({
+            errors: errors.array()
+        });
+        console.log("--- Trying to rate location ---");
+        Database.getUserInfoByMail(req.kauth.grant.access_token.content.preferred_username, infoDiver => {
+            if (infoDiver === undefined) {
+                console.log("\t->Error, User doesn't exist");
+                return res.json({
+                    rated: false,
+                    comment: "User doesn't exist"
+                })
+            }
+            req.body.Event.Start_Date = getDateFormat(new Date(req.body.Event.Start_Date).toLocaleString());
+            req.body.Event.End_Date = getDateFormat(new Date(req.body.Event.End_Date).toLocaleString());
+
+            Database.getDiveSiteInfoByName({
+                Site_Name: req.body.Site_Name
+            }, (locationInfo) => {
+                if (locationInfo === undefined) {
+                    console.log("\t->Error, Location doesn't exist");
+                    return res.json({
+                        rated: false,
+                        comment: "Location doesn't exist"
+                    })
+                }
+                console.log(req.body.Event);
+                req.body.Event.Dive_Site_Id_Dive_Site = locationInfo.Id_Dive_Site;
+                Database.getEvent(req.body.Event, (event) => {
+                    if (event === undefined) {
+                        console.log("\t->Error, Event doesn't exist");
+                        return res.json({
+                            rated: false,
+                            comment: "Event doesn't exist"
+                        })
+                    }
+                    Database.getRegistration({
+                        Diver_Id_Diver: infoDiver.Id_Diver,
+                        Planned_Dive_Id_Planned_Dive: event.Id_Planned_Dive
+                    }, (registration) => {
+                        if (registration === undefined) {
+                            console.log("\t->Error, User is not register");
+                            return res.json({
+                                rated: false,
+                                comment: "User is not register"
+                            })
+                        }
+                        if (registration.Has_Voted == "1") {
+                            console.log("\t->Error, User has already voted");
+                            return res.json({
+                                rated: false,
+                                comment: "User has already voted"
+                            })
+                        }
+                        Database.modifRegistration({
+                            Has_Voted: true,
+                            Diver_Id_Diver: infoDiver.Id_Diver,
+                            Planned_Dive_Id_Planned_Dive: event.Id_Planned_Dive
+                        }, (modified) => {
+                            if (!modified) {
+                                console.log("\t->Error, impossible to modify registration");
+                                return res.json({
+                                    rated: false,
+                                    comment: "Impossible to modify registration"
+                                })
+                            }
+                            locationInfo.Rate_Number++;
+                            Database.modifDiveSite({
+                                Id_Dive_Site: locationInfo.Id_Dive_Site,
+                                General_Rate: req.body.General_Rate,
+                                Location_Rate: req.body.Location_Rate,
+                                Organisation_Rate: req.body.Organisation_Rate,
+                                Conditions_Rate: req.body.Conditions_Rate,
+                                Rate_Number: locationInfo.Rate_Number
+                            }, (rated) => {
+                                if (!rated) {
+                                    console.log("\t->Error, impossible to rate location");
+                                    return res.json({
+                                        rated: false,
+                                        comment: "Impossible to rate location"
+                                    })
+                                }
+                            });
+                        });
+                    });
+                });
+            });
+
+        });
+    });
+
+
 /* ---------------------------------- READ ---------------------------------- */
 
 app.get('/auth/planning/get_planning', keycloak.protect(), function (req, res) {
     Database.getPlanning((allEvents) => {
         Database.getDiveSiteList((allLocations) => {
             Database.getDiversRegistered((allDivers) => {
-                if (allDivers !== undefined) {
-                    allEvents.forEach(event => {
-                        event.Location = allLocations.filter(location => location.Id_Dive_Site === event.Dive_Site_Id_Dive_Site)[0];
-                        event.Users = allDivers.filter(diver => diver.Planned_Dive_Id_Planned_Dive == event.Id_Planned_Dive);
-                    });
-                }
+                if (allDivers === undefined) allDivers = [];
+                allEvents.forEach(event => {
+                    event.Location = allLocations.filter(location => location.Id_Dive_Site === event.Dive_Site_Id_Dive_Site)[0];
+                    event.Users = allDivers.filter(diver => diver.Planned_Dive_Id_Planned_Dive == event.Id_Planned_Dive);
+                });
+
                 if (checkUser(req, "CLUB")) {
                     Database.getUsersList((allUsers) => {
                         return res.json({
@@ -264,7 +367,6 @@ app.get('/auth/planning/get_planning', keycloak.protect(), function (req, res) {
                     })
                 } else {
                     let username = req.kauth.grant.access_token.content.preferred_username;
-                    // filtre les events pour retirer ceux fermés où l'utilisateur n'est pas inscrit
                     allEvents = allEvents.filter(event => {
                         if (event.Status === "true") {
                             let isRegistered = false;
@@ -285,6 +387,63 @@ app.get('/auth/planning/get_planning', keycloak.protect(), function (req, res) {
         })
     });
 })
+
+app.post('/auth/planning/has_voted', keycloak.protect(),
+    body("Start_Date").trim().escape(),
+    body("End_Date").trim().escape(),
+    body("Diver_Price").trim().escape(),
+    body("Instructor_Price").trim().escape(),
+    body("Site_Name").trim(),
+    body("Comments").trim(),
+    body("Special_Needs").trim(),
+    body("Status").trim().escape(),
+    body("Max_Divers").trim().escape(),
+    body("Dive_Type").trim().escape(),
+
+    function (req, res) {
+        let mail = req.kauth.grant.access_token.content.preferred_username;
+        req.body.Start_Date = getDateFormat(new Date(req.body.Start_Date).toLocaleString());
+        req.body.End_Date = getDateFormat(new Date(req.body.End_Date).toLocaleString());
+        Database.getUserInfoByMail(mail, (userInfo) => {
+            if (userInfo === undefined) return res.json({
+                hasVoted: false,
+                comment: "User doesn't exist"
+            });
+            Database.getDiveSiteInfoByName({
+                Site_Name: req.body.Site_Name
+            }, (locationInfo) => {
+                if (locationInfo === undefined) return res.json({
+                    hasVoted: false,
+                    comment: "Location doesn't exist"
+                });
+                req.body.Dive_Site_Id_Dive_Site = locationInfo.Id_Dive_Site;
+                delete req.body.Site_Name;
+                Database.getEvent(req.body, (eventInfo) => {
+                    if (eventInfo === undefined) return res.json({
+                        hasVoted: false,
+                        comment: "Event doesn't exist"
+                    });
+                    Database.getRegistration({
+                        Diver_Id_Diver: userInfo.Id_Diver,
+                        Planned_Dive_Id_Planned_Dive: eventInfo.Id_Planned_Dive
+                    }, (registration) => {
+                        if (registration === undefined) return res.json({
+                            hasVoted: false,
+                            comment: "User is not register"
+                        });
+                        console.log(registration);
+                        return res.json({
+                            hasVoted: registration.Has_Voted
+                        });
+                    });
+                });
+
+            });
+        });
+    });
+
+
+
 
 /* --------------------------------- UPDATE --------------------------------- */
 app.put('/auth/planning', keycloak.protect(),
@@ -485,7 +644,7 @@ app.post('/auth/planning/registration', keycloak.protect(),
                         Planned_Dive_Id_Planned_Dive: eventInfo.Id_Planned_Dive
                     }, (registration) => {
                         if (registration) {
-                            console.log("\t->Error, User is already register");
+                            console.log(`\t->Error, ${userInfo.Mail} is already register`);
                             return res.json({
                                 registered: false,
                                 comment: "Registration already exist"
@@ -493,7 +652,8 @@ app.post('/auth/planning/registration', keycloak.protect(),
                         }
 
                         Database.getDiversRegistered(allDiversRegistered => {
-                            allDiversRegistered.filter(diverInfo => diverInfo.Planned_Dive_Id_Planned_Dive == eventInfo.Id_Planned_Dive)
+                            if (allDiversRegistered === undefined) allDiversRegistered = [];
+                            allDiversRegistered = allDiversRegistered.filter(diverInfo => diverInfo.Planned_Dive_Id_Planned_Dive == eventInfo.Id_Planned_Dive)
                             if (eventInfo.Max_Divers == allDiversRegistered.length) {
                                 console.log("\t->Error, Max divers reached");
                                 return res.json({
@@ -946,7 +1106,9 @@ app.post("/auth/club/locations", keycloak.protect(),
     body("City_Name").trim(),
     body("Country_Name").trim(),
     body("Additional_Address").trim(),
-    body("Tel_Number").trim().escape().isLength({
+    body("Tel_Number").trim().escape().optional({
+        checkFalsy: true
+    }).isLength({
         min: 10,
         max: 10
     }),
@@ -985,6 +1147,12 @@ app.post("/auth/club/locations", keycloak.protect(),
                     comment: "Location already exist"
                 });
             }
+            req.body.General_Rate = 0;
+            req.body.Location_Rate = 0;
+            req.body.Organisation_Rate = 0;
+            req.body.Conditions_Rate = 0;
+            req.body.Rate_Number = 0;
+            console.log(req.body);
             Database.createDiveSite(req.body, (idLoc) => {
                 if (idLoc === undefined) {
                     console.log("\t->Error, impossible to add Location");
@@ -1025,6 +1193,7 @@ app.post("/auth/club/locations", keycloak.protect(),
             })
         })
     })
+
 
 /* ---------------------------------- READ ---------------------------------- */
 app.get("/auth/club/get_locations", keycloak.protect(), function (req, res) {
@@ -1172,6 +1341,12 @@ app.delete("/auth/club/locations", keycloak.protect(), function (req, res) {
         })
     })
 })
+
+// get the not available page (if browser = firefox for example)
+app.get("/not_available", (req, res) => res.send("not_available, try with another browser"));
+
+// Capture 404 requests
+app.use((req, res) => res.sendFile(__dirname + "/vue/html/error/404.html"));
 
 http.listen(port, hostname, (err) => {
     if (err) console.error(err);

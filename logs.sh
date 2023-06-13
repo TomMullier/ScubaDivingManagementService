@@ -1,1 +1,0 @@
-docker logs -f scubadivingmanagementservice_junia-app-1

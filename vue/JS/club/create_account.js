@@ -95,6 +95,10 @@ function deleteUser(target) {
                 });
 }
 
+function getBlankPP(){}
+
+function getUserPP(user){}
+
 
 
 
@@ -204,7 +208,6 @@ function displayUsers() {
                                 document.querySelector("#phone_show").innerText = phone_clicked;
                                 let get_user = all_user.find(user => user.mail == mail_clicked && user.phone == phone_clicked);
                                 document.querySelector("#name_show").innerText = get_user.firstname + " " + get_user.lastname;
-                                document.querySelector("#profile_show").src = "../img/profile_pictures/" + get_user.firstname + get_user.lastname + get_user.licenceNumber + ".jpg";
                                 document.querySelector("#birthdate_show").innerText = get_user.birthdate.split(" ")[0];
                                 document.querySelector("#licence_show").value = get_user.licenceNumber;
                                 document.querySelector("#diver_qualif_show").value = get_user.diverQualification;
@@ -213,6 +216,12 @@ function displayUsers() {
                                 document.querySelector("#additionnal_qualif_show").value = get_user.additionnalQualification;
                                 document.querySelector("#licence_date_show").value = get_user.licenceExpiration.split(" ")[0];
                                 document.querySelector("#medic_date_show").value = get_user.medicalExpiration.split(" ")[0];
+
+                                try{
+                                        getUserPP(get_user);
+                                }catch(e){
+                                        getBlankPP();
+                                }
                         }
                 });
         });

@@ -15,6 +15,11 @@ CREATE TABLE Dive_Site(
    Additional_Address VARCHAR(256) ,
    Tel_Number VARCHAR(50) ,
    Information_URL VARCHAR(256) ,
+   General_Rate DECIMAL(3,2),
+   Location_Rate DECIMAL(3,2),
+   Organisation_Rate DECIMAL(3,2),
+   Conditions_Rate DECIMAL(3,2),
+   Rate_Number INT,
    CONSTRAINT PK_Dive_Site PRIMARY KEY(Id_Dive_Site)
 );
 #COMMENT ON TABLE Dive_Site IS 'Dive site';
@@ -29,6 +34,10 @@ CREATE TABLE Dive_Site(
 #COMMENT ON COLUMN Dive_Site.Additional_Address IS 'Additoanl addres information like bis, ter, CEDEX and so on. Depending on country mainly';
 #COMMENT ON COLUMN Dive_Site.Tel_Number IS ' Telephon number(s) of diving site';
 #COMMENT ON COLUMN Dive_Site.Information_URL IS 'URL to dive site web site or information.';
+#COMMENT ON COLUMN Dive_Site.General_Rate IS ' General rate of the dive site ';
+#COMMENT ON COLUMN Dive_Site.Location_Rate IS ' Rate of the dive site ';
+#COMMENT ON COLUMN Dive_Site.Organisation_Rate IS ' Organisation rate of the dive site ';
+#COMMENT ON COLUMN Dive_Site.Conditions_Rate IS ' Conditions rate of the dive site ';
 
 CREATE TABLE Diver(
    Id_Diver CHAR(36)  NOT NULL,
@@ -241,6 +250,7 @@ CREATE TABLE Dive_Registration(
    Personal_Comment VARCHAR(1024) ,
    Car_Pooling_Seat_Offered SMALLINT,
    Car_Pooling_Seat_Request CHAR(1) ,
+   Has_Voted BOOLEAN DEFAULT false,
    CONSTRAINT PK_Dive_Registration PRIMARY KEY(Diver_Id_Diver, Planned_Dive_Id_Planned_Dive),
    CONSTRAINT FK_Dive_Registration_Diver FOREIGN KEY(Diver_Id_Diver) REFERENCES Diver(Id_Diver),
    CONSTRAINT FK_Dive_Registration_Planned_Dive FOREIGN KEY(Planned_Dive_Id_Planned_Dive) REFERENCES Planned_Dive(Id_Planned_Dive)
@@ -250,3 +260,4 @@ CREATE TABLE Dive_Registration(
 #COMMENT ON COLUMN Dive_Registration.Personal_Comment IS 'A free area for diver to put any information or comment about his/her participation to the planned dive. Could be for example a proposal for car pooling to go to dive site.';
 #COMMENT ON COLUMN Dive_Registration.Car_Pooling_Seat_Offered IS 'Number of passengers seat offered by diver for car pooling';
 #COMMENT ON COLUMN Dive_Registration.Car_Pooling_Seat_Request IS 'Diver would like to get a car pooling seat. (Y/N)';
+#COMMENT ON COLUMN Dive_Registration.Has_Voted IS 'Diver has rated the dive site';

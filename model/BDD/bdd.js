@@ -192,12 +192,12 @@ class BDD {
     }
 
     modifDiveSite(data, callback) {
-        data.Site_Name = escapeHtml(data.Site_Name);
-        data.Track_Name = escapeHtml(data.Track_Name);
-        data.City_Name = escapeHtml(data.City_Name);
-        data.Country_Name = escapeHtml(data.Country_Name);
-        data.Additional_Address = escapeHtml(data.Additional_Address);
-        data.Information_URL = escapeHtml(data.Information_URL);
+        if (data.Site_name) data.Site_Name = escapeHtml(data.Site_Name);
+        if (data.Track_Name) data.Track_Name = escapeHtml(data.Track_Name);
+        if (data.City_Name) data.City_Name = escapeHtml(data.City_Name);
+        if (data.Country_Name) data.Country_Name = escapeHtml(data.Country_Name);
+        if (data.Additional_Address) data.Additional_Address = escapeHtml(data.Additional_Address);
+        if (data.Information_URL) data.Information_URL = escapeHtml(data.Information_URL);
         const query = 'UPDATE Dive_Site SET ? WHERE Id_Dive_Site = ?'
         this.con.query(query, [data, data.Id_Dive_Site], (err, result) => {
             if (err) {
@@ -211,10 +211,6 @@ class BDD {
 
     deleteDiveSite(data, callback) {
         data.Site_Name = escapeHtml(data.Site_Name);
-        data.City_Name = escapeHtml(data.City_Name);
-        data.Country_Name = escapeHtml(data.Country_Name);
-        data.Additional_Address = escapeHtml(data.Additional_Address);
-        data.Information_URL = escapeHtml(data.Information_URL);
         const query = 'DELETE FROM Dive_Site WHERE ?';
         this.con.query(query, [data], (err, result) => {
             if (err) {
@@ -400,10 +396,23 @@ class BDD {
                 callback(undefined);
             } else {
                 result.forEach(event => {
-                    event.Personal_Comment = desEscapeHtml(event.Personal_Comment)
+                    event.Comments = desEscapeHtml(event.Comments);
+                    event.Special_Needs = desEscapeHtml(event.Special_Needs);
                     event = dateFormat(event);
                 });
                 return callback(result);
+            }
+        })
+    }
+
+    modifRegistration(data, callback) {
+        let query = 'UPDATE Dive_Registration SET ? WHERE Diver_Id_Diver = ? AND Planned_Dive_Id_Planned_Dive = ?'
+        this.con.query(query, [data, data.Diver_Id_Diver, data.Planned_Dive_Id_Planned_Dive], (err, result) => {
+            if (err) {
+                console.log(err);
+                return callback(false)
+            } else {
+                return callback(true);
             }
         })
     }
@@ -465,12 +474,19 @@ function escapeHtml(text) {
 }
 
 function desEscapeHtml(text) {
-    return text
-        .replace("&amp;", /&/g)
-        .replace("&lt;", /</g)
-        .replace("&gt;", />/g)
-        .replace("&quot;", /"/g)
-        .replace("&#039;", /'/g);
+    let newText = "";
+    try {
+        newText = text
+            .replace("&amp;", /&/g)
+            .replace("&lt;", /</g)
+            .replace("&gt;", />/g)
+            .replace("&quot;", /"/g)
+            .replace("&#039;", /'/g);
+    } catch (error) {
+        console.log(error);
+        console.log(text);
+    }
+    return newText;
 }
 
 module.exports = {

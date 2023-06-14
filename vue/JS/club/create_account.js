@@ -252,11 +252,15 @@ var emergencyModal = document.getElementById("emergencyModal");
 
 emergencyButton.addEventListener("click", function () {
         modals.show("emergencyModal", function () {
-                menutoggle.classList.remove('active');
+            menutoggle.classList.remove('active');
         });
         menutoggle.classList.toggle('active');
         menutoggle.classList.toggle('close-modal');
-});
+        document.querySelector("#emergencyModal .download_button").addEventListener("click", function () {
+            location.href = "/auth/incident_rapport"
+            modals.closeCurrent();
+        })
+    });
 
 // let save_buttons = document.querySelectorAll(".save_button_infos");
 

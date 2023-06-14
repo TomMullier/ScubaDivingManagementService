@@ -114,17 +114,13 @@ CREATE TABLE Dive_Team_Composition(
 #COMMENT ON COLUMN Dive_Team_Composition.Additional_Diver IS 'Additionnal diver with specific role of dive guide assistant. Max 1';
 
 CREATE TABLE Max_Depth_for_Qualification(
-   Id_Max_Depth_for_Qualification CHAR(36)  NOT NULL,
    Diver_Qualification CHAR(50)  NOT NULL,
-   Diver_Age SMALLINT,
-   Guided_Diver_Depth SMALLINT,
-   Autonomous_Diver_Depth SMALLINT,
-   CONSTRAINT PK_Max_Depth_for_Qualification PRIMARY KEY(Id_Max_Depth_for_Qualification)
+   Guided_Diver_Depth SMALLINT NOT NULL,
+   Autonomous_Diver_Depth SMALLINT NOT NULL,
+   CONSTRAINT PK_Diver_Qualification PRIMARY KEY(Diver_Qualification)
 );
 #COMMENT ON TABLE Max_Depth_for_Qualification IS 'Max depth allocwed depending on diver age, qualification ...  Example: N2 is PA20 and PE40 hence max guided diver depth is 40 m and max autonomous diver is 20 if diver is at least 16 years old.';
-#COMMENT ON COLUMN Max_Depth_for_Qualification.Id_Max_Depth_for_Qualification IS 'of type GUID stored as char(36). Like 363d5a64-22c2-4b45-a29b-2d2d358e340c';
 #COMMENT ON COLUMN Max_Depth_for_Qualification.Diver_Qualification IS 'Diver qualification';
-#COMMENT ON COLUMN Max_Depth_for_Qualification.Diver_Age IS 'Age of the diver: 8, 10 , 12, 14, 16, 18+ years old';
 #COMMENT ON COLUMN Max_Depth_for_Qualification.Guided_Diver_Depth IS 'Max depth for a guided diver';
 #COMMENT ON COLUMN Max_Depth_for_Qualification.Autonomous_Diver_Depth IS 'Max depth for an autonoumous diver';
 
@@ -257,3 +253,11 @@ CREATE TABLE Dive_Registration(
 #COMMENT ON COLUMN Dive_Registration.Car_Pooling_Seat_Offered IS 'Number of passengers seat offered by diver for car pooling';
 #COMMENT ON COLUMN Dive_Registration.Car_Pooling_Seat_Request IS 'Diver would like to get a car pooling seat. (Y/N)';
 #COMMENT ON COLUMN Dive_Registration.Has_Voted IS 'Diver has rated the dive site';
+
+
+INSERT INTO Max_Depth_for_Qualification (Diver_Qualification, Guided_Diver_Depth, Autonomous_Diver_Depth) VALUES ('P0', 6, 0);
+INSERT INTO Max_Depth_for_Qualification (Diver_Qualification, Guided_Diver_Depth, Autonomous_Diver_Depth) VALUES ('P1', 20, 12);
+INSERT INTO Max_Depth_for_Qualification (Diver_Qualification, Guided_Diver_Depth, Autonomous_Diver_Depth) VALUES ('P2', 40, 20);
+INSERT INTO Max_Depth_for_Qualification (Diver_Qualification, Guided_Diver_Depth, Autonomous_Diver_Depth) VALUES ('P3', 60, 60);
+INSERT INTO Max_Depth_for_Qualification (Diver_Qualification, Guided_Diver_Depth, Autonomous_Diver_Depth) VALUES ('P4', 60, 60);
+INSERT INTO Max_Depth_for_Qualification (Diver_Qualification, Guided_Diver_Depth, Autonomous_Diver_Depth) VALUES ('P5', 60, 60);

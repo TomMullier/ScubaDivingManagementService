@@ -1,5 +1,6 @@
 @import "global.less";
 
+
 html,
 body {
         height: 100vh;
@@ -78,7 +79,8 @@ body {
         }
 }
 
-.button_prec, .button_next{
+.button_prec,
+.button_next {
         background-color: @orange;
         border: none;
         outline: none;
@@ -91,30 +93,35 @@ body {
         margin: 0 10px;
         color: white;
         font-size: 20px;
-        position:absolute;
+        position: absolute;
         top: 50%;
         transform: translateY(-50%);
         cursor: pointer;
         transition: all 0.2s ease-in-out;
         border: 2px solid @orange;
-        i{
+
+        i {
                 transition: transform 0.2s ease-in-out;
         }
-        &:hover{
+
+        &:hover {
                 transform: translateY(-50%) scale(1.1);
                 background-color: white;
                 border: 2px solid @orange;
-                i{
+
+                i {
                         transform: rotate(360deg);
                         color: @orange;
 
                 }
         }
 }
-.button_prec{
+
+.button_prec {
         left: 0;
 }
-.button_next{
+
+.button_next {
         right: 0;
 }
 
@@ -158,24 +165,15 @@ body {
                                 font-family: @body_font;
                                 color: @dark_blue;
                                 text-transform: uppercase;
+                                margin: 0;
+                                margin: auto 0;
                         }
 
-                        div {
-                                display: flex;
-                                width: 50%;
-                                flex-direction: column;
-                                align-items: flex-start;
-                                justify-content: center;
-
-                                p {
-                                        width: 100%;
-                                }
-                        }
 
                         p {
 
                                 height: fit-content;
-                                width: calc(50% - 22px);
+                                width: calc(50% - 0px);
                                 font-size: 15px;
                                 font-family: @body_font;
                                 color: darken(@grey, 10%);
@@ -189,6 +187,18 @@ body {
                                 &.adress_title {
                                         font-size: 20px;
                                         color: @dark_blue;
+                                }
+                        }
+
+                        div {
+                                display: flex;
+                                width: 50%;
+                                flex-direction: column;
+                                align-items: flex-start;
+                                justify-content: center;
+
+                                p {
+                                        width: 100%;
                                 }
                         }
                 }
@@ -215,6 +225,43 @@ body {
                 border-bottom: 2px solid @orange;
         }
 
+        .surfaceSecurity {
+                width: 70%;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 20px;
+                padding: 0 20px;
+
+                p {
+                        font-size: 15px;
+                        font-family: @body_font;
+                        color: @dark_blue;
+                        text-align: center;
+                }
+
+                input {
+                        width: 350px;
+                        height: 30px;
+                        font-size: 15px;
+                        font-family: @body_font;
+                        color: @dark_blue;
+                        border: none;
+                        border: 1px solid @dark_blue;
+                        background-color: transparent;
+                        outline: none;
+                        border-radius: 5px;
+                        padding: 0 5px;
+                        margin-left: 10px;
+
+                        &:focus {
+                                border: 1px solid @orange;
+                        }
+                }
+
+        }
+
         .infos {
                 width: 70%;
                 display: flex;
@@ -235,8 +282,9 @@ body {
                         color: @dark_blue;
                         width: fit-content;
                 }
-                .bold{
-                        color:@orange;
+
+                .bold {
+                        color: @orange;
                         font-weight: bold;
                         margin-right: 5px;
                 }
@@ -245,7 +293,7 @@ body {
         .allDivers {
                 width: 70%;
                 display: flex;
-                flex-direction: row;
+                flex-direction: column;
                 align-items: center;
                 justify-content: center;
 
@@ -257,7 +305,7 @@ body {
                         justify-content: space-between;
                         margin-bottom: 20px;
                         border-bottom: 1px solid @orange;
-                        padding: 0 20px;
+                        padding: 10px 20px;
 
                         div p {
                                 width: 100%;
@@ -281,12 +329,342 @@ body {
 
                                 &:focus {
                                         border: 1px solid @orange;
+              
                                 }
 
                                 &:hover {
                                         cursor: pointer;
                                 }
                         }
+                        div{
+                                display: flex;
+                                flex-direction: row;
+                                align-items: center;
+                                i{
+                                        margin-left: 10px;
+                                }
+                        }
                 }
         }
+}
+
+.palanquee_table {
+        width: 100vw;
+        height: fit-content;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 50px auto;
+
+        .palanquee_item {
+                width: 90%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 20px;
+                padding: 10px;
+                border-radius: 10px;
+                border: 2px solid @orange;
+
+                .palanquee_title {
+                        font-size: 20px;
+                        font-family: @body_font;
+                        color: @dark_blue;
+                        text-transform: uppercase;
+                        margin-bottom: 20px;
+                }
+
+                .infos_container {
+                        display: flex;
+                        flex-direction: row;
+                        align-items: flex-start;
+                        justify-content: flex-start;
+                        width: 100%;
+
+                        .diver_list {
+                                display: flex;
+                                flex-direction: column;
+                                align-items: center;
+                                justify-content: center;
+                                padding:10px;
+                                border-right: 2px solid @orange;
+                                width: 30%;
+                                h2 {
+                                        font-size: 20px;
+                                        font-family: @body_font;
+                                        color: @dark_blue;
+                                        text-transform: uppercase;
+                                        margin-bottom: 20px;
+                                }
+                                
+
+                                .diver_item_container {
+                                        display: flex;
+                                        flex-direction: column;
+                                        align-items: center;
+                                        justify-content: center;
+                                        width: 100%;
+
+                                        .select-input {
+                                                .option_container {
+                                                        display: flex;
+                                                        flex-direction: row;
+                                                        align-items: center;
+                                                        justify-content: space-between;
+                                                        width: 100%;
+                                                        height: fit-content;
+                                                }
+
+                                                .name_item {
+                                                        display: flex;
+                                                        flex-direction: column;
+                                                        align-items: flex-start;
+                                                        justify-content: center;
+                                                        h2 {
+                                                                font-size: 15px;
+                                                                font-family: @body_font;
+                                                                color: @dark_blue;
+                                                                text-transform: none;
+                                                                margin: 0;
+
+                                                        }
+
+                                                        span{
+                                                                font-size: 10px;
+                                                                font-family: @body_font;
+                                                                color: @grey;
+                                                                margin: 0;
+                                                                padding: 0;
+                                                                height: 11px;
+                                                                font-weight: normal;
+                                                                display: none;
+
+                                                        }
+                                                }
+                                                .level{
+                                                        font-size: 15px;
+                                                        font-family: @body_font;
+                                                        color: @dark_blue;
+                                                        padding: 0;
+                                                }
+                                        }
+
+                                        ul {
+                                                height: 100%;
+                                                width: 100%;
+                                                display: flex;
+                                                flex-direction: column;
+
+                                                li,
+                                                a {
+                                                        display: flex;
+                                                        flex-direction: row;
+                                                        align-items: center;
+                                                        justify-content: space-between;
+                                                        width: 100%;
+                                                        height: fit-content;
+                                                        padding: 0;
+                                                        line-height: 1.5;
+
+                                                        .option_container {
+                                                                display: flex;
+                                                                flex-direction: row;
+                                                                align-items: center;
+                                                                justify-content: space-between;
+                                                                width: 100%;
+                                                                height: fit-content;
+                                                        }
+
+                                                        .name_item {
+                                                                display: flex;
+                                                                flex-direction: column;
+                                                                align-items: flex-start;
+                                                                justify-content: center;
+
+                                                                h2 {
+                                                                        font-size: 15px;
+                                                                        font-family: @body_font;
+                                                                        color: @dark_blue;
+                                                                        text-transform: none;
+                                                                        margin: 0;
+
+                                                                }
+
+                                                                span {
+                                                                        font-size: 10px;
+                                                                        font-family: @body_font;
+                                                                        color: darken(@grey, 10%);
+                                                                        padding: 0;
+                                                                        height: 11px;
+                                                                        font-weight: normal;
+
+                                                                }
+                                                        }
+                                                }
+                                                .level{
+                                                        font-size: 15px;
+                                                        font-family: @body_font;
+                                                        color: @dark_blue;
+                                                        padding: 0;
+                                                }
+
+                                                a {
+                                                        padding: 10px;
+                                                }
+                                        }
+
+
+
+
+                                }
+
+                        }
+                        .fonction_container{
+                                display: flex;
+                                flex-direction: column;
+                                align-items: center;
+                                justify-content: center;
+                                padding:10px;
+                                border-right: 2px solid @orange;
+                                width:30%;
+                                h2 {
+                                        font-size: 20px;
+                                        font-family: @body_font;
+                                        color: @dark_blue;
+                                        text-transform: uppercase;
+                                        margin-bottom: 20px;
+                                }
+                                .fonction_select_container{
+                                        display: flex;
+                                        flex-direction: column;
+                                        align-items: center;
+                                        justify-content: center;
+                                        width:100%;
+
+                                }
+                                .select .input{
+                                        display:none;
+                                }
+                                .diver_item{
+                                        width:100%;
+                                }
+                        }
+
+                        .param_container{
+                                display: flex;
+                                flex-direction: column;
+                                align-items: center;
+                                justify-content: center;
+                                width: 40%;
+                                padding:10px 10px 10px 5px;
+                                h2{
+                                        font-size: 20px;
+                                        font-family: @body_font;
+                                        color: @dark_blue;
+                                        text-transform: uppercase;
+                                        margin-bottom: 3px;
+                                }
+                                .contain{
+                                        display:flex;
+                                        flex-direction:row;
+                                        align-items:center;
+                                        justify-content:space-between;
+                                        width:100%;
+                                        .prevu{
+                                                display:flex;
+                                                flex-direction:column;
+                                                align-items:center;
+                                                justify-content:center;
+                                                width:50%;
+
+                                                margin-left: 5px;
+                                                h2{
+                                                        font-size: 15px;
+                                                        font-family: @body_font;
+                                                        color: @dark_blue;
+                                                        text-transform: none;
+                                                        margin: 0;
+                                                }
+                                                .input{
+                                                        width: unset;
+                                                        width: 100%;
+                                                        margin-bottom: 5px;
+                                                        .button-group{
+                                                                display: none;
+                                                        }
+                                                }
+
+                                        }
+                                }
+                                .contain2{
+                                        display: flex;
+                                        flex-direction: column;
+                                        align-items: center;
+                                        justify-content: center;
+                                        width: 100%;
+                                        padding-top: 5px;
+                                        padding-left: 5px;
+                                        margin-top:20px;
+
+                                        h2{
+                                                font-size: 15px;
+                                                font-family: @body_font;
+                                                color: @dark_blue;
+                                                text-transform: none;
+                                                margin: 0;
+                                        }
+                                        .input{
+                                                width: unset;
+                                                width: 100%;
+                                                margin-bottom: 5px;
+                                                .button-group{
+                                                        display: none;
+                                                }
+                                        }
+                                }
+                        }
+                        .select{
+                                margin-bottom: 5px;
+                                a{
+                                        padding: 0;
+                                        margin: 0;
+                                        padding: 0 10px;
+                                }
+                        }
+                }
+                .time_container{
+                        width:100%;
+                        display:flex;
+                        flex-direction:row;
+                        align-items:center;
+                        justify-content:center;
+                        margin-top: 10px;
+                        .time{
+                                width:fit-content;
+                                display:flex;
+                                flex-direction:column;
+                                align-items:center;
+                                justify-content:center;
+                                margin: 0 50px;
+                                h2{
+                                        font-size: 15px;
+                                        font-family: @body_font;
+                                        color: @dark_blue;
+                                        text-transform: none;
+                                        margin: 0;
+                                }
+                                .input{
+                                        width: unset;
+                                        width: 100%;
+                                        margin-bottom: 5px;
+                                        .button-group{
+                                                display: none;
+                                        }
+                                }
+                        }
+                }
+        }
+
 }

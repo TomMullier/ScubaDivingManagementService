@@ -1,15 +1,17 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="../../CSS/global.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link rel="stylesheet" href="../../CSS/modal.css" />
     <link rel="stylesheet" href="../../CSS/palanquee.css">
     <script src="https://kit.fontawesome.com/b89837f3ad.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.metroui.org.ua/v4/css/metro-all.min.css">
+
     <title>Feuille de palanquée - 12/08/2012</title>
 </head>
 
@@ -49,9 +51,8 @@
                         <h2>Lieu de la plongée : </h2>
                         <div>
                             <p class="adress_title">La Ciotat</p>
-                            <p>21 rue de Vauban</p>
-                            <p>13600 La Ciotat</p>
-                            <p>France</p>
+                            <p class="adress">21 rue de Vauban</p>
+                            
                         </div>
                     </div>
                 </div>
@@ -59,10 +60,15 @@
             <!-- !PAGE 2 -->
             <section class="divers">
                 <div class="DP_diver">
-                    Directeur de Plongée : Marcel Campion
+                    Directeur de Plongée : <span style="margin-left:5px" class="DP_name">Marcel Campion</span>
+                </div>
+                <div class="surfaceSecurity">
+                    <p>Surveillant de surface :</p>
+                    <input type="text" name="" placeholder="Surveillant">
                 </div>
                 <div class="infos">
-                    <div class="number_divers"><span class="bold">8 plongeurs</span> (possibilité de modifier leur niveau le temps de la plongée uniquement)</div>
+                    <div class="number_divers"><span class="bold number_divers_">8 plongeurs</span> (possibilité de modifier leur
+                        niveau le temps de la plongée uniquement)</div>
                 </div>
                 <div class="allDivers">
                     <div class="diver_item">
@@ -84,6 +90,151 @@
                     </div>
                 </div>
             </section>
+            <!-- !PAGE 3 -->
+            <section class="palanquee_table">
+                <div class="palanquee_item">
+                    <div class="palanquee_title">
+                        <h2>Palanquée 1</h2>
+                    </div>
+                    <div class="infos_container">
+                        <div class="diver_list">
+                            <h2>Plongeurs</h2>
+                            <div class="diver_item_container">
+                                <select data-role="select" name="" id="" class="diver_item">
+                                    <option value="">Sélectionnez un plongeur</option>
+                                    <option value="" data-template='<div class="option_container">
+                                        <div class="name_item">
+                                            <h2>Mich</h2>
+                                            <span>michel.douebf@odeiher.fr</span>
+                                        </div>
+                                        <div class="level">P4</div>
+                                    </div>'>[P4] Michel Dupont de Ligones</option>
+                                   
+                                </select>
+                                <select data-role="select" name="" id="" class="diver_item">
+                                    <option value="">Sélectionnez un plongeur</option>
+                                    <option value="" data-template='<div class="option_container">
+                                        <div class="name_item">
+                                            <h2>Mich</h2>
+                                            <span>michel.douebf@odeiher.fr</span>
+                                        </div>
+                                        <div class="level">P4</div>
+                                    </div>'>[P4] Michel Dupont de Ligones</option>
+                                   
+                                </select>
+                                <select data-role="select" name="" id="" class="diver_item">
+                                    <option value="">Sélectionnez un plongeur</option>
+                                    <option value="" data-template='<div class="option_container">
+                                        <div class="name_item">
+                                            <h2>Mich</h2>
+                                            <span>michel.douebf@odeiher.fr</span>
+                                        </div>
+                                        <div class="level">P4</div>
+                                    </div>'>[P4] Michel Dupont de Ligones</option>
+                                   
+                                </select>
+                                <select data-role="select" name="" id="" class="diver_item">
+                                    <option value="">Sélectionnez un plongeur</option>
+                                    <option value="" data-template='<div class="option_container">
+                                        <div class="name_item">
+                                            <h2>Mich</h2>
+                                            <span>michel.douebf@odeiher.fr</span>
+                                        </div>
+                                        <div class="level">P4</div>
+                                    </div>'>[P4] Michel Dupont de Ligones</option>
+                                   
+                                </select>
+                                <select data-role="select" name="" id="" class="diver_item">
+                                    <option value="">Sélectionnez un plongeur</option>
+                                    <option value="" data-template='<div class="option_container">
+                                        <div class="name_item">
+                                            <h2>Mich</h2>
+                                            <span>michel.douebf@odeiher.fr</span>
+                                        </div>
+                                        <div class="level">P4</div>
+                                    </div>'>[P4] Michel Dupont de Ligones</option>
+                                   
+                                </select>
+                                <select data-role="select" name="" id="" class="diver_item">
+                                    <option value="">Sélectionnez un GP</option>
+                                    <option value="" data-template='<div class="option_container">
+                                        <div class="name_item">
+                                            <h2>Mich</h2>
+                                            <span>michel.douebf@odeiher.fr</span>
+                                        </div>
+                                        <div class="level">P4</div>
+                                    </div>'>[P4] Michel Dupont de Ligones</option>
+                                   
+                                </select>
+                            </div>
+                        </div>
+                        <div class="fonction_container">
+                            <h2>Fonction</h2>
+                            <div class="fonction_select_container">
+                                <select data-role="select" name="" id="" class="diver_item">$
+                                    <option value="">Sélectionnez une fonction</option>
+                                    <option value="">Plongeur</option>
+                                    <option value="">GP</option>
+                                </select>
+                                <select data-role="select" name="" id="" class="diver_item">$
+                                    <option value="">Sélectionnez une fonction</option>
+                                    <option value="">Plongeur</option>
+                                    <option value="">GP</option>
+                                </select>
+                                <select data-role="select" name="" id="" class="diver_item">$
+                                    <option value="">Sélectionnez une fonction</option>
+                                    <option value="">Plongeur</option>
+                                    <option value="">GP</option>
+                                </select>
+                                <select data-role="select" name="" id="" class="diver_item">$
+                                    <option value="">Sélectionnez une fonction</option>
+                                    <option value="">Plongeur</option>
+                                    <option value="">GP</option>
+                                </select>
+                                <select data-role="select" name="" id="" class="diver_item">$
+                                    <option value="">Sélectionnez une fonction</option>
+                                    <option value="">Plongeur</option>
+                                    <option value="">GP</option>
+                                </select>
+                                <select data-role="select" name="" id="" class="diver_item">$
+                                    <option value="">GP</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="param_container">
+                            <h2>Paramètres</h2>
+                            <div class="contain">
+                                <div class="prevu">
+                                    <h2>Prévus</h2>
+                                    <input type="number" data-role="input" data-prepend="Profondeur : " data-append="m">
+                                    <input type="time" data-role="input" data-prepend="Temps : " data-append="min">
+                                </div>
+                                <div class="prevu">
+                                    <h2>Réels</h2>
+                                    <input type="number" data-role="input" data-prepend="Profondeur : " data-append="m">
+                                    <input type="time" data-role="input" data-prepend="Temps : " data-append="min">
+                                </div>
+                            </div>
+                            <div class="contain2">
+                                <h2>Paliers</h2>
+                                <input type="number" data-role="input" data-prepend="3m : " data-append="min">
+                                <input type="number" data-role="input" data-prepend="6m : " data-append="min">
+                                <input type="number" data-role="input" data-prepend="9m : " data-append="min">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="time_container">
+                        <div class="time">
+                            <h2>Heure de départ</h2>
+                            <input type="time" data-role="input">
+                        </div>
+                        <div class="time">
+                            <h2>Heure de retour</h2>
+                            <input type="time" data-role="input">
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
     </div>
     <div class="scrollDots">
@@ -97,8 +248,6 @@
     <div class="button_next">
         <i class="fas fa-chevron-right"></i>
     </div>
-
-
 
 
 
@@ -119,9 +268,29 @@
 
             <div class="top">
                 <h1 id="txt_title" class="title">APPEL SOS</h1>
-                <h3>Appuyez une nouvelle fois pour demander du secours</h3>
-                <h3>Tap once again to call for emergency help</h3>
             </div>
+            <div class="useful_numbers">
+                <div>
+                    <h3>Pompiers</h3>
+                    <a href=""> <i class="fas fa-phone"></i>18</a>
+                </div>
+                <div>
+                    <h3>Samu</h3>
+                    <a href=""> <i class="fas fa-phone"></i>15</a>
+                </div>
+                <div>
+                    <h3>Police</h3>
+                    <a href=""> <i class="fas fa-phone"></i>17</a>
+                </div>
+                <div>
+                    <h3>Numéro d'urgence européen</h3>
+                    <a href=""> <i class="fas fa-phone"></i>112</a>
+                </div>
+                <div class="download_button">
+                    <h3>Télécharger le rapport d'incident</h3>
+                </div>
+            </div>
+
             <div id="txt_descr" class="fields-container">
                 <h3>
                     <a id="callButton"><i class="fa-solid fa-truck-medical"></i></a>
@@ -130,8 +299,10 @@
         </modal>
     </div>
 
+
     <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.metroui.org.ua/v4/js/metro.min.js"></script>
     <script src="../../JS/modal.js"></script>
     <script type=module src="../../JS//dp/palanquee.js"></script>
 </body>

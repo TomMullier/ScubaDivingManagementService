@@ -157,9 +157,79 @@ body {
                 margin:0;
             }
         }
+        .useful_numbers{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            width: fit-content;
+            div{
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-direction: row;
+                margin-bottom: 10px;
+                a{
+                    color: @dark_blue;
+                    font-size: 15px;
+                    text-transform: uppercase;
+                    font-family: @body_font;
+                    text-align: center;
+                    align-self: center;
+                    margin:0;
+                    margin-right: 10px;
+                    text-decoration: none;
+                    transition: 0.2s;
+                    margin:auto 0;
+                    &:hover{
+                        color: white;
+                    }
+                }
+                i{
+                    font-size: 15px;
+                    margin:auto 0;
+                    margin-right: 5px;
+                }
+                h3{
+                    color: @dark_blue;
+                    font-size: 15px;
+                    text-transform: uppercase;
+                    font-family: @body_font;
+                    text-align: center;
+                    align-self: center;
+                    margin:0;
+                    margin-right: 10px;
+                }
+            }
+            .download_button{
+                background-color: @orange;
+                border: white 2px solid;
+                outline: none;
+                padding: 20px 20px;
+                border-radius: 25px;
+                color: white;
+                font-family: @body_font;
+                font-size: 20px;
+                text-transform: uppercase;
+                cursor: pointer;
+                margin-top: 20px;
+                transition: 0.2s;
+                h3{
+                    margin: 0;
+                color: white;
+                    font-weight: bold;
+                }
+                &:hover {
+                    background-color: @orange;
+                    color: @orange;
+                }
+            }
+        }
 
         #txt_descr {
-            margin-top: 50px;
+            margin-top: 70px;
 
             #callButton {
                 background-color: @orange;
@@ -172,7 +242,7 @@ body {
                 font-size: 100px;
                 text-transform: uppercase;
                 cursor: pointer;
-                margin-top: 20px;
+                margin-top: 40px;
                 transition: 0.2s;
                 animation: Blink 1s both infinite;
 

@@ -819,6 +819,10 @@ emergencyButton.addEventListener("click", function () {
     });
     menutoggle.classList.toggle('active');
     menutoggle.classList.toggle('close-modal');
+    document.querySelector("#emergencyModal .download_button").addEventListener("click", function () {
+        location.href = "/auth/incident_rapport"
+        modals.closeCurrent();
+    })
 });
 
 

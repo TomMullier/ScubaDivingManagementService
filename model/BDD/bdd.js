@@ -154,6 +154,7 @@ class BDD {
 
 
     getDiveSite(data, callback) {
+        if (data.Site_name) data.Site_Name = escapeHtml(data.Site_Name);
         const query = 'SELECT * FROM Dive_Site WHERE ?';
         this.con.query(query, [data], (err, result) => {
             if (err || !result[0]) {
@@ -454,7 +455,7 @@ class BDD {
     /*                                    DIVE                                    */
     /* -------------------------------------------------------------------------- */
 
-    createPalanquee(data, callback) {
+    createDive(data, callback) {
         data.Id_Dive = uuidv4();
         data.Comments = escapeHtml(data.Comments);
         data.Surface_Security = escapeHtml(data.Surface_Security);
@@ -469,7 +470,7 @@ class BDD {
         })
     }
 
-    getPalanquee(data, callback) {
+    getDive(data, callback) {
         const query = 'SELECT * FROM Dive WHERE ?';
         this.con.query(query, data, (err, result) => {
             if (err || !result[0]) {
@@ -480,6 +481,22 @@ class BDD {
                 result[0].Surface_Security = desEscapeHtml(result[0].Surface_Security);
                 result[0] = dateFormat(result[0]);
                 return callback(result[0]);
+            }
+        })
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*                                  MAX DEPTH                                 */
+    /* -------------------------------------------------------------------------- */
+
+    getMaxDepth(callback) {
+        const query = 'SELECT * FROM Max_Depth_for_Qualification';
+        this.con.query(query, (err, result) => {
+            if (err || !result[0]) {
+                if (err) console.log(err);
+                callback(undefined);
+            } else {
+                return callback(result);
             }
         })
     }

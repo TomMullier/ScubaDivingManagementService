@@ -70,6 +70,42 @@ function getDateFormat(badDate) {
     return year + "-" + month + "-" + day + " " + hour;
 }
 
+function cropToSquare(imagePath) {
+    return new Promise((resolve, reject) => {
+        Sharp(imagePath)
+            .metadata()
+            .then(metadata => {
+                const {
+                    width,
+                    height
+                } = metadata;
+                const size = Math.min(width, height);
+                const x = Math.floor((width - size) / 2);
+                const y = Math.floor((height - size) / 2);
+
+                let newPath = imagePath.replace("TOCROP", "");
+                Sharp(imagePath)
+                    .extract({
+                        left: x,
+                        top: y,
+                        width: size,
+                        height: size
+                    })
+                    .resize(500) // Définissez ici la taille souhaitée du carré
+                    .toFile(newPath, (err, info) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(info);
+                        }
+                    });
+            })
+            .catch(err => {
+                reject(err);
+            });
+    });
+}
+
 /* -------------------------------------------------------------------------- */
 /*                                   ROUTES                                   */
 /* -------------------------------------------------------------------------- */
@@ -127,7 +163,7 @@ app.post('/auth/upload_pp', keycloak.protect(), function (req, res) {
                 .catch(err => {
                     console.error('Erreur lors du recadrage de l\'image:', err);
                 });
-                
+
 
 
 
@@ -135,42 +171,6 @@ app.post('/auth/upload_pp', keycloak.protect(), function (req, res) {
         return res.redirect('/auth/user/account');
     });
 })
-
-function cropToSquare(imagePath) {
-    return new Promise((resolve, reject) => {
-        Sharp(imagePath)
-        .metadata()
-        .then(metadata => {
-            const {
-                width,
-                height
-            } = metadata;
-            const size = Math.min(width, height);
-            const x = Math.floor((width - size) / 2);
-            const y = Math.floor((height - size) / 2);
-            
-            let newPath = imagePath.replace("TOCROP", "");
-            Sharp(imagePath)
-            .extract({
-                left: x,
-                        top: y,
-                        width: size,
-                        height: size
-                    })
-                    .resize(500) // Définissez ici la taille souhaitée du carré
-                    .toFile(newPath, (err, info) => {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            resolve(info);
-                        }
-                    });
-            })
-            .catch(err => {
-                reject(err);
-            });
-    });
-}
 
 app.post('/auth/user_pp', keycloak.protect(), function (req, res) {
     let userMail = new String(req.body.mail);
@@ -791,7 +791,7 @@ app.post('/auth/planning/registration', keycloak.protect(),
     });
 
 /* --------------------------------- DELETE --------------------------------- */
-app.delete('/auth/planning/registration', keycloak.protect(), function (req, res) { //! A MERGE
+app.delete('/auth/planning/registration', keycloak.protect(), function (req, res) {
     let username = req.kauth.grant.access_token.content.preferred_username;
 
     req.body.Start_Date = getDateFormat(new Date(req.body.Start_Date).toLocaleString());
@@ -898,7 +898,7 @@ app.delete('/auth/planning/registration/all', keycloak.protect(), function (req,
             }
             Database.deleteAllRegistration(event.Id_Planned_Dive, deleted => {
                 if (deleted) {
-                    console.log("\t->All registrations deleted");
+                    console.log("\t->All registrations deleted"); //! A MERGE
                     return res.json({
                         deleted: true,
                         comment: "All registrations deleted"
@@ -952,12 +952,16 @@ app.get('/auth/user/account/get_info', keycloak.protect(), function (req, res) {
 /* -------------------------------------------------------------------------- */
 /*                                  PALANQUEE                                 */
 /* -------------------------------------------------------------------------- */
-// app.get('/auth/dp/scuba_file', keycloak.protect(), function (req, res) {                                         //TODO
-//     if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
-//     res.sendFile(__dirname + "/vue/html/dp/scuba_file.html", {headers: {'userType': 'dp'}});
-// })
+app.get('/auth/dp/palanquee', keycloak.protect(), function (req, res) {
+    if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
+    res.sendFile(__dirname + "/vue/html/dp/palanquee.html", {
+        headers: {
+            'userType': 'dp'
+        }
+    });
+})
 
-// app.get('/auth/dp/incident_rapport', keycloak.protect(), function (req, res) {                                   //TODO
+// app.get('/auth/dp/incident_rapport', keycloak.protect(), function (req, res) {
 //     if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
 //     res.download(__dirname + "/vue/rapport_incident.pdf", {headers: { 'userType': 'dp' }});
 // })

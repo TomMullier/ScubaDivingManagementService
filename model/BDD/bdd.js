@@ -153,7 +153,7 @@ class BDD {
     }
 
 
-    getDiveSiteInfoByName(data, callback) {
+    getDiveSite(data, callback) {
         const query = 'SELECT * FROM Dive_Site WHERE ?';
         this.con.query(query, [data], (err, result) => {
             if (err || !result[0]) {
@@ -168,26 +168,6 @@ class BDD {
                 result[0].Information_URL = desEscapeHtml(result[0].Information_URL);
                 callback(result[0]);
             }
-        })
-    }
-
-    async getDiveSiteInfoById(data, callback) {
-        return new Promise((resolve, reject) => {
-            const query = 'SELECT * FROM Dive_Site WHERE ?';
-            this.con.query(query, [data], (err, result) => {
-                if (err || !result[0]) {
-                    if (err) console.log(err);
-                    callback(undefined);
-                } else {
-                    result[0].Site_Name = desEscapeHtml(result[0].Site_Name);
-                    result[0].Track_Name = desEscapeHtml(result[0].Track_Name);
-                    result[0].City_Name = desEscapeHtml(result[0].City_Name);
-                    result[0].Country_Name = desEscapeHtml(result[0].Country_Name);
-                    result[0].Additional_Address = desEscapeHtml(result[0].Additional_Address);
-                    result[0].Information_URL = desEscapeHtml(result[0].Information_URL);
-                    callback(result[0]);
-                }
-            })
         })
     }
 
@@ -237,6 +217,20 @@ class BDD {
                 callback(false);
             } else {
                 callback(true);
+            }
+        })
+    }
+
+    getEmergencyPlan(data, callback) {
+        const query = 'SELECT * FROM Emergency_Plan WHERE ?';
+        this.con.query(query, [data], (err, result) => {
+            if (err || !result[0]) {
+                if (err) console.log(err);
+                callback(undefined);
+            } else {
+                result[0].Emergency_Plan = desEscapeHtml(result[0].Emergency_Plan);
+                result[0].Post_Accident_Procedure = desEscapeHtml(result[0].Post_Accident_Procedure);
+                callback(result[0]);
             }
         })
     }
@@ -308,6 +302,21 @@ class BDD {
         data.Special_Needs = escapeHtml(data.Special_Needs);
         const query = 'SELECT * FROM Planned_Dive WHERE Start_Date = ? AND End_Date = ? AND Diver_Price = ? AND Instructor_Price = ? AND Comments = ? AND Special_Needs = ? AND Status = ? AND Max_Divers = ? AND Dive_Type = ? AND Dive_Site_Id_Dive_Site = ?';
         this.con.query(query, [data.Start_Date, data.End_Date, data.Diver_Price, data.Instructor_Price, data.Comments, data.Special_Needs, (data.Status + ""), data.Max_Divers, data.Dive_Type, data.Dive_Site_Id_Dive_Site], (err, result) => {
+            if (err || !result[0]) {
+                if (err) console.log(err);
+                callback(undefined);
+            } else {
+                result[0] = dateFormat(result[0]);
+                result[0].Comments = desEscapeHtml(result[0].Comments);
+                result[0].Special_Needs = desEscapeHtml(result[0].Special_Needs);
+                return callback(result[0]);
+            }
+        })
+    }
+
+    getEventById(data, callback) {
+        const query = 'SELECT * FROM Planned_Dive WHERE Id_Planned_Dive = ?';
+        this.con.query(query, data, (err, result) => {
             if (err || !result[0]) {
                 if (err) console.log(err);
                 callback(undefined);
@@ -437,6 +446,40 @@ class BDD {
                 callback(false);
             } else {
                 callback(true);
+            }
+        })
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*                                    DIVE                                    */
+    /* -------------------------------------------------------------------------- */
+
+    createPalanquee(data, callback) {
+        data.Id_Dive = uuidv4();
+        data.Comments = escapeHtml(data.Comments);
+        data.Surface_Security = escapeHtml(data.Surface_Security);
+        let query = 'INSERT INTO Dive SET ?';
+        this.con.query(query, [data], (err, result) => {
+            if (err) {
+                console.log(err);
+                callback(false);
+            } else {
+                callback(true);
+            }
+        })
+    }
+
+    getPalanquee(data, callback) {
+        const query = 'SELECT * FROM Dive WHERE ?';
+        this.con.query(query, data, (err, result) => {
+            if (err || !result[0]) {
+                if (err) console.log(err);
+                callback(undefined);
+            } else {
+                result[0].Comments = desEscapeHtml(result[0].Comments);
+                result[0].Surface_Security = desEscapeHtml(result[0].Surface_Security);
+                result[0] = dateFormat(result[0]);
+                return callback(result[0]);
             }
         })
     }

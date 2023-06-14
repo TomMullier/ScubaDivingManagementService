@@ -1,14 +1,139 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="stylesheet" href="../../CSS/global.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="../../CSS/modal.css" />
+    <link rel="stylesheet" href="../../CSS/palanquee.css">
+    <script src="https://kit.fontawesome.com/b89837f3ad.js" crossorigin="anonymous"></script>
+    <title>Feuille de palanquée - 12/08/2012</title>
 </head>
+
 <body>
-    <h1>Account infos</h1>
-    <a href="/auth/dp/incident_rapport">Rapport d'incident</a>
-    <script type="module" src="../../js/dp/scuba_file.js"></script>
+    <div class="menu_button_container">
+        <div class="toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+    <div id="menutoggle"></div>
+    <button id="emergencyButton"><i class="fa-solid fa-truck-medical"></i></button>
+    <div class="loading_animation">
+        <img src="../../img/double_loading.svg" alt="">
+        <p>Chargement...</p>
+    </div>
+    <div class="title_container">
+        <h1>Plannification des plongées</h1>
+    </div>
+
+
+    <div class="scroll">
+        <div>
+            <!--! PAGE 1  -->
+            <section class="diveInfos">
+                <div class="plongeeInfos">
+                    <div class="date">
+                        <h2>Date de la plongée : </h2>
+                        <p>12/08/2012</p>
+                    </div>
+                    <div class="heure">
+                        <h2>Heure de la plongée : </h2>
+                        <p>12h00</p>
+                    </div>
+                    <div class="location">
+                        <h2>Lieu de la plongée : </h2>
+                        <div>
+                            <p class="adress_title">La Ciotat</p>
+                            <p>21 rue de Vauban</p>
+                            <p>13600 La Ciotat</p>
+                            <p>France</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- !PAGE 2 -->
+            <section class="divers">
+                <div class="DP_diver">
+                    Directeur de Plongée : Marcel Campion
+                </div>
+                <div class="infos">
+                    <div class="number_divers"><span class="bold">8 plongeurs</span> (possibilité de modifier leur niveau le temps de la plongée uniquement)</div>
+                </div>
+                <div class="allDivers">
+                    <div class="diver_item">
+                        <div>
+                            <p>Marcel Campion</p>
+                        </div>
+                        <div>
+                            <p>marcel.campion@gmail.com</p>
+                        </div>
+                        <div>
+                            <p>06 12 34 56 78</p>
+                        </div>
+                        <div>
+                            <select name="" id="" class="diver_level">
+                                <option value="P1">P1</option>
+                                <option value="P2">P2</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    <div class="scrollDots">
+        <div class="dot active"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+    </div>
+    <div class="button_prec" style="display:none;opacity:0;">
+        <i class="fas fa-chevron-left"></i>
+    </div>
+    <div class="button_next">
+        <i class="fas fa-chevron-right"></i>
+    </div>
+
+
+
+
+
+    <div id="modals" style="display:flex;">
+        <modal id="menuModal">
+            <div class="menu_content">
+                <a href="/auth/dashboard">Tableau de Bord</a>
+                <a href="/auth/planning">Plannification</a>
+                <a class=user_only href="/auth/user/account">Mon profil</a>
+                <a class=club_only href="/auth/club/locations">Liste des Lieux</a>
+                <a class=club_only href="/auth/club/club_members">Liste des Utilisateurs</a>
+            </div>
+            <div class="logout_button">
+                <a href="/logout">Déconnexion</a>
+            </div>
+        </modal>
+        <modal id="emergencyModal">
+
+            <div class="top">
+                <h1 id="txt_title" class="title">APPEL SOS</h1>
+                <h3>Appuyez une nouvelle fois pour demander du secours</h3>
+                <h3>Tap once again to call for emergency help</h3>
+            </div>
+            <div id="txt_descr" class="fields-container">
+                <h3>
+                    <a id="callButton"><i class="fa-solid fa-truck-medical"></i></a>
+                </h3>
+            </div>
+        </modal>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="../../JS/modal.js"></script>
+    <script type=module src="../../JS//dp/palanquee.js"></script>
 </body>
+
 </html>

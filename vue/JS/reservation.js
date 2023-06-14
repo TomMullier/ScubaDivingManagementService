@@ -15,8 +15,6 @@ import {
 import {
     Location
 } from "./class/Location.js";
-// import { cs } from './@fullcalendar/core/internal-common.js';
-// import { set } from 'express/lib/response.js';
 
 /* -------------------------------------------------------------------------- */
 /*                              GLOBAL VARIABLES                              */
@@ -71,7 +69,6 @@ fetch('/auth/user/account/get_info', {
             me = res.username.split("@")[0];
         }
         setUserInfos();
-
     })
 
 /* ------------------------------ GET PLANNING ------------------------------ */
@@ -99,7 +96,7 @@ fetch('/auth/planning/get_planning', {
                 e.durationEditable = true;
                 e.resizableFromStart = true;
                 e.dropable = true;
-            } else{
+            } else {
                 e.startEditable = false;
                 e.durationEditable = false;
                 e.resizableFromStart = false;
@@ -318,6 +315,22 @@ function hasVoted(event) {
         })
 }
 
+function editPalanquee(event) {
+    fetch('/auth/planning/edit_palanquee', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(event)
+        }).then(res => res.json())
+        .then(res => {
+            console.log(res)
+            if (res.created) window.location.href = '/auth/dp/palanquee'
+            else {
+                console.log(res.comment)
+            }
+        })
+}
 
 
 
@@ -493,7 +506,8 @@ function setEvents(ev_) {
                 button.style.display = "flex";
                 document.querySelector(".rating").style.display = "none";
             }
-            if (new Date(eventClicked.start) <= new Date() && my_role == "dp") {
+            //! ATTENTION CONDITION A REFAIRE
+            if (my_role == "dp") {
                 document.querySelector(".edit_rapport").style.display = "flex";
             } else {
                 document.querySelector(".edit_rapport").style.display = "none";
@@ -813,15 +827,19 @@ emergencyButton.addEventListener("click", function () {
 
 let rapport_button = document.querySelector(".edit_rapport");
 rapport_button.addEventListener("click", function () {
-    modals.closeCurrent();
-    setTimeout(function () {
-        modals.show("dive_rapport", function () {
-            menutoggle.classList.remove('active');
-        });
-        menutoggle.classList.toggle('active');
-        menutoggle.classList.toggle('close-modal');
-    }, 500);
-    document.querySelector(".title_rapport_plannif").innerHTML = "Plannification " + eventClicked.title;
+    let event = {
+        Start_Date: eventClicked.start,
+        End_Date: eventClicked.end,
+        Diver_Price: eventClicked.extendedProps.divePrice,
+        Instructor_Price: eventClicked.extendedProps.InstructorPrice,
+        Special_Needs: eventClicked.extendedProps.needs,
+        Status: eventClicked.extendedProps.open,
+        Max_Divers: eventClicked.extendedProps.max,
+        Dive_Type: eventClicked.extendedProps.diveType,
+        Comments: eventClicked.extendedProps.comment,
+        Site_Name: eventClicked.extendedProps.location.Site_Name,
+    }
+    editPalanquee(event);
 });
 
 //! EVENT CREATION

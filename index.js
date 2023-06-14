@@ -311,7 +311,7 @@ app.post('/auth/planning', keycloak.protect(),
 
             req.body.Start_Date = getDateFormat(new Date(req.body.Start_Date));
             req.body.End_Date = getDateFormat(new Date(req.body.End_Date));
-            Database.getDiveSiteInfoByName({
+            Database.getDiveSite({
                 Site_Name: Site_Name
             }, siteInfo => {
                 if (siteInfo == undefined) {
@@ -375,7 +375,7 @@ app.post('/auth/planning/set_rate', keycloak.protect(),
             req.body.Event.Start_Date = getDateFormat(new Date(req.body.Event.Start_Date).toLocaleString());
             req.body.Event.End_Date = getDateFormat(new Date(req.body.Event.End_Date).toLocaleString());
 
-            Database.getDiveSiteInfoByName({
+            Database.getDiveSite({
                 Site_Name: req.body.Site_Name
             }, (locationInfo) => {
                 if (locationInfo === undefined) {
@@ -450,6 +450,111 @@ app.post('/auth/planning/set_rate', keycloak.protect(),
         });
     });
 
+app.post('/auth/planning/edit_palanquee', keycloak.protect(),
+    body("Start_Date").trim().escape(),
+    body("End_Date").trim().escape(),
+    body("Diver_Price").trim().escape(),
+    body("Instructor_Price").trim().escape(),
+    body("Site_Name").trim(),
+    body("Comments").trim(),
+    body("Special_Needs").trim(),
+    body("Status").trim().escape(),
+    body("Max_Divers").trim().escape(),
+    body("Dive_Type").trim().escape(),
+    function (req, res) {
+        if (!checkUser(req, "DP")) return res.sendStatus(401);
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(422).json({
+            errors: errors.array()
+        });
+        const username = req.kauth.grant.access_token.content.preferred_username;
+        req.body.Start_Date = getDateFormat(new Date(req.body.Start_Date).toLocaleString());
+        req.body.End_Date = getDateFormat(new Date(req.body.End_Date).toLocaleString());
+
+        console.log("--- Trying to create palanquee ---");
+        Database.getUserInfoByMail(username, infoDp => {
+            if (infoDp === undefined) {
+                console.log("\t->Error, DP doesn't exist");
+                return res.json({
+                    created: false,
+                    comment: "DP doesn't exist"
+                });
+            }
+            Database.getDiveSite({
+                Site_Name: req.body.Site_Name
+            }, (locationInfo) => {
+                if (locationInfo === undefined) {
+                    console.log("\t->Error, Dive Site doesn't exist");
+                    return res.json({
+                        created: false,
+                        comment: "Dive Site doesn't exist"
+                    });
+                }
+                req.body.Dive_Site_Id_Dive_Site = locationInfo.Id_Dive_Site;
+                delete req.body.Site_Name;
+                Database.getEvent(req.body, (event) => {
+                    if (event === undefined) {
+                        console.log("\t->Error, Event doesn't exist");
+                        return res.json({
+                            created: false,
+                            comment: "Event doesn't exist"
+                        });
+                    }
+                    Database.getEmergencyPlan({
+                        Id_Emergency_Plan: event.Dive_Site_Id_Dive_Site
+                    }, (emergencyPlanInfo) => {
+                        if (emergencyPlanInfo === undefined) {
+                            console.log("\t->Error, Emergency plan doesn't exist");
+                            return res.json({
+                                created: false,
+                                comment: "Emergency plan doesn't exist"
+                            });
+                        }
+                        Database.getPalanquee({
+                            Planned_Dive_Id_Planned_Dive: event.Id_Planned_Dive
+                        }, (palanquee) => {
+                            console.log(palanquee);
+                            if (palanquee) {
+                                console.log("\t-----> Palanquee already exist, redirection");
+                                req.session.idPalanquee = palanquee.Id_Dive;
+                                return res.json({
+                                    created: true,
+                                    comment: "Palanquee already exist, but it's ok"
+                                });
+                            }
+                            let data = {
+                                Planned_Dive_Id_Planned_Dive: event.Id_Planned_Dive,
+                                Diver_Id_Diver: infoDp.Id_Diver,
+                                Start_Date: req.body.Start_Date,
+                                End_Date: req.body.End_Date,
+                                Diver_Price: req.body.Diver_Price,
+                                Instructor_Price: req.body.Instructor_Price,
+                                Comments: req.body.Comments,
+                                Surface_Security: emergencyPlanInfo.SOS_Tel_Number,
+                                Max_Ppo2: 0,
+                            }
+                            Database.createPalanquee(data, (isInserted) => {
+                                if (!isInserted) {
+                                    console.log("\t->Error, impossible to add Palanquee");
+                                    return res.json({
+                                        created: false,
+                                        comment: "Impossible to add Palanquee"
+                                    });
+                                } else {
+                                    console.log("\t->Palanquee added");
+                                    return res.json({
+                                        created: true,
+                                        comment: "Palanquee added"
+                                    });
+                                }
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    });
+
 
 /* ---------------------------------- READ ---------------------------------- */
 
@@ -515,7 +620,7 @@ app.post('/auth/planning/has_voted', keycloak.protect(),
                 hasVoted: false,
                 comment: "User doesn't exist"
             });
-            Database.getDiveSiteInfoByName({
+            Database.getDiveSite({
                 Site_Name: req.body.Site_Name
             }, (locationInfo) => {
                 if (locationInfo === undefined) return res.json({
@@ -590,7 +695,7 @@ app.put('/auth/planning', keycloak.protect(),
 
             let Site_Name = req.body.Site_Name;
             delete req.body.Site_Name;
-            Database.getDiveSiteInfoByName({
+            Database.getDiveSite({
                 Site_Name: Site_Name
             }, siteInfo => {
                 if (siteInfo == undefined) {
@@ -724,7 +829,7 @@ app.post('/auth/planning/registration', keycloak.protect(),
                 })
             }
             data.Diver_Id_Diver = userInfo.Id_Diver;
-            Database.getDiveSiteInfoByName({
+            Database.getDiveSite({
                 Site_Name: req.body.Site_Name
             }, (locationInfo) => {
                 if (locationInfo === undefined) {
@@ -806,7 +911,7 @@ app.delete('/auth/planning/registration', keycloak.protect(), function (req, res
                 comment: "User doesn't exist"
             })
         }
-        Database.getDiveSiteInfoByName({
+        Database.getDiveSite({
             Site_Name: req.body.Site_Name
         }, (locationInfo) => {
             if (locationInfo === undefined) {
@@ -874,7 +979,7 @@ app.delete('/auth/planning/registration/all', keycloak.protect(), function (req,
     req.body.Start_Date = getDateFormat(new Date(req.body.Start_Date).toLocaleString());
     req.body.End_Date = getDateFormat(new Date(req.body.End_Date).toLocaleString());
     console.log("--- Trying to delete all registrations ---");
-    Database.getDiveSiteInfoByName({
+    Database.getDiveSite({
         Site_Name: req.body.Site_Name
     }, (locationInfo) => {
         if (locationInfo === undefined) {
@@ -960,6 +1065,65 @@ app.get('/auth/dp/palanquee', keycloak.protect(), function (req, res) {
         }
     });
 })
+
+app.get('/auth/dp/palanquee/get_palanquee', keycloak.protect(), function (req, res) {
+    if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
+    if (!req.session.idPalanquee) {
+        //console.log("Id palanquee is not stored in session")
+        return res.json({
+            data: undefined,
+            comment: "Id palanquee is not stored in session",
+            redirect: true
+        });
+    };
+    Database.getPalanquee({
+        Id_Dive: req.session.idPalanquee
+    }, (palanquee) => {
+        if (palanquee === undefined) return res.json({
+            data: undefined,
+            comment: "Palanquee doesn't exist"
+        });
+        Database.getEventById(palanquee.Planned_Dive_Id_Planned_Dive, (event) => {
+            if (event === undefined) return res.json({
+                data: undefined,
+                comment: "Event doesn't exist"
+            });
+            Database.getDiveSite({
+                Id_Dive_Site: event.Dive_Site_Id_Dive_Site
+            }, (location) => {
+                if (location === undefined) return res.json({
+                    data: undefined,
+                    comment: "Location doesn't exist"
+                });
+                Database.getEmergencyPlan({
+                    Id_Emergency_Plan: location.Id_Dive_Site
+                }, (emergencyPlan) => {
+                    if (emergencyPlan === undefined) return res.json({
+                        data: undefined,
+                        comment: "Emergency plan doesn't exist"
+                    });
+                    Database.getDiversRegistered((allDivers) => {
+                        if (allDivers === undefined) allDivers = [];
+                        allDivers = allDivers.filter(diver => diver.Planned_Dive_Id_Planned_Dive == event.Id_Planned_Dive);
+                        location.emergencyPlan = emergencyPlan;
+                        event.location = location;
+                        event.allDivers = allDivers
+                        let data = {
+                            palanquee,
+                            event
+                        }
+                        return res.json({
+                            data,
+                            comment: "Palanquee found"
+                        });
+                    });
+                });
+            });
+        });
+    });
+});
+
+
 
 // app.get('/auth/dp/incident_rapport', keycloak.protect(), function (req, res) {
 //     if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
@@ -1252,7 +1416,7 @@ app.post("/auth/club/locations", keycloak.protect(),
         delete req.body.Post_Accident_Procedure;
 
         console.log("--- Trying to create location ---");
-        Database.getDiveSiteInfoByName({
+        Database.getDiveSite({
             Site_Name: req.body.Site_Name
         }, (siteInfo) => {
             if (siteInfo !== undefined) {
@@ -1363,7 +1527,7 @@ app.put("/auth/club/locations", keycloak.protect(),
         delete req.body.Version;
 
         console.log("--- Trying to update location ---");
-        Database.getDiveSiteInfoByName({
+        Database.getDiveSite({
             Site_Name: req.body.Site_Name
         }, (siteInfo) => {
             if (siteInfo === undefined) {
@@ -1417,7 +1581,7 @@ app.put("/auth/club/locations", keycloak.protect(),
 app.delete("/auth/club/locations", keycloak.protect(), function (req, res) {
     if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
     console.log("--- Trying to delete location ---");
-    Database.getDiveSiteInfoByName(req.body, (siteInfo) => {
+    Database.getDiveSite(req.body, (siteInfo) => {
         Database.deleteEmergencyPlan({
             Id_Emergency_Plan: siteInfo.Id_Dive_Site
         }, (isDelete) => {

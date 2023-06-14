@@ -162,13 +162,11 @@ CREATE TABLE SDMS_Meta_Data(
 
 CREATE TABLE Dive(
    Id_Dive CHAR(36)  NOT NULL,
-   Begin_Time TIME NOT NULL,
-   Begin_Date DATE NOT NULL,
-   End_Date DATE NOT NULL,
-   End_Time TIME NOT NULL,
-   Comment VARCHAR(1024) ,
+   Start_Date DATETIME NOT NULL,
+   End_Date DATETIME NOT NULL,
+   Comments VARCHAR(1024) ,
    Surface_Security VARCHAR(1024) ,
-   Dive_Price DECIMAL(15,2)  ,
+   Diver_Price DECIMAL(15,2)  ,
    Instructor_Price DECIMAL(15,2)  ,
    Max_Ppo2 DECIMAL(4,2)  ,
    Diver_Id_Diver CHAR(36)  NOT NULL,
@@ -180,11 +178,9 @@ CREATE TABLE Dive(
 );
 #COMMENT ON TABLE Dive IS 'Actual dive';
 #COMMENT ON COLUMN Dive.Id_Dive IS 'of type GUID stored as char(36). Like 363d5a64-22c2-4b45-a29b-2d2d358e340c';
-#COMMENT ON COLUMN Dive.Begin_Time IS 'Begin time of dive';
-#COMMENT ON COLUMN Dive.Begin_Date IS 'Begin date of dive';
-#COMMENT ON COLUMN Dive.End_Date IS 'End date of dive';
-#COMMENT ON COLUMN Dive.End_Time IS 'End time of dive';
-#COMMENT ON COLUMN Dive.Comment IS 'Comment(s) linked to this dive. Could be before or/and after dive comments.  For example in case of dive issue, comments should be filled.';
+#COMMENT ON COLUMN Dive.Start_Date IS 'Begin date and time of dive';
+#COMMENT ON COLUMN Dive.End_Date IS 'End date and time of dive';
+#COMMENT ON COLUMN Dive.Comments IS 'Comment(s) linked to this dive. Could be before or/and after dive comments.  For example in case of dive issue, comments should be filled.';
 #COMMENT ON COLUMN Dive.Surface_Security IS 'What kind of security suface provided. Could be something like SOS telephon number, person in charge to monitor the dive etc.';
 #COMMENT ON COLUMN Dive.Dive_Price IS 'Actual Price for diver, by default diver price from planned dive.';
 #COMMENT ON COLUMN Dive.Instructor_Price IS 'Actual Price for instructor. Some dive sites have pricing based on role: diver or instructor. By default instructor price from planned dive.';

@@ -108,13 +108,7 @@
                             <input type="text" id="eventLocationInput_modify" name="eventLocationInput"
                                 placeholder="Rechercher" value="">
                             <div class="location_list_dropdown" style="display:none">
-                                <h4 class="location_item">Nevada</h4>
-                                <h4 class="location_item">New York</h4>
-                                <h4 class="location_item">Los Angeles</h4>
-                                <h4 class="location_item">Chicago</h4>
-                                <h4 class="location_item">Houston</h4>
-                                <h4 class="location_item">Philadelphia</h4>
-                                <h4 class="location_item">Phoenix</h4>
+                                
                             </div>
                         </div>
                     </div>
@@ -148,13 +142,7 @@
                             <input type="text" id="eventDPInput_modify" name="eventDPInput" placeholder="Rechercher"
                                 value="">
                             <div class="DP_list_dropdown" style="display:none">
-                                <h4 class="DP_item">Tom</h4>
-                                <h4 class="DP_item">Marcel</h4>
-                                <h4 class="DP_item">Alan</h4>
-                                <h4 class="DP_item">Enguerrand</h4>
-                                <h4 class="DP_item">Maxime</h4>
-                                <h4 class="DP_item">Maxime D</h4>
-                                <h4 class="DP_item">Elen</h4>
+                                
                             </div>
                         </div>
                     </div>
@@ -169,13 +157,7 @@
                             <input type="text" id="eventDiverInput_modify" name="eventDiverInput"
                                 placeholder="Rechercher (0 inscrits)" value="">
                             <div class="diver_list_dropdown" style="display:none">
-                                <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Tom</h4>
-                                <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Marcel</h4>
-                                <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Alan</h4>
-                                <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Enguerrand</h4>
-                                <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Maxime</h4>
-                                <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Maxime D</h4>
-                                <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Elen</h4>
+                        
                             </div>
                         </div>
                     </div>
@@ -253,13 +235,7 @@
                                 <input required type="text" id="eventDPInput" name="eventDPInput" placeholder="Rechercher"
                                     value="">
                                 <div class="DP_list_dropdown" style="display:none">
-                                    <h4 class="DP_item">Tom</h4>
-                                    <h4 class="DP_item">Marcel</h4>
-                                    <h4 class="DP_item">Alan</h4>
-                                    <h4 class="DP_item">Enguerrand</h4>
-                                    <h4 class="DP_item">Maxime</h4>
-                                    <h4 class="DP_item">Maxime D</h4>
-                                    <h4 class="DP_item">Elen</h4>
+                                   
                                 </div>
                             </div>
                         </div>
@@ -274,11 +250,7 @@
                                 <input type="text" id="eventDiverInput" name="eventDiverInput"
                                     placeholder="Rechercher (0 inscrits)" value="">
                                 <div class="diver_list_dropdown" style="display:none">
-                                    <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Alan</h4>
-                                    <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Enguerrand</h4>
-                                    <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Maxime</h4>
-                                    <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Maxime D</h4>
-                                    <h4 class="diver_item"><input type="checkbox" class="checkbox_item">Elen</h4>
+                                    
                                 </div>
                             </div>
                         </div>
@@ -352,232 +324,6 @@
                 <h3>Valider</h3>
             </div>
         </modal>
-        <modal id="dive_rapport">
-            <div class="general_plannification_container">
-                <h1 class="title_rapport_plannif">Plannification</h1>
-                <div class="date_container">
-                    <h3>Date de la plongée </h3>
-                    <input type="date" id="date" name="date" value="">
-                </div>
-                <div class="time_container">
-                    <h3>Heure de la plongée </h3>
-                    <input type="time" id="time" name="time" value="">
-                </div>
-                <div class="location_container">
-                    <h3>Lieu de la plongée </h3>
-                    <input type="text" id="location" name="location" value="">
-                </div>
-                <div class="map_dive"></div>
-
-                <div class="plongeurs_container">
-                    <h1>Plongeurs</h1>
-                    <div class="nombre_plongeurs">
-                        <h3>Nombre de plongeurs</h3>
-                        <input type="number" id="number" min="0" max="50" name="number" value="">
-                    </div>
-                    <div class="nombre_plongeurs">
-                        <h3>Directeur de Plongée</h3>
-                        <input type="text" value="">
-                    </div>
-                </div>
-                <div class="next_button_infos">
-                    Suivant
-                </div>
-
-            </div>
-
-            <div id="palanquees-container" class="parametres-container">
-                <h1>Palanquée 1</h1>
-                <h2>Paramètres</h2>
-                <div class="metres-prevus">
-                    <h3>Profondeur prévue</h3>
-                    <select name="metres-prevus" id="metres-prevus">
-                        <option value="">--Please choose an option--</option>
-                        <option value="20">20m</option>
-                        <option value="20">40m</option>
-                        <option value="20">60m</option>
-                        <option value="20">80m</option>
-                    </select>
-                </div>
-                <div class="metres-realises">
-                    <h3>Profondeur réalisée</h3>
-                    <input type="number" id="metres" name="metres" value="">
-                </div>
-                <div class="temps-prevu">
-                    <h3>Temps prévu</h3>
-                    <input type="time" id="duree-prevu" name="duree-prevu" step="1">
-                </div>
-                <div class="temps-realise">
-                    <h3>Temps réalisé</h3>
-                    <input type="time" id="duree-realise" name="duree-realise" step="1">
-                </div>
-                <div class="departure temps-realise">
-                    <h3>Heure de départ</h3>
-                    <input type="time" id="heure-depart" name="heure-depart" step="1">
-                </div>
-                <div class="arrival temps-realise">
-                    <h3>Heure de retour</h3>
-                    <input type="time" id="heure-arrivee" name="heure-arrivee" step="1">
-                </div>
-                <div class="next_button_infos">
-                    Suivant
-                </div>
-            </div>
-
-            <div class="diver">
-                <select id="name" class="diver-name">
-                    <option value="" selected disabled>Sélectionnez un nom</option>
-                    <option value="John">John</option>
-                    <option value="Alice">Alice</option>
-                    <option value="Bob">Bob</option>
-                </select>
-                <select name="" id="" class="level-diver">
-                    <option value="">Niveau</option>
-                    <option value="">1</option>
-                    <option value="">2</option>
-                    <option value="">3</option>
-                    <option value="">4</option>
-                </select>
-                <div class="diver-parameters">
-                    <select>
-                        <option value="">Fonction</option>
-                        <option value="">ezqsrdtfcygvuhbijnk</option>
-                        <option value="">dxtfchgvjbkn</option>
-                        <option value="">fcghgvjbkn</option>
-                        <option value="">fdxgchv</option>
-                    </select>
-                    <select>
-                        <option value="">Plongée</option>
-                        <option value="">Technique</option>
-                        <option value="">Exploration</option>
-                    </select>
-                    <select>
-                        <option value="">Nitrox %</option>
-                        <option value="">21</option>
-                        <option value="">32</option>
-                        <option value="">36</option>
-                    </select>
-                </div>
-            </div>
-            <div class="diver">
-                <select id="name" class="diver-name">
-                    <option value="" selected disabled>Sélectionnez un nom</option>
-                    <option value="John">John</option>
-                    <option value="Alice">Alice</option>
-                    <option value="Bob">Bob</option>
-                </select>
-                <select name="" id="" class="level-diver">
-                    <option value="">Niveau</option>
-                    <option value="">1</option>
-                    <option value="">2</option>
-                    <option value="">3</option>
-                    <option value="">4</option>
-                </select>
-                <div class="diver-parameters">
-                    <select>
-                        <option value="">Fonction</option>
-                        <option value="">ezqsrdtfcygvuhbijnk</option>
-                        <option value="">dxtfchgvjbkn</option>
-                        <option value="">fcghgvjbkn</option>
-                        <option value="">fdxgchv</option>
-                    </select>
-                    <select>
-                        <option value="">Plongée</option>
-                        <option value="">Technique</option>
-                        <option value="">Exploration</option>
-                    </select>
-                    <select>
-                        <option value="">Nitrox %</option>
-                        <option value="">21</option>
-                        <option value="">32</option>
-                        <option value="">36</option>
-                    </select>
-                </div>
-            </div>
-            <div class="diver">
-                <select id="name" class="diver-name">
-                    <option value="" selected disabled>Sélectionnez un nom</option>
-                    <option value="John">John</option>
-                    <option value="Alice">Alice</option>
-                    <option value="Bob">Bob</option>
-                </select>
-                <select name="" id="" class="level-diver">
-                    <option value="">Niveau</option>
-                    <option value="">1</option>
-                    <option value="">2</option>
-                    <option value="">3</option>
-                    <option value="">4</option>
-                </select>
-                <div class="diver-parameters">
-                    <select>
-                        <option value="">Fonction</option>
-                        <option value="">ezqsrdtfcygvuhbijnk</option>
-                        <option value="">dxtfchgvjbkn</option>
-                        <option value="">fcghgvjbkn</option>
-                        <option value="">fdxgchv</option>
-                    </select>
-                    <select>
-                        <option value="">Plongée</option>
-                        <option value="">Technique</option>
-                        <option value="">Exploration</option>
-                    </select>
-                    <select>
-                        <option value="">Nitrox %</option>
-                        <option value="">21</option>
-                        <option value="">32</option>
-                        <option value="">36</option>
-                    </select>
-                </div>
-            </div>
-            <div class="diver">
-                <select id="name" class="diver-name">
-                    <option value="" selected disabled>Sélectionnez un nom</option>
-                    <option value="John">John</option>
-                    <option value="Alice">Alice</option>
-                    <option value="Bob">Bob</option>
-                </select>
-                <select name="" id="" class="level-diver">
-                    <option value="">Niveau</option>
-                    <option value="">1</option>
-                    <option value="">2</option>
-                    <option value="">3</option>
-                    <option value="">4</option>
-                </select>
-                <div class="diver-parameters">
-                    <select>
-                        <option value="">Fonction</option>
-                        <option value="">ezqsrdtfcygvuhbijnk</option>
-                        <option value="">dxtfchgvjbkn</option>
-                        <option value="">fcghgvjbkn</option>
-                        <option value="">fdxgchv</option>
-                    </select>
-                    <select>
-                        <option value="">Plongée</option>
-                        <option value="">Technique</option>
-                        <option value="">Exploration</option>
-                    </select>
-                    <select>
-                        <option value="">Nitrox %</option>
-                        <option value="">21</option>
-                        <option value="">32</option>
-                        <option value="">36</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="next_button_infos add_palanquee">
-                Ajouter une palanquée
-            </div>
-
-            <div class="next_button_infos save_rapport">
-                Enregistrer le rapport
-            </div>
-
-        </modal>
-
-
-
-
 
         <modal id="menuModal">
             <div class="menu_content">

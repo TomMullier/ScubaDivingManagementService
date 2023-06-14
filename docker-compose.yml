@@ -60,6 +60,7 @@ services:
       - .:/app:z
     networks:
       - sdms_net
+    pid: "host"
     depends_on:
       - keycloak
       - mysql

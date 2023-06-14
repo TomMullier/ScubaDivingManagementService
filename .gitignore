@@ -1,7 +1,7 @@
 package-lock.json
 keycloak.json
 .env
-
+model/img/*
 # Logs
 logs
 *.log

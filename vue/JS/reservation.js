@@ -94,8 +94,17 @@ fetch('/auth/planning/get_planning', {
             console.log(event);
             let e = new Event(new Date(event.Start_Date), new Date(event.End_Date), event.Diver_Price, event.Instructor_Price, event.Location, event.Comments, event.Special_Needs, event.Status, event.Max_Divers, event.Dive_Type);
             e.addUser(event.Users);
-            if (my_role == "club") e.startEditable = true;
-            else e.startEditable = false;
+            if (my_role == "club" && e.start > new Date()) {
+                e.startEditable = true;
+                e.durationEditable = true;
+                e.resizableFromStart = true;
+                e.dropable = true;
+            } else{
+                e.startEditable = false;
+                e.durationEditable = false;
+                e.resizableFromStart = false;
+                e.dropable = false;
+            }
             events.push(e);
         });
 
@@ -300,9 +309,9 @@ function hasVoted(event) {
             console.log(res)
             if (my_role == "user") {
                 console.log(res.hasVoted);
-                if(res.hasVoted == 1){
+                if (res.hasVoted == 1) {
                     document.querySelector(".rating").style.display = "none";
-                }else{
+                } else {
                     document.querySelector(".rating").style.display = "flex";
                 }
             }
@@ -479,7 +488,7 @@ function setEvents(ev_) {
                     Site_Name: eventClicked.extendedProps.location.Site_Name,
                 }
                 hasVoted(event);
-                 
+
             } else {
                 button.style.display = "flex";
                 document.querySelector(".rating").style.display = "none";

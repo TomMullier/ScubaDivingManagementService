@@ -1,8 +1,10 @@
 import socket
+
 from dotenv import dotenv_values, set_key
 import json
 import subprocess
 import webbrowser
+import requests
 
 
 def get_ip_address():
@@ -78,24 +80,89 @@ def launchDocker():
         command = "docker compose up -d" 
         result = subprocess.run(command, shell=True, capture_output=True, text=True)
 
+        
+
+        url = f"http://{ip}:8080/realms/SDMS/protocol/openid-connect/token"
+
+        payload = 'client_id=SDMS_connect&client_secret=uanSPPp2dE7Q3VFx4nkqeFJEA8DvzXua&grant_type=client_credentials'
+        headers = {
+                'Content-Type': 'application/x-www-form-urlencoded'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+        print(response)
+        if(response.status_code == 200):
+                print("----- Getting token")
+                print("---------- Token retrieved")
+                token = response.json()["access_token"]
+
+
+                url3 = f"http://{ip}:8080/admin/realms/SDMS/clients/c346816f-76c8-4e05-8a24-bb1ee736e479"
+                print(url3)
+                payload3 = json.dumps({
+                "baseUrl": f"http://{ip}:3000/",
+                "redirectUris": [
+                    f"http://{ip}:3000/*"
+                ],
+                "webOrigins": [
+                    f"http://{ip}:3000/*"
+                ],
+                "attributes": {
+                    "backchannel.logout.url": f"http://{ip}:3000/"
+                }
+                })
+                headers3 = {
+                'Content-Type': 'application/json',
+                'Authorization': f'Bearer {token}'
+                }
+
+                response3 = requests.request("PUT", url3, headers=headers3, data=payload3)
+                print("----- Change IP Keycloak Admin Panel for : ", ip)
+                print(response3)
+                if(response3.status_code == 204):
+                        print("---------- IP changed in Keycloak Admin Panel")
+                else:
+                        print("---------- Error while changing IP")
+
+                url2 = f"http://{ip}:8080/admin/realms/SDMS/users"
+
+                payload2 = json.dumps({
+                "email": "club@club.fr",
+                "credentials": [
+                    {
+                    "type": "password",
+                    "value": "pass"
+                    }
+                ],
+                "enabled": True
+                })
+                headers2 = {
+                'Content-Type': 'application/json',
+                'Authorization': f'Bearer {token}'
+                }
+
+                response2 = requests.request("POST", url2, headers=headers2, data=payload2)
+                print("----- Adding club")
+                if(response2.status_code == 200):
+                        print("---------- Club added")
+                else:
+                        print("---------- Error while adding club")
+                        
+
+
+        else:
+                print("---------- Error while retrieving token")
+        
+        
+        
+        
         # Check the output
         if result.returncode == 0:
                 output = result.stdout
                 print ("----- Opening web browser")
                 webbrowser.open(newURL)
-                # print("Command output:", output)
-                # print ("----- Launching docker logs")
-                # command = "./logs.sh" 
-                # result = subprocess.run(command, shell=True, capture_output=True, text=True)
-
-                # # Check the output
-                # if result.returncode == 0:
-                #         output = result.stdout
-                #         print("Command output:", output)
-                # else:
-                #         print("An error occurred:", result.stderr)
         else:
-                print("An error occurred:", result.stderr)
+                print("--------- An error occurred:", result.stderr)
                 
 
 
@@ -104,6 +171,6 @@ print("IP address:", ip)
 
 newURL="http://" + ip + ":3000/"
 writeEnv();
-changeRealm();
-changeKeycloak();
+# changeRealm();
+# changeKeycloak();
 launchDocker();

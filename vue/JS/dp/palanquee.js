@@ -107,7 +107,8 @@ function setPage(data) {
             document.querySelector(".DP_name").innerText = " " + diver.Firstname + " " + diver.Lastname;
         } else {
             let html_ = '<div class="diver_item"><div><p>' + diver.Firstname + ' ' + diver.Lastname + '</p></div><div><p>' + diver.Mail + '</p></div><div><p>' + diver.Phone + '</p></div><div><select name="" id="" class="diver_level">'
-            html_ += '<option value="P1">' + diver.Diver_Qualification + '</option>'
+            
+            html_ += '<option value="'+diver.Diver_Qualification+'">' + diver.Diver_Qualification + '</option>'
             let currentLevel = diver.Diver_Qualification.split("P")[1];
             if (currentLevel != 5) {
                 currentLevel = parseInt(currentLevel);
@@ -119,6 +120,19 @@ function setPage(data) {
                 html_ += '</select><i style="opacity:0;color:#f2574a" class="fa-solid fa-triangle-exclamation"></i></div></div>';
                 document.querySelector(".allDivers").innerHTML += html_;
             }
+            document.querySelectorAll(".diver_level").forEach(function (element) {
+                if(diver.Temporary_Qualification != ""){
+                        element.value = diver.Temporary_Qualification;
+                }
+                if (element.value.includes("Pe") || element.value.includes("Pa")) {
+                    element.parentElement.querySelector("i").style.opacity = "1";
+                    element.parentElement.title = "Vous êtes responsable du changement de niveau du plongeur";
+    
+                } else {
+                    element.parentElement.querySelector("i").style.opacity = "0";
+                    element.parentElement.title = "";
+                }
+            })  
         }
     })
     document.querySelectorAll(".diver_level").forEach(function (element) {

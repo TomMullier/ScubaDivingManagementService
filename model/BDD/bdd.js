@@ -505,7 +505,7 @@ class BDD {
         })
     }
 
-    getDiveTeamMember(data, callback) {
+    getAllDiveTeamMember(data, callback) {
         let query = 'SELECT * FROM  Dive_Team_Member WHERE ?';
         this.con.query(query, data, (err, result) => {
             if (err || !result[0]) {

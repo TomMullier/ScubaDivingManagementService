@@ -917,44 +917,55 @@ app.post('/auth/planning/registration', keycloak.protect(),
                             comment: "Event doesn't exist"
                         })
                     }
-                    data.Planned_Dive_Id_Planned_Dive = eventInfo.Id_Planned_Dive;
-                    Database.getRegistration({
-                        Diver_Id_Diver: userInfo.Id_Diver,
+                    Database.getDive({
                         Planned_Dive_Id_Planned_Dive: eventInfo.Id_Planned_Dive
-                    }, (registration) => {
-                        if (registration) {
-                            console.log(`\t->Error, ${userInfo.Mail} is already register`);
+                    }, dive => {
+                        if (dive) {
+                            console.log("\t->Error, Dive already exist, impossible to register");
                             return res.json({
                                 registered: false,
-                                comment: "Registration already exist"
+                                comment: "Dive already exist"
                             })
                         }
-
-                        Database.getDiversRegistered(allDiversRegistered => {
-                            if (allDiversRegistered === undefined) allDiversRegistered = [];
-                            allDiversRegistered = allDiversRegistered.filter(diverInfo => diverInfo.Planned_Dive_Id_Planned_Dive == eventInfo.Id_Planned_Dive)
-                            if (eventInfo.Max_Divers == allDiversRegistered.length) {
-                                console.log("\t->Error, Max divers reached");
+                        data.Planned_Dive_Id_Planned_Dive = eventInfo.Id_Planned_Dive;
+                        Database.getRegistration({
+                            Diver_Id_Diver: userInfo.Id_Diver,
+                            Planned_Dive_Id_Planned_Dive: eventInfo.Id_Planned_Dive
+                        }, (registration) => {
+                            if (registration) {
+                                console.log(`\t->Error, ${userInfo.Mail} is already register`);
                                 return res.json({
                                     registered: false,
-                                    comment: "Max divers reached"
+                                    comment: "Registration already exist"
                                 })
                             }
 
-                            Database.createRegistration(data, (created) => {
-                                if (created) {
-                                    console.log(`\t->${userInfo.Firstname} ${userInfo.Lastname} registered`);
-                                    return res.json({
-                                        registered: true,
-                                        comment: "Registration added"
-                                    })
-                                } else {
-                                    console.log("\t->Error, impossible to register user");
+                            Database.getDiversRegistered(allDiversRegistered => {
+                                if (allDiversRegistered === undefined) allDiversRegistered = [];
+                                allDiversRegistered = allDiversRegistered.filter(diverInfo => diverInfo.Planned_Dive_Id_Planned_Dive == eventInfo.Id_Planned_Dive)
+                                if (eventInfo.Max_Divers == allDiversRegistered.length) {
+                                    console.log("\t->Error, Max divers reached");
                                     return res.json({
                                         registered: false,
-                                        comment: "Impossible to add Registration"
-                                    });
+                                        comment: "Max divers reached"
+                                    })
                                 }
+
+                                Database.createRegistration(data, (created) => {
+                                    if (created) {
+                                        console.log(`\t->${userInfo.Firstname} ${userInfo.Lastname} registered`);
+                                        return res.json({
+                                            registered: true,
+                                            comment: "Registration added"
+                                        })
+                                    } else {
+                                        console.log("\t->Error, impossible to register user");
+                                        return res.json({
+                                            registered: false,
+                                            comment: "Impossible to add Registration"
+                                        });
+                                    }
+                                });
                             });
                         });
                     });
@@ -1000,41 +1011,52 @@ app.delete('/auth/planning/registration', keycloak.protect(), function (req, res
                         comment: "Event doesn't exist"
                     })
                 }
-                Database.getRegistration({
-                    Diver_Id_Diver: userInfo.Id_Diver,
+                Database.getDive({
                     Planned_Dive_Id_Planned_Dive: eventInfo.Id_Planned_Dive
-                }, (registration) => {
-                    if (registration === undefined) {
-                        console.log("\t->Error, User is not register");
+                }, dive => {
+                    if (dive) {
+                        console.log("\t->Error, Dive already exist, impossible to unregister");
                         return res.json({
                             deleted: false,
-                            comment: "User is not register"
+                            comment: "Dive already exist"
                         })
                     }
-                    if (registration.Diver_Role === "DP") {
-                        console.log("\t->Error, DP can't unregister");
-                        return res.json({
-                            deleted: false,
-                            comment: "DP can't unregister"
-                        })
-                    }
-                    Database.deleteRegistration({
+                    Database.getRegistration({
                         Diver_Id_Diver: userInfo.Id_Diver,
                         Planned_Dive_Id_Planned_Dive: eventInfo.Id_Planned_Dive
-                    }, (deleted) => {
-                        if (deleted) {
-                            console.log(`\t->${userInfo.Firstname} ${userInfo.Lastname} unregistered`);
-                            return res.json({
-                                deleted: true,
-                                comment: "Registration deleted"
-                            })
-                        } else {
-                            console.log("\t->Error, impossible to delete registration");
+                    }, (registration) => {
+                        if (registration === undefined) {
+                            console.log("\t->Error, User is not register");
                             return res.json({
                                 deleted: false,
-                                comment: "Impossible to delete Registration"
-                            });
+                                comment: "User is not register"
+                            })
                         }
+                        if (registration.Diver_Role === "DP") {
+                            console.log("\t->Error, DP can't unregister");
+                            return res.json({
+                                deleted: false,
+                                comment: "DP can't unregister"
+                            })
+                        }
+                        Database.deleteRegistration({
+                            Diver_Id_Diver: userInfo.Id_Diver,
+                            Planned_Dive_Id_Planned_Dive: eventInfo.Id_Planned_Dive
+                        }, (deleted) => {
+                            if (deleted) {
+                                console.log(`\t->${userInfo.Firstname} ${userInfo.Lastname} unregistered`);
+                                return res.json({
+                                    deleted: true,
+                                    comment: "Registration deleted"
+                                })
+                            } else {
+                                console.log("\t->Error, impossible to delete registration");
+                                return res.json({
+                                    deleted: false,
+                                    comment: "Impossible to delete Registration"
+                                });
+                            }
+                        });
                     });
                 });
             });
@@ -1177,20 +1199,35 @@ app.get('/auth/dp/palanquee/get_palanquee', keycloak.protect(), function (req, r
                         allDivers = allDivers.filter(diver => diver.Planned_Dive_Id_Planned_Dive == event.Id_Planned_Dive);
                         location.emergencyPlan = emergencyPlan;
                         event.Location = location;
-                        event.allDivers = allDivers
-                        Database.getMaxDepth(listMaxDepth => {
-                            if (listMaxDepth == undefined) return res.json({
-                                data: undefined,
-                                comment: "Can't get list max depth"
-                            });
-                            let data = {
-                                dive,
-                                event,
-                                listMaxDepth
-                            }
-                            return res.json({
-                                data,
-                                comment: "Dive found"
+                        event.allDivers = allDivers;
+
+                        Database.getAllDiveTeamMember({
+                            Dive_Id_Dive: dive.Id_Dive
+                        }, (allDiveTeamMember) => {
+                            if (allDiveTeamMember === undefined) allDiveTeamMember = [];
+                            // on récupère les infos de chaque membre de l'équipe de plongée
+                            // si le membre possède une Temporary_Diver_Qualification, on la stocke dans les infos du membre allDivers (pour l'affichage)
+                            event.allDivers.forEach(diver => {
+                                let found = allDiveTeamMember.find(member => member.Diver_Id_Diver == diver.Id_Diver);
+                                if (found) diver.Temporary_Qualification = found.Temporary_Diver_Qualification;
+                                else diver.Temporary_Qualification = "";
+                            })
+
+                            Database.getMaxDepth(listMaxDepth => {
+                                if (listMaxDepth == undefined) return res.json({
+                                    data: undefined,
+                                    comment: "Can't get list max depth"
+                                });
+
+                                let data = {
+                                    dive,
+                                    event,
+                                    listMaxDepth
+                                }
+                                return res.json({
+                                    data,
+                                    comment: "Dive found"
+                                });
                             });
                         });
                     });
@@ -1254,7 +1291,7 @@ app.post('/auth/dp/palanquee', keycloak.protect(),
                     else member.Paid_Amount = dive.Diver_Price;
                 });
 
-                Database.getDiveTeamMember({
+                Database.getAllDiveTeamMember({
                     Dive_Id_Dive: idDive
                 }, (allDiveTeamMember) => {
                     if (allDiveTeamMember !== undefined) {
@@ -1274,7 +1311,7 @@ app.post('/auth/dp/palanquee', keycloak.protect(),
                     Database.createDiveTeamMember(DiveTeamMember, (created) => {
                         if (!created) {
                             console.log("\t->Error, impossible to create all Dive Team Member");
-                            return res.json({ 
+                            return res.json({
                                 created: false,
                                 comment: "Impossible to create all Dive Team Member"
                             });
@@ -1642,7 +1679,7 @@ app.delete('/auth/club/club_members', keycloak.protect(), // USE
                             comment: "User is linked to a dive"
                         })
                     }
-                    // Database.getDiveTeamMember({
+                    // Database.getAllDiveTeamMember({
                     //     Diver_Id_Diver: userInfo.Id_Diver
                     // }, diveTeamMember => {
                     //     if (diveTeamMember) {

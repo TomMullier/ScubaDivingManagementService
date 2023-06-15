@@ -151,7 +151,8 @@ body {
 
                 .date,
                 .heure,
-                .location {
+                .location,
+                .type {
                         width: 100%;
                         display: flex;
                         flex-direction: row;
@@ -657,6 +658,7 @@ body {
                                 }
                                 .input{
                                         width: unset;
+                           
                                         width: 100%;
                                         margin-bottom: 5px;
                                         .button-group{
@@ -666,5 +668,26 @@ body {
                         }
                 }
         }
+
+}
+
+.save_button{
+        width:auto;
+        height:fit-content;
+        display:flex;
+        margin: 50px auto;
+        flex-direction:row;
+        align-items:center;
+        justify-content:center;
+        padding: 10px 20px;
+        border-radius: 25px;
+        background-color: @orange;
+        color: white;
+        font-size: 15px;
+        font-family: @body_font;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        
 
 }

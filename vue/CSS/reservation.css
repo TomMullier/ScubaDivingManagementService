@@ -449,6 +449,8 @@ body {
   font-family: 'Montserrat', sans-serif;
   text-align: center;
   text-transform: uppercase;
+  font-weight: bold;
+  margin-top: 16px;
 }
 .instructions_container h2 {
   color: #120B8F;
@@ -458,9 +460,15 @@ body {
   text-align: left;
   padding-left: 50px;
   padding-right: 50px;
+  margin-top: 16px;
+  font-weight: bold;
 }
 .instructions_container h2 .orange {
   color: #f2574a;
+}
+[class*=cell-],
+[class*=col-] {
+  display: revert;
 }
 #calendar {
   display: block;
@@ -759,8 +767,9 @@ body {
   font-weight: bold;
 }
 #eventModal .modal-wrapper .listOfUser .DP::before {
-  content: "DP :";
-  margin-right: 5px;
+  content: "DP : ";
+  margin-right: 10px;
+  display: contents;
 }
 #eventModal .modal-wrapper .listOfUser ul li {
   list-style: circle;
@@ -1308,6 +1317,12 @@ body {
   color: #f2574a;
   margin-right: 5px;
 }
+#createEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .select-input,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .select-input,
+#createEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .select-input,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .select-input {
+  flex-flow: nowrap;
+}
 #createEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown,
 #modifyEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown,
 #createEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown,
@@ -1321,15 +1336,62 @@ body {
   font-family: 'Montserrat', sans-serif;
   font-size: 15px;
 }
-#createEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .select-input .short-tag,
-#modifyEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .select-input .short-tag,
-#createEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .select-input .short-tag,
-#modifyEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .select-input .short-tag,
-#createEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown .select-input .short-tag,
-#modifyEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown .select-input .short-tag,
-#createEventModal .modal-wrapper .right div .search_location_DP .diver_list_dropdown .select-input .short-tag,
-#modifyEventModal .modal-wrapper .right div .search_location_DP .diver_list_dropdown .select-input .short-tag {
-  width: fit-content;
+#createEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .select-input .mail,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .select-input .mail,
+#createEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .select-input .mail,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .select-input .mail,
+#createEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown .select-input .mail,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown .select-input .mail,
+#createEventModal .modal-wrapper .right div .search_location_DP .diver_list_dropdown .select-input .mail,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .diver_list_dropdown .select-input .mail {
+  display: none;
+}
+#createEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .select-input .user-info-list,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .select-input .user-info-list,
+#createEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .select-input .user-info-list,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .select-input .user-info-list,
+#createEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown .select-input .user-info-list,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown .select-input .user-info-list,
+#createEventModal .modal-wrapper .right div .search_location_DP .diver_list_dropdown .select-input .user-info-list,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .diver_list_dropdown .select-input .user-info-list {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+#createEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .select-input .tag,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .select-input .tag,
+#createEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .select-input .tag,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .select-input .tag,
+#createEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown .select-input .tag,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown .select-input .tag,
+#createEventModal .modal-wrapper .right div .search_location_DP .diver_list_dropdown .select-input .tag,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .diver_list_dropdown .select-input .tag {
+  width: auto;
+}
+#createEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .select-input .title,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .select-input .title,
+#createEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .select-input .title,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .select-input .title,
+#createEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown .select-input .title,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown .select-input .title,
+#createEventModal .modal-wrapper .right div .search_location_DP .diver_list_dropdown .select-input .title,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .diver_list_dropdown .select-input .title {
+  display: flex;
+  align-items: center;
+}
+#createEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .select-input .title .user-info-list,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .select-input .title .user-info-list,
+#createEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .select-input .title .user-info-list,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .select-input .title .user-info-list,
+#createEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown .select-input .title .user-info-list,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown .select-input .title .user-info-list,
+#createEventModal .modal-wrapper .right div .search_location_DP .diver_list_dropdown .select-input .title .user-info-list,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .diver_list_dropdown .select-input .title .user-info-list {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 }
 #createEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .select-input .title i,
 #modifyEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .select-input .title i,
@@ -1368,6 +1430,16 @@ body {
   font-size: 15px;
   color: #9dacc4;
 }
+#createEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown li,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown li,
+#createEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown li,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown li,
+#createEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown li,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown li,
+#createEventModal .modal-wrapper .right div .search_location_DP .diver_list_dropdown li,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .diver_list_dropdown li {
+  height: fit-content;
+}
 #createEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .option-list a,
 #modifyEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .option-list a,
 #createEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .option-list a,
@@ -1381,6 +1453,11 @@ body {
   font-size: 15px;
   font-family: 'Montserrat', sans-serif;
   text-align: left;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  height: fit-content;
 }
 #createEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .option-list a i,
 #modifyEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .option-list a i,
@@ -1393,6 +1470,45 @@ body {
   margin-right: 5px;
   color: #f2574a;
   font-size: 15px;
+}
+#createEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .option-list a .user-info-list,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .option-list a .user-info-list,
+#createEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .option-list a .user-info-list,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .option-list a .user-info-list,
+#createEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown .option-list a .user-info-list,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown .option-list a .user-info-list,
+#createEventModal .modal-wrapper .right div .search_location_DP .diver_list_dropdown .option-list a .user-info-list,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .diver_list_dropdown .option-list a .user-info-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  height: auto;
+  margin-left: 10px;
+  line-height: 1.3;
+}
+#createEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .option-list a .user-info-list .name,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .option-list a .user-info-list .name,
+#createEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .option-list a .user-info-list .name,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .option-list a .user-info-list .name,
+#createEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown .option-list a .user-info-list .name,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown .option-list a .user-info-list .name,
+#createEventModal .modal-wrapper .right div .search_location_DP .diver_list_dropdown .option-list a .user-info-list .name,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .diver_list_dropdown .option-list a .user-info-list .name {
+  color: #120B8F;
+  font-size: 15px;
+}
+#createEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .option-list a .user-info-list .mail,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .DP_list_dropdown .option-list a .user-info-list .mail,
+#createEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .option-list a .user-info-list .mail,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown .option-list a .user-info-list .mail,
+#createEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown .option-list a .user-info-list .mail,
+#modifyEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown .option-list a .user-info-list .mail,
+#createEventModal .modal-wrapper .right div .search_location_DP .diver_list_dropdown .option-list a .user-info-list .mail,
+#modifyEventModal .modal-wrapper .right div .search_location_DP .diver_list_dropdown .option-list a .user-info-list .mail {
+  color: #BDC7D7;
+  font-size: 13px;
 }
 #createEventModal .comment,
 #modifyEventModal .comment,
@@ -1694,8 +1810,8 @@ body {
   position: absolute;
   bottom: 0;
   right: 0;
-  margin-bottom: 20px;
-  margin-right: 30px;
+  margin-bottom: 10px;
+  margin-right: 10px;
   display: flex;
   flex-direction: row;
   align-items: right;
@@ -1714,7 +1830,7 @@ body {
   bottom: 0;
   right: 0;
   margin-bottom: 20px;
-  margin-right: 80px;
+  margin-right: 20px;
   display: flex;
   flex-direction: row;
   align-items: right;

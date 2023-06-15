@@ -155,7 +155,7 @@ app.post('/auth/upload_pp', keycloak.protect(), function (req, res) {
             console.log("Profile picture uploaded for " + userMail);
             cropToSquare(__dirname + '/model/img/' + userMail + '/TOCROP' + userMail + '.jpg')
                 .then(info => {
-                    console.log('Image recadrée avec succès:', info);
+                    console.log('\t->Image recadrée avec succès');
                     fs.unlinkSync(__dirname + '/model/img/' + userMail + '/TOCROP' + userMail + '.jpg');
                 })
                 .catch(err => {
@@ -304,11 +304,17 @@ app.post('/auth/planning', keycloak.protect(),
         });
         console.log("--- Trying to create event --'");
         Database.getUserInfoByMail(req.body.dp, infoDp => {
-            if (infoDp.Diver_Qualification != "P5") {
+            if (req.body.Dive_Type === "Exploration" && infoDp.Diver_Qualification !== "P5") {
                 console.log("\t->Error, DP is not P5");
                 return res.json({
                     created: false,
                     comment: "DP is not P5"
+                })
+            } else if (req.body.Dive_Type === "Technique" && infoDp.Diver_Qualification !== ("E3" || "E4")) {
+                console.log("\t->Error, DP is not E3 or E4");
+                return res.json({
+                    created: false,
+                    comment: "DP is not E3 or E4"
                 })
             }
             delete req.body.dp;
@@ -529,8 +535,8 @@ app.post('/auth/planning/edit_palanquee', keycloak.protect(),
                         Database.getDive({
                             Planned_Dive_Id_Planned_Dive: event.Id_Planned_Dive
                         }, (dive) => {
-                            req.session.idDive = dive.Id_Dive;
                             if (dive) {
+                                req.session.idDive = dive.Id_Dive;
                                 console.log("\t----->Dive already exist, redirection");
                                 return res.json({
                                     created: true,
@@ -557,9 +563,21 @@ app.post('/auth/planning/edit_palanquee', keycloak.protect(),
                                     });
                                 } else {
                                     console.log("\t->Dive added");
-                                    return res.json({
-                                        created: true,
-                                        comment: "Dive added"
+                                    Database.getDive({
+                                        Planned_Dive_Id_Planned_Dive: event.Id_Planned_Dive
+                                    }, (newDive) => {
+                                        if (newDive === undefined) {
+                                            console.log("\t->Error, Dive doesn't exist");
+                                            return res.json({
+                                                created: false,
+                                                comment: "Dive doesn't exist"
+                                            });
+                                        }
+                                        req.session.idDive = newDive.Id_Dive;
+                                        return res.json({
+                                            created: true,
+                                            comment: "Dive added"
+                                        });
                                     });
                                 }
                             });
@@ -606,8 +624,6 @@ app.get('/auth/planning/get_planning', keycloak.protect(), function (req, res) {
                         allEvents,
                         allLocations
                     });
-
-
                 }
             })
         })
@@ -698,11 +714,17 @@ app.put('/auth/planning', keycloak.protect(),
         delete req.body.oldEvent;
         console.log("--- Trying to modify event ---");
         Database.getUserInfoByMail(req.body.dp, infoDp => {
-            if (infoDp && infoDp.Diver_Qualification !== "P5") {
+            if (req.body.Dive_Type === "Exploration" && infoDp.Diver_Qualification !== "P5") {
                 console.log("\t->Error, DP is not P5");
                 return res.json({
-                    modified: false,
+                    created: false,
                     comment: "DP is not P5"
+                })
+            } else if (req.body.Dive_Type === "Technique" && infoDp.Diver_Qualification !== ("E3" || "E4")) {
+                console.log("\t->Error, DP is not E3 or E4");
+                return res.json({
+                    created: false,
+                    comment: "DP is not E3 or E4"
                 })
             }
             delete req.body.dp;
@@ -1105,7 +1127,7 @@ app.get('/auth/user/account/get_info', keycloak.protect(), function (req, res) {
 /* -------------------------------------------------------------------------- */
 app.get('/auth/dp/palanquee', keycloak.protect(), function (req, res) {
     if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
-    // if(req.session.idDive == undefined) return res.redirect('/404');
+    if (req.session.idDive == undefined) return res.redirect('/auth/planning');
     res.sendFile(__dirname + "/vue/html/dp/palanquee.html", {
         headers: {
             'userType': 'dp'
@@ -1117,15 +1139,15 @@ app.get('/auth/dp/palanquee', keycloak.protect(), function (req, res) {
 
 app.get('/auth/dp/palanquee/get_palanquee', keycloak.protect(), function (req, res) {
     if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
-    // if (!req.session.idDive) {
-    //     return res.json({
-    //         data: undefined,
-    //         comment: "Id dive is not stored in session",
-    //         redirect: true
-    //     });
-    // };
+    if (!req.session.idDive) {
+        return res.json({
+            data: undefined,
+            comment: "Id dive is not stored in session",
+            redirect: true
+        });
+    };
     Database.getDive({
-        Id_Dive: "3e0a06de-9847-4eab-943b-a5764b59e396" //! en dur /-> req.session.idDive 
+        Id_Dive: req.session.idDive
     }, (dive) => {
         if (dive === undefined) return res.json({
             data: undefined,
@@ -1182,34 +1204,198 @@ app.get('/auth/dp/palanquee/get_palanquee', keycloak.protect(), function (req, r
 
 app.post('/auth/dp/palanquee', keycloak.protect(),
     body("*.userMail").trim().toLowerCase(),
-    body("*.tmpQualif").trim().escape(),
-    function(req, res){
+    function (req, res) {
+        console.log(req.body);
         if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(422).json({
             errors: errors.array()
         });
-        console.log(req.body);
         let idDive = req.session.idDive;
 
-        // pour chaque user, stocker
-        // - 
-        req.body.forEach(user => {
-            Database.getUserInfoByMail(user.userMail, userInfo => {
-                if (userInfo === undefined) return res.json({
+        let DiveTeamMember = [];
+        let data = {
+            Diver_Id_Diver: "", //ok
+            Dive_Team_Id_Dive_Team: "",
+            Dive_Id_Dive: idDive, //ok
+            Temporary_Diver_Qualification: "", //ok
+            Current_Diver_Qualification: "", //ok
+            Diver_Role: "Diver",
+            Current_Instructor_Qualification: "", //ok
+            Nox_Percentage: 0,
+            Comment: "",
+            Paid_Amount: 0, //ok
+        }
+
+        Database.getUsersList(async allUsers => {
+            if (allUsers === undefined) allUsers = [];
+            for (let i = 0; i < req.body.length; i++) {
+                const userMail = req.body[i].userMail;
+                const foundUser = allUsers.find(user => user.hasOwnProperty('Mail') && user.Mail === userMail);
+                if (foundUser) {
+                    let tmpData = Object.assign({}, data); // Crée une nouvelle instance d'objet avec les propriétés de data
+                    tmpData.Diver_Id_Diver = foundUser.Id_Diver;
+                    tmpData.Current_Diver_Qualification = foundUser.Diver_Qualification;
+                    tmpData.Current_Instructor_Qualification = foundUser.Instructor_Qualification;
+                    if (foundUser.Instructor_Qualification !== "") tmpData.Paid_Amount = "E";
+                    else tmpData.Paid_Amount = "D";
+                    DiveTeamMember.push(tmpData);
+                }
+            }
+            Database.getDive({
+                Id_Dive: idDive
+            }, (dive) => {
+                if (dive === undefined) return res.json({
                     created: false,
-                    comment: "User doesn't exist"
+                    comment: "Dive doesn't exist"
                 });
-                
+                DiveTeamMember.forEach(member => {
+                    if (member.Paid_Amount === "E") member.Paid_Amount = dive.Instructor_Price;
+                    else member.Paid_Amount = dive.Diver_Price;
+                });
 
-            })
-        })
+                Database.getDiveTeamMember({
+                    Dive_Id_Dive: idDive
+                }, (allDiveTeamMember) => {
+                    if (allDiveTeamMember !== undefined) {
+                        // si les membres de DiveTeamMember sont déjà dans allDiveTeamMember, on les supprime du tableau DiveTeamMember
+                        DiveTeamMember.forEach(member => {
+                            let found = allDiveTeamMember.find(memberDiveTeam => memberDiveTeam.Diver_Id_Diver == member.Diver_Id_Diver);
+                            if (found) {
+                                let index = DiveTeamMember.indexOf(member);
+                                DiveTeamMember.splice(index, 1);
+                            }
+                        });
+                    }
+                    if (DiveTeamMember.length == 0) return res.json({
+                        created: true,
+                        comment: "All Dive Team Member already exist"
+                    });
+                    Database.createDiveTeamMember(DiveTeamMember, (created) => {
+                        if (!created) {
+                            console.log("\t->Error, impossible to create all Dive Team Member");
+                            return res.json({ 
+                                created: false,
+                                comment: "Impossible to create all Dive Team Member"
+                            });
+                        } else {
+                            console.log("\t->All Dive Team Member created");
+                            return res.json({
+                                created: true,
+                                comment: "All Dive Team Member created"
+                            });
+                        }
+                    });
+                });
+            });
+        });
+    });
 
-        res.json({
-            created: true
-        })
-    }
-)
+/* --------------------------------- UPDATE --------------------------------- */
+
+app.put('/auth/dp/palanquee', keycloak.protect(),
+    body("*.userMail").trim().toLowerCase(),
+    body("*.tmpQualif").trim().escape(),
+    function (req, res) {
+        if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(422).json({
+            errors: errors.array()
+        });
+        let idDive = req.session.idDive;
+
+        let DiveTeamMember = [];
+        let data = {
+            Diver_Id_Diver: "", //ok
+            Dive_Team_Id_Dive_Team: "",
+            Dive_Id_Dive: idDive, //ok
+            Temporary_Diver_Qualification: "", //ok
+            Current_Diver_Qualification: "", //ok
+            Diver_Role: "Diver",
+            Current_Instructor_Qualification: "", //ok
+            Nox_Percentage: 0,
+            Comment: "",
+            Paid_Amount: 0, //ok
+        }
+
+        Database.getUsersList(async allUsers => {
+            if (allUsers === undefined) allUsers = [];
+            for (let i = 0; i < req.body.length; i++) {
+                const userMail = req.body[i].userMail;
+                const foundUser = allUsers.find(user => user.hasOwnProperty('Mail') && user.Mail === userMail);
+                if (foundUser) {
+                    let tmpData = Object.assign({}, data); // Crée une nouvelle instance d'objet avec les propriétés de data
+                    tmpData.Diver_Id_Diver = foundUser.Id_Diver;
+                    tmpData.Current_Diver_Qualification = foundUser.Diver_Qualification;
+
+                    if (req.body[i].tmpQualif !== foundUser.Diver_Qualification && foundUser.Diver_Qualification !== "P5") {
+                        let levelUp = parseInt(foundUser.Diver_Qualification.split("P")[1]) + 1;
+                        let pLevelUp = "P" + levelUp;
+                        let maxDepth = await Database.getMaxDepthByLevel({
+                            Diver_Qualification: pLevelUp
+                        });
+                        if (req.body[i].tmpQualif.split("Pe")[0] == "") {
+                            if (req.body[i].tmpQualif !== ("Pe" + maxDepth.Guided_Diver_Depth)) return res.json({
+                                created: false,
+                                comment: "Guided diver depth is not correct for the current qualification"
+                            });
+                        } else if (req.body[i].tmpQualif.split("Pa")[0] == "") {
+                            if (req.body[i].tmpQualif !== ("Pa" + maxDepth.Autonomous_Diver_Depth)) return res.json({
+                                created: false,
+                                comment: "Autonomous diver depth is not correct for the current qualification"
+                            });
+                        }
+                        tmpData.Temporary_Diver_Qualification = req.body[i].tmpQualif
+                    };
+                    tmpData.Current_Instructor_Qualification = foundUser.Instructor_Qualification;
+                    if (foundUser.Instructor_Qualification !== "") tmpData.Paid_Amount = "E";
+                    else tmpData.Paid_Amount = "D";
+
+                    DiveTeamMember.push(tmpData);
+                }
+            }
+            Database.getDive({
+                Id_Dive: idDive
+            }, (dive) => {
+                if (dive === undefined) return res.json({
+                    created: false,
+                    comment: "Dive doesn't exist"
+                });
+                DiveTeamMember.forEach(member => {
+                    if (member.Paid_Amount === "E") member.Paid_Amount = dive.Instructor_Price;
+                    else member.Paid_Amount = dive.Diver_Price;
+                });
+
+                let allInserted = true;
+                DiveTeamMember.forEach(async member => {
+                    if (!allInserted) return;
+                    let updated = await Database.updateDiveTeamMember(member)
+                    if (!updated) {
+                        console.log("\t->Error, impossible to update member");
+                        allInserted = false;
+                    } else {
+                        console.log("\t->Dive Team Member updated");
+                    }
+                });
+                if (allInserted) {
+                    console.log("\t->All Dive Team Member updated");
+                    return res.json({
+                        created: true,
+                        comment: "All Dive Team Member updated"
+                    });
+                } else {
+                    console.log("\t->Error, impossible to update all Dive Team Member");
+                    return res.json({
+                        created: false,
+                        comment: "Impossible to update all Dive Team Member"
+                    });
+                }
+
+            });
+        });
+    });
+
+
 
 /* -------------------------------------------------------------------------- */
 /*                                CLUB MEMBERS                                */
@@ -1252,7 +1438,20 @@ app.post('/auth/club/club_members', keycloak.protect(),
         req.body.Birthdate = getDateFormat(new Date(req.body.Birthdate));
         req.body.License_Expiration_Date = getDateFormat(new Date(req.body.License_Expiration_Date));
         req.body.Medical_Certificate_Expiration_Date = getDateFormat(new Date(req.body.Medical_Certificate_Expiration_Date));
+
         console.log("--- Trying to create user ---");
+        if (req.body.Diver_Qualification === ("P0" || "P1")) {
+            if (req.body.Instructor_Qualification !== "EO") return res.json({
+                created: false,
+                comment: "Instructor qualification is not EO"
+            });
+        } else if (req.body.Diver_Qualification === ("P2" || "P3")) {
+            if (req.body.Instructor_Qualification !== ("E0" || "E1")) return res.json({
+                created: false,
+                comment: "Instructor qualification is not E1"
+            });
+        }
+
         let responseKc = await Keycloak_module.createUser(req.body, getUserName(req));
         if (responseKc) {
             console.log("\t->User created in KC");
@@ -1335,7 +1534,21 @@ app.put('/auth/club/club_members', keycloak.protect(),
         req.body.Medical_Certificate_Expiration_Date = getDateFormat(new Date(req.body.Medical_Certificate_Expiration_Date));
         let clientPassword = req.body.password;
         delete req.body.password;
+
         console.log("--- Trying to modify user ---");
+
+        if (req.body.Diver_Qualification === ("P0" || "P1")) {
+            if (req.body.Instructor_Qualification !== "EO") return res.json({
+                created: false,
+                comment: "Instructor qualification is not EO"
+            });
+        } else if (req.body.Diver_Qualification === ("P2" || "P3")) {
+            if (req.body.Instructor_Qualification !== ("E0" || "E1")) return res.json({
+                created: false,
+                comment: "Instructor qualification is not E1"
+            });
+        }
+
         Database.getUserInfoByMail(req.body.oldMail, (userInfo) => {
             if (userInfo === undefined) {
                 console.log("\t->Error, User doesn't exist");

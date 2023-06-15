@@ -189,6 +189,76 @@ body {
   align-self: center;
   margin: 0;
 }
+#emergencyModal .modal-wrapper .useful_numbers {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  width: fit-content;
+}
+#emergencyModal .modal-wrapper .useful_numbers div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  margin-bottom: 10px;
+}
+#emergencyModal .modal-wrapper .useful_numbers div a {
+  color: #120B8F;
+  font-size: 15px;
+  text-transform: uppercase;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  align-self: center;
+  margin: 0;
+  margin-right: 10px;
+  text-decoration: none;
+  transition: 0.2s;
+  margin: auto 0;
+}
+#emergencyModal .modal-wrapper .useful_numbers div a:hover {
+  color: white;
+}
+#emergencyModal .modal-wrapper .useful_numbers div i {
+  font-size: 15px;
+  margin: auto 0;
+  margin-right: 5px;
+}
+#emergencyModal .modal-wrapper .useful_numbers div h3 {
+  color: #120B8F;
+  font-size: 15px;
+  text-transform: uppercase;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  align-self: center;
+  margin: 0;
+  margin-right: 10px;
+}
+#emergencyModal .modal-wrapper .useful_numbers .download_button {
+  background-color: #f2574a;
+  border: white 2px solid;
+  outline: none;
+  padding: 20px 20px;
+  border-radius: 25px;
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 20px;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: 0.2s;
+}
+#emergencyModal .modal-wrapper .useful_numbers .download_button h3 {
+  margin: 0;
+  color: white;
+  font-weight: bold;
+}
+#emergencyModal .modal-wrapper .useful_numbers .download_button:hover {
+  background-color: #f2574a;
+  color: #f2574a;
+}
 #emergencyModal .modal-wrapper #txt_descr {
   margin-top: 70px;
 }
@@ -495,7 +565,8 @@ body {
 }
 .diveInfos .plongeeInfos .date,
 .diveInfos .plongeeInfos .heure,
-.diveInfos .plongeeInfos .location {
+.diveInfos .plongeeInfos .location,
+.diveInfos .plongeeInfos .type {
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -504,7 +575,8 @@ body {
 }
 .diveInfos .plongeeInfos .date h2,
 .diveInfos .plongeeInfos .heure h2,
-.diveInfos .plongeeInfos .location h2 {
+.diveInfos .plongeeInfos .location h2,
+.diveInfos .plongeeInfos .type h2 {
   flex-wrap: nowrap;
   white-space: nowrap;
   font-size: 20px;
@@ -516,7 +588,8 @@ body {
 }
 .diveInfos .plongeeInfos .date p,
 .diveInfos .plongeeInfos .heure p,
-.diveInfos .plongeeInfos .location p {
+.diveInfos .plongeeInfos .location p,
+.diveInfos .plongeeInfos .type p {
   height: fit-content;
   width: calc(50% - 0px);
   font-size: 15px;
@@ -531,13 +604,15 @@ body {
 }
 .diveInfos .plongeeInfos .date p.adress_title,
 .diveInfos .plongeeInfos .heure p.adress_title,
-.diveInfos .plongeeInfos .location p.adress_title {
+.diveInfos .plongeeInfos .location p.adress_title,
+.diveInfos .plongeeInfos .type p.adress_title {
   font-size: 20px;
   color: #120B8F;
 }
 .diveInfos .plongeeInfos .date div,
 .diveInfos .plongeeInfos .heure div,
-.diveInfos .plongeeInfos .location div {
+.diveInfos .plongeeInfos .location div,
+.diveInfos .plongeeInfos .type div {
   display: flex;
   width: 50%;
   flex-direction: column;
@@ -546,7 +621,8 @@ body {
 }
 .diveInfos .plongeeInfos .date div p,
 .diveInfos .plongeeInfos .heure div p,
-.diveInfos .plongeeInfos .location div p {
+.diveInfos .plongeeInfos .location div p,
+.diveInfos .plongeeInfos .type div p {
   width: 100%;
 }
 .divers {
@@ -962,4 +1038,22 @@ body {
 }
 .palanquee_table .palanquee_item .time_container .time .input .button-group {
   display: none;
+}
+.save_button {
+  width: auto;
+  height: fit-content;
+  display: flex;
+  margin: 50px auto;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border-radius: 25px;
+  background-color: #f2574a;
+  color: white;
+  font-size: 15px;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
 }

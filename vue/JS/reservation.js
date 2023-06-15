@@ -506,11 +506,30 @@ function setEvents(ev_) {
                 document.querySelector(".rating").style.display = "none";
             }
             //! ATTENTION CONDITION A REFAIRE
-            if (my_role == "dp") {
+            let midnight_before = new Date(eventClicked.start);
+            midnight_before.setHours(0, 0, 0, 0);
+            let midnight_after = new Date(eventClicked.start);
+            midnight_after.setHours(23, 59, 59, 999);
+            if (my_role == "dp" && new Date() > midnight_before && new Date() < midnight_after) {
+                document.querySelector(".edit_rapport").querySelector("i").classList = "fa-solid fa-file-circle-plus edit_rapport";
                 document.querySelector(".edit_rapport").style.display = "flex";
             } else {
-                document.querySelector(".edit_rapport").style.display = "none";
+                if (my_role == "dp" && new Date() > midnight_after) {
+                    document.querySelector(".edit_rapport").querySelector("i").classList = "fa-solid fa-floppy-disk edit_rapport";
+                    document.querySelector(".edit_rapport").style.display = "flex";
+                } else {
+
+                    document.querySelector(".edit_rapport").style.display = "none";
+                }
             }
+
+            // Si la date de fin est passée, alors on affiche l'icone pour voter
+            if (new Date(eventClicked.end) < new Date() && my_role == "user") {
+                document.querySelector(".rating").style.display = "flex";
+            } else {
+                document.querySelector(".rating").style.display = "none";
+            }
+
             if (dp_in_event) {
                 document.querySelectorAll("#reserveButton").forEach(function (button) {
                     button.style.display = "none";
@@ -564,6 +583,9 @@ function setEvents(ev_) {
                     document.querySelector("#timeline_view").style.height = "calc(" + $("#global-view").height() + "px - 40px)";
             }, 0);
             let adress = eventClicked.extendedProps.location.Site_Name;
+            adress += "\n" + eventClicked.extendedProps.location.Track_Number + " " + eventClicked.extendedProps.location.Track_Type + " " + eventClicked.extendedProps.location.Track_Name;
+            adress += "\n" + eventClicked.extendedProps.location.Zip_Code + " " + eventClicked.extendedProps.location.City_Name;
+            adress += "\n" + eventClicked.extendedProps.location.Country_Name;
             document.querySelector("#eventLocation").innerText = adress;
             adress = adress.replace(/(\r\n|\n|\r)/gm, " ");
             document.querySelector("#eventLocation").href = "https://www.google.com/maps/search/?api=1&query=" + adress;
@@ -712,8 +734,7 @@ function setEvents(ev_) {
 
     //! Check si il est déja inscrit
     events.forEach(function (event) {
-        if (!(event.users == [] || my_role == "club")) {
-            ;
+        if (!event.users == [] && my_role != "club") {
             event.users.forEach(function (user) {
                 if (user.Mail == me.mail) {
                     event.backgroundColor = "#f2574a";
@@ -881,10 +902,10 @@ create_event_button.addEventListener("click", function () {
     allDivers.forEach(function (diver) {
         console.log(diver);
         if (diver.Diver_Qualification == "P5") {
-            let option = "<li data-value='" + diver.Mail + "'><a><i class='fa-solid fa-user'></i>" + diver.Firstname + " " + diver.Lastname + "</a></li>";
+            let option = "<li data-value='" + diver.Mail + "'><a><i class='fa-solid fa-user'></i><div class=user-info-list><span class=name>" + diver.Firstname + " " + diver.Lastname + "</span><span class=mail>"+diver.Mail+"</span></div></a></li>";
             select_dp.querySelector(".option-list").innerHTML += option;
         }
-        let option = "<li data-value='" + diver.Mail + "'><a><i class='fa-solid fa-user'></i>" + diver.Firstname + " " + diver.Lastname + "</a></li>";
+        let option = "<li data-value='" + diver.Mail + "'><a><i class='fa-solid fa-user'></i><div class=user-info-list><span class=name>" + diver.Firstname + " " + diver.Lastname + "</span><span class=mail>"+diver.Mail+"</span></div></a></li>";
         select_diver.querySelector(".option-list").innerHTML += option;
     });
 });
@@ -947,6 +968,7 @@ validate_event.addEventListener("click", function (e) {
     let end = new Date(beginDate + " " + endTime);
     //find in Llocations the location with the same name as the one in the input
     let location = locations.find(location => location.name == document.querySelector(".location_select").querySelector(".select-input").innerText);
+    location = location.name;
     let divePrice = document.querySelector("#eventPriceInputDiver").value;
     let instructorPrice = document.querySelector("#eventPriceInputInstructor").value;
     let comment = document.querySelector("#eventComment").value;
@@ -1001,7 +1023,7 @@ validate_event.addEventListener("click", function (e) {
         console.log("Users to register :");
         console.log(usersToRegister);
         console.log(data)
-        // addEvent(data, usersToRegister);
+        addEvent(data, usersToRegister);
         validate_event.disabled = true;
         validate_event.innerHTML = "<img src='../img/loading_animation.svg' alt='loading' class='loading'>";
         validate_event.style.height = "40px";
@@ -1093,22 +1115,22 @@ function edit_event(info) {
         let option;
         if (diver.Diver_Qualification == "P5") {
             if (diver.Mail == dp.Mail) {
-                option = "<li class=active data-value='" + diver.Mail + "'><a><i class='fa-solid fa-user'></i>" + diver.Firstname + " " + diver.Lastname + "</a></li>";
+            option = "<li data-value='" + diver.Mail + "'><a><i class='fa-solid fa-user'></i><div class=user-info-list><span class=name>" + diver.Firstname + " " + diver.Lastname + "</span><span class=mail>"+diver.Mail+"</span></div></a></li>";
             } else {
-                option = "<li data-value='" + diver.Mail + "'><a><i class='fa-solid fa-user'></i>" + diver.Firstname + " " + diver.Lastname + "</a></li>";
+                option = "<li data-value='" + diver.Mail + "'><a><i class='fa-solid fa-user'></i><div class=user-info-list><span class=name>" + diver.Firstname + " " + diver.Lastname + "</span><span class=mail>"+diver.Mail+"</span></div></a></li>";
             }
             select_dp.querySelector(".option-list").innerHTML += option;
         }
-        option = "<li data-value='" + diver.Mail + "'><a><i class='fa-solid fa-user'></i>" + diver.Firstname + " " + diver.Lastname + "</a></li>";
+        option = "<li data-value='" + diver.Mail + "'><a><i class='fa-solid fa-user'></i><div class=user-info-list><span class=name>" + diver.Firstname + " " + diver.Lastname + "</span><span class=mail>"+diver.Mail+"</span></div></a></li>";
         select_diver.querySelector(".option-list").innerHTML += option;
     });
     // set divers already selected
-    let diver_list=info.event.extendedProps.users;
-    document.querySelector("#modifyEventModal .diver_list_dropdown .select-input").innerHTML="";
-    diver_list.forEach(function(diver){
-        if(diver.Diver_Role!="DP"){
-            select_diver.querySelector(".option-list").querySelectorAll("li").forEach(function(li){
-                if(li.innerText==diver.Firstname+" "+diver.Lastname){
+    let diver_list = info.event.extendedProps.users;
+    document.querySelector("#modifyEventModal .diver_list_dropdown .select-input").innerHTML = "";
+    diver_list.forEach(function (diver) {
+        if (diver.Diver_Role != "DP") {
+            select_diver.querySelector(".option-list").querySelectorAll("li").forEach(function (li) {
+                if (li.innerText.includes(diver.Firstname + " " + diver.Lastname)) {
                     li.click();
                 }
             })
@@ -1168,7 +1190,7 @@ function edit_event(info) {
         let end = new Date(beginDate + " " + endTime);
         //find in Llocations the location with the same name as the one in the input
         let location = locations.find(location => location.name == document.querySelector(".location_list_dropdown").querySelector(".select-input").innerText);
-        location=location.name;
+        location = location.name;
         let divePrice = document.querySelector("#eventPriceInputDiver_modify").value;
         let instructorPrice = document.querySelector("#eventPriceInputInstructor_modify").value;
         let comment = document.querySelector("#eventComment_modify").value;
@@ -1185,9 +1207,9 @@ function edit_event(info) {
             dp_mail = "";
         }
 
-        
-        
-        
+
+
+
         let diverListMail = [];
         document.querySelectorAll("#modifyEventModal .diver_list_dropdown .short-tag").forEach(function (diver) {
             let diver_name = diver.innerText.replace("\n×", "");

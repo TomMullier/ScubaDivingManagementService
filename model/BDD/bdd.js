@@ -486,6 +486,52 @@ class BDD {
     }
 
     /* -------------------------------------------------------------------------- */
+    /*                              DIVE_TEAM_MEMBER                              */
+    /* -------------------------------------------------------------------------- */
+
+    createDiveTeamMember(data, callback) {
+        let toInsert = [];
+        data.forEach(member => {
+            toInsert.push([member.Diver_Id_Diver, member.Dive_Team_Id_Dive_Team, member.Dive_Id_Dive, member.Temporary_Diver_Qualification, member.Current_Diver_Qualification, member.Diver_Role, member.Current_Instructor_Qualification, member.Nox_Percentage, member.Comment, member.Paid_Amount]);
+        });
+        let query = 'INSERT INTO Dive_Team_Member (Diver_Id_Diver, Dive_Team_Id_Dive_Team, Dive_Id_Dive, Temporary_Diver_Qualification, Current_Diver_Qualification, Diver_Role, Current_Instructor_Qualification, Nox_Percentage, Comment, Paid_Amount) VALUES ?';
+        this.con.query(query, [toInsert], (err, result) => {
+            if (err) {
+                console.log(err);
+                callback(false);
+            } else {
+                callback(true);
+            }
+        })
+    }
+
+    getDiveTeamMember(data, callback) {
+        let query = 'SELECT * FROM  Dive_Team_Member WHERE ?';
+        this.con.query(query, data, (err, result) => {
+            if (err || !result[0]) {
+                if (err) console.log(err);
+                callback(undefined);
+            } else {
+                return callback(result);
+            }
+        })
+    }
+
+    async updateDiveTeamMember(data) {
+        return new Promise((resolve, reject) => {
+            let query = 'UPDATE Dive_Team_Member SET ? WHERE Dive_Id_Dive = ? AND Diver_Id_Diver = ?'
+            this.con.query(query, [data, data.Dive_Id_Dive, data.Diver_Id_Diver], (err, result) => {
+                if (err) {
+                    console.log(err);
+                    resolve(false)
+                } else {
+                    resolve(true);
+                }
+            })
+        })
+    }
+
+    /* -------------------------------------------------------------------------- */
     /*                                  MAX DEPTH                                 */
     /* -------------------------------------------------------------------------- */
 
@@ -498,6 +544,20 @@ class BDD {
             } else {
                 return callback(result);
             }
+        })
+    }
+
+    async getMaxDepthByLevel(data) {
+        return new Promise((resolve, reject) => {
+            const query = 'SELECT * FROM Max_Depth_for_Qualification WHERE ?';
+            this.con.query(query, data, (err, result) => {
+                if (err || !result[0]) {
+                    if (err) console.log(err);
+                    resolve(undefined);
+                } else {
+                    resolve(result[0]);
+                }
+            })
         })
     }
 }

@@ -103,11 +103,9 @@
                     <div class="location_container">
                         <h3>Lieu de l'évènement</h3>
                         <div class="search_location">
-                            <input type="text" id="eventLocationInput_modify" name="eventLocationInput"
-                                placeholder="Rechercher" value="">
-                            <div class="location_list_dropdown" style="display:none">
+                            <select class="location_list_dropdown" data-role="select">
                                 
-                            </div>
+                            </select>
                             
                         </div>
                     </div>
@@ -138,11 +136,9 @@
                     <div>
                         <h3>Directeur de Plongée</h3>
                         <div class="search_location_DP">
-                            <input type="text" id="eventDPInput_modify" name="eventDPInput" placeholder="Rechercher"
-                                value="">
-                            <div class="DP_list_dropdown" style="display:none">
+                            <select data-role="select" class="DP_list_dropdown">
                                 
-                            </div>
+                            </select>
                         </div>
                     </div>
                     <div>
@@ -153,11 +149,9 @@
                     <div>
                         <h3>Plongeurs obligatoires</h3>
                         <div class="search_location_diver">
-                            <input type="text" id="eventDiverInput_modify" name="eventDiverInput"
-                                placeholder="Rechercher (0 inscrits)" value="">
-                            <div class="diver_list_dropdown" style="display:none">
+                            <select data-role="select" multiple class="diver_list_dropdown">
                         
-                            </div>
+                            </select>
                         </div>
                     </div>
 
@@ -198,7 +192,7 @@
                         </div>
                         <div class="location_container">
                             <h3>Lieu de l'évènement</h3>
-                            <div class="search_location">
+                            <div class="search_location" data-filter-placeholder="Lieu">
                                 <select class="location_select" data-role="select">                  
                                 </select>
                             </div>
@@ -231,7 +225,7 @@
                         <div>
                             <h3>Directeur de Plongée</h3>
                             <div class="search_location_DP">
-                                <select data-role="select" class="DP_list_dropdown">
+                                <select data-role="select" class="DP_list_dropdown" data-filter-placeholder="Directeur de plongée">
                                 </select>
                             </div>
                         </div>
@@ -243,8 +237,7 @@
                         <div>
                             <h3>Plongeurs obligatoires</h3>
                             <div class="search_location_diver">
-                                <select class="diver_list_dropdown" data-role="select" multiple>
-                                    
+                                <select class="diver_list_dropdown" data-role="select" multiple data-filter-placeholder="Plongeurs">  
                                 </select>
                             </div>
                         </div>

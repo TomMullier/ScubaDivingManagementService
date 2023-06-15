@@ -1181,9 +1181,30 @@ app.get('/auth/dp/palanquee/get_palanquee', keycloak.protect(), function (req, r
 /* --------------------------------- CREATE --------------------------------- */
 
 app.post('/auth/dp/palanquee', keycloak.protect(),
-    body("Start_Date").trim().escape(),
+    body("*.userMail").trim().toLowerCase(),
+    body("*.tmpQualif").trim().escape(),
     function(req, res){
+        if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(422).json({
+            errors: errors.array()
+        });
         console.log(req.body);
+        let idDive = req.session.idDive;
+
+        // pour chaque user, stocker
+        // - 
+        req.body.forEach(user => {
+            Database.getUserInfoByMail(user.userMail, userInfo => {
+                if (userInfo === undefined) return res.json({
+                    created: false,
+                    comment: "User doesn't exist"
+                });
+                
+
+            })
+        })
+
         res.json({
             created: true
         })

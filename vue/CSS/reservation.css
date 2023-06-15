@@ -1140,20 +1140,31 @@ body {
   flex-direction: column;
   width: 45%;
 }
+#createEventModal .modal-wrapper .left div .search_location i,
+#modifyEventModal .modal-wrapper .left div .search_location i {
+  color: #f2574a;
+  margin-right: 5px;
+}
 #createEventModal .modal-wrapper .left div .search_location .location_select,
-#modifyEventModal .modal-wrapper .left div .search_location .location_select {
+#modifyEventModal .modal-wrapper .left div .search_location .location_select,
+#createEventModal .modal-wrapper .left div .search_location .location_list_dropdown,
+#modifyEventModal .modal-wrapper .left div .search_location .location_list_dropdown {
   border-radius: 5px;
   border: 1px solid #120B8F;
   font-family: 'Montserrat', sans-serif;
   font-size: 15px;
 }
 #createEventModal .modal-wrapper .left div .search_location .location_select i,
-#modifyEventModal .modal-wrapper .left div .search_location .location_select i {
+#modifyEventModal .modal-wrapper .left div .search_location .location_select i,
+#createEventModal .modal-wrapper .left div .search_location .location_list_dropdown i,
+#modifyEventModal .modal-wrapper .left div .search_location .location_list_dropdown i {
   color: #f2574a;
   margin-right: 5px;
 }
 #createEventModal .modal-wrapper .left div .search_location .location_select input,
-#modifyEventModal .modal-wrapper .left div .search_location .location_select input {
+#modifyEventModal .modal-wrapper .left div .search_location .location_select input,
+#createEventModal .modal-wrapper .left div .search_location .location_list_dropdown input,
+#modifyEventModal .modal-wrapper .left div .search_location .location_list_dropdown input {
   width: 100%;
   flex-basis: fit-content;
   text-align: left;
@@ -1163,7 +1174,9 @@ body {
   color: #9dacc4;
 }
 #createEventModal .modal-wrapper .left div .search_location .location_select .option-list a,
-#modifyEventModal .modal-wrapper .left div .search_location .location_select .option-list a {
+#modifyEventModal .modal-wrapper .left div .search_location .location_select .option-list a,
+#createEventModal .modal-wrapper .left div .search_location .location_list_dropdown .option-list a,
+#modifyEventModal .modal-wrapper .left div .search_location .location_list_dropdown .option-list a {
   padding: 0;
   padding-left: 10px;
   font-size: 15px;
@@ -1171,7 +1184,9 @@ body {
   text-align: left;
 }
 #createEventModal .modal-wrapper .left div .search_location .location_select .option-list a i,
-#modifyEventModal .modal-wrapper .left div .search_location .location_select .option-list a i {
+#modifyEventModal .modal-wrapper .left div .search_location .location_select .option-list a i,
+#createEventModal .modal-wrapper .left div .search_location .location_list_dropdown .option-list a i,
+#modifyEventModal .modal-wrapper .left div .search_location .location_list_dropdown .option-list a i {
   margin-right: 5px;
   color: #f2574a;
   font-size: 15px;

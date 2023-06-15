@@ -953,11 +953,11 @@ validate_event.addEventListener("click", function (e) {
     let needs = document.querySelector("#eventNeedInput").value;
     let max = document.querySelector("#eventDiverNumberInput").value;
     let type = document.querySelector("#eventTypeInput").value;
-    let dp_ = document.querySelector(".DP_list_dropdown .select-input").innerText;
+    let dp_ = document.querySelector("#createEventModal .DP_list_dropdown .select-input").innerText;
     let dp = allDivers.find(diver => diver.Firstname + " " + diver.Lastname == dp_);
 
     let private_ = document.querySelector("#eventPrivateInput").checked;
-    if(dp!= undefined){
+    if (dp != undefined) {
         dp_mail = dp.Mail;
     } else {
         dp_mail = "";
@@ -1045,203 +1045,10 @@ function setUserInfos() {
 
 let search_diver_edit = document.querySelector("#eventDiverInput_modify");
 
-search_diver_edit.addEventListener("focusout", function () {
-    setTimeout(function () {
-        document.querySelector("#modifyEventModal .diver_list_dropdown").style.display = "none";
-        let dps = document.querySelectorAll("#modifyEventModal .diver_item");
-        dps.forEach(function (dp) {
-            dp.style.display = "none";
-        });
-        search_diver_edit.value = "";
-        detectDivers_edit();
-    }, 200);
-});
 
-search_diver_edit.addEventListener("click", function () {
-    detectDivers_edit();
-    let dps = document.querySelectorAll("#modifyEventModal .diver_item");
-    document.querySelector("#modifyEventModal .diver_list_dropdown").style.display = "none";
-    // eventClicked.extendedProps.users.forEach(function (user) {
-    //     dps.forEach(function (dp) {
-    //         if (dp.querySelector("#diver_mail").className == user.Mail) {
-    //             dp.querySelector("input").checked = true;
-    //         }
-    //     });
-    // });
 
-    dps.forEach(function (dp) {
-        if (dp.querySelector("input").checked) {
-            dp.style.display = "flex";
-            document.querySelector("#modifyEventModal .diver_list_dropdown").style.display = "flex";
-        } else {
-            dp.style.display = "none";
-        }
-    });
-});
 
-search_diver_edit.addEventListener("input", function checkInputDiver_edit() {
-    detectDivers();
-    let search = search_diver_edit.value;
-    let divers = document.querySelectorAll("#modifyEventModal .diver_item");
-    divers.forEach(function (diver) {
 
-        diver.querySelector("input").addEventListener("click", function () {
-            document.querySelector("#modifyEventModal .diver_list_dropdown").style.display = "none";
-            search_diver_edit.value = "";
-
-            checkInputDiver_edit();
-        });
-        if (diver.innerText.toLowerCase().includes(search.toLowerCase())) {
-            diver.style.display = "flex";
-            document.querySelector("#modifyEventModal .diver_list_dropdown").style.display = "flex";
-        } else {
-            if (diver.querySelector("input").checked) {
-                diver.style.display = "flex";
-            } else {
-                diver.style.display = "none";
-            }
-        }
-
-    });
-
-    let display = false;
-    divers.forEach(function (diver) {
-        if (diver.style.display == "flex") {
-            display = true;
-        }
-    });
-    if (search_diver_edit.value == "") {
-        display = false;
-    }
-    if (display) {
-        document.querySelector("#modifyEventModal .diver_list_dropdown").style.display = "flex";
-    } else {
-        document.querySelector("#modifyEventModal .diver_list_dropdown").style.display = "none";
-    }
-});
-
-function detectDivers_edit() {
-    let divers = document.querySelectorAll("#modifyEventModal .diver_item");
-    let number_of_diver = 0;
-    divers.forEach(function (diver) {
-        if (diver.querySelector(".checkbox_item").checked) {
-            number_of_diver++;
-        }
-    });
-    search_diver_edit.placeholder = "Rechercher" + " (" + number_of_diver + " inscrits)";
-}
-
-let search_dp_edit = document.querySelector("#eventDPInput_modify");
-
-search_dp_edit.addEventListener("click", function () {
-    let dps = document.querySelectorAll("#modifyEventModal .DP_item");
-    document.querySelector("#modifyEventModal .DP_list_dropdown").style.display = "flex";
-    dps.forEach(function (dp) {
-
-        dp.style.display = "flex";
-        dp.addEventListener("click", function () {
-            search_dp_edit.value = dp.querySelector(".name_contain").innerText;
-            dp_mail = dp.querySelector("#DP_mail").className;
-            document.querySelector("#modifyEventModal .DP_list_dropdown").style.display = "none";
-        });
-    });
-});
-search_dp_edit.addEventListener("focusout", function () {
-    setTimeout(function () {
-        document.querySelector("#modifyEventModal .DP_list_dropdown").style.display = "none";
-        let dps = document.querySelectorAll("#modifyEventModal .DP_item");
-        dps.forEach(function (dp) {
-            dp.style.display = "none";
-        });
-    }, 200);
-});
-
-search_dp_edit.addEventListener("input", function () {
-    let search = search_dp_edit.value;
-    let dps = document.querySelectorAll("#modifyEventModal .DP_item");
-    dps.forEach(function (dp) {
-        if (dp.innerText.toLowerCase().includes(search.toLowerCase())) {
-            dp.style.display = "flex";
-            document.querySelector("#modifyEventModal .DP_list_dropdown").style.display = "flex";
-            dp.addEventListener("click", function () {
-                search_dp_edit.value = dp.querySelector(".name_contain").innerText;
-                dp_mail = dp.querySelector("#DP_mail").className;
-                document.querySelector("#modifyEventModal .DP_list_dropdown").style.display = "none";
-            });
-        } else {
-            dp.style.display = "none";
-        }
-
-    });
-    let display = false;
-    dps.forEach(function (dp) {
-        if (dp.style.display == "flex") {
-            display = true;
-        }
-    });
-    if (search_dp_edit.value == "") {
-        display = true;
-    }
-    if (display) {
-        document.querySelector("#modifyEventModal .DP_list_dropdown").style.display = "flex";
-    } else {
-        document.querySelector("#modifyEventModal .DP_list_dropdown").style.display = "none";
-    }
-});
-
-let search_location_edit = document.querySelector("#eventLocationInput_modify");
-
-search_location_edit.addEventListener("click", function () {
-    let location_ = document.querySelectorAll(".location_item");
-    location_.forEach(function (location) {
-        document.querySelector("#modifyEventModal .location_list_dropdown").style.display = "flex";
-        location.style.display = "flex";
-        location.addEventListener("click", function () {
-            search_location_edit.value = location.innerText;
-            document.querySelector("#modifyEventModal .location_list_dropdown").style.display = "none";
-        });
-    });
-});
-search_location_edit.addEventListener("focusout", function () {
-    setTimeout(function () {
-        document.querySelector("#modifyEventModal .location_list_dropdown").style.display = "none";
-        let location_ = document.querySelectorAll(".location_item");
-        location_.forEach(function (location) {
-            location.style.display = "none";
-        });
-    }, 200);
-});
-search_location_edit.addEventListener("input", function () {
-    let search = search_location_edit.value;
-    let location_ = document.querySelectorAll(".location_item");
-    location_.forEach(function (location) {
-        if (location.innerText.toLowerCase().includes(search.toLowerCase())) {
-            document.querySelector("#modifyEventModal .location_list_dropdown").style.display = "flex";
-            location.style.display = "flex";
-            location.addEventListener("click", function () {
-                search_location_edit.value = location.innerText;
-                document.querySelector("#modifyEventModal .location_list_dropdown").style.display = "none";
-            });
-        } else {
-            location.style.display = "none";
-        }
-
-    });
-    let display = false;
-    location_.forEach(function (location) {
-        if (location.style.display == "flex") {
-            display = true;
-        }
-    });
-    if (search_location_edit.value == "") {
-        display = true;
-    }
-    if (display) {
-        document.querySelector("#modifyEventModal  .location_list_dropdown").style.display = "flex";
-    } else {
-        document.querySelector("#modifyEventModal  .location_list_dropdown").style.display = "none";
-    }
-});
 
 function edit_event(info) {
     // Open modale
@@ -1264,41 +1071,68 @@ function edit_event(info) {
     }
 
     let location_dropdown_edit = document.querySelector("#modifyEventModal .location_list_dropdown");
-    location_dropdown_edit.innerHTML = "";
+    location_dropdown_edit.querySelector(".option-list").innerHTML = "";
+    let _location = info.event.extendedProps.location.Site_Name;
     locations.forEach(function (location) {
-        let location_item = document.createElement("H4");
-        location_item.classList.add("location_item");
-        location_item.innerText = location.name;
-        location_dropdown_edit.appendChild(location_item);
+        let option;
+        location_dropdown_edit.querySelector(".select-input").innerHTML = "<i class='fas fa-map-marker-alt'></i>" + _location;
+        if (location.name == _location) {
+            option = "<li class=active data-text='" + location.name + "' data-value='" + location.name + "'><a><i class='fas fa-map-marker-alt'></i>" + location.name + "</a></li>";
+        } else {
+            option = "<li data-text='" + location.name + "' data-value='" + location.name + "'><a><i class='fas fa-map-marker-alt'></i>" + location.name + "</a></li>";
+        }
+        location_dropdown_edit.querySelector(".option-list").innerHTML += option;
     });
+    let select_dp = document.querySelector("#modifyEventModal .DP_list_dropdown")
+    select_dp.querySelector(".option-list").innerHTML = "";
+    let dp = info.event.extendedProps.users.find(user => user.Diver_Role == "DP");
+    select_dp.querySelector(".select-input").innerHTML = "<i class='fa-solid fa-user'></i>" + dp.Firstname + " " + dp.Lastname;
+    let select_diver = document.querySelector("#modifyEventModal .diver_list_dropdown");
+    select_diver.querySelector(".option-list").innerHTML = "";
+    allDivers.forEach(function (diver) {
+        let option;
+        if (diver.Diver_Qualification == "P5") {
+            if (diver.Mail == dp.Mail) {
+                option = "<li class=active data-value='" + diver.Mail + "'><a><i class='fa-solid fa-user'></i>" + diver.Firstname + " " + diver.Lastname + "</a></li>";
+            } else {
+                option = "<li data-value='" + diver.Mail + "'><a><i class='fa-solid fa-user'></i>" + diver.Firstname + " " + diver.Lastname + "</a></li>";
+            }
+            select_dp.querySelector(".option-list").innerHTML += option;
+        }
+        option = "<li data-value='" + diver.Mail + "'><a><i class='fa-solid fa-user'></i>" + diver.Firstname + " " + diver.Lastname + "</a></li>";
+        select_diver.querySelector(".option-list").innerHTML += option;
+    });
+    // set divers already selected
+    let diver_list=info.event.extendedProps.users;
+    document.querySelector("#modifyEventModal .diver_list_dropdown .select-input").innerHTML="";
+    diver_list.forEach(function(diver){
+        if(diver.Diver_Role!="DP"){
+            select_diver.querySelector(".option-list").querySelectorAll("li").forEach(function(li){
+                if(li.innerText==diver.Firstname+" "+diver.Lastname){
+                    li.click();
+                }
+            })
+        }
+    });
+
+
+
 
     // Remplir les champs avec les valeurs de info
     document.querySelector("#eventDateInput_modify").value = info.event.start.toISOString().slice(0, 10);
     document.querySelector("#eventStartInput_modify").value = info.event.start.toLocaleTimeString().slice(0, 5);
     document.querySelector("#eventEndInput_modify").value = info.event.end.toLocaleTimeString().slice(0, 5);
-    document.querySelector("#eventLocationInput_modify").value = info.event.extendedProps.location.Site_Name;
+    // document.querySelector("#eventLocationInput_modify").value = info.event.extendedProps.location.Site_Name;
     document.querySelector("#eventPriceInputDiver_modify").value = info.event.extendedProps.divePrice;
     document.querySelector("#eventPriceInputInstructor_modify").value = info.event.extendedProps.InstructorPrice;
     document.querySelector("#eventComment_modify").value = info.event.extendedProps.comment;
     document.querySelector("#eventNeedInput_modify").value = info.event.extendedProps.needs;
     document.querySelector("#eventDiverNumberInput_modify").value = info.event.extendedProps.max;
     document.querySelector("#eventTypeInput_modify").value = info.event.extendedProps.diveType;
-
-    setDiversListsHTML_Edit();
-    info.event._def.extendedProps.users.forEach(function (user) {
-        if (user.Diver_Role == "DP") {
-            document.querySelector("#eventDPInput_modify").value = user.Firstname + " " + user.Lastname;
-        } else {
-            document.querySelectorAll("#modifyEventModal .diver_item").forEach(function (diver) {
-                if (diver.querySelector("#diver_mail").className == user.Mail) {
-                    diver.querySelector("input").checked = true;
-                }
-            });
-        }
-    });
-    let numberToDisplay = info.event.extendedProps.users.length != 0 ? info.event.extendedProps.users.length - 1 : 0;
-    document.querySelector("#eventDiverInput_modify").placeholder = "Rechercher" + " (" + numberToDisplay + " inscrits)";
     document.querySelector("#eventPrivateInput_modify").checked = info.event.extendedProps.open === "true" ? true : false;
+
+
+
 
     //! SUPPRESSION EVENT
     document.querySelector(".delete_event_button").addEventListener("click", function () {
@@ -1332,32 +1166,38 @@ function edit_event(info) {
         let endTime = document.querySelector("#eventEndInput_modify").value;
         let begin = new Date(beginDate + " " + beginTime);
         let end = new Date(beginDate + " " + endTime);
-        let location = document.querySelector("#eventLocationInput_modify").value;
+        //find in Llocations the location with the same name as the one in the input
+        let location = locations.find(location => location.name == document.querySelector(".location_list_dropdown").querySelector(".select-input").innerText);
+        location=location.name;
         let divePrice = document.querySelector("#eventPriceInputDiver_modify").value;
         let instructorPrice = document.querySelector("#eventPriceInputInstructor_modify").value;
         let comment = document.querySelector("#eventComment_modify").value;
         let needs = document.querySelector("#eventNeedInput_modify").value;
         let max = document.querySelector("#eventDiverNumberInput_modify").value;
         let type = document.querySelector("#eventTypeInput_modify").value;
-        let dp_ = document.querySelector("#eventDPInput_modify").value;
         let private_ = document.querySelector("#eventPrivateInput_modify").checked;
-        let diverList = [];
-        // serach in all users for the mail corresponding to DP
-        allDivers.forEach(function (diver) {
-            if (diver.Firstname + " " + diver.Lastname == dp_) {
-                dp_mail = diver.Mail;
-            }
-        });
-        let event_to_create = new Event(begin, end, divePrice, instructorPrice, location, comment, needs, private_, max, 0, type);
-        document.querySelectorAll("#modifyEventModal .diver_item").forEach(function (diver) {
+        let dp_ = document.querySelector("#modifyEventModal .DP_list_dropdown .select-input").innerText;
+
+        let dp = allDivers.find(diver => diver.Firstname + " " + diver.Lastname == dp_);
+        if (dp != undefined) {
+            dp_mail = dp.Mail;
+        } else {
+            dp_mail = "";
+        }
+
+        
+        
+        
+        let diverListMail = [];
+        document.querySelectorAll("#modifyEventModal .diver_list_dropdown .short-tag").forEach(function (diver) {
+            let diver_name = diver.innerText.replace("\n×", "");
             allDivers.forEach(function (diver_) {
-                if (diver_.Mail == diver.querySelector("#diver_mail").className && diver_.Mail != dp_mail) {
-                    if (diver.querySelector("input").checked) {
-                        event_to_create.addUser(diver_.Mail);
-                    }
+                if (diver_.Firstname + " " + diver_.Lastname == diver_name) {
+                    diverListMail.push(diver_.Mail);
                 }
             });
-        });
+        })
+
         let data = {
             Start_Date: begin,
             End_Date: end,
@@ -1379,6 +1219,15 @@ function edit_event(info) {
             }
         }
         if (validate_autho) {
+            let event_to_create = new Event(begin, end, divePrice, instructorPrice, location, comment, needs, private_, max, 0, type);
+            event_to_create.addUser(diverListMail);
+            let usersToRegister = event_to_create.users;
+            console.log("Event to modify :");
+            console.log("Users to register :");
+            console.log(usersToRegister);
+            console.log(data)
+            console.log(oldEvent)
+
             validate_event.disabled = true;
             validate_event.innerHTML = "<img src='../img/loading_animation.svg' alt='loading' class='loading'>";
             validate_event.style.height = "20px";
@@ -1396,6 +1245,9 @@ function edit_event(info) {
                     input.style.border = "1px solid #f2574a";
                 }
             });
+            if (document.querySelector(".location_list_dropdown").querySelector(".select-input").innerText == "") {
+                document.querySelector(".location_list_dropdown").style.border = "1px solid #f2574a";
+            }
             setTimeout(function () {
                 validate_event.innerHTML = "Valider";
             }, 2000);

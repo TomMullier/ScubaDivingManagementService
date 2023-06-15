@@ -213,6 +213,7 @@ CREATE TABLE Dive_team(
 
 CREATE TABLE Dive_Team_Member(
    Diver_Id_Diver CHAR(36) ,
+   Dive_Id_Dive CHAR(36) ,
    Dive_team_Id_Dive_Team CHAR(36) ,
    Temporary_Diver_Qualification VARCHAR(50) ,
    Current_Diver_Qualification VARCHAR(50) ,
@@ -221,9 +222,9 @@ CREATE TABLE Dive_Team_Member(
    Nox_Percentage SMALLINT,
    Comment VARCHAR(1024) ,
    Paid_Amount SMALLINT,
-   CONSTRAINT PK_Dive_Team_Member PRIMARY KEY(Diver_Id_Diver, Dive_team_Id_Dive_Team),
+   CONSTRAINT PK_Dive_Team_Member PRIMARY KEY(Diver_Id_Diver, Dive_Id_Dive),
    CONSTRAINT FK_Dive_Team_Member_Diver FOREIGN KEY(Diver_Id_Diver) REFERENCES Diver(Id_Diver),
-   CONSTRAINT FK_Dive_Team_Member_Dive_team FOREIGN KEY(Dive_team_Id_Dive_Team) REFERENCES Dive_team(Id_Dive_Team)
+   CONSTRAINT FK_Dive_Team_Member_Dive FOREIGN KEY(Dive_Id_Dive) REFERENCES Dive(Id_Dive)
 );
 #COMMENT ON TABLE Dive_Team_Member IS 'All information related to diver are information collected at time of the dive. Hence if information about a diver change for example acquisition of new qualification, we get a trace of what was the qualification had a diver in that dive. This is a form of historization.';
 #COMMENT ON COLUMN Dive_Team_Member.Temporary_Diver_Qualification IS 'Temporary qualifiaction given by diver director to diver for that dive. PA12, PA20, PA40, PE20, PE40, PE60';
@@ -261,3 +262,7 @@ INSERT INTO Max_Depth_for_Qualification (Diver_Qualification, Guided_Diver_Depth
 INSERT INTO Max_Depth_for_Qualification (Diver_Qualification, Guided_Diver_Depth, Autonomous_Diver_Depth) VALUES ('P3', 60, 60);
 INSERT INTO Max_Depth_for_Qualification (Diver_Qualification, Guided_Diver_Depth, Autonomous_Diver_Depth) VALUES ('P4', 60, 60);
 INSERT INTO Max_Depth_for_Qualification (Diver_Qualification, Guided_Diver_Depth, Autonomous_Diver_Depth) VALUES ('P5', 60, 60);
+INSERT INTO Max_Depth_for_Qualification (Diver_Qualification, Guided_Diver_Depth, Autonomous_Diver_Depth) VALUES ('E1', 6, 0);
+INSERT INTO Max_Depth_for_Qualification (Diver_Qualification, Guided_Diver_Depth, Autonomous_Diver_Depth) VALUES ('E2', 20, 0);
+INSERT INTO Max_Depth_for_Qualification (Diver_Qualification, Guided_Diver_Depth, Autonomous_Diver_Depth) VALUES ('E3', 40, 0);
+INSERT INTO Max_Depth_for_Qualification (Diver_Qualification, Guided_Diver_Depth, Autonomous_Diver_Depth) VALUES ('E4', 60, 0);

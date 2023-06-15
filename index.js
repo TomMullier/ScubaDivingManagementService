@@ -1113,6 +1113,8 @@ app.get('/auth/dp/palanquee', keycloak.protect(), function (req, res) {
     });
 })
 
+/* ---------------------------------- READ ---------------------------------- */
+
 app.get('/auth/dp/palanquee/get_palanquee', keycloak.protect(), function (req, res) {
     if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
     // if (!req.session.idDive) {
@@ -1123,7 +1125,7 @@ app.get('/auth/dp/palanquee/get_palanquee', keycloak.protect(), function (req, r
     //     });
     // };
     Database.getDive({
-        Id_Dive: "3e0a06de-9847-4eab-943b-a5764b59e396"
+        Id_Dive: "3e0a06de-9847-4eab-943b-a5764b59e396" //! en dur /-> req.session.idDive 
     }, (dive) => {
         if (dive === undefined) return res.json({
             data: undefined,
@@ -1175,6 +1177,18 @@ app.get('/auth/dp/palanquee/get_palanquee', keycloak.protect(), function (req, r
         });
     });
 });
+
+/* --------------------------------- CREATE --------------------------------- */
+
+app.post('/auth/dp/palanquee', keycloak.protect(),
+    body("Start_Date").trim().escape(),
+    function(req, res){
+        console.log(req.body);
+        res.json({
+            created: true
+        })
+    }
+)
 
 /* -------------------------------------------------------------------------- */
 /*                                CLUB MEMBERS                                */

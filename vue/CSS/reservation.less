@@ -835,46 +835,41 @@
                     flex-direction: column;
                     width: 45%;
 
-                    input {
-                        width: 100%;
-                    }
-
-                    .location_list_dropdown {
-                        position: absolute;
-                        display: none;
-                        flex-direction: column;
-                        justify-content: center;
-                        align-items: center;
-                        width: calc(22% - 32px);
-                        height: auto;
-                        background-color: white;
-                        border-bottom-left-radius: 10px;
-                        border-bottom-right-radius: 10px;
-                        z-index: 9999;
-                        margin-top: 35px;
-                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+                    .location_select {
+                        border-radius: 5px;
                         border: 1px solid @dark_blue;
-                        max-height: 200px;
-                        overflow-y: scroll;
-                        overflow-x: hidden;
+                        font-family: @body_font;
+                        font-size: 15px;
+                            i{
+                                color: @orange;
+                                margin-right: 5px;
+                            }
+                        input {
+                            width: 100%;
+                            flex-basis: fit-content;
+                            text-align: left;
+                            padding-left: 10px;
+                            font-family: @body_font;
+                            font-size: 15px;
+                            color: darken(@grey, 10%);
+                        }
 
-                        h4 {
-                            color: @dark_blue;
+                        .option-list a {
+                            padding: 0;
+                            padding-left: 10px;
                             font-size: 15px;
                             font-family: @body_font;
-                            text-align: center;
-                            // text-transform: uppercase;
-                            width: calc(100% - 22px);
-                            padding: 10px;
-                            margin: 0;
+                            text-align: left;
 
-                            &:hover {
-                                cursor: pointer;
-                                background-color: lighten(@grey, 10%);
+                            i {
+                                margin-right: 5px;
                                 color: @orange;
+                                font-size: 15px;
+
                             }
                         }
                     }
+
                 }
 
                 textarea {
@@ -986,135 +981,56 @@
                     flex-direction: column;
                     width: 45%;
 
-                    input {
-                        width: 100%;
+                    i{
+                        color: @orange;
+                        margin-right: 5px;
                     }
-
-                    .DP_list_dropdown {
-                        .DP_item {
-                            display: flex;
-                            flex-direction: column;
-                            align-items: flex-start;
-                            justify-content: center;
-                            padding-left: 10px;
-                            &:hover {
-                                cursor: pointer;
-                                background-color: lighten(@grey, 10%);
-                                color: @orange;
-                            }
-
-                            div {
-                                margin: 0;
-                                padding: 0;
-                                color: @dark_blue;
-                                font-size: 15px;
-                                font-family: @body_font;
-                                text-align: left;
-                                text-transform: uppercase;
-                                margin-right: 20px;
-                                font-weight: bold;
-                            }
-
-                            h4 {
-                                margin: 0;
-                                padding: 0;
-                                color: @grey;
-                                font-size: 15px;
-                                font-family: @body_font;
-                                text-align: left;
-                                text-transform: none;
-                                &:hover {
-                                    cursor: pointer;
-                                    background-color: lighten(@grey, 10%);
-                                    color: @grey;
-                                }
-                            }
-
-                        }
-                    }
-
                     .DP_list_dropdown,
                     .diver_list_dropdown {
-                        position: absolute;
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
-                        align-items: center;
-                        width: calc(22% - 32px);
-                        height: auto;
-                        background-color: white;
-                        border-bottom-left-radius: 10px;
-                        border-bottom-right-radius: 10px;
-                        z-index: 9999;
-                        margin-top: 35px;
-                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+                        border-radius: 5px;
                         border: 1px solid @dark_blue;
-                        max-height: 200px;
-                        overflow-y: scroll;
-                        overflow-x: hidden;
-
-                        h4 {
-                            color: @dark_blue;
-                            font-size: 15px;
-                            font-family: @body_font;
-                            text-align: center;
-                            text-transform: uppercase;
-                            width: calc(100% - 22px);
-                            padding: 10px;
-                            margin: 0;
-
-                            &:hover {
-                                cursor: pointer;
-                                background-color: lighten(@grey, 10%);
-                                color: @orange;
+                        font-family: @body_font;
+                        font-size: 15px;
+                        .select-input{
+                            .short-tag{
+                                width: fit-content;
+                            }
+                            .title{
+                                i{
+                                    color: @orange;
+                                    margin-right: 5px;
+                                }
+                            }
+                            .remover{
+                                margin-left:5px;
                             }
                         }
+                        input {
+                            width: 100%;
+                            flex-basis: fit-content;
+                            text-align: left;
+                            padding-left: 10px;
+                            font-family: @body_font;
+                            font-size: 15px;
+                            color: darken(@grey, 10%);
+                        }
 
-                        .diver_item {
-                            display: flex;
-                            flex-direction: row;
-                            align-items: center;
-                            justify-content: space-between;
+                        .option-list a {
+                            padding: 0;
+                            padding-left: 10px;
+                            font-size: 15px;
+                            font-family: @body_font;
+                            text-align: left;
 
-                            .checkbox_item {
-                                width: auto;
-                                height: auto;
-                            }
+                            i {
+                                margin-right: 5px;
+                                color: @orange;
+                                font-size: 15px;
 
-                            .info_contain {
-                                display: flex;
-                                flex-direction: column;
-                                align-items: flex-start;
-                                justify-content: center;
-                                padding-left: 10px;
-
-                                h4 {
-                                    margin: 0;
-                                    padding: 0;
-                                    color: @grey;
-                                    font-size: 15px;
-                                    font-family: @body_font;
-                                    text-align: left;
-                                    text-transform: none;
-                                }
-
-                                .name_contain {
-                                    display: flex;
-                                    flex-direction: row;
-                                    align-items: center;
-                                    justify-content: flex-start;
-                                    margin: 0;
-                                    padding: 0;
-                                    color: @dark_blue;
-                                    font-size: 15px;
-                                    font-family: @body_font;
-                                    text-align: left;
-                                    text-transform: uppercase;
-                                    margin-right: 20px;
-                                }
                             }
                         }
                     }
+
                 }
             }
         }
@@ -1184,12 +1100,14 @@
         transition: 0.2s;
         text-transform: uppercase;
         margin-bottom: 20px;
-        img{
+
+        img {
             width: 20px;
             height: 20px;
-            margin:0;
+            margin: 0;
             padding: 0;
         }
+
         &:hover {
             background-color: @dark_orange;
         }

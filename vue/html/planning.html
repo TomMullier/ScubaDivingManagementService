@@ -10,17 +10,15 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css">
+    <link rel="stylesheet" href="https://cdn.metroui.org.ua/v4/css/metro-all.min.css">
     <link rel="stylesheet" href="../CSS/modal.css" />
     <link rel="stylesheet" href="../CSS/reservation.css">
 
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.7/index.global.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/typescript/4.0.5/typescript.min.js"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.js"></script> -->
     
     <script type=module src="../JS/@fullcalendar/core/locales/fr.js"></script>
-    <!-- <script type=module src='https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@6.1.7/index.global.min.js'></script> -->
     <script src="https://kit.fontawesome.com/b89837f3ad.js" crossorigin="anonymous"></script>
-    <!-- <script src='../JS/@fullcalendar/interaction/index.global.js'></script> -->
 
     <title>Plannification</title>
 </head>
@@ -110,6 +108,7 @@
                             <div class="location_list_dropdown" style="display:none">
                                 
                             </div>
+                            
                         </div>
                     </div>
                     <div class="price_container">
@@ -200,11 +199,11 @@
                         <div class="location_container">
                             <h3>Lieu de l'évènement</h3>
                             <div class="search_location">
-                                <input required type="text" id="eventLocationInput" name="eventLocationInput"
-                                    placeholder="Rechercher" value="">
-                                <div class="location_list_dropdown" id=location_list_dropdown_create></div>
+                                <select class="location_select" data-role="select">                  
+                                </select>
                             </div>
                         </div>
+                        
                         <div class="price_container">
                             <h3>Prix plongeurs</h3>
                             <input required type="number" id="eventPriceInputDiver" name="eventPriceInput"
@@ -232,11 +231,8 @@
                         <div>
                             <h3>Directeur de Plongée</h3>
                             <div class="search_location_DP">
-                                <input required type="text" id="eventDPInput" name="eventDPInput" placeholder="Rechercher"
-                                    value="">
-                                <div class="DP_list_dropdown" style="display:none">
-                                   
-                                </div>
+                                <select data-role="select" class="DP_list_dropdown">
+                                </select>
                             </div>
                         </div>
                         <div>
@@ -247,11 +243,9 @@
                         <div>
                             <h3>Plongeurs obligatoires</h3>
                             <div class="search_location_diver">
-                                <input type="text" id="eventDiverInput" name="eventDiverInput"
-                                    placeholder="Rechercher (0 inscrits)" value="">
-                                <div class="diver_list_dropdown" style="display:none">
+                                <select class="diver_list_dropdown" data-role="select" multiple>
                                     
-                                </div>
+                                </select>
                             </div>
                         </div>
 
@@ -461,6 +455,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="../JS/modal.js"></script>
     <script type=module src="../JS/reservation.js"></script>
+    <script src="https://cdn.metroui.org.ua/v4/js/metro.min.js"></script>
 </body>
 
 </html>

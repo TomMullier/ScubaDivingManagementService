@@ -42,6 +42,20 @@ fetch('/auth/dp/palanquee/get_palanquee', {
         setPage(res.data);
     })
 
+/* ----------------------- SAVE PALANQUEE USER QUALIF ----------------------- */
+function savePalanqueeUserQualif(data){
+    fetch('/auth/dp/palanquee', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    }).then(res => res.json())
+    .then(res => {
+        console.log(res)
+    })
+}
+
 
 /* -------------------------------------------------------------------------- */
 /*                                    CODE                                    */

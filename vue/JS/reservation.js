@@ -85,7 +85,6 @@ fetch('/auth/planning/get_planning', {
         });
         if (res.allUsers && my_role == "club") {
             allDivers = res.allUsers;
-            setDiversListsHTML();
         }
         res.allEvents.forEach(function (event) {
             console.log(event);
@@ -713,12 +712,15 @@ function setEvents(ev_) {
 
     //! Check si il est déja inscrit
     events.forEach(function (event) {
-        event.users.forEach(function (user) {
-            if (user.Mail == me.mail) {
-                event.backgroundColor = "#f2574a";
-                return;
-            }
-        });
+        if (!(event.users == [] || my_role == "club")) {
+            ;
+            event.users.forEach(function (user) {
+                if (user.Mail == me.mail) {
+                    event.backgroundColor = "#f2574a";
+                    return;
+                }
+            });
+        }
         if (event.start < new Date()) {
             event.backgroundColor = "grey";
         }
@@ -866,113 +868,26 @@ create_event_button.addEventListener("click", function () {
     let end = new Date();
     end.setHours(end.getHours() + 2);
     document.querySelector("#eventEndInput").value = end.toLocaleString().slice(11, 16);
-    let location_dropdown = document.querySelector("#location_list_dropdown_create");
-    location_dropdown.innerHTML = "";
+    let location_select = document.querySelector(".location_select");
+    location_select.querySelector(".option-list").innerHTML = "";
     locations.forEach(function (location) {
-        let location_item = document.createElement("H4");
-        location_item.classList.add("location_item");
-        location_item.innerText = location.name;
-        location_dropdown.appendChild(location_item);
+        let option = "<li data-text='" + location.name + "' data-value='" + location.name + "'><a><i class='fas fa-map-marker-alt'></i>" + location.name + "</a></li>";
+        location_select.querySelector(".option-list").innerHTML += option;
     });
-})
-
-// Search of location 
-let search_location = document.querySelector("#eventLocationInput");
-search_location.addEventListener("click", function () {
-    let location_ = document.querySelectorAll(".location_item");
-    location_.forEach(function (location) {
-        document.querySelector("#createEventModal .location_list_dropdown").style.display = "flex";
-        location.style.display = "flex";
-        location.addEventListener("click", function () {
-            search_location.value = location.innerText;
-            document.querySelector("#createEventModal .location_list_dropdown").style.display = "none";
-        });
-    });
-});
-search_location.addEventListener("focusout", function () {
-    setTimeout(function () {
-        document.querySelector("#createEventModal .location_list_dropdown").style.display = "none";
-        let location_ = document.querySelectorAll(".location_item");
-        location_.forEach(function (location) {
-            location.style.display = "none";
-        });
-    }, 200);
-});
-search_location.addEventListener("input", function () {
-    let search = search_location.value;
-    let location_ = document.querySelectorAll(".location_item");
-    location_.forEach(function (location) {
-        if (location.innerText.toLowerCase().includes(search.toLowerCase())) {
-            document.querySelector("#createEventModal .location_list_dropdown").style.display = "flex";
-            location.style.display = "flex";
-            location.addEventListener("click", function () {
-                search_location.value = location.innerText;
-                document.querySelector("#createEventModal .location_list_dropdown").style.display = "none";
-            });
-        } else {
-            location.style.display = "none";
-        }
-
-    });
-    let display = false;
-    location_.forEach(function (location) {
-        if (location.style.display == "flex") {
-            display = true;
-        }
-    });
-    if (search_location.value == "") {
-        display = true;
-    }
-    if (display) {
-        document.querySelector("#createEventModal  .location_list_dropdown").style.display = "flex";
-    } else {
-        document.querySelector("#createEventModal  .location_list_dropdown").style.display = "none";
-    }
-});
-
-function setDiversListsHTML() {
-    // Set DP list in HTML
-    let DP_list = document.querySelector("#createEventModal .DP_list_dropdown");
-    DP_list.innerHTML = "";
-    let diver_DD = document.querySelector("#createEventModal .diver_list_dropdown");
-    diver_DD.innerHTML = "";
+    let select_dp = document.querySelector("#createEventModal .DP_list_dropdown")
+    select_dp.querySelector(".option-list").innerHTML = "";
+    let select_diver = document.querySelector("#createEventModal .diver_list_dropdown");
+    select_diver.querySelector(".option-list").innerHTML = "";
     allDivers.forEach(function (diver) {
+        console.log(diver);
         if (diver.Diver_Qualification == "P5") {
-            let info_contain = document.createElement("DIV");
-            info_contain.classList.add("DP_item");
-            let diver_item = document.createElement("H4");
-            diver_item.classList.add("diver_item");
-            let hidden = document.createElement("H4");
-            hidden.style.display = "flex";
-            hidden.className = diver.Mail;
-            hidden.innerText = diver.Mail;
-            hidden.id = "DP_mail";
-            let name_contain = document.createElement("DIV");
-            name_contain.classList.add("name_contain");
-            name_contain.innerHTML = diver.Firstname + " " + diver.Lastname;
-            info_contain.appendChild(name_contain);
-            info_contain.appendChild(hidden);
-            DP_list.appendChild(info_contain);
+            let option = "<li data-value='" + diver.Mail + "'><a><i class='fa-solid fa-user'></i>" + diver.Firstname + " " + diver.Lastname + "</a></li>";
+            select_dp.querySelector(".option-list").innerHTML += option;
         }
-        let info_contain = document.createElement("DIV");
-        info_contain.classList.add("info_contain");
-        let diver_item = document.createElement("H4");
-        diver_item.classList.add("diver_item");
-        let hidden = document.createElement("H4");
-        hidden.style.display = "flex";
-        hidden.className = diver.Mail;
-        hidden.innerText = diver.Mail;
-        hidden.id = "diver_mail";
-        diver_item.innerHTML = "<input type='checkbox' class='checkbox_item'>";
-        let name_contain = document.createElement("DIV");
-        name_contain.classList.add("name_contain");
-        name_contain.innerHTML = diver.Firstname + " " + diver.Lastname;
-        info_contain.appendChild(name_contain);
-        info_contain.appendChild(hidden);
-        diver_item.appendChild(info_contain);
-        diver_DD.appendChild(diver_item);
+        let option = "<li data-value='" + diver.Mail + "'><a><i class='fa-solid fa-user'></i>" + diver.Firstname + " " + diver.Lastname + "</a></li>";
+        select_diver.querySelector(".option-list").innerHTML += option;
     });
-}
+});
 
 function setDiversListsHTML_Edit() {
     // Set DP list in HTML
@@ -1019,141 +934,6 @@ function setDiversListsHTML_Edit() {
 }
 
 let dp_mail;
-let search_dp = document.querySelector("#eventDPInput");
-search_dp.addEventListener("click", function () {
-    let dps = document.querySelectorAll("#createEventModal .DP_item");
-    document.querySelector("#createEventModal .DP_list_dropdown").style.display = "flex";
-    dps.forEach(function (dp) {
-        dp.style.display = "flex";
-        dp.addEventListener("click", function () {
-            search_dp.value = dp.querySelector(".name_contain").innerText;
-            dp_mail = dp.querySelector("#DP_mail").className;
-            document.querySelector("#createEventModal .DP_list_dropdown").style.display = "none";
-        });
-    });
-});
-search_dp.addEventListener("focusout", function () {
-    setTimeout(function () {
-        document.querySelector("#createEventModal .DP_list_dropdown").style.display = "none";
-        let dps = document.querySelectorAll("#createEventModal .DP_item");
-        dps.forEach(function (dp) {
-            dp.style.display = "none";
-        });
-    }, 200);
-});
-
-search_dp.addEventListener("input", function () {
-    let search = search_dp.value;
-    let dps = document.querySelectorAll("#createEventModal .DP_item");
-    dps.forEach(function (dp) {
-        if (dp.innerText.toLowerCase().includes(search.toLowerCase())) {
-            dp.style.display = "flex";
-            document.querySelector("#createEventModal .DP_list_dropdown").style.display = "flex";
-            dp.addEventListener("click", function () {
-                search_dp.value = dp.querySelector(".name_contain").innerText;
-                dp_mail = dp.querySelector("#DP_mail").className;
-                document.querySelector("#createEventModal .DP_list_dropdown").style.display = "none";
-            });
-        } else {
-            dp.style.display = "none";
-        }
-
-    });
-    let display = false;
-    dps.forEach(function (dp) {
-        if (dp.style.display == "flex") {
-            display = true;
-        }
-    });
-    if (search_dp.value == "") {
-        display = true;
-    }
-    if (display) {
-        document.querySelector("#createEventModal .DP_list_dropdown").style.display = "flex";
-    } else {
-        document.querySelector("#createEventModal .DP_list_dropdown").style.display = "none";
-    }
-});
-
-let search_diver = document.querySelector("#eventDiverInput");
-
-search_diver.addEventListener("click", function () {
-    detectDivers();
-    let dps = document.querySelectorAll(".diver_item");
-    document.querySelector("#createEventModal .diver_list_dropdown").style.display = "none";
-
-    dps.forEach(function (dp) {
-        if (dp.querySelector("input").checked) {
-            dp.style.display = "flex";
-            document.querySelector("#createEventModal .diver_list_dropdown").style.display = "flex";
-        } else {
-            dp.style.display = "none";
-        }
-    });
-});
-
-search_diver.addEventListener("focusout", function () {
-    setTimeout(function () {
-        document.querySelector("#createEventModal .diver_list_dropdown").style.display = "none";
-        let dps = document.querySelectorAll(".diver_item");
-        dps.forEach(function (dp) {
-            dp.style.display = "none";
-        });
-        search_diver.value = "";
-        detectDivers();
-    }, 200);
-});
-
-search_diver.addEventListener("input", function checkInputDiver() {
-    detectDivers();
-    let search = search_diver.value;
-    let divers = document.querySelectorAll("#createEventModal .diver_item");
-    divers.forEach(function (diver) {
-
-        diver.querySelector("input").addEventListener("click", function () {
-            document.querySelector("#createEventModal .diver_list_dropdown").style.display = "none";
-            search_diver.value = "";
-            checkInputDiver();
-        });
-        if (diver.innerText.toLowerCase().includes(search.toLowerCase())) {
-            diver.style.display = "flex";
-            document.querySelector("#createEventModal .diver_list_dropdown").style.display = "flex";
-        } else {
-            if (diver.querySelector("input").checked) {
-                diver.style.display = "flex";
-            } else {
-                diver.style.display = "none";
-            }
-        }
-
-    });
-
-    let display = false;
-    divers.forEach(function (diver) {
-        if (diver.style.display == "flex") {
-            display = true;
-        }
-    });
-    if (search_diver.value == "") {
-        display = false;
-    }
-    if (display) {
-        document.querySelector("#createEventModal .diver_list_dropdown").style.display = "flex";
-    } else {
-        document.querySelector("#createEventModal .diver_list_dropdown").style.display = "none";
-    }
-});
-
-function detectDivers() {
-    let divers = document.querySelectorAll("#createEventModal .diver_item");
-    let number_of_diver = 0;
-    divers.forEach(function (diver) {
-        if (diver.querySelector("input").checked) {
-            number_of_diver++;
-        }
-    });
-    search_diver.placeholder = "Rechercher" + " (" + number_of_diver + " inscrits)";
-}
 
 
 let validate_event = document.querySelector("#createEventModal .create_event_button");
@@ -1165,27 +945,34 @@ validate_event.addEventListener("click", function (e) {
     let endTime = document.querySelector("#eventEndInput").value;
     let begin = new Date(beginDate + " " + beginTime);
     let end = new Date(beginDate + " " + endTime);
-    let location = document.querySelector("#eventLocationInput").value;
+    //find in Llocations the location with the same name as the one in the input
+    let location = locations.find(location => location.name == document.querySelector(".location_select").querySelector(".select-input").innerText);
     let divePrice = document.querySelector("#eventPriceInputDiver").value;
     let instructorPrice = document.querySelector("#eventPriceInputInstructor").value;
     let comment = document.querySelector("#eventComment").value;
     let needs = document.querySelector("#eventNeedInput").value;
     let max = document.querySelector("#eventDiverNumberInput").value;
     let type = document.querySelector("#eventTypeInput").value;
-    let dp_ = document.querySelector("#eventDPInput").value;
-    let private_ = document.querySelector("#eventPrivateInput").checked;
-    let diverList = [];
-    let event_to_create = new Event(begin, end, divePrice, instructorPrice, location, comment, needs, private_, max, 0, type);
+    let dp_ = document.querySelector(".DP_list_dropdown .select-input").innerText;
+    let dp = allDivers.find(diver => diver.Firstname + " " + diver.Lastname == dp_);
 
-    document.querySelectorAll("#createEventModal .diver_item").forEach(function (diver) {
+    let private_ = document.querySelector("#eventPrivateInput").checked;
+    if(dp!= undefined){
+        dp_mail = dp.Mail;
+    } else {
+        dp_mail = "";
+    }
+    let diverListMail = [];
+    document.querySelectorAll("#createEventModal .diver_list_dropdown .short-tag").forEach(function (diver) {
+        let diver_name = diver.innerText.replace("\n×", "");
         allDivers.forEach(function (diver_) {
-            if (diver_.Mail == diver.querySelector("#diver_mail").className && diver_.Mail != dp_mail) {
-                if (diver.querySelector("input").checked) {
-                    event_to_create.addUser(diver_.Mail);
-                }
+            if (diver_.Firstname + " " + diver_.Lastname == diver_name) {
+                diverListMail.push(diver_.Mail);
             }
         });
-    });
+    })
+
+
     let data = {
         Start_Date: begin,
         End_Date: end,
@@ -1199,11 +986,6 @@ validate_event.addEventListener("click", function (e) {
         Site_Name: location,
         dp: dp_mail, // MAIL
     }
-    let usersToRegister = event_to_create.users;
-    console.log("Evenement à créer :");
-    console.log(data);
-    console.log("Utilisateurs à inscrire :");
-    console.log(usersToRegister);
     let validate_autho = true
     for (const [key, value] of Object.entries(data)) {
         if (value == "" && key != "Comments" && key != "Special_Needs" && key != "users" && key != "Status") {
@@ -1211,7 +993,15 @@ validate_event.addEventListener("click", function (e) {
         }
     }
     if (validate_autho) {
-        addEvent(data, usersToRegister);
+        let event_to_create = new Event(begin, end, divePrice, instructorPrice, location, comment, needs, private_, max, 0, type);
+        event_to_create.addUser(diverListMail);
+        let usersToRegister = event_to_create.users;
+        console.log("Event to create :");
+        console.log(event_to_create);
+        console.log("Users to register :");
+        console.log(usersToRegister);
+        console.log(data)
+        // addEvent(data, usersToRegister);
         validate_event.disabled = true;
         validate_event.innerHTML = "<img src='../img/loading_animation.svg' alt='loading' class='loading'>";
         validate_event.style.height = "40px";
@@ -1232,6 +1022,9 @@ validate_event.addEventListener("click", function (e) {
                 input.style.border = "1px solid #f2574a";
             }
         });
+        if (document.querySelector(".location_select").querySelector(".select-input").innerText == "") {
+            document.querySelector(".location_select").style.border = "1px solid #f2574a";
+        }
         setTimeout(function () {
             validate_event.innerHTML = "Valider";
 

@@ -79,6 +79,22 @@ class BDD {
         })
     }
 
+    async getUserInfoByMailSync(data) {
+        return new Promise((resolve, reject) => {
+            const query = 'SELECT * FROM Diver WHERE ?';
+            this.con.query(query, data, (err, result) => {
+                if (err || !result[0]) {
+                    if (err) console.log(err);
+                    resolve(undefined)
+                } else {
+                    result[0].Lastname = desEscapeHtml(result[0].Lastname)
+                    resolve(result[0]);
+                }
+            })
+        })
+    }
+
+
     modifUser(data, callback) {
         data.Lastname = escapeHtml(data.Lastname);
         const query = 'UPDATE Diver SET ? WHERE Id_Diver = ?'
@@ -479,6 +495,27 @@ class BDD {
             } else {
                 result[0].Comments = desEscapeHtml(result[0].Comments);
                 result[0].Surface_Security = desEscapeHtml(result[0].Surface_Security);
+                result[0] = dateFormat(result[0]);
+                return callback(result[0]);
+            }
+        })
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*                                GET DIVE TEAM                               */
+    /* -------------------------------------------------------------------------- */
+
+    createDiveTeam(data, callback){
+        
+    }
+
+    getDiveTeam(data, callback) {
+        const query = 'SELECT * FROM Dive_Team WHERE ?';
+        this.con.query(query, data, (err, result) => {
+            if (err || !result[0]) {
+                if (err) console.log(err);
+                callback(undefined);
+            } else {
                 result[0] = dateFormat(result[0]);
                 return callback(result[0]);
             }

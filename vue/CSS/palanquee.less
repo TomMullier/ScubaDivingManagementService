@@ -146,6 +146,18 @@ body {
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        .last_modif{
+                font-size: 12px;
+                font-family: @body_font;
+                color: darken(@grey, 20%);
+                margin-bottom: 20px;
+                text-align: left;
+                display: flex;
+                flex-direction: row;
+                align-items: flex-start;
+                justify-content: flex-start;
+                width:100%;
+        }
 
         .plongeeInfos {
                 display: flex;
@@ -361,6 +373,7 @@ body {
         }
 }
 
+//! PAGE 3
 .palanquee_table {
         width: 100vw;
         height: fit-content;
@@ -389,7 +402,14 @@ body {
                         font-family: @body_font;
                         color: @dark_blue;
                         text-transform: uppercase;
+                }
+                .palanquee_infos{
+                        font-size: 20px;
+                        font-family: @body_font;
+                        color: @dark_blue;
                         margin-bottom: 20px;
+                        width:50%;
+                
                 }
 
                 .infos_container {

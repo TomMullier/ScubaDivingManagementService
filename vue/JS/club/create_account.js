@@ -208,7 +208,7 @@ function displayUsers() {
                                 modals.show("user-info", function () {
                                         menutoggle.classList.remove('active');
                                 })
-
+                                
                                 menutoggle.classList.toggle('active');
                                 menutoggle.classList.toggle('close-modal');
                                 let clicked = e.target
@@ -217,10 +217,11 @@ function displayUsers() {
                                 }
                                 let mail_clicked = clicked.querySelector(".infos").querySelector(".mail").innerHTML;
                                 let phone_clicked = clicked.querySelector(".infos").querySelector(".phone").innerHTML;
-
+                                
                                 document.querySelector("#mail_show").innerText = mail_clicked;
                                 document.querySelector("#phone_show").innerText = phone_clicked;
                                 let get_user = all_user.find(user => user.mail == mail_clicked && user.phone == phone_clicked);
+                                console.log(get_user)
                                 document.querySelector("#name_show").innerText = get_user.firstname + " " + get_user.lastname;
                                 document.querySelector("#birthdate_show").innerText = get_user.birthdate.split(" ")[0];
                                 document.querySelector("#licence_show").value = get_user.licenceNumber;

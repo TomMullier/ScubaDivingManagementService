@@ -560,6 +560,18 @@ body {
   align-items: center;
   justify-content: center;
 }
+.diveInfos .last_modif {
+  font-size: 12px;
+  font-family: 'Montserrat', sans-serif;
+  color: #7d91b1;
+  margin-bottom: 20px;
+  text-align: left;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+}
 .diveInfos .plongeeInfos {
   display: flex;
   flex-direction: column;
@@ -787,7 +799,13 @@ body {
   font-family: 'Montserrat', sans-serif;
   color: #120B8F;
   text-transform: uppercase;
+}
+.palanquee_table .palanquee_item .palanquee_infos {
+  font-size: 20px;
+  font-family: 'Montserrat', sans-serif;
+  color: #120B8F;
   margin-bottom: 20px;
+  width: 50%;
 }
 .palanquee_table .palanquee_item .infos_container {
   display: flex;

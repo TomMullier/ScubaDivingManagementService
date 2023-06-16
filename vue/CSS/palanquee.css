@@ -472,6 +472,15 @@ body {
   flex-direction: row;
   width: fit-content;
 }
+.scroll .button_save_container_palanquee {
+  width: auto;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 10px auto;
+}
 .scroll::-webkit-scrollbar {
   display: none;
 }
@@ -482,9 +491,11 @@ body {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  position: absolute;
+  position: fixed;
   bottom: 0;
-  margin-bottom: 20px;
+  padding-bottom: 20px;
+  background-color: white;
+  z-index: 999;
 }
 .scrollDots .dot {
   width: 10px;
@@ -512,7 +523,7 @@ body {
   margin: 0 10px;
   color: white;
   font-size: 20px;
-  position: absolute;
+  position: fixed;
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
@@ -754,8 +765,11 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   margin: 50px auto;
+  max-height: 75vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 .palanquee_table .palanquee_item {
   width: 90%;
@@ -1043,7 +1057,7 @@ body {
   width: auto;
   height: fit-content;
   display: flex;
-  margin: 50px auto;
+  margin: 10px auto;
   flex-direction: row;
   align-items: center;
   justify-content: center;

@@ -182,16 +182,19 @@ CREATE TABLE Dive(
 #COMMENT ON COLUMN Dive.Instructor_Price IS 'Actual Price for instructor. Some dive sites have pricing based on role: diver or instructor. By default instructor price from planned dive.';
 #COMMENT ON COLUMN Dive.Max_Ppo2 IS 'Maximum of Ppo2 that diver must follow. This has an impact on max of depth for diver diving with Nitrox. Could be a decision of Dive Director. In any case, Max Ppo2 shouldn t be greater tha 1.6 bar.';
 
-CREATE TABLE Dive_team(
+CREATE TABLE Dive_Team(
    Id_Dive_Team CHAR(36)  NOT NULL,
-   Max_Depth INT NOT NULL,
-   Max_Duration INT NOT NULL,
-   Actual_Depth DECIMAL(5,2)   NOT NULL,
-   Actual_Duration VARCHAR(50)  NOT NULL,
-   Dive_Type VARCHAR(50)  NOT NULL,
    Sequence_number SMALLINT NOT NULL,
-   Start_Time TIME NOT NULL,
-   Stop_Time VARCHAR(50)  NOT NULL,
+   Max_Depth INT NOT NULL,
+   Actual_Depth DECIMAL(5,2),
+   Max_Duration TIME NOT NULL,
+   Actual_Duration TIME,
+   Dive_Type VARCHAR(50) NOT NULL,
+   Floor_3 TIME,
+   Floor_6 TIME,
+   Floor_9 TIME,
+   Start_Time DATETIME NOT NULL,
+   Stop_Time DATETIME,
    Comment VARCHAR(1024) ,
    Diver_Id_Diver CHAR(36) ,
    Dive_Id_Dive CHAR(36)  NOT NULL,
@@ -207,6 +210,9 @@ CREATE TABLE Dive_team(
 #COMMENT ON COLUMN Dive_team.Actual_Duration IS 'Actual duration of dive';
 #COMMENT ON COLUMN Dive_team.Dive_Type IS 'Dive type for this team: Exploration, Education';
 #COMMENT ON COLUMN Dive_team.Sequence_number IS 'Sequence number of team in the dive. First is 1, second is 2 ....';
+#COMMENT ON COLUMN Dive_team.Floor_3 IS 'Decompression stop at 3m';
+#COMMENT ON COLUMN Dive_team.Floor_6 IS 'Decompression stop at 6m';
+#COMMENT ON COLUMN Dive_team.Floor_9 IS 'Decompression stop at 9m';
 #COMMENT ON COLUMN Dive_team.Start_Time IS 'Start of dive time';
 #COMMENT ON COLUMN Dive_team.Stop_Time IS 'Stop of dive time';
 #COMMENT ON COLUMN Dive_team.Comment IS 'Comments about dive in relationship with that team. Could be for examle information about issue on dive equipement of one diver.';
@@ -218,7 +224,7 @@ CREATE TABLE Dive_Team_Member(
    Temporary_Diver_Qualification VARCHAR(50) ,
    Current_Diver_Qualification VARCHAR(50) ,
    Diver_Role VARCHAR(50) ,
-   Current_Instructorr_Qualification VARCHAR(50) ,
+   Current_Instructor_Qualification VARCHAR(50) ,
    Nox_Percentage SMALLINT,
    Comment VARCHAR(1024) ,
    Paid_Amount SMALLINT,

@@ -501,6 +501,14 @@ app.post('/auth/planning/edit_palanquee', keycloak.protect(),
                     comment: "DP doesn't exist"
                 });
             }
+            if ((req.body.Dive_Type === "Exploration" && infoDp.Diver_Qualification !== "P5") || (req.body.Dive_Type === "Technique" && infoDp.Diver_Qualification !== ("E3" || "E4"))) {
+                console.log("\t->Error, DP is not P5 or E3/E4");
+                return res.json({
+                    created: false,
+                    comment: "DP is not P5 or E3/E4"
+                });
+            }
+            
             Database.getDiveSite({
                 Site_Name: req.body.Site_Name
             }, (locationInfo) => {
@@ -1242,7 +1250,6 @@ app.get('/auth/dp/palanquee/get_palanquee', keycloak.protect(), function (req, r
 app.post('/auth/dp/palanquee', keycloak.protect(),
     body("*.userMail").trim().toLowerCase(),
     function (req, res) {
-        console.log(req.body);
         if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(422).json({
@@ -1296,13 +1303,15 @@ app.post('/auth/dp/palanquee', keycloak.protect(),
                 }, (allDiveTeamMember) => {
                     if (allDiveTeamMember !== undefined) {
                         // si les membres de DiveTeamMember sont déjà dans allDiveTeamMember, on les supprime du tableau DiveTeamMember
+                        let diversFound = []
                         DiveTeamMember.forEach(member => {
                             let found = allDiveTeamMember.find(memberDiveTeam => memberDiveTeam.Diver_Id_Diver == member.Diver_Id_Diver);
-                            if (found) {
-                                let index = DiveTeamMember.indexOf(member);
-                                DiveTeamMember.splice(index, 1);
-                            }
+                            if (found) diversFound.push(member);
                         });
+                        diversFound.forEach(diver => {
+                            let index = DiveTeamMember.indexOf(diver);
+                            DiveTeamMember.splice(index, 1);
+                        })
                     }
                     if (DiveTeamMember.length == 0) return res.json({
                         created: true,
@@ -1327,6 +1336,169 @@ app.post('/auth/dp/palanquee', keycloak.protect(),
             });
         });
     });
+
+app.post('/auth/dp/palanquee/dive_team', keycloak.protect(),
+    body("*.Divers.*.Mail").trim().toLowerCase(),
+    body("*.Divers.*.Fonction").trim().escape(),
+    body("*.Params.Max_Depth").trim().escape(),
+    body("*.Params.Actual_Depth").trim().escape(),
+    body("*.Params.Max_Duration").trim().escape(),
+    body("*.Params.Actual_Duration").trim().escape(),
+    body("*.Params.Dive_Type").trim().escape(),
+    body("*.Params.Floor_3").trim().escape(),
+    body("*.Params.Floor_6").trim().escape(),
+    body("*.Params.Floor_9").trim().escape(),
+    body("*.Params.Start_Date").trim().escape(),
+    body("*.Params.End_Date").trim().escape(),
+    body("*.Params.Palanquee_Type").trim().escape(),
+    function (req, res) {
+        //console.log(req.body);
+        if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(422).json({
+            errors: errors.array()
+        });
+        let idDive = req.session.idDive;
+
+        let dataError = {
+            success: true,
+            comment: ""
+        }
+
+        // Vérifier le nombre de plongeurs par palanquee : si 2<=PA<=3 / 2<=PE<=5(ou 6 si 2 GP)
+        // Si baptême : 1 plongeur P0 et 1 GP dans une palanquée
+
+        // Vérifier au moins un GP par palanquée, sauf si niveau PA
+        // Vérifier que la profonduer prévue coincide avec le niveau des plongeurs de la palanquée
+
+        // Si technique : au moins un plongeur avec qualificatione E, attention à la profondeur max
+
+
+        // return res.json(dataError);
+        console.log("--- Verifying Palanquee Info ---");
+        Database.getMaxDepth(listMaxDepth => {
+            Object.keys(req.body).forEach(key => {
+                const palanquee = req.body[key];
+                const divers = palanquee.Divers;
+                const params = palanquee.Params;
+
+
+                if (params.Dive_Type === "Exploration") {
+                    if (params.Palanquee_Type === "Pa") {
+                        /* ---------------------------- PLONGEE AUTONOME ---------------------------- */
+                        // Vérification du nombre de plongeurs
+                        if (divers.length < 2 || divers.length > 3) {
+                            dataError.success = false;
+                            dataError.comment = `Palanquée n°${key} : le nombre de plongeurs est incorrect pour une plongée autonome`;
+                            return
+                        }
+
+                        // Vérification de la profondeur de plongée
+                        let maxDepth = parseInt(params.Max_Depth);
+                        // on cherche le plus petit niveau autonome parmi les plongeurs de la palanquée
+                        let minLevel = 60;
+                        divers.forEach(diver => {
+                            if (diver.Qualification === "P0") {
+                                dataError.success = false;
+                                dataError.comment = `Palanquée n°${key} : un plongeur est qualifié P0 alors que la plongée est autonome`;
+                                return
+                            }
+                            if (diver.Qualification.split("Pe")[0] == "") {
+                                dataError.success = false;
+                                dataError.comment = `Palanquée n°${key} : un plongeur à une qualification Pe alors que la plongée est autonome`;
+                                return
+                            }
+
+                            if (diver.Qualification.split("Pa")[0] == "") {
+                                let level = parseInt(diver.Qualification.split("Pa")[1]);
+                                if (level < minLevel) minLevel = level;
+                            } else {
+                                let depth = listMaxDepth.find(level => level.Diver_Qualification === diver.Qualification);
+                                if (depth) {
+                                    let level = depth.Autonomous_Diver_Depth;
+                                    if (level < minLevel) minLevel = level;
+                                }
+                            }
+                            if (minLevel < maxDepth) {
+                                dataError.success = false;
+                                dataError.comment = `Palanquée n°${key} : la profondeur prévue est trop importante pour le niveau d'un plongeur`;
+                                return
+                            }
+                        });
+
+
+
+                    } else if (params.Palanquee_Type === "Pe") {
+                        /* ---------------------------- PLONGEE ENCADREE ---------------------------- */
+                        let nbGp = 0;
+                        divers.forEach(diver => {
+                            // Comptage du nombre de GP
+                            if (diver.Fonction === "GP") nbGp++;
+                            // Vérification du baptème
+                            if (diver.Qualification === "P0" && divers.length !== 2) {
+                                dataError.success = false;
+                                dataError.comment = `Palanquée n°${key} : le nombre de plongeurs est incorrect pour un bapteme`;
+                                return
+                            }
+                        })
+                        if (dataError.success === false) return;
+                        // Vérification du nombre de GP
+                        if (nbGp === 0) {
+                            dataError.success = false;
+                            dataError.comment = `Palanquée n°${key} : il n'y a pas de guide de palanquée pour une plongée encadrée`;
+                            return
+                        }
+                        // Vérification du nombre de plongeurs
+                        if (!((divers.length >= 2 && divers.length <= 5 && nbGp >= 1) || (divers.length === 6 && nbGp >= 2))) {
+                            dataError.comment = `Palanquée n°${key} : le nombre de plongeurs est incorrect pour une plongée encadrée, ou il n'y a pas assez de guide de palanquée`;
+                            dataError.success = false;
+                            return
+                        }
+
+                        // Vérification de la profondeur de plongée
+                        let maxDepth = parseInt(params.Max_Depth);
+                        // on cherche le plus petit niveau autonome parmi les plongeurs de la palanquée
+                        let minLevel = 60;
+                        divers.forEach(diver => {
+                            if (diver.Qualification.split("Pa")[0] == "") {
+                                dataError.success = false;
+                                dataError.comment = `Palanquée n°${key} : un plongeur à une qualification Pa alors que la plongée est encadrée`;
+                                return
+                            }
+
+                            if (diver.Qualification.split("Pe")[0] == "") {
+                                let level = parseInt(diver.Qualification.split("Pe")[1]);
+                                if (level < minLevel) minLevel = level;
+                            } else {
+                                let depth = listMaxDepth.find(level => level.Diver_Qualification === diver.Qualification);
+                                if (depth) {
+                                    let level = depth.Guided_Diver_Depth;
+                                    if (level < minLevel) minLevel = level;
+                                }
+                            }
+                            if (minLevel < maxDepth) {
+                                dataError.success = false;
+                                dataError.comment = `Palanquée n°${key} : la profondeur prévue est trop importante pour le niveau d'un plongeur`;
+                                return
+                            }
+                        });
+
+                    }
+                } else if (params.Dive_Type === "Technique") {
+
+                }
+
+            })
+            return res.json(dataError);
+        });
+    });
+
+
+
+
+
+
+
 
 /* --------------------------------- UPDATE --------------------------------- */
 

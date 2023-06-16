@@ -86,6 +86,90 @@ function savePalanqueeUserQualif(data) {
         })
 }
 
+/* ----------------------------- SAVE DIVE TEAM ----------------------------- */
+let dataPalanquee = {
+    1: {
+        Divers: [{
+                Mail: "m.d@gmail.com",
+                Fonction: "Diver",
+                Qualification: "P1"
+            },
+            {
+                Mail: "d.p@gmail.com",
+                Fonction: "GP",
+                Qualification: "P4"
+            }, {
+                Mail: "m.d@gmail.com",
+                Fonction: "Diver",
+                Qualification: "Pe40"
+            },
+            {
+                Mail: "d.p@gmail.com",
+                Fonction: "Diver",
+                Qualification: "P1"
+            }, {
+                Mail: "m.d@gmail.com",
+                Fonction: "Diver",
+                Qualification: "P1"
+            },
+        ],
+        Params: {
+            Palanquee_Type: "Pe",
+            Dive_Type: "Exploration",
+            Max_Depth: 40,
+            Actual_Depth: 10,
+            Max_Duration: new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+            Actual_Duration: new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+            Floor_3: new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+            Floor_6: new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+            Floor_9: new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+            Start_Date: new Date(),
+            End_Date: new Date(),
+        }
+    },
+    2: {
+        Divers: [{
+                Mail: "m.d@gmail.com",
+                Fonction: "Diver",
+                Qualification: "Pa20"
+            },
+            {
+                Mail: "d.p@gmail.com",
+                Fonction: "Diver",
+                Qualification: "P1"
+            },
+        ],
+        Params: {
+            Palanquee_Type: "Pa",
+            Dive_Type: "Exploration",
+            Max_Depth: 12,
+            Actual_Depth: 10,
+            Max_Duration: new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+            Actual_Duration: new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+            Floor_3: new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+            Floor_6: new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+            Floor_9: new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+            Start_Date: new Date(),
+            End_Date: new Date(),
+        }
+    },
+
+}
+saveDiveTeam(dataPalanquee)
+
+function saveDiveTeam(data) {
+    fetch('/auth/dp/palanquee/dive_team', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(res => res.json())
+        .then(res => {
+            console.log(res)
+        })
+}
+
 
 /* -------------------------------------------------------------------------- */
 /*                                    CODE                                    */
@@ -107,8 +191,8 @@ function setPage(data) {
             document.querySelector(".DP_name").innerText = " " + diver.Firstname + " " + diver.Lastname;
         } else {
             let html_ = '<div class="diver_item"><div><p>' + diver.Firstname + ' ' + diver.Lastname + '</p></div><div><p>' + diver.Mail + '</p></div><div><p>' + diver.Phone + '</p></div><div><select name="" id="" class="diver_level">'
-            
-            html_ += '<option value="'+diver.Diver_Qualification+'">' + diver.Diver_Qualification + '</option>'
+
+            html_ += '<option value="' + diver.Diver_Qualification + '">' + diver.Diver_Qualification + '</option>'
             let currentLevel = diver.Diver_Qualification.split("P")[1];
             if (currentLevel != 5) {
                 currentLevel = parseInt(currentLevel);
@@ -121,18 +205,22 @@ function setPage(data) {
                 document.querySelector(".allDivers").innerHTML += html_;
             }
             document.querySelectorAll(".diver_level").forEach(function (element) {
-                if(diver.Temporary_Qualification != ""){
-                        element.value = diver.Temporary_Qualification;
-                }
-                if (element.value.includes("Pe") || element.value.includes("Pa")) {
-                    element.parentElement.querySelector("i").style.opacity = "1";
-                    element.parentElement.title = "Vous êtes responsable du changement de niveau du plongeur";
-    
-                } else {
-                    element.parentElement.querySelector("i").style.opacity = "0";
-                    element.parentElement.title = "";
-                }
-            })  
+                divers.forEach(function (diver_) {
+                    if (diver_.Temporary_Qualification != "" && diver_.Firstname + " " + diver_.Lastname == element.parentElement.parentElement.children[0].children[0].innerText) {
+                        element.value = diver_.Temporary_Qualification;
+                        console.log(diver_.Temporary_Qualification);
+                        console.log(element.parentElement.parentElement.children[0].children[0].innerText);
+                    }
+                    if (element.value.includes("Pe") || element.value.includes("Pa")) {
+                        element.parentElement.querySelector("i").style.opacity = "1";
+                        element.parentElement.title = "Vous êtes responsable du changement de niveau du plongeur";
+
+                    } else {
+                        element.parentElement.querySelector("i").style.opacity = "0";
+                        element.parentElement.title = "";
+                    }
+                })
+            })
         }
     })
     document.querySelectorAll(".diver_level").forEach(function (element) {
@@ -147,57 +235,90 @@ function setPage(data) {
             }
         })
     })
+    createAllPalanquee(data);
+    numberpalanquee=0;
+    addPalanquee(data);
 
-    // Set all selects
-    document.querySelector(".diver_item_container").querySelectorAll(".select").forEach(function (select) {
-        let list = select.querySelector(".option-list");
-        let html_tag = "<li data-text='Sélectionnez un plongeur' class=active><a>Sélectionnez un plongeur</a></li>";
-        list.innerHTML = html_tag;
-        divers.forEach(function (diver) {
-            if (diver.Diver_Role != "DP") {
-                html_tag = "<li class=option><a><div class=option_container><div class=name_item><h2>" + diver.Firstname + " " + diver.Lastname + "</h2><span>" + diver.Mail + "</span></div><div class=level>" + diver.Diver_Qualification + "</div></div></a></li>";
-                list.innerHTML += html_tag;
-            }
-        })
-    })
-    document.querySelector(".diver_item_container").querySelectorAll(".select").forEach(function (select) {
-        select.addEventListener("change", function () {
-            let diver = select.querySelector(".option-list").querySelector(".active");
-            updateSelectDivers(data, diver, select);
-        })
-    })
     loadingClose();
 };
 
-function updateSelectDivers(data, diver_selected, select) {
-    let diver_to_eliminate;
-    try {
-        diver_to_eliminate = diver_selected.querySelector("h2").innerText;
-    } catch (e) {
-        diver_to_eliminate = ""
+function addPalanquee(data) {
+    numberpalanquee += 1;
+    document.querySelector(".palanquee_" + numberpalanquee).style.display = "flex";
+    if(numberpalanquee<Math.floor(data.event.allDivers.length/2)){
+        add_buttons(data);
+    } else {
+        add_buttons(data);
+        document.querySelector(".add_palanquee").style.display = "none";
     }
+}
+
+
+let active = [];
+
+function setupSelect(data) {
+    let divers = data.event.allDivers;
+    let container = document.querySelectorAll(".diver_item_container");
+    container.forEach(function (element_) {
+        element_.querySelectorAll(".diver_item").forEach(function (select) {
+            select.innerHTML = "";
+            let option = document.createElement("option");
+            option.value = "";
+            option.innerText = "Sélectionnez un plongeur";
+            select.appendChild(option);
+            divers.forEach(function (diver) {
+                if (diver.Diver_Role != "DP") {
+                    option = document.createElement("option");
+                    option.value = diver.Mail;
+                    option.innerText = diver.Firstname + " " + diver.Lastname;
+                    select.appendChild(option);
+                }
+            })
+        })
+    })
+    document.querySelectorAll(".diver_item_container").forEach(function (element_) {
+        element_.querySelectorAll("select").forEach(function (select) {
+            select.removeEventListener("change", function () {});
+        })
+    })
+    document.querySelectorAll(".diver_item_container").forEach(function (element_) {
+        element_.querySelectorAll("select").forEach(function (select) {
+            select.addEventListener("change", function () {
+                active = [];
+                document.querySelectorAll(".diver_item_container").forEach(function (e) {
+                    e.querySelectorAll(".select").forEach(function (element) {
+                        if (element.querySelector(".select-input").innerText != "Sélectionnez un plongeur") {
+                            active.push(element.querySelector(".select-input").innerText.split("\n")[0]);
+                        }
+                    })
+                })
+                updateAllSelect(active, data);
+            })
+        })
+    })
+}
+
+
+function updateAllSelect(active, data) {
     let to_display = [];
+    //remove active array to all divers array
     data.event.allDivers.forEach(function (diver) {
-        if (diver.Firstname + " " + diver.Lastname != diver_to_eliminate) {
+        if (!active.includes(diver.Firstname + " " + diver.Lastname) && diver.Diver_Role != "DP") {
             to_display.push(diver);
         }
     })
-    updateAllSelect(diver_to_eliminate, to_display, select);
-}
-
-function updateAllSelect(diver_to_eliminate, to_display, select_to_avoid) {
-    document.querySelector(".diver_item_container").querySelectorAll(".select").forEach(function (select) {
-        if (select != select_to_avoid) {
+    document.querySelectorAll(".diver_item_container").forEach(function (element_) {
+        element_.querySelectorAll(".select").forEach(function (select) {
             let list = select.querySelector(".option-list");
             let html_tag = "<li data-text='Sélectionnez un plongeur' class=active><a>Sélectionnez un plongeur</a></li>";
             list.innerHTML = html_tag;
             to_display.forEach(function (diver) {
                 if (diver.Diver_Role != "DP") {
-                    html_tag = "<li class=option><a><div class=option_container><div class=name_item><h2>" + diver.Firstname + " " + diver.Lastname + "</h2><span>" + diver.Mail + "</span></div><div class=level>" + diver.Diver_Qualification + "</div></div></a></li>";
+                    html_tag = "<li class=option><a><div class=option_container><div class=name_item><h2>" + diver.Firstname + " " + diver.Lastname + "</h2><span>" + diver.Mail + "</span></div><div class=level>" + (diver.Temporary_Qualification != "" ? diver.Temporary_Qualification : diver.Diver_Qualification) + "</div></div></a></li>";
                     list.innerHTML += html_tag;
                 }
             })
-        }
+        })
     })
 }
 
@@ -287,3 +408,132 @@ document.querySelector(".save_change_level").addEventListener("click", function 
     //? Save button change level
     savePalanqueeUserQualif(data);
 })
+
+let numberpalanquee = 1
+
+function createAllPalanquee(data) {
+    let final = "";
+    // for (let i = 1; i <= data.event.allDivers.length / 2; i++) {
+    for (let i = 1; i <=Math.floor(data.event.allDivers.length/2); i++) {
+
+        let html_tag = '<div class="palanquee_item palanquee_' + i + '">'
+        html_tag += '<div class="palanquee_title">'
+        html_tag += '<h2>Palanquée ' + i + '</h2>'
+        html_tag += '</div>'
+        html_tag += '<div class="infos_container">'
+        html_tag += '<div class="diver_list">'
+        html_tag += '<h2>Plongeurs</h2>'
+        html_tag += '<div class="diver_item_container diver_item_container' + i + '">'
+        html_tag += '<select data-role="select" name="" id="" class="diver_item">'
+        html_tag += '</select>'
+        html_tag += '<select data-role="select" name="" id="" class="diver_item">'
+        html_tag += '</select>'
+        html_tag += '<select data-role="select" name="" id="" class="diver_item">'
+        html_tag += '</select>'
+        html_tag += '<select data-role="select" name="" id="" class="diver_item">'
+        html_tag += '</select>'
+        html_tag += '<select data-role="select" name="" id="" class="diver_item">'
+        html_tag += '</select>'
+        html_tag += '<select data-role="select" name="" id="" class="diver_item">'
+        html_tag += '</select>'
+        html_tag += '</div>'
+        html_tag += '</div>'
+        html_tag += '<div class="fonction_container">'
+        html_tag += '<h2>Fonction</h2>'
+        html_tag += '<div class="fonction_select_container">'
+        html_tag += '<select data-role="select" name="" id="" class="diver_item">'
+        html_tag += '<option value="">Sélectionnez une fonction</option>'
+        html_tag += '<option value="">Plongeur</option>'
+        html_tag += '<option value="">GP</option>'
+        html_tag += 'select>'
+        html_tag += 'select data-role="select" name="" id="" class="diver_item">'
+        html_tag += '<option value="">Sélectionnez une fonction</option>'
+        html_tag += '<option value="">Plongeur</option>'
+        html_tag += '<option value="">GP</option>'
+        html_tag += '</select>'
+        html_tag += '<select data-role="select" name="" id="" class="diver_item">'
+        html_tag += '<option value="">Sélectionnez une fonction</option>'
+        html_tag += '<option value="">Plongeur</option>'
+        html_tag += '<option value="">GP</option>'
+        html_tag += '</select>'
+        html_tag += '<select data-role="select" name="" id="" class="diver_item">'
+        html_tag += '<option value="">Sélectionnez une fonction</option>'
+        html_tag += '<option value="">Plongeur</option>'
+        html_tag += '<option value="">GP</option>'
+        html_tag += '</select>'
+        html_tag += '<select data-role="select" name="" id="" class="diver_item">'
+        html_tag += '<option value="">Sélectionnez une fonction</option>'
+        html_tag += '<option value="">Plongeur</option>'
+        html_tag += '<option value="">GP</option>'
+        html_tag += '</select>'
+        html_tag += '<select data-role="select" name="" id="" class="diver_item">'
+        html_tag += '<option value="">GP</option>'
+        html_tag += '</select>'
+        html_tag += '</div>'
+        html_tag += '</div>'
+        html_tag += '<div class="param_container">'
+        html_tag += '<h2>Paramètres</h2>'
+        html_tag += '<div class="contain">'
+        html_tag += '<div class="prevu">'
+        html_tag += '<h2>Prévus</h2>'
+        html_tag += '<input type="number" data-role="input" data-prepend="Profondeur : " data-append="m">'
+        html_tag += '<input type="time" data-role="input" data-prepend="Temps : " data-append="min">'
+        html_tag += '</div>'
+        html_tag += '<div class="prevu">'
+        html_tag += '<h2>Réels</h2>'
+        html_tag += '<input type="number" data-role="input" data-prepend="Profondeur : " data-append="m">'
+        html_tag += '<input type="time" data-role="input" data-prepend="Temps : " data-append="min">'
+        html_tag += '</div>'
+        html_tag += '</div>'
+        html_tag += '<div class="contain2">'
+        html_tag += '<h2>Paliers</h2>'
+        html_tag += '<input type="number" data-role="input" data-prepend="3m : " data-append="min">'
+        html_tag += '<input type="number" data-role="input" data-prepend="6m : " data-append="min">'
+        html_tag += '<input type="number" data-role="input" data-prepend="9m : " data-append="min">'
+        html_tag += '</div>'
+        html_tag += '</div>'
+        html_tag += '</div>'
+        html_tag += '<div class="time_container">'
+        html_tag += '<div class="time">'
+        html_tag += '<h2>Heure de départ</h2>'
+        html_tag += '<input type="time" data-role="input">'
+        html_tag += '</div>'
+        html_tag += '<div class="time">'
+        html_tag += '<h2>Heure de retour</h2>'
+        html_tag += '<input type="time" data-role="input">'
+        html_tag += '</div>'
+        html_tag += '</div>'
+        html_tag += '</div>'
+
+        final += html_tag;
+    }
+    document.querySelector(".palanquee_table").innerHTML = final;
+    setupSelect(data);
+    for (let i = 2; i <=Math.floor(data.event.allDivers.length/2); i++) {
+        try{document.querySelector(".palanquee_" + i).style.display = "none";
+        } catch (error) {}
+    }
+
+
+}
+
+function add_buttons(data) {
+    let html_tag = '<div class="button_save_container_palanquee">'
+    html_tag += '<div class="save_button add_palanquee" style="margin-top:0px;">'
+    html_tag += '<i class="fas fa-plus"></i>'
+    html_tag += '</div>'
+    html_tag += '<div class="save_button save_change_palanquee">'
+    html_tag += 'Sauvegarder'
+    html_tag += '</div>'
+    html_tag += '</div>'
+
+    try {
+        document.querySelector(".add_palanquee").removeEventListener("click", function () {});
+        document.querySelector(".palanquee_table").removeChild(document.querySelector(".button_save_container_palanquee"));
+    } catch (error) {}
+    // In palanquee table, add html_tag after palanquee_+numberpalanquee
+    document.querySelector(".palanquee_" + numberpalanquee).insertAdjacentHTML('afterend', html_tag);
+    document.querySelector(".add_palanquee").addEventListener("click", function () {
+        addPalanquee(data);
+    })
+}

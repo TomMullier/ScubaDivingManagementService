@@ -67,7 +67,7 @@ function getInfo() {
         }).then(res => res.json())
         .then(res => {
             console.log(res)
-            if (Object.keys(res).length != 0) {
+            if (Object.keys(res).length === 0) {
                 openErrorModal("Une erreur est survenue lors de la récupération des informations");
             }
             let userInfo = res.userInfo

@@ -215,6 +215,7 @@ function addPalanquee(data) {
         add_buttons(data);
         document.querySelector(".add_palanquee").style.display = "none";
     }
+
 }
 
 
@@ -246,7 +247,11 @@ function setupSelect(data) {
         })
     })
     let active = [];
-
+    document.querySelectorAll(".diver_item_container").forEach(function (element_) {
+        // get last select child in element_ and display none
+        element_.children[element_.children.length - 1].style.display = "none";
+        element_.children[element_.children.length - 1].style.opacity = "0";
+    })
     document.querySelectorAll(".diver_item_container").forEach(function (element_) {
         element_.querySelectorAll(".diver_item").forEach(function (select) {
             select.addEventListener("change", function () {
@@ -259,6 +264,7 @@ function setupSelect(data) {
                         }
 
                     })
+                    changeSelectToDIV(active, data);
                 })
             })
         })
@@ -275,19 +281,26 @@ function changeSelectToDIV(active, data) {
     })
     console.log(to_display);
     document.querySelectorAll(".diver_item_container").forEach(function (list) {
+        list.children[list.children.length - 1].style.display = "none";
+        list.children[list.children.length - 1].style.opacity = "0";
         for (let select of list.children) {
-            //     // select = element_.children[i];
             if (select.tagName == "LABEL") {
-                //remove element SELECT
-                try{
+                try {
                     let s = select.querySelectorAll("li")
-                    s.forEach(function(element){
+                    s.forEach(function (element) {
                         select.removeChild(element);
                     })
                     select.removeChild(s);
-                }catch(error){}
-                console.log(select.querySelector("ul"));
-                select.querySelector("ul").innerHTML = "";
+                } catch (error) {}
+                let list_ = select.querySelector(".option-list");
+                let html_tag = "<li data-text='Sélectionnez un plongeur' class=active><a>Sélectionnez un plongeur</a></li>";
+                list_.innerHTML = html_tag;
+                to_display.forEach(function (diver) {
+                    if (diver.Diver_Role != "DP") {
+                        html_tag = "<li class=option><a><div class=option_container><div class=name_item><h2>" + diver.Firstname + " " + diver.Lastname + "</h2><span>" + diver.Mail + "</span></div><div class=level>" + (diver.Temporary_Qualification != "" ? diver.Temporary_Qualification : diver.Diver_Qualification) + "</div></div></a></li>";
+                        list_.innerHTML += html_tag;
+                    }
+                })
             }
         }
     })
@@ -414,6 +427,8 @@ function createAllPalanquee(data) {
         html_tag += '</select>'
         html_tag += '<select data-role="select" name="" id="" class="diver_item">'
         html_tag += '</select>'
+        html_tag += '<select data-role="select" name="" id="" class="diver_item" style="display:none;">'
+        html_tag += '</select>'
         html_tag += '</div>'
         html_tag += '</div>'
         html_tag += '<div class="fonction_container">'
@@ -486,6 +501,8 @@ function createAllPalanquee(data) {
         final += html_tag;
     }
     document.querySelector(".palanquee_table").innerHTML = final;
+
+
     setupSelect(data);
     for (let i = 2; i <= Math.floor(data.event.allDivers.length / 2); i++) {
         try {
@@ -515,4 +532,63 @@ function add_buttons(data) {
     document.querySelector(".add_palanquee").addEventListener("click", function () {
         addPalanquee(data);
     })
+    document.querySelector(".save_change_palanquee").addEventListener("click", function () {
+        savePalanquee(data);
+    })
+}
+
+function savePalanquee(d) {
+    let data = [];
+    let palanquees = document.querySelectorAll(".palanquee_item");
+    for (let i = 0; i < palanquees.length; i++) {
+        let palanquee_ = {
+            Index: i + 1,
+            Divers: [],
+            Params: {
+                Palanquee_Type: "",
+                Time_Start: "",
+                Time_End: "",
+                Max_Depth_Prevu: "",
+                Max_Depth_Actuel: "",
+                Max_Duration_Prevu: "",
+                Max_Duration_Actuel: "",
+                Floor_3: "",
+                Floor_6: "",
+                Floor_9: "",
+            }
+        }
+        for (let j = 1; j < 7; j++) {
+            let diver = {
+                Mail: "",
+                Fonction: "",
+                Qualification: ""
+            }
+            if (palanquees[i].querySelector(".diver_item_container  ").children[j - 1].querySelector(".select-input").innerText != "Sélectionnez un plongeur") {
+                console.log("Un diver")
+                let diver_ = palanquees[i].querySelector(".diver_item_container ").children[j - 1];
+                let user = diver_.querySelector(".select-input").innerText.split("\n")[0];
+                // find mail of user using find
+                let user_ = d.event.allDivers.find(x => x.Firstname + " " + x.Lastname == user);
+                diver.Mail = user_.Mail;
+                let function_ = palanquees[i].querySelector(".fonction_select_container").children[j - 1].querySelector(".select-input").innerText;
+                diver.Fonction = function_;
+                let qualification = diver_.querySelector(".select-input").innerText.split("\n")[1];
+                diver.Qualification = qualification;
+                palanquee_.Divers.push(diver);
+            }
+        }
+        palanquee_.Params.Palanquee_Type = palanquees[i].querySelector(".palanquee_type").querySelector(".select-input").innerText;
+        palanquee_.Params.Time_Start = palanquees[i].querySelector(".time_container").children[0].querySelector("input").value;
+        palanquee_.Params.Time_End = palanquees[i].querySelector(".time_container").children[1].querySelector("input").value;
+        palanquee_.Params.Max_Depth_Prevu = palanquees[i].querySelector(".contain").children[0].querySelectorAll("input")[0].value;
+        palanquee_.Params.Max_Depth_Actuel = palanquees[i].querySelector(".contain").children[1].querySelectorAll("input")[0].value;
+        palanquee_.Params.Max_Duration_Prevu = palanquees[i].querySelector(".contain").children[0].querySelectorAll("input")[1].value;
+        palanquee_.Params.Max_Duration_Actuel = palanquees[i].querySelector(".contain").children[1].querySelectorAll("input")[1].value;
+        palanquee_.Params.Floor_3 = palanquees[i].querySelector(".contain2").querySelectorAll("input")[0].value;
+        palanquee_.Params.Floor_6 = palanquees[i].querySelector(".contain2").querySelectorAll("input")[1].value;
+        palanquee_.Params.Floor_9 = palanquees[i].querySelector(".contain2").querySelectorAll("input")[2].value;
+
+        data.push(palanquee_);
+    }
+    console.log(data);
 }

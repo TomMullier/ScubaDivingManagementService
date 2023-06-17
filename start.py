@@ -171,6 +171,6 @@ print("IP address:", ip)
 
 newURL="http://" + ip + ":3000/"
 writeEnv();
-# changeRealm();
-# changeKeycloak();
+changeRealm();
+changeKeycloak();
 launchDocker();

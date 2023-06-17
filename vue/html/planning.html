@@ -16,7 +16,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.7/index.global.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/typescript/4.0.5/typescript.min.js"></script>
-    
+
     <script type=module src="../JS/@fullcalendar/core/locales/fr.js"></script>
     <script src="https://kit.fontawesome.com/b89837f3ad.js" crossorigin="anonymous"></script>
 
@@ -104,9 +104,9 @@
                         <h3>Lieu de l'évènement</h3>
                         <div class="search_location">
                             <select class="location_list_dropdown" data-role="select">
-                                
+
                             </select>
-                            
+
                         </div>
                     </div>
                     <div class="price_container">
@@ -137,7 +137,7 @@
                         <h3>Directeur de Plongée</h3>
                         <div class="search_location_DP">
                             <select data-role="select" class="DP_list_dropdown">
-                                
+
                             </select>
                         </div>
                     </div>
@@ -150,7 +150,7 @@
                         <h3>Plongeurs obligatoires</h3>
                         <div class="search_location_diver">
                             <select data-role="select" multiple class="diver_list_dropdown">
-                        
+
                             </select>
                         </div>
                     </div>
@@ -193,11 +193,11 @@
                         <div class="location_container">
                             <h3>Lieu de l'évènement</h3>
                             <div class="search_location" data-filter-placeholder="Lieu">
-                                <select class="location_select" data-role="select">                  
+                                <select class="location_select" data-role="select">
                                 </select>
                             </div>
                         </div>
-                        
+
                         <div class="price_container">
                             <h3>Prix plongeurs</h3>
                             <input required type="number" id="eventPriceInputDiver" name="eventPriceInput"
@@ -225,7 +225,8 @@
                         <div>
                             <h3>Directeur de Plongée</h3>
                             <div class="search_location_DP">
-                                <select data-role="select" class="DP_list_dropdown" data-filter-placeholder="Directeur de plongée">
+                                <select data-role="select" class="DP_list_dropdown"
+                                    data-filter-placeholder="Directeur de plongée">
                                 </select>
                             </div>
                         </div>
@@ -237,7 +238,8 @@
                         <div>
                             <h3>Plongeurs obligatoires</h3>
                             <div class="search_location_diver">
-                                <select class="diver_list_dropdown" data-role="select" multiple data-filter-placeholder="Plongeurs">  
+                                <select class="diver_list_dropdown" data-role="select" multiple
+                                    data-filter-placeholder="Plongeurs">
                                 </select>
                             </div>
                         </div>
@@ -387,7 +389,7 @@
                         <p>Nombre d'avis : <span class="numberOfRatings_display"></span></p>
                     </div>
                     <div id="reserveButton" class="reserveButton">S'inscrire</div>
-                    
+
                     <!-- <div id="dereserveButton">Se désinscrire</div> -->
                 </div>
                 <div class="listOfUser">
@@ -441,6 +443,14 @@
                 <h3>
                     <a id="callButton"><i class="fa-solid fa-truck-medical"></i></a>
                 </h3>
+            </div>
+        </modal>
+        <modal id="error_occured">
+            <div class="top">
+                <h1 id="txt_title" class="title">Oops, une erreur est survenue</h1>
+            </div>
+            <div id="txt_descr" class="fields-container">
+                <p id="error_message"></p>
             </div>
         </modal>
     </div>

@@ -26,6 +26,13 @@ let events = [];
 /* -------------------------------------------------------------------------- */
 
 /* -------------------------------- USERTYPE -------------------------------- */
+function openErrorModal(e){
+    modals.show("error_occured");
+    document.querySelector("#error_occured p").innerText = e;
+    setTimeout(function(){
+        modals.closeCurrent();
+    }   , 3000);
+}
 fetch('/auth/dashboard')
     .then(response => {
         const userType = response.headers.get('userType');
@@ -60,6 +67,9 @@ function getInfo() {
         }).then(res => res.json())
         .then(res => {
             console.log(res)
+            if (Object.keys(res).length != 0) {
+                openErrorModal("Une erreur est survenue lors de la récupération des informations");
+            }
             let userInfo = res.userInfo
             if (res.userInfo && res.userInfo.length != 0 && my_role != "club") {
                 me = new User(userInfo.Lastname, userInfo.Firstname, userInfo.Mail, userInfo.Phone, userInfo.Diver_Qualification, userInfo.Instructor_Qualification, userInfo.Nox_Level, userInfo.Additional_Qualifications, userInfo.License_Number, userInfo.License_Expiration_Date, userInfo.Medical_Certificate_Expiration_Date, userInfo.Birthdate);

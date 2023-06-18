@@ -47,11 +47,11 @@ fetch('/auth/dp/palanquee/get_palanquee', {
         setPage(res.data);
         let allMails = [];
         res.data.event.allDivers.forEach(user => {
-            if (user.Diver_Role != "DP") {
+            // if (user.Diver_Role != "DP") {
                 allMails.push({
                     userMail: user.Mail
                 });
-            }
+            // }
         })
         createPalanqueeUserQualif(allMails);
     })
@@ -68,6 +68,7 @@ function createPalanqueeUserQualif(data) {
         .then(res => {
             console.log(res)
             if (res.created == false) window.location.href = "/auth/planning";
+            // saveDiveTeam(dataPalanquee)
         })
 }
 /* ----------------------- SAVE PALANQUEE USER QUALIF ----------------------- */
@@ -87,25 +88,25 @@ function savePalanqueeUserQualif(data) {
 
 /* ----------------------------- SAVE DIVE TEAM ----------------------------- */
 let dataPalanquee = {
-    1: {
+    1: {    // Numéro palanquée
         Divers: [{
-                Mail: "m.d@gmail.com",
+                Mail: "p1@gmail.fr",
                 Fonction: "Diver",
                 Qualification: "P2"
             },
             {
-                Mail: "m.d@gmail.com",
+                Mail: "p2@gmail.fr",
                 Fonction: "Diver",
                 Qualification: "P2"
             },
             {
-                Mail: "d.p@gmail.com",
+                Mail: "dp@gmail.fr",
                 Fonction: "GP",
                 Qualification: "P5"
             }
         ],
         Params: {
-            Palanquee_Type: "Pa",
+            Palanquee_Type: "Pe",
             Dive_Type: "Exploration",
             Max_Depth: 20,
             Actual_Depth: 10,
@@ -118,10 +119,7 @@ let dataPalanquee = {
             End_Date: new Date(),
         }
     },
-
-
 }
-saveDiveTeam(dataPalanquee)
 
 function saveDiveTeam(data) {
     fetch('/auth/dp/palanquee/dive_team', {
@@ -132,7 +130,8 @@ function saveDiveTeam(data) {
             body: JSON.stringify(data)
         }).then(res => res.json())
         .then(res => {
-            console.log(res)
+            console.log(res);
+            // window.location.reload();
         })
 }
 
@@ -286,7 +285,7 @@ function changeSelectToDIV(active, data) {
                     })
                     select.removeChild(s);
                 }catch(error){}
-                console.log(select.querySelector("ul"));
+                // console.log(select.querySelector("ul"));
                 select.querySelector("ul").innerHTML = "";
             }
         }

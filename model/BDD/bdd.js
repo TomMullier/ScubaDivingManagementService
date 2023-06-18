@@ -505,8 +505,18 @@ class BDD {
     /*                                GET DIVE TEAM                               */
     /* -------------------------------------------------------------------------- */
 
-    createDiveTeam(data, callback){
-        
+    async createDiveTeam(data) {
+        return new Promise((resolve, reject) => {
+            let query = 'INSERT INTO Dive_Team (Id_Dive_Team, Sequence_number, Max_Depth, Actual_Depth, Max_Duration, Actual_Duration, Dive_Type, Floor_3, Floor_6, Floor_9, Start_Date, End_Date, Comment, Dive_Id_Dive) VALUES ?';
+            this.con.query(query, [data], (err, result) => {
+                if (err) {
+                    console.log(err);
+                    resolve(false);
+                } else {
+                    resolve(true);
+                }
+            })
+        });
     }
 
     getDiveTeam(data, callback) {
@@ -519,6 +529,20 @@ class BDD {
                 result[0] = dateFormat(result[0]);
                 return callback(result[0]);
             }
+        })
+    }
+
+    async DeleteDiveTeam(data) {
+        return new Promise((resolve, reject) => {
+            let query = 'DELETE FROM Dive_Team WHERE ?';
+            this.con.query(query, data, (err, result) => {
+                if (err) {
+                    console.log(err);
+                    resolve(false);
+                } else {
+                    resolve(true);
+                }
+            })
         })
     }
 
@@ -551,6 +575,20 @@ class BDD {
             } else {
                 return callback(result);
             }
+        })
+    }
+
+    async getDiveTeamMember(data) {
+        return new Promise((resolve, reject) => {
+            let query = 'SELECT * FROM  Dive_Team_Member WHERE Dive_Id_Dive = ? AND Diver_Id_Diver = ?';
+            this.con.query(query, [data.Dive_Id_Dive, data.Diver_Id_Diver], (err, result) => {
+                if (err || !result[0]) {
+                    if (err) console.log(err);
+                    resolve(undefined);
+                } else {
+                    resolve(result[0]);
+                }
+            })
         })
     }
 

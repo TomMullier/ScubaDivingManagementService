@@ -193,13 +193,11 @@ CREATE TABLE Dive_Team(
    Floor_3 TIME,
    Floor_6 TIME,
    Floor_9 TIME,
-   Start_Time DATETIME NOT NULL,
-   Stop_Time DATETIME,
+   Start_Date DATETIME NOT NULL,
+   End_Date DATETIME,
    Comment VARCHAR(1024) ,
-   Diver_Id_Diver CHAR(36) ,
    Dive_Id_Dive CHAR(36)  NOT NULL,
    CONSTRAINT PK_Dive_team PRIMARY KEY(Id_Dive_Team),
-   CONSTRAINT FK_Dive_team_Diver FOREIGN KEY(Diver_Id_Diver) REFERENCES Diver(Id_Diver),
    CONSTRAINT FK_Dive_team_Dive FOREIGN KEY(Dive_Id_Dive) REFERENCES Dive(Id_Dive)
 );
 #COMMENT ON TABLE Dive_team IS 'Team of divers who dive all together. At least one team per dive.';

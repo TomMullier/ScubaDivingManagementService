@@ -9,6 +9,14 @@ import {
 let my_role;
 let all_user = [];
 
+function openErrorModal(e) {
+        modals.show("error_occured");
+        document.querySelector("#error_occured p").innerText = e;
+        setTimeout(function () {
+                modals.closeCurrent();
+        }, 3000);
+}
+
 /* -------------------------------------------------------------------------- */
 /*                                   REQUEST                                  */
 /* -------------------------------------------------------------------------- */
@@ -64,6 +72,7 @@ function createUser(data) {
                         body: JSON.stringify(data)
                 }).then((res) => res.json())
                 .then((res) => {
+                        
                         openModalConfirmCreate(res.created)
                 });
 }
@@ -91,23 +100,26 @@ function deleteUser(target) {
                 }).then((res) => res.json())
                 .then((res) => {
                         console.log(res);
-                        location.reload();
+                        if(res.deleted == false) {
+                                openErrorModal(res.comment);
+                        }
+                        document.location.reload();
                 });
 }
 
-function getUserPP(user){
+function getUserPP(user) {
         fetch('/auth/user_pp', {
-                method: 'POST',
-                headers: {
-                        'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(user)
-        }).then((res) => res.blob())
-        .then((imgBlob) => {
-                let res = URL.createObjectURL(imgBlob);
-                console.log(res);
-                document.querySelector("#profile_show").src = res;
-        } );
+                        method: 'POST',
+                        headers: {
+                                'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(user)
+                }).then((res) => res.blob())
+                .then((imgBlob) => {
+                        let res = URL.createObjectURL(imgBlob);
+                        console.log(res);
+                        document.querySelector("#profile_show").src = res;
+                });
 }
 
 
@@ -132,7 +144,7 @@ let oldMail;
 
 
 function displayUsers() {
-        
+
         let container = document.querySelector(".list_container");
         container.innerHTML = "";
         all_user.forEach(function (me) {
@@ -208,7 +220,7 @@ function displayUsers() {
                                 modals.show("user-info", function () {
                                         menutoggle.classList.remove('active');
                                 })
-                                
+
                                 menutoggle.classList.toggle('active');
                                 menutoggle.classList.toggle('close-modal');
                                 let clicked = e.target
@@ -217,7 +229,7 @@ function displayUsers() {
                                 }
                                 let mail_clicked = clicked.querySelector(".infos").querySelector(".mail").innerHTML;
                                 let phone_clicked = clicked.querySelector(".infos").querySelector(".phone").innerHTML;
-                                
+
                                 document.querySelector("#mail_show").innerText = mail_clicked;
                                 document.querySelector("#phone_show").innerText = phone_clicked;
                                 let get_user = all_user.find(user => user.mail == mail_clicked && user.phone == phone_clicked);
@@ -233,7 +245,7 @@ function displayUsers() {
                                 document.querySelector("#medic_date_show").value = get_user.medicalExpiration.split(" ")[0];
 
                                 getUserPP(get_user);
-                                
+
                         }
                 });
         });
@@ -253,15 +265,15 @@ var emergencyModal = document.getElementById("emergencyModal");
 
 emergencyButton.addEventListener("click", function () {
         modals.show("emergencyModal", function () {
-            menutoggle.classList.remove('active');
+                menutoggle.classList.remove('active');
         });
         menutoggle.classList.toggle('active');
         menutoggle.classList.toggle('close-modal');
         document.querySelector("#emergencyModal .download_button").addEventListener("click", function () {
-            location.href = "/auth/incident_rapport"
-            modals.closeCurrent();
+                location.href = "/auth/incident_rapport"
+                modals.closeCurrent();
         })
-    });
+});
 
 // let save_buttons = document.querySelectorAll(".save_button_infos");
 

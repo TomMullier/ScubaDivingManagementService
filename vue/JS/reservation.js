@@ -25,6 +25,14 @@ let events = [];
 let locations = [];
 let allDivers = [];
 
+function openErrorModal(e) {
+    modals.show("error_occured");
+    document.querySelector("#error_occured p").innerText = e;
+    setTimeout(function () {
+        modals.closeCurrent();
+    }, 3000);
+}
+
 /* -------------------------------------------------------------------------- */
 /*                                   REQUEST                                  */
 /* -------------------------------------------------------------------------- */
@@ -61,12 +69,16 @@ fetch('/auth/user/account/get_info', {
     }).then(res => res.json())
     .then(res => {
         let userInfo = res
-        if (res.Lastname) {
-            me = new User(userInfo.Lastname, userInfo.Firstname, userInfo.Mail, userInfo.Phone, userInfo.Diver_Qualification, userInfo.Instructor_Qualification, userInfo.Nox_Level, userInfo.Additional_Qualifications, userInfo.License_Number, userInfo.License_Expiration_Date, userInfo.Medical_Certificate_Expiration_Date, userInfo.Birthdate);
-            // setUserInfos();
-        }
-        if (res.username) {
-            me = res.username.split("@")[0];
+        try {
+            if (res.Lastname) {
+                me = new User(userInfo.Lastname, userInfo.Firstname, userInfo.Mail, userInfo.Phone, userInfo.Diver_Qualification, userInfo.Instructor_Qualification, userInfo.Nox_Level, userInfo.Additional_Qualifications, userInfo.License_Number, userInfo.License_Expiration_Date, userInfo.Medical_Certificate_Expiration_Date, userInfo.Birthdate);
+                // setUserInfos();
+            }
+            if (res.username) {
+                me = res.username.split("@")[0];
+            }
+        } catch (e) {
+            openErrorModal(e);
         }
         setUserInfos();
     })
@@ -87,7 +99,6 @@ fetch('/auth/planning/get_planning', {
             allDivers = res.allUsers;
         }
         res.allEvents.forEach(function (event) {
-            console.log(event);
             let e = new Event(new Date(event.Start_Date), new Date(event.End_Date), event.Diver_Price, event.Instructor_Price, event.Location, event.Comments, event.Special_Needs, event.Status, event.Max_Divers, event.Dive_Type);
             e.addUser(event.Users);
             if (my_role == "club" && e.start > new Date()) {
@@ -122,6 +133,7 @@ function addEvent(event, usersToRegister) {
             console.log(res)
             if (!res.created) {
                 // L'event n'a pas été créé
+                openErrorModal(res.comment);
             } else {
                 let registrationInfo = {
                     Personnal_Comment: "Registered by club",
@@ -154,6 +166,7 @@ function updateEvent(oldEvent, event, usersToRegister) {
             console.log(res)
             if (!res.modified) {
                 // L'event n'a pas été modifié
+                openErrorModal(res.comment);
             } else {
                 delete event.oldEvent;
                 let isDeleted = await deleteAllRegistration(event);
@@ -188,6 +201,11 @@ function deleteEvent(event) {
         }).then(res => res.json())
         .then(res => {
             console.log(res)
+            if (!res.deleted) {
+                // L'event n'a pas été supprimé
+                openErrorModal(res.comment);
+            }
+
         })
 }
 
@@ -222,6 +240,9 @@ function register(
                 document.querySelector("#reserveButton").classList.remove("reserveButton");
                 document.location.reload();
                 // eventClicked.setProp("backgroundColor", "#f2574a");
+            } else {
+                // Impossible de s'inscrire
+                openErrorModal(res.comment);
             }
         })
 }
@@ -252,6 +273,9 @@ function unregister(event, registrationInfo = {
                 document.querySelector("#reserveButton").classList.remove("unreserveButton");
                 eventClicked.setProp("backgroundColor", "#4CAF50");
                 document.location.reload();
+            } else {
+                // Impossible de se désinscrire
+                openErrorModal(res.comment);
             }
         })
 }
@@ -268,7 +292,10 @@ async function deleteAllRegistration(event) {
             }).then(res => res.json())
             .then(res => {
                 if (res.deleted) resolve(true);
-                else resolve(false);
+                else {
+                    resolve(false);
+                    openErrorModal(res.comment);
+                }
             })
     })
 }
@@ -285,7 +312,8 @@ function rateLocation(data) {
         .then(res => {
             console.log(res)
             if (!res.rated) {
-                // La note n'a pas été prise en compte
+                // L'event n'a pas été créé
+                openErrorModal(res.comment);
             } else {
 
             }
@@ -326,7 +354,7 @@ function editPalanquee(event) {
             console.log(res)
             if (res.created) window.location.href = '/auth/dp/palanquee'
             else {
-                console.log(res.comment)
+                openErrorModal(res.comment);
             }
         })
 }
@@ -902,10 +930,10 @@ create_event_button.addEventListener("click", function () {
     allDivers.forEach(function (diver) {
         console.log(diver);
         if (diver.Diver_Qualification == "P5") {
-            let option = "<li data-value='" + diver.Mail + "'><a><i class='fa-solid fa-user'></i><div class=user-info-list><span class=name>" + diver.Firstname + " " + diver.Lastname + "</span><span class=mail>"+diver.Mail+"</span></div></a></li>";
+            let option = "<li data-value='" + diver.Mail + "'><a><i class='fa-solid fa-user'></i><div class=user-info-list><span class=name>" + diver.Firstname + " " + diver.Lastname + "</span><span class=mail>" + diver.Mail + "</span></div></a></li>";
             select_dp.querySelector(".option-list").innerHTML += option;
         }
-        let option = "<li data-value='" + diver.Mail + "'><a><i class='fa-solid fa-user'></i><div class=user-info-list><span class=name>" + diver.Firstname + " " + diver.Lastname + "</span><span class=mail>"+diver.Mail+"</span></div></a></li>";
+        let option = "<li data-value='" + diver.Mail + "'><a><i class='fa-solid fa-user'></i><div class=user-info-list><span class=name>" + diver.Firstname + " " + diver.Lastname + "</span><span class=mail>" + diver.Mail + "</span></div></a></li>";
         select_diver.querySelector(".option-list").innerHTML += option;
     });
 });
@@ -1115,13 +1143,13 @@ function edit_event(info) {
         let option;
         if (diver.Diver_Qualification == "P5") {
             if (diver.Mail == dp.Mail) {
-            option = "<li data-value='" + diver.Mail + "'><a><i class='fa-solid fa-user'></i><div class=user-info-list><span class=name>" + diver.Firstname + " " + diver.Lastname + "</span><span class=mail>"+diver.Mail+"</span></div></a></li>";
+                option = "<li data-value='" + diver.Mail + "'><a><i class='fa-solid fa-user'></i><div class=user-info-list><span class=name>" + diver.Firstname + " " + diver.Lastname + "</span><span class=mail>" + diver.Mail + "</span></div></a></li>";
             } else {
-                option = "<li data-value='" + diver.Mail + "'><a><i class='fa-solid fa-user'></i><div class=user-info-list><span class=name>" + diver.Firstname + " " + diver.Lastname + "</span><span class=mail>"+diver.Mail+"</span></div></a></li>";
+                option = "<li data-value='" + diver.Mail + "'><a><i class='fa-solid fa-user'></i><div class=user-info-list><span class=name>" + diver.Firstname + " " + diver.Lastname + "</span><span class=mail>" + diver.Mail + "</span></div></a></li>";
             }
             select_dp.querySelector(".option-list").innerHTML += option;
         }
-        option = "<li data-value='" + diver.Mail + "'><a><i class='fa-solid fa-user'></i><div class=user-info-list><span class=name>" + diver.Firstname + " " + diver.Lastname + "</span><span class=mail>"+diver.Mail+"</span></div></a></li>";
+        option = "<li data-value='" + diver.Mail + "'><a><i class='fa-solid fa-user'></i><div class=user-info-list><span class=name>" + diver.Firstname + " " + diver.Lastname + "</span><span class=mail>" + diver.Mail + "</span></div></a></li>";
         select_diver.querySelector(".option-list").innerHTML += option;
     });
     // set divers already selected

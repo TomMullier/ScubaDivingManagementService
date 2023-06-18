@@ -11,6 +11,14 @@ import {
 let my_role;
 let me;
 
+function openErrorModal(e) {
+    modals.show("error_occured");
+    document.querySelector("#error_occured p").innerText = e;
+    setTimeout(function () {
+        modals.closeCurrent();
+    }, 3000);
+}
+
 /* -------------------------------------------------------------------------- */
 /*                                   REQUEST                                  */
 /* -------------------------------------------------------------------------- */
@@ -66,7 +74,7 @@ function upload_pp(file) {
         }).then(res => res.json())
         .then(res => {
             console.log(res)
-            // document.location.reload();
+            document.location.reload();
         })
 }
 

@@ -447,3 +447,37 @@ body {
 .toggle.active span:nth-child(3) {
     transform: rotate(-45deg);
 }
+
+#error_occured{
+    .modal-wrapper{
+        top:0;
+        width:80%;
+        height: fit-content;
+        position: fixed;
+        background-color: @orange;
+        border-radius: 10px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin-top:20px;
+        margin-bottom: 20px;
+        #txt_title{
+            color: white;
+            font-size: 20px;
+            font-family: @body_font;
+            text-transform: uppercase;
+            text-align: center;
+            margin: 0;
+        }
+        p{
+            color: white;
+            font-size: 15px;
+            font-family: @body_font;
+            text-transform: uppercase;
+            text-align: center;
+            margin: 0;
+        }
+    }
+}

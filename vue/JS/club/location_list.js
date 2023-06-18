@@ -10,7 +10,13 @@ import {
 /*                              GLOBAL VARIABLES                              */
 /* -------------------------------------------------------------------------- */
 let locations = [];
-
+function openErrorModal(e) {
+    modals.show("error_occured");
+    document.querySelector("#error_occured p").innerText = e;
+    setTimeout(function () {
+        modals.closeCurrent();
+    }, 3000);
+}
 
 /* -------------------------------------------------------------------------- */
 /*                                   REQUEST                                  */
@@ -24,7 +30,6 @@ fetch('/auth/club/get_locations', {
         },
     }).then(res => res.json())
     .then(sites => {
-        console.log(sites);
         sites.forEach(function (site) {
             locations.push(new Location(site.Site_Name, site.Gps_Latitude, site.Gps_Longitude, site.Track_Type, site.Track_Number, site.Track_Name, site.Zip_Code, site.City_Name, site.Country_Name, site.Additional_Address, site.Tel_Number, site.Information_URL, [], site.SOS_Tel_Number, site.Emergency_Plan, site.Post_Accident_Procedure));
         });
@@ -35,7 +40,6 @@ fetch('/auth/club/get_locations', {
 
 /* ----------------------------- CREATE LOCATION ---------------------------- */
 function createLocation(loc) {
-    console.log("iciiiiiiiiiiiiiiiiiiiiii");
     fetch('/auth/club/locations', {
             method: 'POST',
             headers: {
@@ -45,6 +49,9 @@ function createLocation(loc) {
         }).then((res) => res.json())
         .then((res) => {
             console.log(res);
+            if(!res.created){
+                openErrorModal(res.comment);
+            }
             document.location.reload();
         });
 }
@@ -58,7 +65,13 @@ function modifyLocation(data) {
             },
             body: JSON.stringify(data)
         }).then(res => res.json())
-        .then(res => console.log(res))
+        .then(res => {
+            console.log(res);
+            if(!res.modified){
+                openErrorModal(res.comment);
+            }
+            document.location.reload();
+        });
 }
 
 /* ----------------------------- DELETE LOCATION ---------------------------- */
@@ -75,6 +88,10 @@ function deleteLocation(target) {
         }).then((res) => res.json())
         .then((res) => {
             console.log(res);
+            if(!res.deleted){
+                openErrorModal(res.comment);
+            }
+            document.location.reload();
         });
 }
 

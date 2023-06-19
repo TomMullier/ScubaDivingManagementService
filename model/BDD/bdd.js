@@ -526,7 +526,6 @@ class BDD {
                 if (err) console.log(err);
                 callback(undefined);
             } else {
-                console.log(result);
                 result.forEach(res => {
                     res = dateFormat(res);
                 });

@@ -28,10 +28,11 @@ body {
         }
 }
 
-.scroll {
+.scroll_container {
         // Horizontal scroll
         width: 100%;
-        overflow-x: hidden;
+        height: auto;
+        overflow-x: scroll;
         overflow-y: hidden;
         scroll-snap-type: x mandatory;
         scroll-behavior: smooth;
@@ -384,6 +385,10 @@ body {
         max-height: 75vh;
         overflow-y: scroll;
         overflow-x: hidden;
+        box-sizing: content-box;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+
 
         .palanquee_item {
                 width: 90%;
@@ -709,20 +714,60 @@ body {
         width:auto;
         height:fit-content;
         display:flex;
-        margin: 10px auto;
-        flex-direction:row;
-        align-items:center;
-        justify-content:center;
-        padding: 10px 20px;
+        padding: 5px 30px;
         border-radius: 25px;
         background-color: @orange;
+        font-weight: bold;
         color: white;
         font-size: 15px;
         font-family: @body_font;
         text-transform: uppercase;
         cursor: pointer;
         transition: all 0.2s ease-in-out;
+        border: 2px solid @orange;
+        
+        &:hover{
+                background-color: white;
+                color: @orange;
+                border: 2px solid @orange;
+        }
         
 
+}
+
+.checkbox_container{
+        display:flex;
+        flex-direction:row;
+        align-items:center;
+        justify-content:center;
+        margin: 10px 0;
+        font-size: 15px;
+        font-family: @body_font;
+        color: @dark_blue;
+        input{
+                margin-right: 5px;
+        }
+}
+
+#pdfButton{
+
+        display:none;
+        padding: 5px 30px;
+        border-radius: 25px;
+        background-color: @orange;
+        font-weight: bold;
+        color: white;
+        font-size: 15px;
+        font-family: @body_font;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        border: 2px solid @orange;
+        
+        &:hover{
+                background-color: white;
+                color: @orange;
+                border: 2px solid @orange;
+        }
 }
 

@@ -79,9 +79,9 @@ def launchDocker():
         print ("----- Launching docker compose")
         command = "docker compose up -d" 
         result = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        result.wait();  
         for line in result.stdout:
                 print(line)
-        result.wait();
 
         
 
@@ -234,7 +234,7 @@ def launchDocker():
                 url2 = f"http://{ip}:8080/admin/realms/SDMS/users"
 
                 payload2 = json.dumps({
-                "email": "club@club.fr",
+                "email": f"{clubMail}",
                 "emailVerified": True,
                 "credentials": [
                     {
@@ -253,11 +253,40 @@ def launchDocker():
                 print("----- Adding club")
                 if(response2.status_code == 201):
                         print("---------- Club added")
+                        
+
+
+                        url4 = f"http://{ip}:8080/admin/realms/SDMS/users?username={clubMail}"
+                        payload4 = ""
+                        headers4 = {
+                                'Authorization': f'Bearer {token}'
+                        }
+
+                        response = requests.request("GET", url4, headers=headers4, data=payload4)
+
+                        print(response)
+                        clubId = response.json()[0]["id"]
+
+                        # AJOUTER ROLE CLUB
+                        url5 = f"http://{ip}:8080/admin/realms/SDMS/users/{clubId}/role-mappings/realm"
+                        payload5 = json.dumps([
+                                {
+                                        "id": "dad8c5a9-e2a3-4c4a-9b75-449603c98cce",
+                                        "name": "club",
+                                        "composite": True,
+                                        "containerId": "SDMS"
+                                }
+                        ])
+                        headers5 = {
+                                'Content-Type': 'application/json',
+                                'Authorization': f'Bearer {token}'
+                        }
+                        response5 = requests.request("POST", url5, headers=headers5, data=payload5)
+                        print(response5)
+
+
                 else:
                         print("---------- Error while adding club")
-                        
-                # AJOUTER ROLE CLUB
-
         else:
                 print("---------- Error while retrieving token")
         
@@ -276,6 +305,9 @@ def launchDocker():
 
 ip = get_ip_address()
 print("IP address:", ip)
+
+clubMail = "club@club.fr"
+clubId = ""
 
 newURL="http://" + ip + ":3000/"
 writeEnv();

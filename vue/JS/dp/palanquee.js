@@ -198,7 +198,7 @@ function setPage(data) {
         })
     })
     createAllPalanquee(data);
-    numberpalanquee = data.palanquee.length-1;
+    numberpalanquee = data.palanquee.length - 1;
     addPalanquee(data);
 
     loadingClose();
@@ -514,9 +514,9 @@ function createAllPalanquee(data) {
     setPalanqueeReceived(data.palanquee);
 
     setupSelect(data);
-    for (let i = data.palanquee.length+1; i <= Math.floor(data.event.allDivers.length / 2); i++) {
+    for (let i = data.palanquee.length + 1; i <= Math.floor(data.event.allDivers.length / 2); i++) {
         try {
-                document.querySelector(".palanquee_" + i).style.display = "none";
+            document.querySelector(".palanquee_" + i).style.display = "none";
         } catch (error) {}
     }
     numberpalanquee = data.palanquee.length;
@@ -534,13 +534,32 @@ function add_buttons(data) {
     html_tag += 'Sauvegarder'
     html_tag += '</div>'
     html_tag += '</div>'
+    html_tag += '<div class="checkbox_container">'
+    html_tag += '<input type="checkbox" name="" id="checkbox_responsability">'
+    html_tag += '<label for="checkbox">En cochant cette case, je reconnais que ma responsabilité est engagée pour cette plongée</label>'
+    html_tag += '</div>'
+    html_tag += '<button id="pdfButton">Sauvegarder définitivement et générer le PDF</button>'
 
     try {
         document.querySelector(".add_palanquee").removeEventListener("click", function () {});
         document.querySelector(".palanquee_table").removeChild(document.querySelector(".button_save_container_palanquee"));
+        document.querySelector(".palanquee_table").removeChild(document.querySelector(".checkbox_container"));
+        document.querySelector(".palanquee_table").removeChild(document.querySelector("#pdfButton"));
     } catch (error) {}
     // In palanquee table, add html_tag after palanquee_+numberpalanquee
     document.querySelector(".palanquee_" + numberpalanquee).insertAdjacentHTML('afterend', html_tag);
+    document.querySelector("#checkbox_responsability").addEventListener("change", function () {
+        if (this.checked) {
+            document.querySelector("#pdfButton").style.display = "flex";
+            document.querySelector(".palanquee_table").scrollTo(0, document.querySelector(".palanquee_table").scrollHeight);
+        } else {
+            document.querySelector("#pdfButton").style.display = "none";
+        }
+    })
+    document.querySelector("#pdfButton").addEventListener("click", function () {
+        generatePDF();
+    })
+
     document.querySelector(".add_palanquee").addEventListener("click", function () {
         addPalanquee(data);
     })
@@ -621,6 +640,11 @@ function savePalanquee(d) {
                 palanquees[i].querySelectorAll("input").forEach(function (element) {
                     if (element.value == "") {
                         element.style.borderColor = "#f2574a";
+                        openErrorModal("Veuillez remplir tous les champs");
+                        setTimeout(function () {
+                            element.style.borderColor = "#120B8F";
+                            modals.closeCurrent();
+                        }, 2000);
                     }
                 })
             }
@@ -660,4 +684,55 @@ function setPalanqueeReceived(data) {
             palanquee.querySelector(".fonction_select_container").children[j].value = divers[j].Fonction;
         }
     }
+}
+
+function generatePDF() {
+    // open loading animation
+    document.querySelector(".loading_animation").style.display = "flex";
+    setTimeout(function () {
+        document.querySelector(".loading_animation").style.opacity = "1";
+    }, 500);
+    setTimeout(function () {
+        let div =
+            document.querySelector(".palanquee_table");
+        div.style.height = "fit-content";
+        $(".palanquee_table").css("max-height", "none");
+        document.querySelector(".scroll_container div").style.flexDirection = "column";
+        document.querySelector(".scroll_container div").style.height = "auto";
+
+        document.querySelector(".scroll_container").style.height = "auto";
+        document.querySelector(".scroll_container").scrollTo(0, 0);
+        document.querySelector(".scroll_container").style.overflow = "visible";
+        div.scrollTo(0, 0);
+        div.style.overflow = "visible";
+        document.querySelector(".button_save_container_palanquee").style.display = "none";
+        let pdf = new jsPDF('p', 'mm', 'a4');
+        document.querySelector("#pdfButton").style.display = "none";
+        html2canvas(document.querySelector(".diveInfos")).then(function (canvas) {
+            // set to pdf and scale to A4 without changing ratio
+            let imgData = canvas.toDataURL('image/png');
+            const pdfWidth = pdf.internal.pageSize.width;
+            const pdfHeight = canvas.height * pdfWidth / canvas.width;
+            pdf.setFontSize(10);
+            pdf.setFont('helvetica');
+            pdf.setTextColor(0, 0, 0);
+
+            pdf.text(pdfWidth / 2 - 20, pdf.internal.pageSize.height / 2 - 20, "Résumé de la plongée");
+
+
+            pdf.addImage(imgData, 'PNG', 0, pdf.internal.pageSize.height - canvas.height / 2, pdfWidth, pdfHeight);
+
+        })
+        html2canvas(div).then(function (canvas) {
+            // set to pdf and scale to A4 without changing ratio
+            let imgData = canvas.toDataURL('image/png');
+            const pdfWidth = pdf.internal.pageSize.width;
+            const pdfHeight = canvas.height * pdfWidth / canvas.width;
+            pdf.addPage(pdfWidth, pdfHeight + 20);
+
+            pdf.addImage(imgData, 'PNG', 0, 10, pdfWidth, pdfHeight);
+            pdf.save("test.pdf");
+            document.location.reload();
+        })
+    }, 1000);
 }

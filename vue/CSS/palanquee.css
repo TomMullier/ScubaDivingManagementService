@@ -535,9 +535,10 @@ body {
   text-align: center;
   text-transform: uppercase;
 }
-.scroll {
+.scroll_container {
   width: 100%;
-  overflow-x: hidden;
+  height: auto;
+  overflow-x: scroll;
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
@@ -547,12 +548,12 @@ body {
   align-items: center;
   justify-content: flex-start;
 }
-.scroll div {
+.scroll_container div {
   display: flex;
   flex-direction: row;
   width: fit-content;
 }
-.scroll .button_save_container_palanquee {
+.scroll_container .button_save_container_palanquee {
   width: auto;
   height: fit-content;
   display: flex;
@@ -561,7 +562,7 @@ body {
   justify-content: center;
   margin: 10px auto;
 }
-.scroll::-webkit-scrollbar {
+.scroll_container::-webkit-scrollbar {
   display: none;
 }
 .scrollDots {
@@ -862,6 +863,9 @@ body {
   max-height: 75vh;
   overflow-y: scroll;
   overflow-x: hidden;
+  box-sizing: content-box;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 .palanquee_table .palanquee_item {
   width: 90%;
@@ -1155,17 +1159,52 @@ body {
   width: auto;
   height: fit-content;
   display: flex;
-  margin: 10px auto;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 20px;
+  padding: 5px 30px;
   border-radius: 25px;
   background-color: #f2574a;
+  font-weight: bold;
   color: white;
   font-size: 15px;
   font-family: 'Montserrat', sans-serif;
   text-transform: uppercase;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+  border: 2px solid #f2574a;
+}
+.save_button:hover {
+  background-color: white;
+  color: #f2574a;
+  border: 2px solid #f2574a;
+}
+.checkbox_container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0;
+  font-size: 15px;
+  font-family: 'Montserrat', sans-serif;
+  color: #120B8F;
+}
+.checkbox_container input {
+  margin-right: 5px;
+}
+#pdfButton {
+  display: none;
+  padding: 5px 30px;
+  border-radius: 25px;
+  background-color: #f2574a;
+  font-weight: bold;
+  color: white;
+  font-size: 15px;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border: 2px solid #f2574a;
+}
+#pdfButton:hover {
+  background-color: white;
+  color: #f2574a;
+  border: 2px solid #f2574a;
 }

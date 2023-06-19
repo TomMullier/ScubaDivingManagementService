@@ -62,7 +62,6 @@ function getUserName(req) {
 }
 
 function getDateFormat(badDate) {
-    console.log(badDate);
     badDate += '';
     badDate = new Date(badDate).toLocaleString('fr-FR', {
         hour12: false
@@ -1422,7 +1421,6 @@ app.post('/auth/dp/palanquee/dive_team', keycloak.protect(),
                 const maxDepth = parseInt(params.Max_Depth);
 
                 // Time : Max_Duration, Actual_Duration, Start_Date, End_Date, Floor_3, Floor_6, Floor_9
-                console.log("\t->Verifying Time", params);
                 params.Start_Date = getDateFormat(new Date(params.Start_Date).toLocaleString());
                 params.End_Date = getDateFormat(new Date(params.End_Date).toLocaleString());
                 params.Max_Duration = getTimeFormat(new Date(params.Max_Duration).toLocaleString());
@@ -1430,7 +1428,6 @@ app.post('/auth/dp/palanquee/dive_team', keycloak.protect(),
                 params.Floor_3 = getTimeFormat(new Date(params.Floor_3).toLocaleString());
                 params.Floor_6 = getTimeFormat(new Date(params.Floor_6.toLocaleString()));
                 params.Floor_9 = getTimeFormat(new Date(params.Floor_9.toLocaleString()));
-                console.log("\t->Verified Time", params);
 
                 if (params.Dive_Type === "Exploration") {
                     /* ------------------------------- EXPLORATION ------------------------------ */
@@ -1718,6 +1715,703 @@ app.post('/auth/dp/palanquee/dive_team', keycloak.protect(),
         });
     });
 
+app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (req, res) {
+    if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
+    if (!req.session.idDive) res.redirect('/auth/planning');
+
+    let dataError = {
+        success: true,
+        comment: ""
+    }
+
+    Database.getMaxDepth(listMaxDepth => {
+        if (listMaxDepth == undefined) {
+            dataError.success = false;
+            dataError.comment = "Impossible de récupérer les informations de profondeur";
+            return res.json(dataError);
+        }
+        Database.getDive({
+            Id_Dive: req.session.idDive
+        }, diveInfo => {
+            if (diveInfo === undefined) {
+                dataError.success = false;
+                dataError.comment = "Impossible de récupérer les informations de la plongée";
+                return res.json(dataError);
+            }
+            Database.getEventById(diveInfo.Planned_Dive_Id_Planned_Dive, eventInfo => {
+                if (eventInfo === undefined) {
+                    dataError.success = false;
+                    dataError.comment = "Impossible de récupérer les informations de l'évènement";
+                    return res.json(dataError);
+                }
+                Database.getAllDiveTeamMember({
+                    Dive_Id_Dive: req.session.idDive
+                }, async allDiveTeamMember => {
+                    if (allDiveTeamMember === undefined) {
+                        dataError.success = false;
+                        dataError.comment = "Impossible de récupérer les informations de la plongée";
+                        return res.json(dataError);
+                    }
+
+                    if (eventInfo.Dive_Type = "Exploration") {
+                        let remainingDiver = allDiveTeamMember.length;
+
+                        let diverPa = allDiveTeamMember.filter(member => member.Temporary_Diver_Qualification.split("Pa")[0] == "");
+                        let diverPe = allDiveTeamMember.filter(member => member.Temporary_Diver_Qualification.split("Pe")[0] == "");
+
+                        let diverP0 = allDiveTeamMember.filter(member => member.Current_Diver_Qualification == "P0" && member.Temporary_Diver_Qualification === "");
+                        let diverP1 = allDiveTeamMember.filter(member => member.Current_Diver_Qualification == "P1" && member.Temporary_Diver_Qualification === "");
+                        let diverP2 = allDiveTeamMember.filter(member => member.Current_Diver_Qualification == "P2" && member.Temporary_Diver_Qualification === "");
+                        let diverP3 = allDiveTeamMember.filter(member => member.Current_Diver_Qualification == "P3" && member.Temporary_Diver_Qualification === "");
+
+                        let allGp = allDiveTeamMember.filter(member => member.Current_Diver_Qualification == "P4" || member.Current_Diver_Qualification == "P5" && member.Temporary_Diver_Qualification === "");
+
+                        let PALANQUEES = [];
+
+                        /* ------------------------------- BAPTEMES P0 ------------------------------ */
+                        if (diverP0.length > 0) {
+                            while (diverP0.length > 0 && allGp.length > 0) {
+                                // mettre 1 gp + 1 diver dans un tableau de Divers
+                                // remplir les params en fonction
+                                // push le tableau dans PALANQUEES
+                                let Divers = [];
+
+                                let diver = diverP0[0];
+                                let userInfo = await Database.getUserInfoSync({
+                                    Id_Diver: diver.Diver_Id_Diver
+                                });
+                                if (userInfo === undefined) {
+                                    dataError.success = false;
+                                    dataError.comment = `Impossible de récupérer les informations du plongeur ${diver.Mail}`;
+                                    return res.json(dataError);
+                                }
+                                Divers.push({
+                                    Mail: userInfo.Mail,
+                                    Fonction: "Plongeur",
+                                    Qualification: userInfo.Diver_Qualification
+                                })
+                                diverP0.splice(0, 1);
+
+                                let gp = allGp[0];
+                                let gpInfo = await Database.getUserInfoSync({
+                                    Id_Diver: gp.Diver_Id_Diver
+                                });
+                                if (gpInfo === undefined) {
+                                    dataError.success = false;
+                                    dataError.comment = `Impossible de récupérer les informations du guide de palanquée ${gp.Mail}`;
+                                    return res.json(dataError);
+                                }
+                                Divers.push({
+                                    Mail: gpInfo.Mail,
+                                    Fonction: "GP",
+                                    Qualification: gpInfo.Diver_Qualification
+                                })
+                                allGp.splice(0, 1);
+
+                                let palanquee = {
+                                    Divers: Divers,
+                                    Params: {
+                                        Max_Depth: 6,
+                                        Actual_Depth: 0,
+                                        Max_Duration: 0,
+                                        Actual_Duration: 0,
+                                        Dive_Type: "Exploration",
+                                        Floor_3: 0,
+                                        Floor_6: 0,
+                                        Floor_9: 0,
+                                        Start_Date: "",
+                                        End_Date: "",
+                                        Palanquee_Type: "Pe"
+                                    }
+                                }
+                                PALANQUEES.push(palanquee);
+                            }
+                        } else {
+                            dataError.success = true;
+                            dataError.comment = `Pas assez de GP pour les baptêmes P0`;
+                        }
+                        remainingDiver = allGp.length + diverPe.length + diverPa.length + diverP1.length + diverP2.length + diverP3.length;
+
+                        /* ------------------------------- PLONGEURS Pe ------------------------------ */
+                        while (diverPe.length > 0 && allGp.length > 0) {
+                            let pe40 = diverPe.filter(member => member.Temporary_Diver_Qualification === "Pe40");
+                            let pe60 = diverPe.filter(member => member.Temporary_Diver_Qualification === "Pe60");
+
+                            /* ---------------------------------- PE40 ---------------------------------- */
+                            if (pe40.length > 0 && allGp.length > 0) {
+                                let ratio = pe40.length / allGp.length;
+                                if (ratio > 4) ratio = 4;
+                                else ratio = Math.ceil(ratio);
+
+                                while (pe40.length > 0 && allGp.length > 0) {
+                                    let Divers = [];
+                                    let i = 0;
+                                    let gpInfo = await Database.getUserInfoSync({
+                                        Id_Diver: allGp[0].Diver_Id_Diver
+                                    });
+                                    if (gpInfo === undefined) {
+                                        dataError.success = false;
+                                        dataError.comment = `Impossible de récupérer les informations du guide de palanquée ${allGp[i].Mail}`;
+                                        return res.json(dataError);
+                                    }
+                                    Divers.push({
+                                        Mail: gpInfo.Mail,
+                                        Fonction: "GP",
+                                        Qualification: gpInfo.Diver_Qualification
+                                    })
+                                    allGp.splice(0, 1);
+                                    while (i < ratio && pe40.length > 0 && allGp.length > 0) {
+                                        let diver = pe40[0];
+                                        let userInfo = await Database.getUserInfoSync({
+                                            Id_Diver: diver.Diver_Id_Diver
+                                        });
+                                        if (userInfo === undefined) {
+                                            dataError.success = false;
+                                            dataError.comment = `Impossible de récupérer les informations du plongeur ${diver.Mail}`;
+                                            return res.json(dataError);
+                                        }
+                                        Divers.push({
+                                            Mail: userInfo.Mail,
+                                            Fonction: "Plongeur",
+                                            Qualification: userInfo.Diver_Qualification
+                                        })
+                                        pe40.splice(0, 1);
+                                        i++;
+                                    }
+                                    let palanquee = {
+                                        Divers: Divers,
+                                        Params: {
+                                            Max_Depth: 40,
+                                            Actual_Depth: 0,
+                                            Max_Duration: 0,
+                                            Actual_Duration: 0,
+                                            Dive_Type: "Exploration",
+                                            Floor_3: 0,
+                                            Floor_6: 0,
+                                            Floor_9: 0,
+                                            Start_Date: "",
+                                            End_Date: "",
+                                            Palanquee_Type: "Pe"
+                                        }
+                                    }
+                                    PALANQUEES.push(palanquee);
+                                }
+                            }
+                            /* ---------------------------------- PE60 ---------------------------------- */
+                            if (pe60.length > 0 && allGp.length > 0) {
+                                let ratio = pe60.length / allGp.length;
+                                if (ratio > 4) ratio = 4;
+                                else ratio = Math.ceil(ratio);
+
+                                while (pe60.length > 0 && allGp.length > 0) {
+                                    let Divers = [];
+                                    let i = 0;
+                                    let gpInfo = await Database.getUserInfoSync({
+                                        Id_Diver: allGp[0].Diver_Id_Diver
+                                    });
+                                    if (gpInfo === undefined) {
+                                        dataError.success = false;
+                                        dataError.comment = `Impossible de récupérer les informations du guide de palanquée ${allGp[i].Mail}`;
+                                        return res.json(dataError);
+                                    }
+                                    Divers.push({
+                                        Mail: gpInfo.Mail,
+                                        Fonction: "GP",
+                                        Qualification: gpInfo.Diver_Qualification
+                                    })
+                                    allGp.splice(0, 1);
+                                    while (i < ratio && pe60.length > 0 && allGp.length > 0) {
+                                        let diver = pe60[0];
+                                        let userInfo = await Database.getUserInfoSync({
+                                            Id_Diver: diver.Diver_Id_Diver
+                                        });
+                                        if (userInfo === undefined) {
+                                            dataError.success = false;
+                                            dataError.comment = `Impossible de récupérer les informations du plongeur ${diver.Mail}`;
+                                            return res.json(dataError);
+                                        }
+                                        Divers.push({
+                                            Mail: userInfo.Mail,
+                                            Fonction: "Plongeur",
+                                            Qualification: userInfo.Diver_Qualification
+                                        })
+                                        pe40.splice(0, 1);
+                                        i++;
+                                    }
+                                    let palanquee = {
+                                        Divers: Divers,
+                                        Params: {
+                                            Max_Depth: 60,
+                                            Actual_Depth: 0,
+                                            Max_Duration: 0,
+                                            Actual_Duration: 0,
+                                            Dive_Type: "Exploration",
+                                            Floor_3: 0,
+                                            Floor_6: 0,
+                                            Floor_9: 0,
+                                            Start_Date: "",
+                                            End_Date: "",
+                                            Palanquee_Type: "Pe"
+                                        }
+                                    }
+                                    PALANQUEES.push(palanquee);
+                                }
+                            }
+                        }
+
+                        /* ------------------------------- P1 ENCADRE ------------------------------- */
+                        if (diverP1.length > 0 && allGp.length > 0) {
+                            let ratio = diverP1.length / allGp.length;
+                            if (ratio > 4) ratio = 4;
+                            else ratio = Math.ceil(ratio);
+
+                            while (diverP1.length > 0 && allGp.length > 0) {
+                                let Divers = [];
+                                let i = 0;
+                                let gpInfo = await Database.getUserInfoSync({
+                                    Id_Diver: allGp[0].Diver_Id_Diver
+                                });
+                                if (gpInfo === undefined) {
+                                    dataError.success = false;
+                                    dataError.comment = `Impossible de récupérer les informations du guide de palanquée ${allGp[i].Mail}`;
+                                    return res.json(dataError);
+                                }
+                                Divers.push({
+                                    Mail: gpInfo.Mail,
+                                    Fonction: "GP",
+                                    Qualification: gpInfo.Diver_Qualification
+                                })
+                                allGp.splice(0, 1);
+                                while (i < ratio && diverP1.length > 0 && allGp.length > 0) {
+                                    let diver = diverP1[0];
+                                    let userInfo = await Database.getUserInfoSync({
+                                        Id_Diver: diver.Diver_Id_Diver
+                                    });
+                                    if (userInfo === undefined) {
+                                        dataError.success = false;
+                                        dataError.comment = `Impossible de récupérer les informations du plongeur ${diver.Mail}`;
+                                        return res.json(dataError);
+                                    }
+                                    Divers.push({
+                                        Mail: userInfo.Mail,
+                                        Fonction: "Plongeur",
+                                        Qualification: userInfo.Diver_Qualification
+                                    })
+                                    diverP1.splice(0, 1);
+                                    i++;
+                                }
+                                let palanquee = {
+                                    Divers: Divers,
+                                    Params: {
+                                        Max_Depth: 20,
+                                        Actual_Depth: 0,
+                                        Max_Duration: 0,
+                                        Actual_Duration: 0,
+                                        Dive_Type: "Exploration",
+                                        Floor_3: 0,
+                                        Floor_6: 0,
+                                        Floor_9: 0,
+                                        Start_Date: "",
+                                        End_Date: "",
+                                        Palanquee_Type: "Pe"
+                                    }
+                                }
+                                PALANQUEES.push(palanquee);
+                            }
+                        }
+
+                        /* ------------------------------- P2 ENCADRE ------------------------------- */
+                        if (diverP2.length > 0) {
+                            let palanquee40 = PALANQUEES.filter(palanquee => palanquee.Params.Max_Depth === 40);
+                            let ratio = (diverP2.length + palanquee40.length) / allGp.length;
+                            if (ratio > 4) ratio = 4;
+                            else ratio = Math.ceil(ratio);
+                            for (const palanquee of PALANQUEES) {
+                                if (palanquee.Params.Max_Depth === 40) {
+                                    while (palanquee.Divers.length < ratio) {
+                                        let diver = diverP2[0];
+                                        let userInfo = await Database.getUserInfoSync({
+                                            Id_Diver: diver.Diver_Id_Diver
+                                        });
+                                        if (userInfo === undefined) {
+                                            dataError.success = false;
+                                            dataError.comment = `Impossible de récupérer les informations du plongeur ${diver.Mail}`;
+                                            return res.json(dataError);
+                                        }
+                                        palanquee.Divers.push({
+                                            Mail: userInfo.Mail,
+                                            Fonction: "Plongeur",
+                                            Qualification: userInfo.Diver_Qualification
+                                        })
+                                        diverP2.splice(0, 1);
+                                    }
+                                }
+                            }
+                            while (diverP2.length > 0 && allGp.length > 0) {
+                                let Divers = [];
+                                let i = 0;
+                                let gpInfo = await Database.getUserInfoSync({
+                                    Id_Diver: allGp[0].Diver_Id_Diver
+                                });
+                                if (gpInfo === undefined) {
+                                    dataError.success = false;
+                                    dataError.comment = `Impossible de récupérer les informations du guide de palanquée ${allGp[i].Mail}`;
+                                    return res.json(dataError);
+                                }
+                                Divers.push({
+                                    Mail: gpInfo.Mail,
+                                    Fonction: "GP",
+                                    Qualification: gpInfo.Diver_Qualification
+                                })
+                                allGp.splice(0, 1);
+                                while (i < ratio && diverP2.length > 0 && allGp.length > 0) {
+                                    let diver = diverP2[0];
+                                    let userInfo = await Database.getUserInfoSync({
+                                        Id_Diver: diver.Diver_Id_Diver
+                                    });
+                                    if (userInfo === undefined) {
+                                        dataError.success = false;
+                                        dataError.comment = `Impossible de récupérer les informations du plongeur ${diver.Mail}`;
+                                        return res.json(dataError);
+                                    }
+                                    Divers.push({
+                                        Mail: userInfo.Mail,
+                                        Fonction: "Plongeur",
+                                        Qualification: userInfo.Diver_Qualification
+                                    })
+                                    diverP2.splice(0, 1);
+                                    i++;
+                                }
+                                let palanquee = {
+                                    Divers: Divers,
+                                    Params: {
+                                        Max_Depth: 20,
+                                        Actual_Depth: 0,
+                                        Max_Duration: 0,
+                                        Actual_Duration: 0,
+                                        Dive_Type: "Exploration",
+                                        Floor_3: 0,
+                                        Floor_6: 0,
+                                        Floor_9: 0,
+                                        Start_Date: "",
+                                        End_Date: "",
+                                        Palanquee_Type: "Pe"
+                                    }
+                                }
+                                PALANQUEES.push(palanquee);
+                            }
+                        }
+
+                        /* ------------------------------- P3 ENCADRE ------------------------------- */
+                        if (diverP3.length > 0) {
+                            let palanquee60 = PALANQUEES.filter(palanquee => palanquee.Params.Max_Depth === 60);
+                            let ratio = (diverP3.length + palanquee60.length) / allGp.length;
+                            if (ratio > 4) ratio = 4;
+                            else ratio = Math.ceil(ratio);
+                            for (const palanquee of PALANQUEES) {
+                                if (palanquee.Params.Max_Depth === 60) {
+                                    while (palanquee.Divers.length < ratio) {
+                                        let diver = diverP3[0];
+                                        let userInfo = await Database.getUserInfoSync({
+                                            Id_Diver: diver.Diver_Id_Diver
+                                        });
+                                        if (userInfo === undefined) {
+                                            dataError.success = false;
+                                            dataError.comment = `Impossible de récupérer les informations du plongeur ${diver.Mail}`;
+                                            return res.json(dataError);
+                                        }
+                                        palanquee.Divers.push({
+                                            Mail: userInfo.Mail,
+                                            Fonction: "Plongeur",
+                                            Qualification: userInfo.Diver_Qualification
+                                        })
+                                        diverP3.splice(0, 1);
+                                    }
+                                }
+                            }
+                            while (diverP3.length > 0 && allGp.length > 0) {
+                                let Divers = [];
+                                let i = 0;
+                                let gpInfo = await Database.getUserInfoSync({
+                                    Id_Diver: allGp[0].Diver_Id_Diver
+                                });
+                                if (gpInfo === undefined) {
+                                    dataError.success = false;
+                                    dataError.comment = `Impossible de récupérer les informations du guide de palanquée ${allGp[i].Mail}`;
+                                    return res.json(dataError);
+                                }
+                                Divers.push({
+                                    Mail: gpInfo.Mail,
+                                    Fonction: "GP",
+                                    Qualification: gpInfo.Diver_Qualification
+                                })
+                                allGp.splice(0, 1);
+                                while (i < ratio && diverP3.length > 0 && allGp.length > 0) {
+                                    let diver = diverP3[0];
+                                    let userInfo = await Database.getUserInfoSync({
+                                        Id_Diver: diver.Diver_Id_Diver
+                                    });
+                                    if (userInfo === undefined) {
+                                        dataError.success = false;
+                                        dataError.comment = `Impossible de récupérer les informations du plongeur ${diver.Mail}`;
+                                        return res.json(dataError);
+                                    }
+                                    Divers.push({
+                                        Mail: userInfo.Mail,
+                                        Fonction: "Plongeur",
+                                        Qualification: userInfo.Diver_Qualification
+                                    })
+                                    diverP3.splice(0, 1);
+                                    i++;
+                                }
+                                let palanquee = {
+                                    Divers: Divers,
+                                    Params: {
+                                        Max_Depth: 60,
+                                        Actual_Depth: 0,
+                                        Max_Duration: 0,
+                                        Actual_Duration: 0,
+                                        Dive_Type: "Exploration",
+                                        Floor_3: 0,
+                                        Floor_6: 0,
+                                        Floor_9: 0,
+                                        Start_Date: "",
+                                        End_Date: "",
+                                        Palanquee_Type: "Pe"
+                                    }
+                                }
+                                PALANQUEES.push(palanquee);
+                            }
+                        }
+
+                        /* ---------------------------- P4 OU P5 RESTANTS --------------------------- */
+                        if (allGp.length > 0) {
+                            let palanquee60 = PALANQUEES.filter(palanquee => palanquee.Params.Max_Depth === 60);
+                            let ratio = (allGp.length + palanquee60.length) / allGp.length;
+                            if (ratio > 4) ratio = 4;
+                            else ratio = Math.ceil(ratio);
+                            for (const palanquee of PALANQUEES) {
+                                if (palanquee.Params.Max_Depth === 60) {
+                                    while (palanquee.Divers.length < ratio) {
+                                        let diver = allGp[0];
+                                        let userInfo = await Database.getUserInfoSync({
+                                            Id_Diver: diver.Diver_Id_Diver
+                                        });
+                                        if (userInfo === undefined) {
+                                            dataError.success = false;
+                                            dataError.comment = `Impossible de récupérer les informations du plongeur ${diver.Mail}`;
+                                            return res.json(dataError);
+                                        }
+                                        palanquee.Divers.push({
+                                            Mail: userInfo.Mail,
+                                            Fonction: "Plongeur",
+                                            Qualification: userInfo.Diver_Qualification
+                                        })
+                                        allGp.splice(0, 1);
+                                    }
+                                }
+                            }
+                            while (allGp.length > 0) {
+                                let Divers = [];
+                                let i = 0;
+                                let gpInfo = await Database.getUserInfoSync({
+                                    Id_Diver: allGp[0].Diver_Id_Diver
+                                });
+                                if (gpInfo === undefined) {
+                                    dataError.success = false;
+                                    dataError.comment = `Impossible de récupérer les informations du guide de palanquée ${allGp[i].Mail}`;
+                                    return res.json(dataError);
+                                }
+                                Divers.push({
+                                    Mail: gpInfo.Mail,
+                                    Fonction: "GP",
+                                    Qualification: gpInfo.Diver_Qualification
+                                })
+                                allGp.splice(0, 1);
+                                while (i < ratio && allGp.length > 0 && allGp.length > 0) {
+                                    let diver = allGp[0];
+                                    let userInfo = await Database.getUserInfoSync({
+                                        Id_Diver: diver.Diver_Id_Diver
+                                    });
+                                    if (userInfo === undefined) {
+                                        dataError.success = false;
+                                        dataError.comment = `Impossible de récupérer les informations du plongeur ${diver.Mail}`;
+                                        return res.json(dataError);
+                                    }
+                                    Divers.push({
+                                        Mail: userInfo.Mail,
+                                        Fonction: "Plongeur",
+                                        Qualification: userInfo.Diver_Qualification
+                                    })
+                                    allGp.splice(0, 1);
+                                    i++;
+                                }
+                                let palanquee = {
+                                    Divers: Divers,
+                                    Params: {
+                                        Max_Depth: 60,
+                                        Actual_Depth: 0,
+                                        Max_Duration: 0,
+                                        Actual_Duration: 0,
+                                        Dive_Type: "Exploration",
+                                        Floor_3: 0,
+                                        Floor_6: 0,
+                                        Floor_9: 0,
+                                        Start_Date: "",
+                                        End_Date: "",
+                                        Palanquee_Type: "Pe"
+                                    }
+                                }
+                                PALANQUEES.push(palanquee);
+                            }
+                        }
+
+                        /* ---------------------------- PLONGEE AUTONOME ---------------------------- */
+                        if (diverP1.length > 1) {
+                            while (diverP1.length > 0) {
+                                let Divers = [];
+                                let i = 0;
+                                while (i < 3 && diverP1.length > 0) {
+                                    let diver = diverP1[0];
+                                    let userInfo = await Database.getUserInfoSync({
+                                        Id_Diver: diver.Diver_Id_Diver
+                                    });
+                                    if (userInfo === undefined) {
+                                        dataError.success = false;
+                                        dataError.comment = `Impossible de récupérer les informations du plongeur ${diver.Mail}`;
+                                        return res.json(dataError);
+                                    }
+                                    Divers.push({
+                                        Mail: userInfo.Mail,
+                                        Fonction: "Plongeur",
+                                        Qualification: userInfo.Diver_Qualification
+                                    })
+                                    diverP1.splice(0, 1);
+                                    i++;
+                                }
+                                let palanquee = {
+                                    Divers: Divers,
+                                    Params: {
+                                        Max_Depth: 12,
+                                        Actual_Depth: 0,
+                                        Max_Duration: 0,
+                                        Actual_Duration: 0,
+                                        Dive_Type: "Exploration",
+                                        Floor_3: 0,
+                                        Floor_6: 0,
+                                        Floor_9: 0,
+                                        Start_Date: "",
+                                        End_Date: "",
+                                        Palanquee_Type: "Pa"
+                                    }
+                                }
+                                PALANQUEES.push(palanquee);
+                            }
+                        }
+                        let diverPa40 = diverPa.filter(member => member.Temporary_Diver_Qualification === "Pa40");
+                        if (diverP2.length > 0 || diverPa40.length > 0) {
+                            // ajoute les plongeurs en Pa40 dans le tableau de diverP2
+                            diverP2 = diverP2.concat(diverPa40);
+                            while (diverP2.length > 0) {
+                                let Divers = [];
+                                let i = 0;
+                                while (i < 3 && diverP2.length > 0) {
+                                    let diver = diverP2[0];
+                                    let userInfo = await Database.getUserInfoSync({
+                                        Id_Diver: diver.Diver_Id_Diver
+                                    });
+                                    if (userInfo === undefined) {
+                                        dataError.success = false;
+                                        dataError.comment = `Impossible de récupérer les informations du plongeur ${diver.Mail}`;
+                                        return res.json(dataError);
+                                    }
+                                    Divers.push({
+                                        Mail: userInfo.Mail,
+                                        Fonction: "Plongeur",
+                                        Qualification: userInfo.Diver_Qualification
+                                    })
+                                    diverP2.splice(0, 1);
+                                    i++;
+                                }
+                                let palanquee = {
+                                    Divers: Divers,
+                                    Params: {
+                                        Max_Depth: 40,
+                                        Actual_Depth: 0,
+                                        Max_Duration: 0,
+                                        Actual_Duration: 0,
+                                        Dive_Type: "Exploration",
+                                        Floor_3: 0,
+                                        Floor_6: 0,
+                                        Floor_9: 0,
+                                        Start_Date: "",
+                                        End_Date: "",
+                                        Palanquee_Type: "Pa"
+                                    }
+                                }
+                                PALANQUEES.push(palanquee);
+                            }
+                        }
+                        let diverPa60 = diverPa.filter(member => member.Temporary_Diver_Qualification === "Pa60");
+                        if (diverP3.length > 0 || allGp.length > 0 || diverPa60.length > 0) {
+                            diverP3 = diverP3.concat(diverPa60);
+                            diverP3 = diverP3.concat(allGp);
+
+                            while (diverP3.length > 0) {
+                                let Divers = [];
+                                let i = 0;
+                                while (i < 3 && diverP3.length > 0) {
+                                    let diver = diverP3[0];
+                                    let userInfo = await Database.getUserInfoSync({
+                                        Id_Diver: diver.Diver_Id_Diver
+                                    });
+                                    if (userInfo === undefined) {
+                                        dataError.success = false;
+                                        dataError.comment = `Impossible de récupérer les informations du plongeur ${diver.Mail}`;
+                                        return res.json(dataError);
+                                    }
+                                    Divers.push({
+                                        Mail: userInfo.Mail,
+                                        Fonction: "Plongeur",
+                                        Qualification: userInfo.Diver_Qualification
+                                    })
+                                    diverP3.splice(0, 1);
+                                    i++;
+                                }
+                                let palanquee = {
+                                    Divers: Divers,
+                                    Params: {
+                                        Max_Depth: 60,
+                                        Actual_Depth: 0,
+                                        Max_Duration: 0,
+                                        Actual_Duration: 0,
+                                        Dive_Type: "Exploration",
+                                        Floor_3: 0,
+                                        Floor_6: 0,
+                                        Floor_9: 0,
+                                        Start_Date: "",
+                                        End_Date: "",
+                                        Palanquee_Type: "Pa"
+                                    }
+                                }
+                                PALANQUEES.push(palanquee);
+                            }
+                        }
+
+                        /* -------------------------------- TECHNIQUE ------------------------------- */
+                    } else if (eventInfo.Dive_Type = "Technique") {
+
+                    }
+                    return res.json(dataError);
+
+
+
+                });
+            });
+        });
+    });
+});
+
 
 /* --------------------------------- UPDATE --------------------------------- */
 
@@ -1957,6 +2651,7 @@ app.put('/auth/club/club_members', keycloak.protect(),
     body("License_Number").trim().escape(),
     body("License_Expiration_Date").trim().escape(),
     body("Medical_Certificate_Expiration_Date").trim().escape(),
+    body("forgotPassword"),
     body("password").trim().escape().exists(),
     function (req, res) {
         if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
@@ -1968,6 +2663,8 @@ app.put('/auth/club/club_members', keycloak.protect(),
         req.body.License_Expiration_Date = getDateFormat(new Date(req.body.License_Expiration_Date));
         req.body.Medical_Certificate_Expiration_Date = getDateFormat(new Date(req.body.Medical_Certificate_Expiration_Date));
         let clientPassword = req.body.password;
+        let forgotPassword = req.body.forgotPassword;
+        delete req.body.forgotPassword;
         delete req.body.password;
 
         console.log("--- Trying to modify user ---");
@@ -2003,34 +2700,59 @@ app.put('/auth/club/club_members', keycloak.protect(),
                         comment: "Impossible to update user in DB"
                     })
                 }
-                const modifKc = await Keycloak_module.modifyUser(userOldMail, req.body.Mail, req.body.Firstname, req.body.Lastname, getUserName(req), clientPassword)
+                let modifPassword = "";
+                if (forgotPassword) modifPassword = req.body.License_Number;
+                const modifKc = await Keycloak_module.modifyUser(userOldMail, req.body.Mail, req.body.Firstname, req.body.Lastname, modifPassword, getUserName(req), clientPassword)
+
                 if (modifKc) {
                     console.log("\t->User modified in KC");
                     console.log("\t->User correctly modified");
-                    return res.json({
-                        modified: true,
-                        comment: "User modified"
+
+                    //update le dossier avec le nouveau mail
+                    // avec fs, renommer le dossier avec le mail de lutilisateur
+                    let filename = req.body.Mail.replace(/@/g, "_").replace(/\./g, "_").replace(/-/g, "_");
+                    let oldFilename = userOldMail.replace(/@/g, "_").replace(/\./g, "_").replace(/-/g, "_");
+                    fs.rename(__dirname + "/model/img/" + oldFilename, __dirname + "/model/img/" + filename, (err) => {
+                        if (err) {
+                            console.log("\tL'image de profil n'a pas pu être renommée")
+                            console.log(err);
+                        } else {
+                            console.log("\t->User folder renamed");
+                            // rename l'image de profil
+                            fs.rename(__dirname + "/model/img/" + filename + "/" + oldFilename + ".jpg", __dirname + "/model/img/" + filename + "/" + filename + ".jpg", (err) => {
+                                if (err) {
+                                    console.log("\tL'image de profil n'a pas pu être renommée")
+                                    console.log(err);
+                                } else {
+                                    console.log("\t->User profile picture renamed");
+                                }
+                                return res.json({
+                                    modified: true,
+                                    comment: "User modified"
+                                })
+                            });
+                        }
+                    })
+                } else {
+                    console.log("\t->Error, impossible to update user in KC");
+                    Database.modifUser(userInfo, (isInser) => {
+                        if (isInser) {
+                            console.log("\t->User modified in DB");
+                            console.log("\t->Error, impossible to update user in KC, success to cancel all modifications");
+                            return res.json({
+                                modified: false,
+                                comment: "Error while modifying, success to cancel all modifications"
+                            });
+                        } else {
+                            console.log("\t->Error, impossible to update user in DB");
+                            console.log("\t->Error, impossible to update user in KC, impossible to cancel all modifications");
+                            return res.json({
+                                modified: false,
+                                comment: "Error while modifying, impossible to cancel all modifications"
+                            });
+                        }
                     })
                 }
-
-                console.log("\t->Error, impossible to update user in KC");
-                Database.modifUser(userInfo, (isInser) => {
-                    if (isInser) {
-                        console.log("\t->User modified in DB");
-                        console.log("\t->Error, impossible to update user in KC, success to cancel all modifications");
-                        return res.json({
-                            modified: false,
-                            comment: "Error while modifying, success to cancel all modifications"
-                        });
-                    } else {
-                        console.log("\t->Error, impossible to update user in DB");
-                        console.log("\t->Error, impossible to update user in KC, impossible to cancel all modifications");
-                        return res.json({
-                            modified: false,
-                            comment: "Error while modifying, impossible to cancel all modifications"
-                        });
-                    }
-                })
             })
         })
     })
@@ -2076,75 +2798,78 @@ app.delete('/auth/club/club_members', keycloak.protect(), // USE
                             comment: "User is linked to a dive"
                         })
                     }
-                    // Database.getAllDiveTeamMember({
-                    //     Diver_Id_Diver: userInfo.Id_Diver
-                    // }, diveTeamMember => {
-                    //     if (diveTeamMember) {
-                    //         console.log("\t->Error, User is linked to a dive team member");
-                    //         return res.json({
-                    //             deleted: false,
-                    //             comment: "User is linked to a dive team member"
-                    //         })
-                    //     }
-                    //     Database.getDiveTeam({
-                    //         Diver_Id_Diver: userInfo.Id_Diver
-                    //     }, diveTeam => {
-                    //         if (diveTeam) {
-                    //             console.log("\t->Error, User is linked to a dive team");
-                    //             return res.json({
-                    //                 deleted: false,
-                    //                 comment: "User is linked to a dive team"
-                    //             })
-                    //         }
-                    Database.deleteUser(req.body.Mail, async (isDelDb) => {
-                        if (!isDelDb) {
-                            console.log("\t->Error, impossible to delete user in DB");
+                    Database.getAllDiveTeamMember({
+                        Diver_Id_Diver: userInfo.Id_Diver
+                    }, diveTeamMember => {
+                        if (diveTeamMember) {
+                            console.log("\t->Error, User is linked to a dive team member");
                             return res.json({
                                 deleted: false,
-                                comment: "Impossible to delete user in DB"
+                                comment: "User is linked to a dive team member"
                             })
                         }
-
-                        const isDelKc = await Keycloak_module.deleteUser(req.body.Mail, getUserName(req), req.body.password);
-                        if (isDelKc) {
-                            console.log("\t->User deleted in KC");
-                            console.log("\t->User correctly deleted");
-
-                            // Supprimer le dossier
-                            // avec fs, supprimer le dossier avec le mail de lutilisateur
-                            try {
-                                let filename = req.body.Mail.replace(/@/g, "_").replace(/\./g, "_").replace(/-/g, "_");
-                                fs.rm(__dirname + "/model/img/" + filename, {
-                                    recursive: true
-                                });
-                                console.log("\t->User folder deleted");
-                            } catch (error) {
-                                console.log("\tL'image de profil n'a pas pu être supprimée")
-                                console.log(error);
+                        Database.getDiveTeam({
+                            Diver_Id_Diver: userInfo.Id_Diver
+                        }, diveTeam => {
+                            if (diveTeam) {
+                                console.log("\t->Error, User is linked to a dive team");
+                                return res.json({
+                                    deleted: false,
+                                    comment: "User is linked to a dive team"
+                                })
                             }
+                            Database.deleteUser(req.body.Mail, async (isDelDb) => {
+                                if (!isDelDb) {
+                                    console.log("\t->Error, impossible to delete user in DB");
+                                    return res.json({
+                                        deleted: false,
+                                        comment: "Impossible to delete user in DB"
+                                    })
+                                }
 
-                            return res.json({
-                                deleted: true,
-                                comment: "User deleted"
+                                const isDelKc = await Keycloak_module.deleteUser(req.body.Mail, getUserName(req), req.body.password);
+                                if (isDelKc) {
+                                    console.log("\t->User deleted in KC");
+                                    console.log("\t->User correctly deleted");
+
+                                    // Supprimer le dossier
+                                    // avec fs, supprimer le dossier avec le mail de lutilisateur
+                                    let filename = req.body.Mail.replace(/@/g, "_").replace(/\./g, "_").replace(/-/g, "_");
+
+                                    fs.rm(__dirname + "/model/img/" + filename, {
+                                        recursive: true,
+                                        force: true
+                                    }, (err) => {
+                                        if (err) {
+                                            console.log("\tL'image de profil n'a pas pu être supprimée")
+                                            console.log(err);
+                                        } else {
+                                            console.log("\t->User folder deleted");
+                                        }
+                                        return res.json({
+                                            deleted: true,
+                                            comment: "User deleted"
+                                        })
+                                    });
+                                } else {
+                                    Database.createUser(userInfo, false, (isInser) => {
+                                        if (isInser) {
+                                            console.log("\t->Error, impossible to delete user in KC, success to cancel all modifications");
+                                            return res.json({
+                                                deleted: false,
+                                                comment: "Error while deleting, success to cancel all modifications"
+                                            });
+                                        } else {
+                                            console.log("\t->Error, impossible to delete user in KC, impossible to cancel all modifications");
+                                            return res.json({
+                                                deleted: false,
+                                                comment: "Error while deleting, impossible to cancel all modifications"
+                                            });
+                                        }
+                                    })
+                                }
                             })
-                        }
-                        Database.createUser(userInfo, false, (isInser) => {
-                            if (isInser) {
-                                console.log("\t->Error, impossible to delete user in KC, success to cancel all modifications");
-                                return res.json({
-                                    deleted: false,
-                                    comment: "Error while deleting, success to cancel all modifications"
-                                });
-                            } else {
-                                console.log("\t->Error, impossible to delete user in KC, impossible to cancel all modifications");
-                                return res.json({
-                                    deleted: false,
-                                    comment: "Error while deleting, impossible to cancel all modifications"
-                                });
-                            }
                         })
-                        //     })
-                        // })
                     })
                 })
             })

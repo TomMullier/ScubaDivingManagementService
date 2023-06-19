@@ -237,11 +237,15 @@ async function deleteUser(mail, clientUsername = "", clientPassword = "") {
     return deleteUser;
 }
 
-async function modifyUser(oldMail, newMail, firstname, lastname, clientUsername = "", clientPassword = "") {
+async function modifyUser(oldMail, newMail, firstname, lastname, forgotPassword="", clientUsername = "", clientPassword = "") {
     if (clientUsername != "" && clientPassword != "") {
         dataClient.username = clientUsername;
         dataClient.password = clientPassword;
     }
+
+    payload = { "email": newMail, "firstName": firstname, "lastName":lastname }
+    if (forgotPassword) payload["credentials"] = [{ "type": "password", "value": forgotPassword, "temporary": true }]
+
     const adminToken = await getAcessToken(); // return token, undefined if err
     dataClient.username = "";
     dataClient.password = "";
@@ -258,7 +262,7 @@ async function modifyUser(oldMail, newMail, firstname, lastname, clientUsername 
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${adminToken}`
         },
-        data: JSON.stringify({ "email": newMail, "firstName": firstname, "lastName":lastname })
+        data: JSON.stringify(payload)
     };
     const modifUser = await axios.request(config)
         .then((response) => {

@@ -78,7 +78,10 @@ def changeKeycloak():
 def launchDocker():
         print ("----- Launching docker compose")
         command = "docker compose up -d" 
-        result = subprocess.run(command, shell=True, capture_output=True, text=True)
+        result = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        for line in result.stdout:
+                print(line)
+        result.wait();
 
         
 

@@ -5,10 +5,13 @@ const session = require("express-session");
 const Keycloak = require("keycloak-connect");
 const fileUpload = require('express-fileupload');
 const Sharp = require('sharp');
-
+const {
+    v4: uuidv4
+} = require('uuid');
 const {
     body,
-    validationResult
+    validationResult,
+    Result
 } = require("express-validator");
 const fs = require('fs');
 
@@ -1431,7 +1434,7 @@ app.post('/auth/dp/palanquee/dive_team', keycloak.protect(),
 
 
 
-                    } else if (params.Palanquee_Type === "Pe") {
+                    } else if (params.Palanquee_TypeId_Dive_Team === "Pe") {
                         /* ---------------------------- PLONGEE ENCADREE ---------------------------- */
                         let nbGp = 0;
                         for (const diver of divers) {
@@ -1505,11 +1508,11 @@ app.post('/auth/dp/palanquee/dive_team', keycloak.protect(),
                     /* -------------------------------- TECHNIQUE ------------------------------- */
                     let nbGp = 0;
                     let lvlMinGp = 60;
-                    
-                    if (params.Palanquee_Type === "Pa"){
+
+                    if (params.Palanquee_Type === "Pa") {
                         dataError.success = false;
                         dataError.comment = `Palanquée n°${key} : une plongée technique ne peut pas être autonome`;
-                        break;                        
+                        break;
                     }
                     for (const diver of divers) {
                         // Comptage du nombre de GP
@@ -1591,13 +1594,81 @@ app.post('/auth/dp/palanquee/dive_team', keycloak.protect(),
             }
             if (dataError.success) {
                 console.log("\t->Palanquee Info verified");
-                //! A FAIRE : STOCKER LES PALANQUEES EN DB
+                // Supprimer toutes les palanquées existantes (s'il y en a) pour les recréer avec les nouvelles données
+                // Créer les palanquées
+                // Update info dive team member
+                console.log("--- Deleting old version of palanquee");
+                let resDelete = await Database.DeleteDiveTeam({ Dive_Id_Dive: idDive });
+                if (!resDelete) {
+                    console.log("\t->Can't delete old version of palanquees");
+                    dataError.success = false;
+                    dataError.comment = "Impossible de supprimer une ancienne version des palanquées";
+                    return res.json(dataError);
+                }
+                console.log("\t->Old version of palanquee deleted");
+
+                let toCreate = [];
+                for (const key in req.body) {
+                    let palanquee = req.body[key].Params
+                    const Id_Dive_Team = uuidv4();
+                    req.body[key].Params.Id_dive_Team = Id_Dive_Team;
+                    toCreate.push([Id_Dive_Team, key, palanquee.Max_Depth, palanquee.Actual_Depth, palanquee.Max_Duration, palanquee.Actual_Duration, palanquee.Dive_Type, palanquee.Floor_3, palanquee.Floor_6, palanquee.Floor_9, getDateFormat(new Date(palanquee.Start_Date).toLocaleString()), getDateFormat(new Date(palanquee.End_Date).toLocaleString()), "", idDive]);
+                }
+                console.log("--- Inserting new palanquees")
+                let resCreateTeam = await Database.createDiveTeam(toCreate);
+                if (!resCreateTeam) {
+                    console.log("\t->Can't insert palanquees")
+                    dataError.success = false;
+                    dataError.comment = "Impossible d'insérer les palanquées";
+                    return res.json(dataError);
+                }
+                else{
+                    dataError.comment = "Palanquées correctement ajoutées";
+                }
+                console.log("\t->Palanquees inserted")
                 
-            }else{
+                console.log("--- Updating diver role");
+                for (const key in req.body) {
+                    const palanquee = req.body[key];
+                    const divers = palanquee.Divers;
+                    const Id_Dive_Team = palanquee.Id_Dive_Team;
+                    for (const diver of divers) {
+                        let tmp = {Mail: diver.Mail};
+                        let userInfo = await Database.getUserInfoByMailSync(tmp);
+                        if (userInfo == undefined) {
+                            console.log("Can't find user info");
+                            dataError.success = true;
+                            dataError.comment = `Impossible de récupérer les informations du plongeur ${diver.Mail} pour les mettre à jour`;
+                            break
+                        }
+                        const data = {
+                            Diver_Id_Diver: userInfo.Id_Diver,
+                            Dive_Id_Dive: idDive,
+                        }
+                        let diverInTeamInfo = await Database.getDiveTeamMember(data);
+                        if (diverInTeamInfo === undefined) {
+                            console.log("\t->Impossible to get diver info")
+                            dataError.success = true;
+                            dataError.comment = `Impossible de récupérer les informations du plongeur ${diver.Mail} pour les mettre à jour`;
+                            break
+                        }
+                        else {
+                            diverInTeamInfo.Dive_Team_Id_Dive_Team = Id_Dive_Team;
+                            diverInTeamInfo.Diver_Role = diver.Fonction;
+                            let updated = await Database.updateDiveTeamMember(diverInTeamInfo)
+                            if (!updated) {
+                                console.log("\t->Impossible to update diver info")
+                                dataError.success = true;
+                                dataError.comment = `Impossible de modifier les informations du plongeur ${diver.Mail}`
+                                break
+                            }
+                        }
+                    }
+                }
+            } else {
                 console.log("\t->Error, Palanquee Info verified but not correct");
-
             }
-
+            return res.json(dataError)
         });
     });
 

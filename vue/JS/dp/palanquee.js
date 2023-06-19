@@ -47,11 +47,11 @@ fetch('/auth/dp/palanquee/get_palanquee', {
         setPage(res.data);
         let allMails = [];
         res.data.event.allDivers.forEach(user => {
-            if (user.Diver_Role != "DP") {
+            // if (user.Diver_Role != "DP") {
                 allMails.push({
                     userMail: user.Mail
                 });
-            }
+            // }
         })
         createPalanqueeUserQualif(allMails);
     })
@@ -68,6 +68,7 @@ function createPalanqueeUserQualif(data) {
         .then(res => {
             console.log(res)
             if (res.created == false) window.location.href = "/auth/planning";
+            // saveDiveTeam(dataPalanquee)
         })
 }
 /* ----------------------- SAVE PALANQUEE USER QUALIF ----------------------- */
@@ -86,42 +87,39 @@ function savePalanqueeUserQualif(data) {
 }
 
 /* ----------------------------- SAVE DIVE TEAM ----------------------------- */
-let dataPalanquee = {
-    1: {
-        Divers: [{
-                Mail: "m.d@gmail.com",
-                Fonction: "Diver",
-                Qualification: "P2"
-            },
-            {
-                Mail: "m.d@gmail.com",
-                Fonction: "Diver",
-                Qualification: "P2"
-            },
-            {
-                Mail: "d.p@gmail.com",
-                Fonction: "GP",
-                Qualification: "P5"
-            }
-        ],
-        Params: {
-            Palanquee_Type: "Pa",
-            Dive_Type: "Exploration",
-            Max_Depth: 20,
-            Actual_Depth: 10,
-            Max_Duration: new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
-            Actual_Duration: new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
-            Floor_3: new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
-            Floor_6: new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
-            Floor_9: new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
-            Start_Date: new Date(),
-            End_Date: new Date(),
-        }
-    },
-
-
-}
-saveDiveTeam(dataPalanquee)
+// let dataPalanquee = {
+//     1: {    // Numéro palanquée
+//         Divers: [{
+//                 Mail: "p1@gmail.fr",
+//                 Fonction: "Diver",
+//                 Qualification: "P2"
+//             },
+//             {
+//                 Mail: "p2@gmail.fr",
+//                 Fonction: "Diver",
+//                 Qualification: "P2"
+//             },
+//             {
+//                 Mail: "dp@gmail.fr",
+//                 Fonction: "GP",
+//                 Qualification: "P5"
+//             }
+//         ],
+//         Params: {
+//             Palanquee_Type: "Pe",
+//             Dive_Type: "Exploration",
+//             Max_Depth: 20,
+//             Actual_Depth: 10,
+//             Max_Duration: new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+//             Actual_Duration: new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+//             Floor_3: new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+//             Floor_6: new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+//             Floor_9: new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+//             Start_Date: new Date(),
+//             End_Date: new Date(),
+//         }
+//     },
+// }
 
 function saveDiveTeam(data) {
     fetch('/auth/dp/palanquee/dive_team', {
@@ -132,7 +130,8 @@ function saveDiveTeam(data) {
             body: JSON.stringify(data)
         }).then(res => res.json())
         .then(res => {
-            console.log(res)
+            console.log(res);
+            // window.location.reload();
         })
 }
 
@@ -231,12 +230,10 @@ function setupSelect(data) {
             option.innerText = "Sélectionnez un plongeur";
             select.appendChild(option);
             divers.forEach(function (diver) {
-                if (diver.Diver_Role != "DP") {
                     option = document.createElement("option");
                     option.value = diver.Mail;
                     option.innerText = diver.Firstname + " " + diver.Lastname;
                     select.appendChild(option);
-                }
             })
         })
     })
@@ -275,7 +272,7 @@ function changeSelectToDIV(active, data) {
     let to_display = [];
     //remove active array to all divers array
     data.event.allDivers.forEach(function (diver) {
-        if (!active.includes(diver.Firstname + " " + diver.Lastname) && diver.Diver_Role != "DP") {
+        if (!active.includes(diver.Firstname + " " + diver.Lastname)) {
             to_display.push(diver);
         }
     })
@@ -296,10 +293,8 @@ function changeSelectToDIV(active, data) {
                 let html_tag = "<li data-text='Sélectionnez un plongeur' class=active><a>Sélectionnez un plongeur</a></li>";
                 list_.innerHTML = html_tag;
                 to_display.forEach(function (diver) {
-                    if (diver.Diver_Role != "DP") {
                         html_tag = "<li class=option><a><div class=option_container><div class=name_item><h2>" + diver.Firstname + " " + diver.Lastname + "</h2><span>" + diver.Mail + "</span></div><div class=level>" + (diver.Temporary_Qualification != "" ? diver.Temporary_Qualification : diver.Diver_Qualification) + "</div></div></a></li>";
                         list_.innerHTML += html_tag;
-                    }
                 })
             }
         }
@@ -591,4 +586,7 @@ function savePalanquee(d) {
         data.push(palanquee_);
     }
     console.log(data);
+    // TODO : champs temps paliers
+    // TODO : index début objet (0/1)
+    // saveDiveTeam(data);
 }

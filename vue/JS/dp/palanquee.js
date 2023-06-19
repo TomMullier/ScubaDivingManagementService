@@ -3,6 +3,13 @@
 /* -------------------------------------------------------------------------- */
 let my_role;
 
+function openErrorModal(e) {
+    modals.show("error_occured");
+    document.querySelector("#error_occured p").innerText = e;
+    setTimeout(function () {
+        modals.closeCurrent();
+    }, 3000);
+}
 /* -------------------------------------------------------------------------- */
 /*                                   REQUEST                                  */
 /* -------------------------------------------------------------------------- */
@@ -48,9 +55,9 @@ fetch('/auth/dp/palanquee/get_palanquee', {
         let allMails = [];
         res.data.event.allDivers.forEach(user => {
             // if (user.Diver_Role != "DP") {
-                allMails.push({
-                    userMail: user.Mail
-                });
+            allMails.push({
+                userMail: user.Mail
+            });
             // }
         })
         createPalanqueeUserQualif(allMails);
@@ -82,45 +89,27 @@ function savePalanqueeUserQualif(data) {
         }).then(res => res.json())
         .then(res => {
             console.log(res)
-            window.location.reload();
+            if (res.created) {
+                modals.show("success");
+                document.querySelector("#success_message").innerText = res.comment;
+                setTimeout(function () {
+                    modals.closeCurrent();
+                    window.location.reload();
+
+                }, 1500);
+            } else {
+                // Open error
+                openErrorModal(res.comment);
+                setTimeout(function () {
+                    modals.closeCurrent();
+                    window.location.reload();
+
+                }, 1500);
+            }
         })
 }
 
 /* ----------------------------- SAVE DIVE TEAM ----------------------------- */
-// let dataPalanquee = {
-//     1: {    // Numéro palanquée
-//         Divers: [{
-//                 Mail: "p1@gmail.fr",
-//                 Fonction: "Diver",
-//                 Qualification: "P2"
-//             },
-//             {
-//                 Mail: "p2@gmail.fr",
-//                 Fonction: "Diver",
-//                 Qualification: "P2"
-//             },
-//             {
-//                 Mail: "dp@gmail.fr",
-//                 Fonction: "GP",
-//                 Qualification: "P5"
-//             }
-//         ],
-//         Params: {
-//             Palanquee_Type: "Pe",
-//             Dive_Type: "Exploration",
-//             Max_Depth: 20,
-//             Actual_Depth: 10,
-//             Max_Duration: new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
-//             Actual_Duration: new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
-//             Floor_3: new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
-//             Floor_6: new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
-//             Floor_9: new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
-//             Start_Date: new Date(),
-//             End_Date: new Date(),
-//         }
-//     },
-// }
-
 function saveDiveTeam(data) {
     fetch('/auth/dp/palanquee/dive_team', {
             method: 'POST',
@@ -131,7 +120,17 @@ function saveDiveTeam(data) {
         }).then(res => res.json())
         .then(res => {
             console.log(res);
-            // window.location.reload();
+            if (res.comment != "Palanquées correctement ajoutées") {
+                // Open error
+                openErrorModal(res.comment);
+            } else {
+                modals.show("success");
+                document.querySelector("#success_message").innerText = res.comment;
+                setTimeout(function () {
+                    modals.closeCurrent();
+                    window.location.reload();
+                }, 1500);
+            }
         })
 }
 
@@ -199,7 +198,7 @@ function setPage(data) {
         })
     })
     createAllPalanquee(data);
-    numberpalanquee = 0;
+    numberpalanquee = data.palanquee.length-1;
     addPalanquee(data);
 
     loadingClose();
@@ -230,10 +229,10 @@ function setupSelect(data) {
             option.innerText = "Sélectionnez un plongeur";
             select.appendChild(option);
             divers.forEach(function (diver) {
-                    option = document.createElement("option");
-                    option.value = diver.Mail;
-                    option.innerText = diver.Firstname + " " + diver.Lastname;
-                    select.appendChild(option);
+                option = document.createElement("option");
+                option.value = diver.Mail;
+                option.innerText = diver.Firstname + " " + diver.Lastname;
+                select.appendChild(option);
             })
         })
     })
@@ -276,7 +275,6 @@ function changeSelectToDIV(active, data) {
             to_display.push(diver);
         }
     })
-    console.log(to_display);
     document.querySelectorAll(".diver_item_container").forEach(function (list) {
         list.children[list.children.length - 1].style.display = "none";
         list.children[list.children.length - 1].style.opacity = "0";
@@ -290,16 +288,35 @@ function changeSelectToDIV(active, data) {
                     select.removeChild(s);
                 } catch (error) {}
                 let list_ = select.querySelector(".option-list");
-                let html_tag = "<li data-text='Sélectionnez un plongeur' class=active><a>Sélectionnez un plongeur</a></li>";
+                let html_tag = "<li data-text='Sélectionnez un plongeur'><a>Sélectionnez un plongeur</a></li>";
                 list_.innerHTML = html_tag;
                 to_display.forEach(function (diver) {
-                        html_tag = "<li class=option><a><div class=option_container><div class=name_item><h2>" + diver.Firstname + " " + diver.Lastname + "</h2><span>" + diver.Mail + "</span></div><div class=level>" + (diver.Temporary_Qualification != "" ? diver.Temporary_Qualification : diver.Diver_Qualification) + "</div></div></a></li>";
-                        list_.innerHTML += html_tag;
+                    html_tag = "<li data-value='" + diver.Mail + "' class=option><a><div class=option_container><div class=name_item><h2>" + diver.Firstname + " " + diver.Lastname + "</h2><span>" + diver.Mail + "</span></div><div class=level>" + (diver.Temporary_Qualification != "" ? diver.Temporary_Qualification : diver.Diver_Qualification) + "</div></div></a></li>";
+                    list_.innerHTML += html_tag;
                 })
+
+                setDiversImported(data);
             }
         }
     })
 }
+
+function setDiversImported(data) {
+    let palanquee = data.palanquee;
+    for (let i = 0; i < palanquee.length; i++) {
+        let palanquee_ = palanquee[i];
+        let divers = palanquee_.Diver;
+        let container = document.querySelectorAll(".diver_item_container")[i];
+        for (let j = 0; j < divers.length; j++) {
+            let diver = divers[j];
+            let select = container.querySelectorAll(".select")[j];
+            try {
+                select.querySelector(".select-input").innerHTML = '<div class="option_container"><div class="name_item"><h2>' + diver.Firstname + ' ' + diver.Lastname + '</h2><span>' + diver.Mail + '</span></div><div class="level">' + diver.Qualification + '</div></div>';
+            } catch (error) {}
+        }
+    }
+}
+
 
 function loadingClose() {
     document.querySelector(".loading_animation").style.opacity = "0";
@@ -383,8 +400,6 @@ document.querySelector(".save_change_level").addEventListener("click", function 
         data.push(tmp);
     })
     console.log("Change Level");
-    console.log(data);
-    //? Save button change level
     savePalanqueeUserQualif(data);
 })
 
@@ -392,7 +407,6 @@ let numberpalanquee = 1
 
 function createAllPalanquee(data) {
     let final = "";
-    // for (let i = 1; i <= data.event.allDivers.length / 2; i++) {
     for (let i = 1; i <= Math.floor(data.event.allDivers.length / 2); i++) {
 
         let html_tag = '<div class="palanquee_item palanquee_' + i + '">'
@@ -431,31 +445,31 @@ function createAllPalanquee(data) {
         html_tag += '<div class="fonction_select_container">'
         html_tag += '<select data-role="select" name="" id="" class="diver_item">'
         html_tag += '<option value="">Sélectionnez une fonction</option>'
-        html_tag += '<option value="">Plongeur</option>'
-        html_tag += '<option value="">GP</option>'
+        html_tag += '<option value="Plongeur">Plongeur</option>'
+        html_tag += '<option value="GP">GP</option>'
         html_tag += '</select>'
         html_tag += '<select data-role="select" name="" id="" class="diver_item">'
         html_tag += '<option value="">Sélectionnez une fonction</option>'
-        html_tag += '<option value="">Plongeur</option>'
-        html_tag += '<option value="">GP</option>'
+        html_tag += '<option value="Plongeur">Plongeur</option>'
+        html_tag += '<option value="GP">GP</option>'
         html_tag += '</select>'
         html_tag += '<select data-role="select" name="" id="" class="diver_item">'
         html_tag += '<option value="">Sélectionnez une fonction</option>'
-        html_tag += '<option value="">Plongeur</option>'
-        html_tag += '<option value="">GP</option>'
+        html_tag += '<option value="Plongeur">Plongeur</option>'
+        html_tag += '<option value="GP">GP</option>'
         html_tag += '</select>'
         html_tag += '<select data-role="select" name="" id="" class="diver_item">'
         html_tag += '<option value="">Sélectionnez une fonction</option>'
-        html_tag += '<option value="">Plongeur</option>'
-        html_tag += '<option value="">GP</option>'
+        html_tag += '<option value="Plongeur">Plongeur</option>'
+        html_tag += '<option value="GP">GP</option>'
         html_tag += '</select>'
         html_tag += '<select data-role="select" name="" id="" class="diver_item">'
         html_tag += '<option value="">Sélectionnez une fonction</option>'
-        html_tag += '<option value="">Plongeur</option>'
-        html_tag += '<option value="">GP</option>'
+        html_tag += '<option value="Plongeur">Plongeur</option>'
+        html_tag += '<option value="GP">GP</option>'
         html_tag += '</select>'
         html_tag += '<select data-role="select" name="" id="" class="diver_item">'
-        html_tag += '<option value="">GP</option>'
+        html_tag += '<option value="GP">GP</option>'
         html_tag += '</select>'
         html_tag += '</div>'
         html_tag += '</div>'
@@ -465,19 +479,19 @@ function createAllPalanquee(data) {
         html_tag += '<div class="prevu">'
         html_tag += '<h2>Prévus</h2>'
         html_tag += '<input type="number" data-role="input" data-prepend="Profondeur : " data-append="m">'
-        html_tag += '<input type="time" data-role="input" data-prepend="Temps : " data-append="min">'
+        html_tag += '<input type="time" data-role="input" data-prepend="Temps : " data-append="h">'
         html_tag += '</div>'
         html_tag += '<div class="prevu">'
         html_tag += '<h2>Réels</h2>'
         html_tag += '<input type="number" data-role="input" data-prepend="Profondeur : " data-append="m">'
-        html_tag += '<input type="time" data-role="input" data-prepend="Temps : " data-append="min">'
+        html_tag += '<input type="time" data-role="input" data-prepend="Temps : " data-append="h">'
         html_tag += '</div>'
         html_tag += '</div>'
         html_tag += '<div class="contain2">'
         html_tag += '<h2>Paliers</h2>'
-        html_tag += '<input type="number" data-role="input" data-prepend="3m : " data-append="min">'
-        html_tag += '<input type="number" data-role="input" data-prepend="6m : " data-append="min">'
-        html_tag += '<input type="number" data-role="input" data-prepend="9m : " data-append="min">'
+        html_tag += '<input type="time" data-role="input" data-prepend="3m : " data-append="h">'
+        html_tag += '<input type="time" data-role="input" data-prepend="6m : " data-append="h">'
+        html_tag += '<input type="time" data-role="input" data-prepend="9m : " data-append="h">'
         html_tag += '</div>'
         html_tag += '</div>'
         html_tag += '</div>'
@@ -497,13 +511,16 @@ function createAllPalanquee(data) {
     }
     document.querySelector(".palanquee_table").innerHTML = final;
 
+    setPalanqueeReceived(data.palanquee);
 
     setupSelect(data);
-    for (let i = 2; i <= Math.floor(data.event.allDivers.length / 2); i++) {
+    for (let i = data.palanquee.length+1; i <= Math.floor(data.event.allDivers.length / 2); i++) {
         try {
-            document.querySelector(".palanquee_" + i).style.display = "none";
+                document.querySelector(".palanquee_" + i).style.display = "none";
         } catch (error) {}
     }
+    numberpalanquee = data.palanquee.length;
+    add_buttons(data);
 
 
 }
@@ -533,7 +550,7 @@ function add_buttons(data) {
 }
 
 function savePalanquee(d) {
-    let data = [];
+    let data = {};
     let palanquees = document.querySelectorAll(".palanquee_item");
     for (let i = 0; i < palanquees.length; i++) {
         let palanquee_ = {
@@ -541,15 +558,16 @@ function savePalanquee(d) {
             Divers: [],
             Params: {
                 Palanquee_Type: "",
-                Time_Start: "",
-                Time_End: "",
-                Max_Depth_Prevu: "",
-                Max_Depth_Actuel: "",
-                Max_Duration_Prevu: "",
-                Max_Duration_Actuel: "",
+                Start_Date: "",
+                End_Date: "",
+                Max_Depth: "",
+                Actual_Depth: "",
+                Max_Duration: "",
+                Actual_Duration: "",
                 Floor_3: "",
                 Floor_6: "",
                 Floor_9: "",
+                Dive_Type: ""
             }
         }
         for (let j = 1; j < 7; j++) {
@@ -559,7 +577,6 @@ function savePalanquee(d) {
                 Qualification: ""
             }
             if (palanquees[i].querySelector(".diver_item_container  ").children[j - 1].querySelector(".select-input").innerText != "Sélectionnez un plongeur") {
-                console.log("Un diver")
                 let diver_ = palanquees[i].querySelector(".diver_item_container ").children[j - 1];
                 let user = diver_.querySelector(".select-input").innerText.split("\n")[0];
                 // find mail of user using find
@@ -573,20 +590,74 @@ function savePalanquee(d) {
             }
         }
         palanquee_.Params.Palanquee_Type = palanquees[i].querySelector(".palanquee_type").querySelector(".select-input").innerText;
-        palanquee_.Params.Time_Start = palanquees[i].querySelector(".time_container").children[0].querySelector("input").value;
-        palanquee_.Params.Time_End = palanquees[i].querySelector(".time_container").children[1].querySelector("input").value;
-        palanquee_.Params.Max_Depth_Prevu = palanquees[i].querySelector(".contain").children[0].querySelectorAll("input")[0].value;
-        palanquee_.Params.Max_Depth_Actuel = palanquees[i].querySelector(".contain").children[1].querySelectorAll("input")[0].value;
-        palanquee_.Params.Max_Duration_Prevu = palanquees[i].querySelector(".contain").children[0].querySelectorAll("input")[1].value;
-        palanquee_.Params.Max_Duration_Actuel = palanquees[i].querySelector(".contain").children[1].querySelectorAll("input")[1].value;
+        palanquee_.Params.Start_Date = palanquees[i].querySelector(".time_container").children[0].querySelector("input").value;
+        palanquee_.Params.Start_Date = new Date(d.event.Start_Date.split(" ")[0] + " " + palanquee_.Params.Start_Date);
+        palanquee_.Params.End_Date = palanquees[i].querySelector(".time_container").children[1].querySelector("input").value;
+        palanquee_.Params.End_Date = new Date(d.event.Start_Date.split(" ")[0] + " " + palanquee_.Params.End_Date);
+        palanquee_.Params.Max_Depth = palanquees[i].querySelector(".contain").children[0].querySelectorAll("input")[0].value;
+        palanquee_.Params.Actual_Depth = palanquees[i].querySelector(".contain").children[1].querySelectorAll("input")[0].value;
+        palanquee_.Params.Max_Duration = palanquees[i].querySelector(".contain").children[0].querySelectorAll("input")[1].value;
+        palanquee_.Params.Max_Duration = new Date(d.event.Start_Date.split(" ")[0] + " " + palanquee_.Params.Max_Duration);
+        palanquee_.Params.Actual_Duration = palanquees[i].querySelector(".contain").children[1].querySelectorAll("input")[1].value;
+        palanquee_.Params.Actual_Duration = new Date(d.event.Start_Date.split(" ")[0] + " " + palanquee_.Params.Actual_Duration);
         palanquee_.Params.Floor_3 = palanquees[i].querySelector(".contain2").querySelectorAll("input")[0].value;
+        palanquee_.Params.Floor_3 = new Date(d.event.Start_Date.split(" ")[0] + " " + palanquee_.Params.Floor_3);
         palanquee_.Params.Floor_6 = palanquees[i].querySelector(".contain2").querySelectorAll("input")[1].value;
+        palanquee_.Params.Floor_6 = new Date(d.event.Start_Date.split(" ")[0] + " " + palanquee_.Params.Floor_6);
         palanquee_.Params.Floor_9 = palanquees[i].querySelector(".contain2").querySelectorAll("input")[2].value;
-
-        data.push(palanquee_);
+        palanquee_.Params.Floor_9 = new Date(d.event.Start_Date.split(" ")[0] + " " + palanquee_.Params.Floor_9);
+        palanquee_.Params.Dive_Type = d.event.Dive_Type;
+        if (palanquee_.Divers.length > 0) {
+            let auth = true;
+            // Iterate through param to check if all param are filled
+            for (const [key, value] of Object.entries(palanquee_.Params)) {
+                if (value == "") {
+                    auth = false;
+                }
+            }
+            if (auth) data[i + 1] = palanquee_;
+            else {
+                // Orange border for all input not filled
+                palanquees[i].querySelectorAll("input").forEach(function (element) {
+                    if (element.value == "") {
+                        element.style.borderColor = "#f2574a";
+                    }
+                })
+            }
+        }
     }
     console.log(data);
-    // TODO : champs temps paliers
-    // TODO : index début objet (0/1)
-    // saveDiveTeam(data);
+    saveDiveTeam(data);
+}
+
+function setPalanqueeReceived(data) {
+    console.log("Data à set :")
+    console.log(data);
+    let palanquees = document.querySelectorAll(".palanquee_item");
+    for (let i = 0; i < data.length; i++) {
+        let palanquee = palanquees[i];
+        let palanquee_ = data[i];
+        // Palanquee Type
+        palanquee.querySelector(".palanquee_type").value = palanquee_.Params.Palanquee_Type == "Palanquée encadrée" ? "Pe" : "Pa";
+
+        console.log(palanquee.querySelector(".palanquee_type"));
+        // Start and end date
+        palanquee.querySelector(".time_container").children[0].querySelector("input").value = new Date(palanquee_.Params.Start_Date).toLocaleTimeString();
+        palanquee.querySelector(".time_container").children[1].querySelector("input").value = new Date(palanquee_.Params.End_Date).toLocaleTimeString();
+        // Max depth and duration
+        palanquee.querySelector(".contain").children[0].querySelectorAll("input")[0].value = Math.round(palanquee_.Params.Max_Depth);
+        palanquee.querySelector(".contain").children[0].querySelectorAll("input")[1].value = palanquee_.Params.Max_Duration.split(":")[0] + ":" + palanquee_.Params.Max_Duration.split(":")[1];
+        palanquee.querySelector(".contain").children[1].querySelectorAll("input")[0].value = Math.round(palanquee_.Params.Actual_Depth);
+        palanquee.querySelector(".contain").children[1].querySelectorAll("input")[1].value = palanquee_.Params.Actual_Duration.split(":")[0] + ":" + palanquee_.Params.Actual_Duration.split(":")[1];
+        // Floor 3,6,9
+        palanquee.querySelector(".contain2").querySelectorAll("input")[0].value = palanquee_.Params.Floor_3.split(":")[0] + ":" + palanquee_.Params.Floor_3.split(":")[1];
+        palanquee.querySelector(".contain2").querySelectorAll("input")[1].value = palanquee_.Params.Floor_6.split(":")[0] + ":" + palanquee_.Params.Floor_6.split(":")[1];
+        palanquee.querySelector(".contain2").querySelectorAll("input")[2].value = palanquee_.Params.Floor_9.split(":")[0] + ":" + palanquee_.Params.Floor_9.split(":")[1];
+        // Divers
+        let divers = palanquee_.Diver;
+        for (let j = 0; j < divers.length; j++) {
+            palanquee.querySelector(".diver_item_container").children[j].value = divers[j].Mail;
+            palanquee.querySelector(".fonction_select_container").children[j].value = divers[j].Fonction;
+        }
+    }
 }

@@ -434,6 +434,86 @@ body {
 .toggle.active span:nth-child(3) {
   transform: rotate(-45deg);
 }
+#error_occured .modal-wrapper {
+  animation: slideFromTop 0.4s both;
+  top: 0;
+  width: 80%;
+  height: fit-content;
+  position: fixed;
+  background-color: #f2574a;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+#error_occured .modal-wrapper #txt_title {
+  color: white;
+  font-size: 20px;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0;
+}
+#error_occured .modal-wrapper p {
+  color: white;
+  font-size: 15px;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0;
+}
+#success .modal-wrapper {
+  animation: slideFromTop 0.4s both;
+  top: 0;
+  width: 80%;
+  height: fit-content;
+  position: fixed;
+  background-color: green;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+#success .modal-wrapper #txt_title {
+  color: white;
+  font-size: 20px;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0;
+}
+#success .modal-wrapper p {
+  color: white;
+  font-size: 15px;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0;
+}
+@keyframes slideFromTop {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(0%);
+  }
+}
+@keyframes goTop {
+  0% {
+    transform: translateY(0%);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
 html,
 body {
   height: 100vh;
@@ -739,7 +819,7 @@ body {
   padding: 10px 20px;
 }
 .divers .allDivers .diver_item div p {
-  width: 100%;
+  width: 20vw;
   font-size: 15px;
   font-family: 'Montserrat', sans-serif;
   color: #120B8F;

@@ -81,43 +81,44 @@ fetch('/auth/user/account/get_info', {
             openErrorModal(e);
         }
         setUserInfos();
+        getPlanning()
     })
 
 /* ------------------------------ GET PLANNING ------------------------------ */
-fetch('/auth/planning/get_planning', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }).then(res => res.json())
-    .then(res => {
-        console.log(res)
-        res.allLocations.forEach(function (location) {
-            locations.push(new Location(location.Site_Name, location.Latitude, location.Longitude, location.Track_Type, location.Track_Number, location.Track_Name, location.Zip_Code, location.City_Name, location.Country_Name, location.Additional_Address, location.Tel_Number, location.Information_URL, [location.General_Rate, location.Location_Rate, location.Organisation_Rate, location.Conditions_Rate, location.Rate_Number], location.SOS_Tel_Number, location.Emergency_Plan, location.Post_Accident_Procedure));
-        });
-        if (res.allUsers && my_role == "club") {
-            allDivers = res.allUsers;
-        }
-        res.allEvents.forEach(function (event) {
-            let e = new Event(new Date(event.Start_Date), new Date(event.End_Date), event.Diver_Price, event.Instructor_Price, event.Location, event.Comments, event.Special_Needs, event.Status, event.Max_Divers, event.Dive_Type);
-            e.addUser(event.Users);
-            if (my_role == "club" && e.start > new Date()) {
-                e.startEditable = true;
-                e.durationEditable = true;
-                e.resizableFromStart = true;
-                e.dropable = true;
-            } else {
-                e.startEditable = false;
-                e.durationEditable = false;
-                e.resizableFromStart = false;
-                e.dropable = false;
+function getPlanning() {
+    fetch('/auth/planning/get_planning', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
             }
-            events.push(e);
-        });
-
-        setEvents(events);
-    })
-
+        }).then(res => res.json())
+        .then(res => {
+            console.log(res)
+            res.allLocations.forEach(function (location) {
+                locations.push(new Location(location.Site_Name, location.Latitude, location.Longitude, location.Track_Type, location.Track_Number, location.Track_Name, location.Zip_Code, location.City_Name, location.Country_Name, location.Additional_Address, location.Tel_Number, location.Information_URL, [location.General_Rate, location.Location_Rate, location.Organisation_Rate, location.Conditions_Rate, location.Rate_Number], location.SOS_Tel_Number, location.Emergency_Plan, location.Post_Accident_Procedure));
+            });
+            if (res.allUsers && my_role == "club") {
+                allDivers = res.allUsers;
+            }
+            res.allEvents.forEach(function (event) {
+                let e = new Event(new Date(event.Start_Date), new Date(event.End_Date), event.Diver_Price, event.Instructor_Price, event.Location, event.Comments, event.Special_Needs, event.Status, event.Max_Divers, event.Dive_Type);
+                e.addUser(event.Users);
+                if (my_role == "club" && e.start > new Date()) {
+                    e.startEditable = true;
+                    e.durationEditable = true;
+                    e.resizableFromStart = true;
+                    e.dropable = true;
+                } else {
+                    e.startEditable = false;
+                    e.durationEditable = false;
+                    e.resizableFromStart = false;
+                    e.dropable = false;
+                }
+                events.push(e);
+            });
+            setEvents(events);
+        })
+}
 
 /* ------------------------------ CREATE EVENT ------------------------------ */
 

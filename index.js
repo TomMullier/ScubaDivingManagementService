@@ -62,6 +62,7 @@ function getUserName(req) {
 }
 
 function getDateFormat(badDate) {
+    console.log(badDate);
     badDate += '';
     badDate = new Date(badDate).toLocaleString('fr-FR', {
         hour12: false
@@ -71,6 +72,15 @@ function getDateFormat(badDate) {
     const year = badDate.split(', ')[0].split("/")[2];
     const hour = badDate.split(', ')[1];
     return year + "-" + month + "-" + day + " " + hour;
+}
+
+function getTimeFormat(time) {
+    time += '';
+    time = new Date(time).toLocaleString('fr-FR', {
+        hour12: false
+    })
+    const newTime = time.split(', ')[1];
+    return newTime;
 }
 
 function cropToSquare(imagePath) {
@@ -1218,8 +1228,31 @@ app.get('/auth/dp/palanquee/get_palanquee', keycloak.protect(), function (req, r
 
                             Database.getDiveTeam({
                                 Dive_Id_Dive: dive.Id_Dive
-                            }, (diveTeamInfo) => {
-                                if (diveTeamInfo === undefined) diveTeamInfo = [];
+                            }, async (allPalanquee) => {
+                                let Palanquees = [];
+                                if (allPalanquee !== undefined) {
+                                    for (const palanquee of allPalanquee) {
+                                        let obj = {};
+                                        obj.Params = palanquee
+                                        let divers = allDiveTeamMember.filter(member => member.Dive_Team_Id_Dive_Team == palanquee.Id_Dive_Team);
+
+                                        obj.Diver = [];
+                                        for (const diver of divers) {
+                                            let data = {}
+                                            if (diver.Temporary_Diver_Qualification != "") data.Qualification = diver.Temporary_Diver_Qualification;
+                                            else data.Qualification = diver.Current_Diver_Qualification;
+                                            data.Fonction = diver.Diver_Role;
+                                            let userInfo = await Database.getUserInfoSync({
+                                                Id_Diver: diver.Diver_Id_Diver
+                                            })
+                                            data.Firstname = userInfo.Firstname;
+                                            data.Lastname = userInfo.Lastname;
+                                            data.Mail = userInfo.Mail;
+                                            obj.Diver.push(data)
+                                        }
+                                        Palanquees.push(obj);
+                                    }
+                                }
 
                                 event.allDivers.forEach(diver => {
                                     let found = allDiveTeamMember.find(member => member.Diver_Id_Diver == diver.Id_Diver);
@@ -1235,7 +1268,7 @@ app.get('/auth/dp/palanquee/get_palanquee', keycloak.protect(), function (req, r
 
                                     let data = {
                                         dive,
-                                        palanquee: diveTeamInfo,
+                                        palanquee: Palanquees,
                                         event,
                                         listMaxDepth
                                     }
@@ -1383,11 +1416,21 @@ app.post('/auth/dp/palanquee/dive_team', keycloak.protect(),
         console.log("--- Verifying Palanquee Info ---");
         Database.getMaxDepth(async listMaxDepth => {
             for (const key in req.body) {
-
                 const palanquee = req.body[key];
                 const divers = palanquee.Divers;
                 const params = palanquee.Params;
                 const maxDepth = parseInt(params.Max_Depth);
+
+                // Time : Max_Duration, Actual_Duration, Start_Date, End_Date, Floor_3, Floor_6, Floor_9
+                console.log("\t->Verifying Time", params);
+                params.Start_Date = getDateFormat(new Date(params.Start_Date).toLocaleString());
+                params.End_Date = getDateFormat(new Date(params.End_Date).toLocaleString());
+                params.Max_Duration = getTimeFormat(new Date(params.Max_Duration).toLocaleString());
+                params.Actual_Duration = getTimeFormat(new Date(params.Actual_Duration).toLocaleString());
+                params.Floor_3 = getTimeFormat(new Date(params.Floor_3).toLocaleString());
+                params.Floor_6 = getTimeFormat(new Date(params.Floor_6.toLocaleString()));
+                params.Floor_9 = getTimeFormat(new Date(params.Floor_9.toLocaleString()));
+                console.log("\t->Verified Time", params);
 
                 if (params.Dive_Type === "Exploration") {
                     /* ------------------------------- EXPLORATION ------------------------------ */
@@ -1440,7 +1483,7 @@ app.post('/auth/dp/palanquee/dive_team', keycloak.protect(),
                         for (const diver of divers) {
                             // Comptage du nombre de GP
                             if (diver.Fonction === "GP") {
-                                let gpInfo = await Database.getUserInfoByMailSync({
+                                let gpInfo = await Database.getUserInfoSync({
                                     Mail: diver.Mail
                                 });
                                 if (gpInfo === undefined) {
@@ -1517,7 +1560,7 @@ app.post('/auth/dp/palanquee/dive_team', keycloak.protect(),
                     for (const diver of divers) {
                         // Comptage du nombre de GP
                         if (diver.Fonction === "GP") {
-                            let gpInfo = await Database.getUserInfoByMailSync({
+                            let gpInfo = await Database.getUserInfoSync({
                                 Mail: diver.Mail
                             });
                             if (gpInfo === undefined) {
@@ -1598,7 +1641,9 @@ app.post('/auth/dp/palanquee/dive_team', keycloak.protect(),
                 // Créer les palanquées
                 // Update info dive team member
                 console.log("--- Deleting old version of palanquee");
-                let resDelete = await Database.DeleteDiveTeam({ Dive_Id_Dive: idDive });
+                let resDelete = await Database.DeleteDiveTeam({
+                    Dive_Id_Dive: idDive
+                });
                 if (!resDelete) {
                     console.log("\t->Can't delete old version of palanquees");
                     dataError.success = false;
@@ -1611,8 +1656,8 @@ app.post('/auth/dp/palanquee/dive_team', keycloak.protect(),
                 for (const key in req.body) {
                     let palanquee = req.body[key].Params
                     const Id_Dive_Team = uuidv4();
-                    req.body[key].Params.Id_dive_Team = Id_Dive_Team;
-                    toCreate.push([Id_Dive_Team, key, palanquee.Max_Depth, palanquee.Actual_Depth, palanquee.Max_Duration, palanquee.Actual_Duration, palanquee.Dive_Type, palanquee.Floor_3, palanquee.Floor_6, palanquee.Floor_9, getDateFormat(new Date(palanquee.Start_Date).toLocaleString()), getDateFormat(new Date(palanquee.End_Date).toLocaleString()), "", idDive]);
+                    req.body[key].Params.Id_Dive_Team = Id_Dive_Team;
+                    toCreate.push([Id_Dive_Team, key, palanquee.Palanquee_Type, palanquee.Max_Depth, palanquee.Actual_Depth, palanquee.Max_Duration, palanquee.Actual_Duration, palanquee.Dive_Type, palanquee.Floor_3, palanquee.Floor_6, palanquee.Floor_9, getDateFormat(new Date(palanquee.Start_Date).toLocaleString()), getDateFormat(new Date(palanquee.End_Date).toLocaleString()), "", idDive]);
                 }
                 console.log("--- Inserting new palanquees")
                 let resCreateTeam = await Database.createDiveTeam(toCreate);
@@ -1621,22 +1666,23 @@ app.post('/auth/dp/palanquee/dive_team', keycloak.protect(),
                     dataError.success = false;
                     dataError.comment = "Impossible d'insérer les palanquées";
                     return res.json(dataError);
-                }
-                else{
+                } else {
                     dataError.comment = "Palanquées correctement ajoutées";
                 }
                 console.log("\t->Palanquees inserted")
-                
+
                 console.log("--- Updating diver role");
                 for (const key in req.body) {
                     const palanquee = req.body[key];
                     const divers = palanquee.Divers;
-                    const Id_Dive_Team = palanquee.Id_Dive_Team;
+                    const Id_Dive_Team = palanquee.Params.Id_Dive_Team;
                     for (const diver of divers) {
-                        let tmp = {Mail: diver.Mail};
-                        let userInfo = await Database.getUserInfoByMailSync(tmp);
+                        let tmp = {
+                            Mail: diver.Mail
+                        };
+                        let userInfo = await Database.getUserInfoSync(tmp);
                         if (userInfo == undefined) {
-                            console.log("Can't find user info");
+                            console.log("\t->Can't find user info");
                             dataError.success = true;
                             dataError.comment = `Impossible de récupérer les informations du plongeur ${diver.Mail} pour les mettre à jour`;
                             break
@@ -1651,10 +1697,10 @@ app.post('/auth/dp/palanquee/dive_team', keycloak.protect(),
                             dataError.success = true;
                             dataError.comment = `Impossible de récupérer les informations du plongeur ${diver.Mail} pour les mettre à jour`;
                             break
-                        }
-                        else {
+                        } else {
                             diverInTeamInfo.Dive_Team_Id_Dive_Team = Id_Dive_Team;
                             diverInTeamInfo.Diver_Role = diver.Fonction;
+                            console.log("Diver in team info", diverInTeamInfo);
                             let updated = await Database.updateDiveTeamMember(diverInTeamInfo)
                             if (!updated) {
                                 console.log("\t->Impossible to update diver info")

@@ -79,7 +79,7 @@ class BDD {
         })
     }
 
-    async getUserInfoByMailSync(data) {
+    async getUserInfoSync(data) {
         return new Promise((resolve, reject) => {
             const query = 'SELECT * FROM Diver WHERE ?';
             this.con.query(query, data, (err, result) => {
@@ -507,7 +507,7 @@ class BDD {
 
     async createDiveTeam(data) {
         return new Promise((resolve, reject) => {
-            let query = 'INSERT INTO Dive_Team (Id_Dive_Team, Sequence_number, Max_Depth, Actual_Depth, Max_Duration, Actual_Duration, Dive_Type, Floor_3, Floor_6, Floor_9, Start_Date, End_Date, Comment, Dive_Id_Dive) VALUES ?';
+            let query = 'INSERT INTO Dive_Team (Id_Dive_Team, Sequence_number, Palanquee_Type, Max_Depth, Actual_Depth, Max_Duration, Actual_Duration, Dive_Type, Floor_3, Floor_6, Floor_9, Start_Date, End_Date, Comment, Dive_Id_Dive) VALUES ?';
             this.con.query(query, [data], (err, result) => {
                 if (err) {
                     console.log(err);
@@ -526,8 +526,12 @@ class BDD {
                 if (err) console.log(err);
                 callback(undefined);
             } else {
-                result[0] = dateFormat(result[0]);
-                return callback(result[0]);
+                console.log(result);
+                result.forEach(res => {
+                    res = dateFormat(res);
+                });
+
+                return callback(result);
             }
         })
     }

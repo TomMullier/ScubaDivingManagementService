@@ -218,7 +218,7 @@ CREATE TABLE Dive_Team(
 CREATE TABLE Dive_Team_Member(
    Diver_Id_Diver CHAR(36) ,
    Dive_Id_Dive CHAR(36) ,
-   Dive_team_Id_Dive_Team CHAR(36) ,
+   Dive_Team_Id_Dive_Team CHAR(36) ,
    Temporary_Diver_Qualification VARCHAR(50) ,
    Current_Diver_Qualification VARCHAR(50) ,
    Diver_Role VARCHAR(50) ,

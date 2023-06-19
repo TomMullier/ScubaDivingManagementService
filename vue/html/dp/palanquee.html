@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="stylesheet" href="../../CSS/global.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link rel="stylesheet" href="../../CSS/modal.css" />
+    <link rel="stylesheet" href="../../CSS/global.css">
     <link rel="stylesheet" href="../../CSS/palanquee.css">
     <script src="https://kit.fontawesome.com/b89837f3ad.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdn.metroui.org.ua/v4/css/metro-all.min.css">
@@ -167,6 +167,22 @@
                 <h3>
                     <a id="callButton"><i class="fa-solid fa-truck-medical"></i></a>
                 </h3>
+            </div>
+        </modal>
+        <modal id="error_occured">
+            <div class="top">
+                <h1 id="txt_title" class="title">Oops, une erreur est survenue</h1>
+            </div>
+            <div id="txt_descr" class="fields-container">
+                <p id="error_message"></p>
+            </div>
+        </modal>
+        <modal id="success">
+            <div class="top">
+                <h1 id="txt_title" class="title">Succès</h1>
+            </div>
+            <div id="txt_descr" class="fields-container">
+                <p id="success_message"></p>
             </div>
         </modal>
     </div>

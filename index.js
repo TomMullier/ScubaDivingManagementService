@@ -1477,7 +1477,6 @@ app.post('/auth/dp/palanquee/dive_team', keycloak.protect(),
     body("*.Params.End_Date").trim().escape(),
     body("*.Params.Palanquee_Type").trim().escape(),
     function (req, res) {
-        console.log(req.body);
         if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(422).json({
@@ -1891,7 +1890,6 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                         /* ------------------------------- BAPTEMES P0 ------------------------------ */
                         if (diverP0.length > 0) {
                             while (diverP0.length > 0 && allGp.length > 0) {
-                                console.log("ici1");
                                 // mettre 1 gp + 1 diver dans un tableau de Divers
                                 // remplir les params en fonction
                                 // push le tableau dans PALANQUEES
@@ -1952,9 +1950,6 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                         let pe40 = diverPe.filter(member => member.Temporary_Diver_Qualification === "Pe40");
                         let pe60 = diverPe.filter(member => member.Temporary_Diver_Qualification === "Pe60");
                         while (diverPe.length > 0 && allGp.length > 0) {
-                            console.log("ici2");
-
-
                             /* ---------------------------------- PE40 ---------------------------------- */
                             if (pe40.length > 0 && allGp.length > 0) {
                                 let ratio = pe40.length / allGp.length;
@@ -1962,8 +1957,6 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                 else ratio = Math.ceil(ratio);
 
                                 while (pe40.length > 0 && allGp.length > 0) {
-                                    console.log("ici3");
-
                                     let Divers = [];
                                     let i = 0;
                                     let gpInfo = await Database.getUserInfoSync({
@@ -1983,8 +1976,6 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                     })
                                     allGp.splice(0, 1);
                                     while (i < ratio && pe40.length > 0 && allGp.length > 0) {
-                                        console.log("ici4");
-
                                         let diver = pe40[0];
                                         let userInfo = await Database.getUserInfoSync({
                                             Id_Diver: diver.Diver_Id_Diver
@@ -2021,8 +2012,6 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                 else ratio = Math.ceil(ratio);
 
                                 while (pe60.length > 0 && allGp.length > 0) {
-                                    console.log("ici5");
-
                                     let Divers = [];
                                     let i = 0;
                                     let gpInfo = await Database.getUserInfoSync({
@@ -2042,8 +2031,6 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                     })
                                     allGp.splice(0, 1);
                                     while (i < ratio && pe60.length > 0 && allGp.length > 0) {
-                                        console.log("ici6");
-
                                         let diver = pe60[0];
                                         let userInfo = await Database.getUserInfoSync({
                                             Id_Diver: diver.Diver_Id_Diver
@@ -2082,8 +2069,6 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                             else ratio = Math.ceil(ratio);
 
                             while (diverP1.length > 0 && allGp.length > 0) {
-                                console.log("ici7");
-
                                 let Divers = [];
                                 let i = 0;
                                 let gpInfo = await Database.getUserInfoSync({
@@ -2103,7 +2088,6 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                 })
                                 allGp.splice(0, 1);
                                 while (i < ratio && diverP1.length > 0 && allGp.length > 0) {
-                                    console.log("ici8");
                                     let diver = diverP1[0];
                                     let userInfo = await Database.getUserInfoSync({
                                         Id_Diver: diver.Diver_Id_Diver
@@ -2143,8 +2127,6 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                             for (const palanquee of PALANQUEES) {
                                 if (palanquee.Params.Max_Depth === 40) {
                                     while (palanquee.Diver.length < ratio) {
-                                        console.log("ici9");
-
                                         let diver = diverP2[0];
                                         let userInfo = await Database.getUserInfoSync({
                                             Id_Diver: diver.Diver_Id_Diver
@@ -2166,7 +2148,6 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                 }
                             }
                             while (diverP2.length > 0 && allGp.length > 0) {
-                                console.log("ici10");
                                 let Divers = [];
                                 let i = 0;
                                 let gpInfo = await Database.getUserInfoSync({
@@ -2186,7 +2167,6 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                 })
                                 allGp.splice(0, 1);
                                 while (i < ratio && diverP2.length > 0) {
-                                    console.log("ici11");
                                     let diver = diverP2[0];
                                     let userInfo = await Database.getUserInfoSync({
                                         Id_Diver: diver.Diver_Id_Diver
@@ -2227,7 +2207,6 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                 if (palanquee.Params.Max_Depth === 60) {
                                     while (palanquee.Diver.length < ratio && diverP3.length > 0) {
                                         let diver = diverP3[0];
-                                        console.log("ici12 ");
                                         let userInfo = await Database.getUserInfoSync({
                                             Id_Diver: diver.Diver_Id_Diver
                                         });
@@ -2248,7 +2227,6 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                 }
                             }
                             while (diverP3.length > 0 && allGp.length > 0) {
-                                console.log("ici13");
                                 let Divers = [];
                                 let i = 0;
                                 let gpInfo = await Database.getUserInfoSync({
@@ -2268,7 +2246,6 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                 })
                                 allGp.splice(0, 1);
                                 while (i < ratio && diverP3.length > 0) {
-                                    console.log("ici14");
                                     let diver = diverP3[0];
                                     let userInfo = await Database.getUserInfoSync({
                                         Id_Diver: diver.Diver_Id_Diver
@@ -2308,7 +2285,6 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                             for (const palanquee of PALANQUEES) {
                                 if (palanquee.Params.Max_Depth === 60) {
                                     while (palanquee.Diver.length < ratio && allGp.length > 0) {
-                                        console.log("ici15");
                                         let diver = allGp[0];
                                         let userInfo = await Database.getUserInfoSync({
                                             Id_Diver: diver.Diver_Id_Diver
@@ -2330,7 +2306,6 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                 }
                             }
                             while (allGp.length > 0) {
-                                console.log("ici16");
                                 let Divers = [];
                                 let i = 0;
                                 let gpInfo = await Database.getUserInfoSync({
@@ -2350,7 +2325,6 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                 })
                                 allGp.splice(0, 1);
                                 while (i < ratio && allGp.length > 0) {
-                                    console.log("ici17");
                                     let diver = allGp[0];
                                     let userInfo = await Database.getUserInfoSync({
                                         Id_Diver: diver.Diver_Id_Diver
@@ -2384,11 +2358,9 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                         /* ---------------------------- PLONGEE AUTONOME ---------------------------- */
                         if (diverP1.length > 1) {
                             while (diverP1.length > 0) {
-                                console.log("ici18");
                                 let Divers = [];
                                 let i = 0;
                                 while (i < 3 && diverP1.length > 0) {
-                                    console.log("ici19");
                                     let diver = diverP1[0];
                                     let userInfo = await Database.getUserInfoSync({
                                         Id_Diver: diver.Diver_Id_Diver
@@ -2423,11 +2395,9 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                             // ajoute les plongeurs en Pa40 dans le tableau de diverP2
                             diverP2 = diverP2.concat(diverPa20);
                             while (diverP2.length > 0) {
-                                console.log("ici20");
                                 let Divers = [];
                                 let i = 0;
                                 while (i < 3 && diverP2.length > 0) {
-                                    console.log("ici21");
                                     let diver = diverP2[0];
                                     let userInfo = await Database.getUserInfoSync({
                                         Id_Diver: diver.Diver_Id_Diver
@@ -2463,11 +2433,9 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                             diverP3 = diverP3.concat(allGp);
 
                             while (diverP3.length > 0) {
-                                console.log("ici22");
                                 let Divers = [];
                                 let i = 0;
                                 while (i < 3 && diverP3.length > 0) {
-                                    console.log("ici23");
                                     let diver = diverP3[0];
                                     let userInfo = await Database.getUserInfoSync({
                                         Id_Diver: diver.Diver_Id_Diver
@@ -2633,7 +2601,8 @@ app.put('/auth/dp/palanquee', keycloak.protect(),
         });
     });
 
-app.post('/auth/dp/palanquee/upload', /*keycloak.protect(), */ function (req, res) {
+app.post('/auth/dp/palanquee/upload', keycloak.protect(), function (req, res) {
+    if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
     console.log("Upload pdf");
     if (!req.files || Object.keys(req.files).length === 0) {
         console.log("No PDF in the request");
@@ -2645,17 +2614,16 @@ app.post('/auth/dp/palanquee/upload', /*keycloak.protect(), */ function (req, re
     if (!fs.existsSync(__dirname + "/model/pdf")) {
         fs.mkdirSync(__dirname + "/model/pdf");
     }
-    console.log(req.files);
     const {
         file
     } = req.files;
     if (!file) return res.json({
-        success:false,
-        comment:"Impossible de générer le PDF"
+        success: false,
+        comment: "Impossible de générer le PDF"
     });
 
     // Move the uploaded image to our upload folder
-    file.mv(__dirname + '/model/pdf/'+req.session.idDive+'.pdf', function (err) {
+    file.mv(__dirname + '/model/pdf/' + req.session.idDive + '.pdf', function (err) {
         if (err) {
             console.log("Error while uploading PDF ");
             console.log(err);
@@ -2663,8 +2631,8 @@ app.post('/auth/dp/palanquee/upload', /*keycloak.protect(), */ function (req, re
             console.log("PDF uploaded ");
         }
         return res.json({
-            success:true,
-            comment:"PDF généré avec succès"
+            success: true,
+            comment: "PDF généré avec succès"
         });
     });
 

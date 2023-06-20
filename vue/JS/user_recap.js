@@ -85,6 +85,9 @@ function getInfo() {
         }).then(res => res.json())
         .then(res => {
             console.log(res)
+            document.querySelector("#important_text").innerText = res.message.Message
+            document.querySelector(".date_message").innerText = "Le "+new Date(res.message.Date_Modif).toLocaleDateString() + " à " + new Date(res.message.Date_Modif).toLocaleTimeString();
+
             if (Object.keys(res).length === 0) {
                 openErrorModal("Une erreur est survenue lors de la récupération des informations");
             }
@@ -123,7 +126,9 @@ function getUserPP(user) {
 
 function addMessage(message) {
     console.log(message);
-    const data = { "Message": message };
+    const data = {
+        "Message": message
+    };
     fetch('/auth/dashboard', {
             method: 'POST',
             headers: {
@@ -146,7 +151,6 @@ function addMessage(message) {
 /* -------------------------------------------------------------------------- */
 
 function startCalendar() {
-    //!document.querySelector('#my_profile_picture').src = "../img/profile_pictures/" + me.firstname + me.lastname + me.licenceNumber + ".jpg";
     var calendarEl = document.getElementById('calendar');
 
     var calendar = new FullCalendar.Calendar(calendarEl, {

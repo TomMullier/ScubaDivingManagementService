@@ -53,6 +53,7 @@ CREATE TABLE Diver(
    License_Expiration_Date DATE,
    Medical_Certificate_Expiration_Date DATE,
    Birthdate DATE,
+   Club VARCHAR(128) NOT NULL,
    CONSTRAINT PK_Diver PRIMARY KEY(Id_Diver)
 );
 #COMMENT ON TABLE Diver IS 'Divers';
@@ -69,6 +70,7 @@ CREATE TABLE Diver(
 #COMMENT ON COLUMN Diver.License_Expiration_Date IS 'Diving license expiration date';
 #COMMENT ON COLUMN Diver.Medical_Certificate_Expiration_Date IS 'Medical Certificate Validity expiration date';
 #COMMENT ON COLUMN Diver.Birthdate IS 'Divers birthdate. Needed to copute age of diver at dive time to select max depth and other contraints.';
+#COMMENT ON COLUMN Diver.Club IS 'Club of the diver';
 
 CREATE TABLE Planned_Dive(
    Id_Planned_Dive CHAR(36)  NOT NULL,

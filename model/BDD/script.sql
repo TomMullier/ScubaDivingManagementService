@@ -165,6 +165,7 @@ CREATE TABLE Dive(
    Diver_Price DECIMAL(15,2)  ,
    Instructor_Price DECIMAL(15,2)  ,
    Max_Ppo2 DECIMAL(4,2)  ,
+   Last_Modif DATETIME ,
    Diver_Id_Diver CHAR(36)  NOT NULL,
    Planned_Dive_Id_Planned_Dive CHAR(36)  NOT NULL,
    CONSTRAINT PK_Dive PRIMARY KEY(Id_Dive),
@@ -181,6 +182,7 @@ CREATE TABLE Dive(
 #COMMENT ON COLUMN Dive.Dive_Price IS 'Actual Price for diver, by default diver price from planned dive.';
 #COMMENT ON COLUMN Dive.Instructor_Price IS 'Actual Price for instructor. Some dive sites have pricing based on role: diver or instructor. By default instructor price from planned dive.';
 #COMMENT ON COLUMN Dive.Max_Ppo2 IS 'Maximum of Ppo2 that diver must follow. This has an impact on max of depth for diver diving with Nitrox. Could be a decision of Dive Director. In any case, Max Ppo2 shouldn t be greater tha 1.6 bar.';
+#COMMENT ON COLUMN Dive.Last_Modif IS 'Last modification of dive';
 
 CREATE TABLE Dive_Team(
    Id_Dive_Team CHAR(36)  NOT NULL,
@@ -259,6 +261,15 @@ CREATE TABLE Dive_Registration(
 #COMMENT ON COLUMN Dive_Registration.Car_Pooling_Seat_Request IS 'Diver would like to get a car pooling seat. (Y/N)';
 #COMMENT ON COLUMN Dive_Registration.Has_Voted IS 'Diver has rated the dive site';
 
+CREATE TABLE Important_Message(
+   Club VARCHAR(128) NOT NULL,
+   Message VARCHAR(2056) NOT NULL,
+   Date_Modif DATETIME NOT NULL,
+   CONSTRAINT PK_Important_Message PRIMARY KEY(Club)
+);
+#COMMENT ON COLUMN Important_Message.Club IS 'Club name sending the message';
+#COMMENT ON COLUMN Important_Message.Message IS 'Message sent by club';
+#COMMENT ON COLUMN Important_Message.Date_Modif IS 'Date of the message';
 
 INSERT INTO Max_Depth_for_Qualification (Diver_Qualification, Guided_Diver_Depth, Autonomous_Diver_Depth) VALUES ('P0', 6, 0);
 INSERT INTO Max_Depth_for_Qualification (Diver_Qualification, Guided_Diver_Depth, Autonomous_Diver_Depth) VALUES ('P1', 20, 12);

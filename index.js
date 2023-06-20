@@ -5,13 +5,14 @@ const session = require("express-session");
 const Keycloak = require("keycloak-connect");
 const fileUpload = require('express-fileupload');
 const Sharp = require('sharp');
+const multer = require('multer');
+const PDFDocument = require('pdfkit');
 const {
     v4: uuidv4
 } = require('uuid');
 const {
     body,
     validationResult,
-    Result
 } = require("express-validator");
 const fs = require('fs');
 
@@ -29,16 +30,19 @@ const memoryStore = new session.MemoryStore();
 const keycloak = new Keycloak({
     store: memoryStore
 });
+const upload = multer({
+    dest: 'uploads/'
+}); // Spécifie le dossier de destination pour enregistrer les fichiers PDF
 
 const hostname = process.env.IP_HOSTNAME;
 const port = 3000;
 
+app.use(express.static(path.join(__dirname, "vue")));
 app.use(fileUpload({
     useTempFiles: true
 }));
 
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, "vue")));
 app.use(
     session({
         secret: 'mySecret',
@@ -68,7 +72,7 @@ function getDateFormat(badDate) {
     })
     const day = badDate.split(', ')[0].split("/")[0].padStart(2, "0");
     const month = badDate.split(', ')[0].split("/")[1].padStart(2, "0");
-    const year = badDate.split(', ')[0].split("/")[2];
+    const year = new String(badDate.split(', ')[0].split("/")[2]).padStart(4, "0");
     const hour = badDate.split(', ')[1];
     return year + "-" + month + "-" + day + " " + hour;
 }
@@ -235,13 +239,21 @@ app.get('/auth/dashboard/get_info', keycloak.protect(), function (req, res) {
     let username = req.kauth.grant.access_token.content.preferred_username;
     if (checkUser(req, "CLUB")) {
         Database.getPlanning((allEvents) => {
-            Database.getDiveSiteList((allLocations) => {
+            Database.getDiveSiteList(async (allLocations) => {
                 allEvents.forEach(event => {
                     event.Location = allLocations.filter(location => location.Id_Dive_Site === event.Dive_Site_Id_Dive_Site)[0];
                 });
+                const message = await Database.getMessage({
+                    Club: username
+                });
+                if (message === undefined) {
+                    message.Message = "";
+                    message.Date_Modif = getDateFormat(new Date().toLocaleDateString())
+                }
                 return res.json({
                     userInfo: username,
-                    registrationList: allEvents
+                    registrationList: allEvents,
+                    message: message
                 });
             });
         });
@@ -257,19 +269,62 @@ app.get('/auth/dashboard/get_info', keycloak.protect(), function (req, res) {
                         userInfo: userInfo
                     });
                 }
-                Database.getDiveSiteList((allLocations) => {
+                Database.getDiveSiteList(async (allLocations) => {
                     registrationList.forEach(event => {
                         event.Location = allLocations.filter(location => location.Id_Dive_Site === event.Dive_Site_Id_Dive_Site)[0];
                     });
+                    const message = await Database.getMessage({
+                        Club: userInfo.Club
+                    });
+                    if (message === undefined) message = "";
                     return res.json({
                         userInfo: userInfo,
-                        registrationList: registrationList
+                        registrationList: registrationList,
+                        message: message
                     });
                 })
             });
         });
     }
 });
+
+app.post('/auth/dashboard',
+    keycloak.protect(),
+    body("Message").trim(),
+    async function (req, res) {
+        if (checkUser(req, "CLUB")) {
+            const username = req.kauth.grant.access_token.content.preferred_username;
+            const resGetMessage = await Database.getMessage({
+                Club: username
+            })
+            req.body.Club = username;
+            req.body.Date_Modif = getDateFormat(new Date().toLocaleString());
+            if (resGetMessage === undefined) {
+                const createMessage = await Database.createMessageClub(req.body);
+                if (createMessage === undefined) {
+                    return res.json({
+                        success: false,
+                        comment: "Impossible de créer le message"
+                    })
+                }
+            } else {
+                const updateMessage = await Database.updateMessage(req.body);
+                if (updateMessage === undefined) {
+                    return res.json({
+                        success: false,
+                        comment: "Impossible d'actualiser le message"
+                    })
+                }
+            }
+            return res.json({
+                success: true,
+                comment: "Message actualisé"
+            })
+        } else res.json({
+            success: false,
+            comment: "Vous n'avez pas l'autorisation d'ajouter un message"
+        })
+    })
 
 /* -------------------------------------------------------------------------- */
 /*                                  PLANNING                                  */
@@ -307,6 +362,7 @@ app.post('/auth/planning', keycloak.protect(),
     body("Max_Divers").trim().escape(),
     body("Dive_Type").trim().escape(),
     body("dp").trim().escape().exists(), //mail
+    body("lengthUsersToRegister").trim().escape().exists().isNumeric(),
     function (req, res) {
         if (!checkUser(req, "CLUB")) return res.sendStatus(401);
         const errors = validationResult(req);
@@ -314,6 +370,20 @@ app.post('/auth/planning', keycloak.protect(),
             errors: errors.array()
         });
         console.log("--- Trying to create event --'");
+        if (req.body.Max_Divers < req.body.lengthUsersToRegister) {
+            return res.json({
+                created: false,
+                comment: "Trop de plongeurs inscrits par rapport au nombre maximum de plongeurs prévu"
+            })
+        }
+        if (req.body.Max_Divers < 2) {
+            return res.json({
+                created: false,
+                comment: "Nombre de plongeurs trop faible, un événement peut être créé à partir de 2 plongeurs"
+            })
+        }
+        delete req.body.lengthUsersToRegister;
+
         Database.getUserInfoByMail(req.body.dp, infoDp => {
             if (req.body.Dive_Type === "Exploration" && infoDp.Diver_Qualification !== "P5") {
                 console.log("\t->Error, DP is not P5");
@@ -321,7 +391,7 @@ app.post('/auth/planning', keycloak.protect(),
                     created: false,
                     comment: "DP is not P5"
                 })
-            } else if (req.body.Dive_Type === "Technique" && infoDp.Diver_Qualification !== ("E3" && "E4")) {
+            } else if (req.body.Dive_Type === "Technique" && infoDp.Instructor_Qualification !== ("E3" && "E4")) {
                 console.log("\t->Error, DP is not E3 or E4");
                 return res.json({
                     created: false,
@@ -353,8 +423,6 @@ app.post('/auth/planning', keycloak.protect(),
                             comment: "Event already exist"
                         });
                     }
-
-
                     Database.createEvent(req.body, (isInserted) => {
                         if (!isInserted) {
                             console.log("\t->Error, impossible to add Event");
@@ -512,7 +580,7 @@ app.post('/auth/planning/edit_palanquee', keycloak.protect(),
                     comment: "DP doesn't exist"
                 });
             }
-            if ((req.body.Dive_Type === "Exploration" && infoDp.Diver_Qualification !== "P5") || (req.body.Dive_Type === "Technique" && infoDp.Diver_Qualification !== ("E3" && "E4"))) {
+            if ((req.body.Dive_Type === "Exploration" && infoDp.Diver_Qualification !== "P5") || (req.body.Dive_Type === "Technique" && infoDp.Instructor_Qualification !== ("E3" && "E4"))) {
                 console.log("\t->Error, DP is not P5 or E3/E4");
                 return res.json({
                     created: false,
@@ -572,6 +640,7 @@ app.post('/auth/planning/edit_palanquee', keycloak.protect(),
                                 Comments: req.body.Comments,
                                 Surface_Security: "",
                                 Max_Ppo2: 0,
+                                Last_Modif: getDateFormat(new Date().toLocaleString()),
                             }
                             Database.createDive(data, (isInserted) => {
                                 if (!isInserted) {
@@ -718,12 +787,27 @@ app.put('/auth/planning', keycloak.protect(),
     body("Max_Divers").trim().escape(),
     body("Dive_Type").trim().escape(),
     body("dp").trim().escape(), //mail
+    body("lengthUsersToRegister").trim().escape().exists().isNumeric(),
     function (req, res) {
         if (!checkUser(req, "CLUB")) return res.sendStatus(401);
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(422).json({
             errors: errors.array()
         });
+        if (req.body.Max_Divers < req.body.lengthUsersToRegister) {
+            return res.json({
+                created: false,
+                comment: "Trop de plongeurs inscrits par rapport au nombre maximum de plongeurs prévu"
+            })
+        }
+        if (req.body.Max_Divers < 2) {
+            return res.json({
+                created: false,
+                comment: "Nombre de plongeurs trop faible, un événement peut être créé à partir de 2 plongeurs"
+            })
+        }
+        delete req.body.lengthUsersToRegister;
+
         req.body.Start_Date = getDateFormat(new Date(req.body.Start_Date).toLocaleString());
         req.body.End_Date = getDateFormat(new Date(req.body.End_Date).toLocaleString());
         req.body.oldEvent.Start_Date = getDateFormat(new Date(req.body.oldEvent.Start_Date).toLocaleString());
@@ -739,7 +823,7 @@ app.put('/auth/planning', keycloak.protect(),
                     created: false,
                     comment: "DP is not P5"
                 })
-            } else if (req.body.Dive_Type === "Technique" && infoDp.Diver_Qualification !== ("E3" && "E4")) {
+            } else if (req.body.Dive_Type === "Technique" && infoDp.Instructor_Qualification !== ("E3" && "E4")) {
                 console.log("\t->Error, DP is not E3 or E4");
                 return res.json({
                     created: false,
@@ -1156,8 +1240,9 @@ app.get('/auth/user/account/get_info', keycloak.protect(), function (req, res) {
         username: username
     });
     Database.getUserInfoByMail(username, (userInfo) => {
-        if (userInfo === undefined) return res.status(404).json({
-            comment: "Impossible to find user"
+        if (userInfo === undefined) return res.json({
+            data: undefined,
+            comment: "User doesn't exist"
         });
         return res.json(userInfo);
     })
@@ -1392,6 +1477,7 @@ app.post('/auth/dp/palanquee/dive_team', keycloak.protect(),
     body("*.Params.End_Date").trim().escape(),
     body("*.Params.Palanquee_Type").trim().escape(),
     function (req, res) {
+        console.log(req.body);
         if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(422).json({
@@ -1697,7 +1783,6 @@ app.post('/auth/dp/palanquee/dive_team', keycloak.protect(),
                         } else {
                             diverInTeamInfo.Dive_Team_Id_Dive_Team = Id_Dive_Team;
                             diverInTeamInfo.Diver_Role = diver.Fonction;
-                            console.log("Diver in team info", diverInTeamInfo);
                             let updated = await Database.updateDiveTeamMember(diverInTeamInfo)
                             if (!updated) {
                                 console.log("\t->Impossible to update diver info")
@@ -1708,6 +1793,21 @@ app.post('/auth/dp/palanquee/dive_team', keycloak.protect(),
                         }
                     }
                 }
+                Database.getDive({
+                    Id_Dive: idDive
+                }, async (diveInfo) => {
+                    if (diveInfo === undefined) return res.json({
+                        created: false,
+                        comment: "Dive doesn't exist"
+                    });
+                    diveInfo.Surface_Security = req.body.surface ? req.body.surface : "";
+                    diveInfo.Last_Modif = getDateFormat(new Date());
+                    let ismodif = await Database.modifDive(diveInfo);
+                    if (!ismodif) return res.json({
+                        created: false,
+                        comment: "Impossible to update dive"
+                    });
+                });
             } else {
                 console.log("\t->Error, Palanquee Info verified but not correct");
             }
@@ -1716,6 +1816,7 @@ app.post('/auth/dp/palanquee/dive_team', keycloak.protect(),
     });
 
 app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (req, res) {
+    console.log("Automatic dive team");
     if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
     if (!req.session.idDive) res.redirect('/auth/planning');
 
@@ -1753,11 +1854,31 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                         return res.json(dataError);
                     }
 
-                    if (eventInfo.Dive_Type = "Exploration") {
-                        let remainingDiver = allDiveTeamMember.length;
+                    let fullHour = new Date(new Date(eventInfo.End_Date) - new Date(eventInfo.Start_Date));
+                    let min = fullHour.getMinutes();
+                    let hour = fullHour.getHours() - 1;
+                    min = new String(min).padStart(2, "0");
+                    max = new String(hour).padStart(2, "0");
+                    hour = max + ":" + min;
 
-                        let diverPa = allDiveTeamMember.filter(member => member.Temporary_Diver_Qualification.split("Pa")[0] == "");
-                        let diverPe = allDiveTeamMember.filter(member => member.Temporary_Diver_Qualification.split("Pe")[0] == "");
+                    let PALANQUEES = [];
+                    let Params = {
+                        Max_Depth: 0,
+                        Actual_Depth: 0,
+                        Max_Duration: hour,
+                        Actual_Duration: "00:00:00",
+                        Dive_Type: eventInfo.Dive_Type,
+                        Floor_3: "00:00:00",
+                        Floor_6: "00:00:00",
+                        Floor_9: "00:00:00",
+                        Start_Date: getDateFormat(new Date(eventInfo.Start_Date).toLocaleString()),
+                        End_Date: getDateFormat(new Date(eventInfo.End_Date).toLocaleString()),
+                        Palanquee_Type: ""
+                    }
+
+                    if (eventInfo.Dive_Type === "Exploration") {
+                        let diverPa = allDiveTeamMember.filter(member => member.Temporary_Diver_Qualification.split("Pa")[0] == "" && member.Temporary_Diver_Qualification != "");
+                        let diverPe = allDiveTeamMember.filter(member => member.Temporary_Diver_Qualification.split("Pe")[0] == "" && member.Temporary_Diver_Qualification != "");
 
                         let diverP0 = allDiveTeamMember.filter(member => member.Current_Diver_Qualification == "P0" && member.Temporary_Diver_Qualification === "");
                         let diverP1 = allDiveTeamMember.filter(member => member.Current_Diver_Qualification == "P1" && member.Temporary_Diver_Qualification === "");
@@ -1766,11 +1887,11 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
 
                         let allGp = allDiveTeamMember.filter(member => member.Current_Diver_Qualification == "P4" || member.Current_Diver_Qualification == "P5" && member.Temporary_Diver_Qualification === "");
 
-                        let PALANQUEES = [];
 
                         /* ------------------------------- BAPTEMES P0 ------------------------------ */
                         if (diverP0.length > 0) {
                             while (diverP0.length > 0 && allGp.length > 0) {
+                                console.log("ici1");
                                 // mettre 1 gp + 1 diver dans un tableau de Divers
                                 // remplir les params en fonction
                                 // push le tableau dans PALANQUEES
@@ -1787,6 +1908,8 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                 }
                                 Divers.push({
                                     Mail: userInfo.Mail,
+                                    Firstname: userInfo.Firstname,
+                                    Lastname: userInfo.Lastname,
                                     Fonction: "Plongeur",
                                     Qualification: userInfo.Diver_Qualification
                                 })
@@ -1803,39 +1926,34 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                 }
                                 Divers.push({
                                     Mail: gpInfo.Mail,
+                                    Firstname: gpInfo.Firstname,
+                                    Lastname: gpInfo.Lastname,
                                     Fonction: "GP",
                                     Qualification: gpInfo.Diver_Qualification
                                 })
                                 allGp.splice(0, 1);
 
+                                let tmpParam = Object.assign({}, Params);;
+                                tmpParam.Max_Depth = 6;
+                                tmpParam.Palanquee_Type = "Pe";
                                 let palanquee = {
-                                    Divers: Divers,
-                                    Params: {
-                                        Max_Depth: 6,
-                                        Actual_Depth: 0,
-                                        Max_Duration: 0,
-                                        Actual_Duration: 0,
-                                        Dive_Type: "Exploration",
-                                        Floor_3: 0,
-                                        Floor_6: 0,
-                                        Floor_9: 0,
-                                        Start_Date: "",
-                                        End_Date: "",
-                                        Palanquee_Type: "Pe"
-                                    }
+                                    Diver: Divers,
+                                    Params: tmpParam
                                 }
                                 PALANQUEES.push(palanquee);
                             }
-                        } else {
+                        }
+                        if (diverP0.length > 0 && allGp.length == 0) {
                             dataError.success = true;
                             dataError.comment = `Pas assez de GP pour les baptêmes P0`;
                         }
-                        remainingDiver = allGp.length + diverPe.length + diverPa.length + diverP1.length + diverP2.length + diverP3.length;
 
                         /* ------------------------------- PLONGEURS Pe ------------------------------ */
+                        let pe40 = diverPe.filter(member => member.Temporary_Diver_Qualification === "Pe40");
+                        let pe60 = diverPe.filter(member => member.Temporary_Diver_Qualification === "Pe60");
                         while (diverPe.length > 0 && allGp.length > 0) {
-                            let pe40 = diverPe.filter(member => member.Temporary_Diver_Qualification === "Pe40");
-                            let pe60 = diverPe.filter(member => member.Temporary_Diver_Qualification === "Pe60");
+                            console.log("ici2");
+
 
                             /* ---------------------------------- PE40 ---------------------------------- */
                             if (pe40.length > 0 && allGp.length > 0) {
@@ -1844,6 +1962,8 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                 else ratio = Math.ceil(ratio);
 
                                 while (pe40.length > 0 && allGp.length > 0) {
+                                    console.log("ici3");
+
                                     let Divers = [];
                                     let i = 0;
                                     let gpInfo = await Database.getUserInfoSync({
@@ -1856,11 +1976,15 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                     }
                                     Divers.push({
                                         Mail: gpInfo.Mail,
+                                        Firstname: gpInfo.Firstname,
+                                        Lastname: gpInfo.Lastname,
                                         Fonction: "GP",
                                         Qualification: gpInfo.Diver_Qualification
                                     })
                                     allGp.splice(0, 1);
                                     while (i < ratio && pe40.length > 0 && allGp.length > 0) {
+                                        console.log("ici4");
+
                                         let diver = pe40[0];
                                         let userInfo = await Database.getUserInfoSync({
                                             Id_Diver: diver.Diver_Id_Diver
@@ -1872,27 +1996,20 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                         }
                                         Divers.push({
                                             Mail: userInfo.Mail,
+                                            Firstname: userInfo.Firstname,
+                                            Lastname: userInfo.Lastname,
                                             Fonction: "Plongeur",
                                             Qualification: userInfo.Diver_Qualification
                                         })
                                         pe40.splice(0, 1);
                                         i++;
                                     }
+                                    let tmpParam = Object.assign({}, Params);;
+                                    tmpParam.Max_Depth = 40;
+                                    tmpParam.Palanquee_Type = "Pe";
                                     let palanquee = {
-                                        Divers: Divers,
-                                        Params: {
-                                            Max_Depth: 40,
-                                            Actual_Depth: 0,
-                                            Max_Duration: 0,
-                                            Actual_Duration: 0,
-                                            Dive_Type: "Exploration",
-                                            Floor_3: 0,
-                                            Floor_6: 0,
-                                            Floor_9: 0,
-                                            Start_Date: "",
-                                            End_Date: "",
-                                            Palanquee_Type: "Pe"
-                                        }
+                                        Diver: Divers,
+                                        Params: tmpParam
                                     }
                                     PALANQUEES.push(palanquee);
                                 }
@@ -1904,6 +2021,8 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                 else ratio = Math.ceil(ratio);
 
                                 while (pe60.length > 0 && allGp.length > 0) {
+                                    console.log("ici5");
+
                                     let Divers = [];
                                     let i = 0;
                                     let gpInfo = await Database.getUserInfoSync({
@@ -1916,11 +2035,15 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                     }
                                     Divers.push({
                                         Mail: gpInfo.Mail,
+                                        Firstname: gpInfo.Firstname,
+                                        Lastname: gpInfo.Lastname,
                                         Fonction: "GP",
                                         Qualification: gpInfo.Diver_Qualification
                                     })
                                     allGp.splice(0, 1);
                                     while (i < ratio && pe60.length > 0 && allGp.length > 0) {
+                                        console.log("ici6");
+
                                         let diver = pe60[0];
                                         let userInfo = await Database.getUserInfoSync({
                                             Id_Diver: diver.Diver_Id_Diver
@@ -1932,27 +2055,20 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                         }
                                         Divers.push({
                                             Mail: userInfo.Mail,
+                                            Firstname: userInfo.Firstname,
+                                            Lastname: userInfo.Lastname,
                                             Fonction: "Plongeur",
                                             Qualification: userInfo.Diver_Qualification
                                         })
                                         pe40.splice(0, 1);
                                         i++;
                                     }
+                                    let tmpParam = Object.assign({}, Params);;
+                                    tmpParam.Max_Depth = 60;
+                                    tmpParam.Palanquee_Type = "Pe";
                                     let palanquee = {
-                                        Divers: Divers,
-                                        Params: {
-                                            Max_Depth: 60,
-                                            Actual_Depth: 0,
-                                            Max_Duration: 0,
-                                            Actual_Duration: 0,
-                                            Dive_Type: "Exploration",
-                                            Floor_3: 0,
-                                            Floor_6: 0,
-                                            Floor_9: 0,
-                                            Start_Date: "",
-                                            End_Date: "",
-                                            Palanquee_Type: "Pe"
-                                        }
+                                        Diver: Divers,
+                                        Params: tmpParam
                                     }
                                     PALANQUEES.push(palanquee);
                                 }
@@ -1966,6 +2082,8 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                             else ratio = Math.ceil(ratio);
 
                             while (diverP1.length > 0 && allGp.length > 0) {
+                                console.log("ici7");
+
                                 let Divers = [];
                                 let i = 0;
                                 let gpInfo = await Database.getUserInfoSync({
@@ -1978,11 +2096,14 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                 }
                                 Divers.push({
                                     Mail: gpInfo.Mail,
+                                    Firstname: gpInfo.Firstname,
+                                    Lastname: gpInfo.Lastname,
                                     Fonction: "GP",
                                     Qualification: gpInfo.Diver_Qualification
                                 })
                                 allGp.splice(0, 1);
                                 while (i < ratio && diverP1.length > 0 && allGp.length > 0) {
+                                    console.log("ici8");
                                     let diver = diverP1[0];
                                     let userInfo = await Database.getUserInfoSync({
                                         Id_Diver: diver.Diver_Id_Diver
@@ -1994,27 +2115,20 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                     }
                                     Divers.push({
                                         Mail: userInfo.Mail,
+                                        Firstname: userInfo.Firstname,
+                                        Lastname: userInfo.Lastname,
                                         Fonction: "Plongeur",
                                         Qualification: userInfo.Diver_Qualification
                                     })
                                     diverP1.splice(0, 1);
                                     i++;
                                 }
+                                let tmpParam = Object.assign({}, Params);;
+                                tmpParam.Max_Depth = 20;
+                                tmpParam.Palanquee_Type = "Pe";
                                 let palanquee = {
-                                    Divers: Divers,
-                                    Params: {
-                                        Max_Depth: 20,
-                                        Actual_Depth: 0,
-                                        Max_Duration: 0,
-                                        Actual_Duration: 0,
-                                        Dive_Type: "Exploration",
-                                        Floor_3: 0,
-                                        Floor_6: 0,
-                                        Floor_9: 0,
-                                        Start_Date: "",
-                                        End_Date: "",
-                                        Palanquee_Type: "Pe"
-                                    }
+                                    Diver: Divers,
+                                    Params: tmpParam
                                 }
                                 PALANQUEES.push(palanquee);
                             }
@@ -2028,7 +2142,9 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                             else ratio = Math.ceil(ratio);
                             for (const palanquee of PALANQUEES) {
                                 if (palanquee.Params.Max_Depth === 40) {
-                                    while (palanquee.Divers.length < ratio) {
+                                    while (palanquee.Diver.length < ratio) {
+                                        console.log("ici9");
+
                                         let diver = diverP2[0];
                                         let userInfo = await Database.getUserInfoSync({
                                             Id_Diver: diver.Diver_Id_Diver
@@ -2038,8 +2154,10 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                             dataError.comment = `Impossible de récupérer les informations du plongeur ${diver.Mail}`;
                                             return res.json(dataError);
                                         }
-                                        palanquee.Divers.push({
+                                        palanquee.Diver.push({
                                             Mail: userInfo.Mail,
+                                            Firstname: userInfo.Firstname,
+                                            Lastname: userInfo.Lastname,
                                             Fonction: "Plongeur",
                                             Qualification: userInfo.Diver_Qualification
                                         })
@@ -2048,6 +2166,7 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                 }
                             }
                             while (diverP2.length > 0 && allGp.length > 0) {
+                                console.log("ici10");
                                 let Divers = [];
                                 let i = 0;
                                 let gpInfo = await Database.getUserInfoSync({
@@ -2060,11 +2179,14 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                 }
                                 Divers.push({
                                     Mail: gpInfo.Mail,
+                                    Firstname: gpInfo.Firstname,
+                                    Lastname: gpInfo.Lastname,
                                     Fonction: "GP",
                                     Qualification: gpInfo.Diver_Qualification
                                 })
                                 allGp.splice(0, 1);
-                                while (i < ratio && diverP2.length > 0 && allGp.length > 0) {
+                                while (i < ratio && diverP2.length > 0) {
+                                    console.log("ici11");
                                     let diver = diverP2[0];
                                     let userInfo = await Database.getUserInfoSync({
                                         Id_Diver: diver.Diver_Id_Diver
@@ -2076,27 +2198,20 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                     }
                                     Divers.push({
                                         Mail: userInfo.Mail,
+                                        Firstname: userInfo.Firstname,
+                                        Lastname: userInfo.Lastname,
                                         Fonction: "Plongeur",
                                         Qualification: userInfo.Diver_Qualification
                                     })
                                     diverP2.splice(0, 1);
                                     i++;
                                 }
+                                let tmpParam = Object.assign({}, Params);;
+                                tmpParam.Max_Depth = 40;
+                                tmpParam.Palanquee_Type = "Pe";
                                 let palanquee = {
-                                    Divers: Divers,
-                                    Params: {
-                                        Max_Depth: 20,
-                                        Actual_Depth: 0,
-                                        Max_Duration: 0,
-                                        Actual_Duration: 0,
-                                        Dive_Type: "Exploration",
-                                        Floor_3: 0,
-                                        Floor_6: 0,
-                                        Floor_9: 0,
-                                        Start_Date: "",
-                                        End_Date: "",
-                                        Palanquee_Type: "Pe"
-                                    }
+                                    Diver: Divers,
+                                    Params: tmpParam
                                 }
                                 PALANQUEES.push(palanquee);
                             }
@@ -2110,8 +2225,9 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                             else ratio = Math.ceil(ratio);
                             for (const palanquee of PALANQUEES) {
                                 if (palanquee.Params.Max_Depth === 60) {
-                                    while (palanquee.Divers.length < ratio) {
+                                    while (palanquee.Diver.length < ratio && diverP3.length > 0) {
                                         let diver = diverP3[0];
+                                        console.log("ici12 ");
                                         let userInfo = await Database.getUserInfoSync({
                                             Id_Diver: diver.Diver_Id_Diver
                                         });
@@ -2120,8 +2236,10 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                             dataError.comment = `Impossible de récupérer les informations du plongeur ${diver.Mail}`;
                                             return res.json(dataError);
                                         }
-                                        palanquee.Divers.push({
+                                        palanquee.Diver.push({
                                             Mail: userInfo.Mail,
+                                            Firstname: userInfo.Firstname,
+                                            Lastname: userInfo.Lastname,
                                             Fonction: "Plongeur",
                                             Qualification: userInfo.Diver_Qualification
                                         })
@@ -2130,6 +2248,7 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                 }
                             }
                             while (diverP3.length > 0 && allGp.length > 0) {
+                                console.log("ici13");
                                 let Divers = [];
                                 let i = 0;
                                 let gpInfo = await Database.getUserInfoSync({
@@ -2142,11 +2261,14 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                 }
                                 Divers.push({
                                     Mail: gpInfo.Mail,
+                                    Firstname: gpInfo.Firstname,
+                                    Lastname: gpInfo.Lastname,
                                     Fonction: "GP",
                                     Qualification: gpInfo.Diver_Qualification
                                 })
                                 allGp.splice(0, 1);
-                                while (i < ratio && diverP3.length > 0 && allGp.length > 0) {
+                                while (i < ratio && diverP3.length > 0) {
+                                    console.log("ici14");
                                     let diver = diverP3[0];
                                     let userInfo = await Database.getUserInfoSync({
                                         Id_Diver: diver.Diver_Id_Diver
@@ -2158,27 +2280,20 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                     }
                                     Divers.push({
                                         Mail: userInfo.Mail,
+                                        Firstname: userInfo.Firstname,
+                                        Lastname: userInfo.Lastname,
                                         Fonction: "Plongeur",
                                         Qualification: userInfo.Diver_Qualification
                                     })
                                     diverP3.splice(0, 1);
                                     i++;
                                 }
+                                let tmpParam = Object.assign({}, Params);;
+                                tmpParam.Max_Depth = 60;
+                                tmpParam.Palanquee_Type = "Pe";
                                 let palanquee = {
-                                    Divers: Divers,
-                                    Params: {
-                                        Max_Depth: 60,
-                                        Actual_Depth: 0,
-                                        Max_Duration: 0,
-                                        Actual_Duration: 0,
-                                        Dive_Type: "Exploration",
-                                        Floor_3: 0,
-                                        Floor_6: 0,
-                                        Floor_9: 0,
-                                        Start_Date: "",
-                                        End_Date: "",
-                                        Palanquee_Type: "Pe"
-                                    }
+                                    Diver: Divers,
+                                    Params: tmpParam
                                 }
                                 PALANQUEES.push(palanquee);
                             }
@@ -2192,7 +2307,8 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                             else ratio = Math.ceil(ratio);
                             for (const palanquee of PALANQUEES) {
                                 if (palanquee.Params.Max_Depth === 60) {
-                                    while (palanquee.Divers.length < ratio) {
+                                    while (palanquee.Diver.length < ratio && allGp.length > 0) {
+                                        console.log("ici15");
                                         let diver = allGp[0];
                                         let userInfo = await Database.getUserInfoSync({
                                             Id_Diver: diver.Diver_Id_Diver
@@ -2202,8 +2318,10 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                             dataError.comment = `Impossible de récupérer les informations du plongeur ${diver.Mail}`;
                                             return res.json(dataError);
                                         }
-                                        palanquee.Divers.push({
+                                        palanquee.Diver.push({
                                             Mail: userInfo.Mail,
+                                            Firstname: userInfo.Firstname,
+                                            Lastname: userInfo.Lastname,
                                             Fonction: "Plongeur",
                                             Qualification: userInfo.Diver_Qualification
                                         })
@@ -2212,6 +2330,7 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                 }
                             }
                             while (allGp.length > 0) {
+                                console.log("ici16");
                                 let Divers = [];
                                 let i = 0;
                                 let gpInfo = await Database.getUserInfoSync({
@@ -2224,11 +2343,14 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                 }
                                 Divers.push({
                                     Mail: gpInfo.Mail,
+                                    Firstname: gpInfo.Firstname,
+                                    Lastname: gpInfo.Lastname,
                                     Fonction: "GP",
                                     Qualification: gpInfo.Diver_Qualification
                                 })
                                 allGp.splice(0, 1);
-                                while (i < ratio && allGp.length > 0 && allGp.length > 0) {
+                                while (i < ratio && allGp.length > 0) {
+                                    console.log("ici17");
                                     let diver = allGp[0];
                                     let userInfo = await Database.getUserInfoSync({
                                         Id_Diver: diver.Diver_Id_Diver
@@ -2240,27 +2362,20 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                     }
                                     Divers.push({
                                         Mail: userInfo.Mail,
+                                        Firstname: userInfo.Firstname,
+                                        Lastname: userInfo.Lastname,
                                         Fonction: "Plongeur",
                                         Qualification: userInfo.Diver_Qualification
                                     })
                                     allGp.splice(0, 1);
                                     i++;
                                 }
+                                let tmpParam = Object.assign({}, Params);;
+                                tmpParam.Max_Depth = 60;
+                                tmpParam.Palanquee_Type = "Pe";
                                 let palanquee = {
-                                    Divers: Divers,
-                                    Params: {
-                                        Max_Depth: 60,
-                                        Actual_Depth: 0,
-                                        Max_Duration: 0,
-                                        Actual_Duration: 0,
-                                        Dive_Type: "Exploration",
-                                        Floor_3: 0,
-                                        Floor_6: 0,
-                                        Floor_9: 0,
-                                        Start_Date: "",
-                                        End_Date: "",
-                                        Palanquee_Type: "Pe"
-                                    }
+                                    Diver: Divers,
+                                    Params: tmpParam
                                 }
                                 PALANQUEES.push(palanquee);
                             }
@@ -2269,9 +2384,11 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                         /* ---------------------------- PLONGEE AUTONOME ---------------------------- */
                         if (diverP1.length > 1) {
                             while (diverP1.length > 0) {
+                                console.log("ici18");
                                 let Divers = [];
                                 let i = 0;
                                 while (i < 3 && diverP1.length > 0) {
+                                    console.log("ici19");
                                     let diver = diverP1[0];
                                     let userInfo = await Database.getUserInfoSync({
                                         Id_Diver: diver.Diver_Id_Diver
@@ -2283,39 +2400,34 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                     }
                                     Divers.push({
                                         Mail: userInfo.Mail,
+                                        Firstname: userInfo.Firstname,
+                                        Lastname: userInfo.Lastname,
                                         Fonction: "Plongeur",
                                         Qualification: userInfo.Diver_Qualification
                                     })
                                     diverP1.splice(0, 1);
                                     i++;
                                 }
+                                let tmpParam = Object.assign({}, Params);;
+                                tmpParam.Max_Depth = 12;
+                                tmpParam.Palanquee_Type = "Pa";
                                 let palanquee = {
-                                    Divers: Divers,
-                                    Params: {
-                                        Max_Depth: 12,
-                                        Actual_Depth: 0,
-                                        Max_Duration: 0,
-                                        Actual_Duration: 0,
-                                        Dive_Type: "Exploration",
-                                        Floor_3: 0,
-                                        Floor_6: 0,
-                                        Floor_9: 0,
-                                        Start_Date: "",
-                                        End_Date: "",
-                                        Palanquee_Type: "Pa"
-                                    }
+                                    Diver: Divers,
+                                    Params: tmpParam
                                 }
                                 PALANQUEES.push(palanquee);
                             }
                         }
-                        let diverPa40 = diverPa.filter(member => member.Temporary_Diver_Qualification === "Pa40");
-                        if (diverP2.length > 0 || diverPa40.length > 0) {
+                        let diverPa20 = diverPa.filter(member => member.Temporary_Diver_Qualification === "Pa20");
+                        if (diverP2.length > 1 || diverPa20.length > 1) {
                             // ajoute les plongeurs en Pa40 dans le tableau de diverP2
-                            diverP2 = diverP2.concat(diverPa40);
+                            diverP2 = diverP2.concat(diverPa20);
                             while (diverP2.length > 0) {
+                                console.log("ici20");
                                 let Divers = [];
                                 let i = 0;
                                 while (i < 3 && diverP2.length > 0) {
+                                    console.log("ici21");
                                     let diver = diverP2[0];
                                     let userInfo = await Database.getUserInfoSync({
                                         Id_Diver: diver.Diver_Id_Diver
@@ -2327,40 +2439,35 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                     }
                                     Divers.push({
                                         Mail: userInfo.Mail,
+                                        Firstname: userInfo.Firstname,
+                                        Lastname: userInfo.Lastname,
                                         Fonction: "Plongeur",
                                         Qualification: userInfo.Diver_Qualification
                                     })
                                     diverP2.splice(0, 1);
                                     i++;
                                 }
+                                let tmpParam = Object.assign({}, Params);;
+                                tmpParam.Max_Depth = 20;
+                                tmpParam.Palanquee_Type = "Pa";
                                 let palanquee = {
-                                    Divers: Divers,
-                                    Params: {
-                                        Max_Depth: 40,
-                                        Actual_Depth: 0,
-                                        Max_Duration: 0,
-                                        Actual_Duration: 0,
-                                        Dive_Type: "Exploration",
-                                        Floor_3: 0,
-                                        Floor_6: 0,
-                                        Floor_9: 0,
-                                        Start_Date: "",
-                                        End_Date: "",
-                                        Palanquee_Type: "Pa"
-                                    }
+                                    Diver: Divers,
+                                    Params: tmpParam
                                 }
                                 PALANQUEES.push(palanquee);
                             }
                         }
                         let diverPa60 = diverPa.filter(member => member.Temporary_Diver_Qualification === "Pa60");
-                        if (diverP3.length > 0 || allGp.length > 0 || diverPa60.length > 0) {
+                        if (diverP3.length > 1 || allGp.length > 1 || diverPa60.length > 1) {
                             diverP3 = diverP3.concat(diverPa60);
                             diverP3 = diverP3.concat(allGp);
 
                             while (diverP3.length > 0) {
+                                console.log("ici22");
                                 let Divers = [];
                                 let i = 0;
                                 while (i < 3 && diverP3.length > 0) {
+                                    console.log("ici23");
                                     let diver = diverP3[0];
                                     let userInfo = await Database.getUserInfoSync({
                                         Id_Diver: diver.Diver_Id_Diver
@@ -2372,40 +2479,37 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                     }
                                     Divers.push({
                                         Mail: userInfo.Mail,
+                                        Firstname: userInfo.Firstname,
+                                        Lastname: userInfo.Lastname,
                                         Fonction: "Plongeur",
                                         Qualification: userInfo.Diver_Qualification
                                     })
                                     diverP3.splice(0, 1);
                                     i++;
                                 }
+                                let tmpParam = Object.assign({}, Params);;
+                                tmpParam.Max_Depth = 60;
+                                tmpParam.Palanquee_Type = "Pa";
                                 let palanquee = {
-                                    Divers: Divers,
-                                    Params: {
-                                        Max_Depth: 60,
-                                        Actual_Depth: 0,
-                                        Max_Duration: 0,
-                                        Actual_Duration: 0,
-                                        Dive_Type: "Exploration",
-                                        Floor_3: 0,
-                                        Floor_6: 0,
-                                        Floor_9: 0,
-                                        Start_Date: "",
-                                        End_Date: "",
-                                        Palanquee_Type: "Pa"
-                                    }
+                                    Diver: Divers,
+                                    Params: tmpParam
                                 }
                                 PALANQUEES.push(palanquee);
                             }
                         }
 
                         /* -------------------------------- TECHNIQUE ------------------------------- */
-                    } else if (eventInfo.Dive_Type = "Technique") {
-
+                    } else if (eventInfo.Dive_Type === "Technique") {
+                        dataError.success = false;
+                        dataError.comment = `Il est impossible de générer une palanquée pour une plongée technique`;
+                    } else {
+                        dataError.success = false;
+                        dataError.comment = `Le type de plongée n'est pas correct`;
                     }
-                    return res.json(dataError);
-
-
-
+                    return res.json({
+                        dataError,
+                        palanquee: PALANQUEES
+                    });
                 });
             });
         });
@@ -2416,8 +2520,9 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
 /* --------------------------------- UPDATE --------------------------------- */
 
 app.put('/auth/dp/palanquee', keycloak.protect(),
-    body("*.userMail").trim().toLowerCase(),
-    body("*.tmpQualif").trim().escape(),
+    body("**.userMail").trim().toLowerCase(),
+    body("**.tmpQualif").trim().escape(),
+    body("surface").trim().escape(), // surveillant de surface
     function (req, res) {
         if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
         const errors = validationResult(req);
@@ -2442,32 +2547,34 @@ app.put('/auth/dp/palanquee', keycloak.protect(),
 
         Database.getUsersList(async allUsers => {
             if (allUsers === undefined) allUsers = [];
-            for (let i = 0; i < req.body.length; i++) {
-                const userMail = req.body[i].userMail;
+            for (let i = 0; i < req.body.data.length; i++) {
+                const userMail = req.body.data[i].userMail;
+                console.log("userMail : ", userMail);
                 const foundUser = allUsers.find(user => user.hasOwnProperty('Mail') && user.Mail === userMail);
+                console.log("foundUser : ", foundUser);
                 if (foundUser) {
                     let tmpData = Object.assign({}, data); // Crée une nouvelle instance d'objet avec les propriétés de data
                     tmpData.Diver_Id_Diver = foundUser.Id_Diver;
                     tmpData.Current_Diver_Qualification = foundUser.Diver_Qualification;
 
-                    if (req.body[i].tmpQualif !== foundUser.Diver_Qualification && foundUser.Diver_Qualification !== "P5") {
+                    if (req.body.data[i].tmpQualif !== foundUser.Diver_Qualification && foundUser.Diver_Qualification !== "P5") {
                         let levelUp = parseInt(foundUser.Diver_Qualification.split("P")[1]) + 1;
                         let pLevelUp = "P" + levelUp;
                         let maxDepth = await Database.getMaxDepthByLevel({
                             Diver_Qualification: pLevelUp
                         });
-                        if (req.body[i].tmpQualif.split("Pe")[0] == "") {
-                            if (req.body[i].tmpQualif !== ("Pe" + maxDepth.Guided_Diver_Depth)) return res.json({
+                        if (req.body.data[i].tmpQualif.split("Pe")[0] == "") {
+                            if (req.body.data[i].tmpQualif !== ("Pe" + maxDepth.Guided_Diver_Depth)) return res.json({
                                 created: false,
                                 comment: "Guided diver depth is not correct for the current qualification"
                             });
-                        } else if (req.body[i].tmpQualif.split("Pa")[0] == "") {
-                            if (req.body[i].tmpQualif !== ("Pa" + maxDepth.Autonomous_Diver_Depth)) return res.json({
+                        } else if (req.body.data[i].tmpQualif.split("Pa")[0] == "") {
+                            if (req.body.data[i].tmpQualif !== ("Pa" + maxDepth.Autonomous_Diver_Depth)) return res.json({
                                 created: false,
                                 comment: "Autonomous diver depth is not correct for the current qualification"
                             });
                         }
-                        tmpData.Temporary_Diver_Qualification = req.body[i].tmpQualif
+                        tmpData.Temporary_Diver_Qualification = req.body.data[i].tmpQualif
                     };
                     tmpData.Current_Instructor_Qualification = foundUser.Instructor_Qualification;
                     if (foundUser.Instructor_Qualification !== "") tmpData.Paid_Amount = "E";
@@ -2478,17 +2585,26 @@ app.put('/auth/dp/palanquee', keycloak.protect(),
             }
             Database.getDive({
                 Id_Dive: idDive
-            }, (dive) => {
-                if (dive === undefined) return res.json({
+            }, async (diveInfo) => {
+                if (diveInfo === undefined) return res.json({
                     created: false,
                     comment: "Dive doesn't exist"
                 });
+                diveInfo.Surface_Security = req.body.surface;
+                diveInfo.Last_Modif = getDateFormat(new Date());
+                let ismodif = await Database.modifDive(diveInfo);
+                if (!ismodif) return res.json({
+                    created: false,
+                    comment: "Impossible to update dive"
+                });
+
                 DiveTeamMember.forEach(member => {
-                    if (member.Paid_Amount === "E") member.Paid_Amount = dive.Instructor_Price;
-                    else member.Paid_Amount = dive.Diver_Price;
+                    if (member.Paid_Amount === "E") member.Paid_Amount = diveInfo.Instructor_Price;
+                    else member.Paid_Amount = diveInfo.Diver_Price;
                 });
 
                 let allInserted = true;
+                console.log("Dive Team Member : ", DiveTeamMember);
                 DiveTeamMember.forEach(async member => {
                     if (!allInserted) return;
                     let updated = await Database.updateDiveTeamMember(member)
@@ -2517,7 +2633,42 @@ app.put('/auth/dp/palanquee', keycloak.protect(),
         });
     });
 
+app.post('/auth/dp/palanquee/upload', /*keycloak.protect(), */ function (req, res) {
+    console.log("Upload pdf");
+    if (!req.files || Object.keys(req.files).length === 0) {
+        console.log("No PDF in the request");
+        return res.redirect('/auth/planning');
+    }
 
+    // on recoit un jpg, stocke le dans le 
+    // si le dossier n'existe pas, crée le
+    if (!fs.existsSync(__dirname + "/model/pdf")) {
+        fs.mkdirSync(__dirname + "/model/pdf");
+    }
+    console.log(req.files);
+    const {
+        file
+    } = req.files;
+    if (!file) return res.json({
+        success:false,
+        comment:"Impossible de générer le PDF"
+    });
+
+    // Move the uploaded image to our upload folder
+    file.mv(__dirname + '/model/pdf/'+req.session.idDive+'.pdf', function (err) {
+        if (err) {
+            console.log("Error while uploading PDF ");
+            console.log(err);
+        } else {
+            console.log("PDF uploaded ");
+        }
+        return res.json({
+            success:true,
+            comment:"PDF généré avec succès"
+        });
+    });
+
+})
 
 /* -------------------------------------------------------------------------- */
 /*                                CLUB MEMBERS                                */
@@ -2557,6 +2708,7 @@ app.post('/auth/club/club_members', keycloak.protect(),
         if (!errors.isEmpty()) return res.status(422).json({
             errors: errors.array()
         });
+        req.body.Club = req.kauth.grant.access_token.content.preferred_username;
         req.body.Birthdate = getDateFormat(new Date(req.body.Birthdate));
         req.body.License_Expiration_Date = getDateFormat(new Date(req.body.License_Expiration_Date));
         req.body.Medical_Certificate_Expiration_Date = getDateFormat(new Date(req.body.Medical_Certificate_Expiration_Date));
@@ -3160,8 +3312,11 @@ app.get("/not_available", (req, res) => res.send("not_available, try with anothe
 
 // Capture 404 requests
 app.get("/404", (req, res) => res.sendFile(__dirname + "/vue/html/error/404.html"));
-app.use((req, res) => res.sendFile(__dirname + "/vue/html/error/404.html"));
-
+app.use((req, res) => res.redirect("/404"));
+app.use((err, req, res, next) => {
+    // Gestion des autres types d'erreurs si nécessaire
+    res.status(500).send("Internal Server Error");
+});
 http.listen(port, hostname, (err) => {
     if (err) console.error(err);
     else console.log(`Server running at http://${process.env.IP_PERSO}:${port}`);

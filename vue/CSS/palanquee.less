@@ -413,6 +413,10 @@ body {
                         color: @dark_blue;
                         margin-bottom: 20px;
                         width:50%;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
                 
                 }
 
@@ -725,7 +729,7 @@ body {
         cursor: pointer;
         transition: all 0.2s ease-in-out;
         border: 2px solid @orange;
-        
+        margin-top: 20px;
         &:hover{
                 background-color: white;
                 color: @orange;
@@ -763,6 +767,30 @@ body {
         cursor: pointer;
         transition: all 0.2s ease-in-out;
         border: 2px solid @orange;
+        
+        &:hover{
+                background-color: white;
+                color: @orange;
+                border: 2px solid @orange;
+        }
+}
+
+.button_auto{
+        width:auto;
+        height:fit-content;
+        display:flex;
+        padding: 5px 30px;
+        border-radius: 25px;
+        background-color: @orange;
+        font-weight: bold;
+        color: white;
+        font-size: 15px;
+        font-family: @body_font;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        border: 2px solid @orange;
+        margin-bottom: 10px;
         
         &:hover{
                 background-color: white;

@@ -12,11 +12,14 @@ let my_role;
 let me;
 
 function openErrorModal(e) {
-    modals.show("error_occured");
-    document.querySelector("#error_occured p").innerText = e;
+    modals.closeCurrent();
     setTimeout(function () {
-        modals.closeCurrent();
-    }, 3000);
+        modals.show("error_occured");
+        document.querySelector("#error_occured p").innerText = e;
+        setTimeout(function () {
+            modals.closeCurrent();
+        }, 3000);
+    }, 500);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -44,6 +47,21 @@ fetch('/auth/user/account')
             document.querySelectorAll(".user_only").forEach(function (element) {
                 element.style.display = "none";
             })
+        }
+        if (my_role == "user") {
+            document.querySelector(".my_profile_menu").style.display = "flex";
+            document.querySelector(".locations_menu").style.display = "none";
+            document.querySelector(".club_members_menu").style.display = "none";
+        }
+        if (my_role == "dp") {
+            document.querySelector(".my_profile_menu").style.display = "flex";
+            document.querySelector(".locations_menu").style.display = "none";
+            document.querySelector(".club_members_menu").style.display = "none";
+        }
+        if (my_role == "club") {
+            document.querySelector(".my_profile_menu").style.display = "none";
+            document.querySelector(".locations_menu").style.display = "flex";
+            document.querySelector(".club_members_menu").style.display = "flex";
         }
     });
 

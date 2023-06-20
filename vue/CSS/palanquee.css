@@ -890,6 +890,10 @@ body {
   color: #120B8F;
   margin-bottom: 20px;
   width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 .palanquee_table .palanquee_item .infos_container {
   display: flex;
@@ -1170,6 +1174,7 @@ body {
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   border: 2px solid #f2574a;
+  margin-top: 20px;
 }
 .save_button:hover {
   background-color: white;
@@ -1204,6 +1209,28 @@ body {
   border: 2px solid #f2574a;
 }
 #pdfButton:hover {
+  background-color: white;
+  color: #f2574a;
+  border: 2px solid #f2574a;
+}
+.button_auto {
+  width: auto;
+  height: fit-content;
+  display: flex;
+  padding: 5px 30px;
+  border-radius: 25px;
+  background-color: #f2574a;
+  font-weight: bold;
+  color: white;
+  font-size: 15px;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border: 2px solid #f2574a;
+  margin-bottom: 10px;
+}
+.button_auto:hover {
   background-color: white;
   color: #f2574a;
   border: 2px solid #f2574a;

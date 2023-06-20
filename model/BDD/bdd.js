@@ -496,8 +496,23 @@ class BDD {
                 result[0].Comments = desEscapeHtml(result[0].Comments);
                 result[0].Surface_Security = desEscapeHtml(result[0].Surface_Security);
                 result[0] = dateFormat(result[0]);
+                result[0].Last_Modif = getDateFormat(result[0].Last_Modif)
                 return callback(result[0]);
             }
+        })
+    }
+
+    async modifDive(data) {
+        return new Promise((resolve, reject) => {
+            let query = 'UPDATE Dive SET ? WHERE Id_Dive = ?'
+            this.con.query(query, [data, data.Id_Dive], (err, result) => {
+                if (err) {
+                    console.log(err);
+                    resolve(false)
+                } else {
+                    resolve(true);
+                }
+            })
         })
     }
 
@@ -638,6 +653,65 @@ class BDD {
             })
         })
     }
+
+
+    /* -------------------------------------------------------------------------- */
+    /*                              IMPORTANT MESSAGE                             */
+    /* -------------------------------------------------------------------------- */
+    // let data = {
+    //      Id_Message: uuidv4(),
+    //     Club: "club@club.fr",
+    //     Message: "",
+    //     Date_Modif: getDateFormat(new Date().toLocaleString())
+    // }
+    async createMessageClub(data) {
+        data.Club = escapeHtml(data.Club);
+        data.Message = escapeHtml(data.Message);
+        return new Promise((resolve, reject) => {
+            let query = 'INSERT INTO Important_Message SET ?';
+            this.con.query(query, [data], (err, result) => {
+                if (err) {
+                    console.log(err);
+                    resolve(false)
+                } else {
+                    resolve(true);
+                }
+            })
+        })
+    }
+
+    async getMessage(data) {
+        return new Promise((resolve, reject) => {
+            const query = 'SELECT * FROM Important_Message WHERE ?';
+            this.con.query(query, [data], (err, result) => {
+                if (err || !result[0]) {
+                    if (err) console.log(err);
+                    resolve(undefined);
+                } else {
+                    result[0].Club = desEscapeHtml(result[0].Club);
+                    result[0].Message = desEscapeHtml(result[0].Message);
+                    result[0].Date_Modif = getDateFormat(result[0].Date_Modif);
+                    return resolve(result[0]);
+                }
+            })
+        })
+    }
+
+    async updateMessage(data) {
+        data.Club = escapeHtml(data.Club);
+        data.Message = escapeHtml(data.Message);
+        return new Promise((resolve, reject) => {
+            let query = 'UPDATE Important_Message SET ? WHERE Club = ?'
+            this.con.query(query, [data, data.Club], (err, result) => {
+                if (err) {
+                    console.log(err);
+                    resolve(false)
+                } else {
+                    resolve(true);
+                }
+            })
+        })
+    }
 }
 
 /* -------------------------------------------------------------------------- */
@@ -657,7 +731,7 @@ function getDateFormat(badDate) {
     })
     const day = badDate.split(', ')[0].split("/")[0];
     const month = badDate.split(', ')[0].split("/")[1];
-    const year = badDate.split(', ')[0].split("/")[2];
+    const year = new String(badDate.split(', ')[0].split("/")[2]).padStart(4, "0");
     const hour = badDate.split(', ')[1];
     return year + "-" + month + "-" + day + " " + hour;
 }

@@ -32,7 +32,7 @@
         <p>Chargement...</p>
     </div>
     <div class="title_container">
-        <h1>Plannification des plongées</h1>
+        <h1>Planification des plongées</h1>
     </div>
 
 
@@ -74,7 +74,7 @@
                 </div>
                 <div class="surfaceSecurity">
                     <p>Surveillant de surface :</p>
-                    <input type="text" name="" placeholder="Surveillant">
+                    <input id="surface" type="text" name="" placeholder="Surveillant">
                 </div>
                 <div class="infos">
                     <div class="number_divers"><span class="bold number_divers_">8 plongeurs</span> (possibilité de
@@ -129,10 +129,10 @@
         <modal id="menuModal">
             <div class="menu_content">
                 <a href="/auth/dashboard">Tableau de Bord</a>
-                <a href="/auth/planning">Plannification</a>
-                <a class=user_only href="/auth/user/account">Mon profil</a>
-                <a class=club_only href="/auth/club/locations">Liste des Lieux</a>
-                <a class=club_only href="/auth/club/club_members">Liste des Utilisateurs</a>
+                <a href="/auth/planning">Planification</a>
+                <a class="my_profile_menu" href="/auth/user/account">Mon profil</a>
+                <a class="locations_menu" href="/auth/club/locations">Liste des Lieux</a>
+                <a class="club_members_menu" href="/auth/club/club_members">Liste des Utilisateurs</a>
             </div>
             <div class="logout_button">
                 <a href="/logout">Déconnexion</a>

@@ -2,6 +2,7 @@ package-lock.json
 keycloak.json
 .env
 model/img/*/
+model/palanquee/*
 # Logs
 logs
 *.log

@@ -4,11 +4,14 @@
 let my_role;
 
 function openErrorModal(e) {
-    modals.show("error_occured");
-    document.querySelector("#error_occured p").innerText = e;
+    modals.closeCurrent();
     setTimeout(function () {
-        modals.closeCurrent();
-    }, 3000);
+        modals.show("error_occured");
+        document.querySelector("#error_occured p").innerText = e;
+        setTimeout(function () {
+            modals.closeCurrent();
+        }, 3000);
+    }, 500);
 }
 /* -------------------------------------------------------------------------- */
 /*                                   REQUEST                                  */
@@ -40,9 +43,26 @@ fetch('/auth/dp/palanquee')
                 element.style.display = "none";
             })
         }
+        if (my_role == "user") {
+            document.querySelector(".my_profile_menu").style.display = "flex";
+            document.querySelector(".locations_menu").style.display = "none";
+            document.querySelector(".club_members_menu").style.display = "none";
+        }
+        if (my_role == "dp") {
+            document.querySelector(".my_profile_menu").style.display = "flex";
+            document.querySelector(".locations_menu").style.display = "none";
+            document.querySelector(".club_members_menu").style.display = "none";
+        }
+        if (my_role == "club") {
+            document.querySelector(".my_profile_menu").style.display = "none";
+            document.querySelector(".locations_menu").style.display = "flex";
+            document.querySelector(".club_members_menu").style.display = "flex";
+        }
+
     });
 
 /* ----------------------------- PALANQUEE INFO ----------------------------- */
+let ev_;
 fetch('/auth/dp/palanquee/get_palanquee', {
         method: 'GET',
         headers: {
@@ -53,6 +73,7 @@ fetch('/auth/dp/palanquee/get_palanquee', {
         console.log(res);
         setPage(res.data);
         let allMails = [];
+        ev_ = res.data.event;
         res.data.event.allDivers.forEach(user => {
             // if (user.Diver_Role != "DP") {
             allMails.push({
@@ -75,8 +96,8 @@ function createPalanqueeUserQualif(data) {
         .then(res => {
             console.log(res)
             if (res.created == false) window.location.href = "/auth/planning";
-            // saveDiveTeam(dataPalanquee)
         })
+
 }
 /* ----------------------- SAVE PALANQUEE USER QUALIF ----------------------- */
 function savePalanqueeUserQualif(data) {
@@ -103,7 +124,6 @@ function savePalanqueeUserQualif(data) {
                 setTimeout(function () {
                     modals.closeCurrent();
                     window.location.reload();
-
                 }, 1500);
             }
         })
@@ -134,6 +154,75 @@ function saveDiveTeam(data) {
         })
 }
 
+async function saveDiveTeamPDF(data) {
+    return new Promise((resolve, reject) => {
+        fetch('/auth/dp/palanquee/dive_team', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            }).then(res => res.json())
+            .then(res => {
+                console.log(res);
+                if (res.comment != "Palanquées correctement ajoutées") {
+                    // Open error
+                    setTimeout(function () {
+                        openErrorModal(res.comment);
+                        window.location.reload();
+                        resolve(false)
+                    }, 3000);
+                } else {
+                    modals.show("success");
+                    document.querySelector("#success_message").innerText = res.comment;
+                    setTimeout(function () {
+                        modals.closeCurrent();
+                    }, 1500);
+                    resolve(true)
+                }
+            })
+    })
+}
+
+/* --------------------------- GENERATE DIVE TEAM --------------------------- */
+function generateDiveTeam() {
+    fetch('/auth/dp/palanquee/automatic_dive_team', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        }).then(res => res.json())
+        .then(res => {
+            console.log(res);
+            if (res.dataError.success) {
+                const data = {
+                    palanquee: res.palanquee,
+                    event: ev_
+                }
+                createAllPalanquee(data);
+            } else {
+                // open error modal
+                openErrorModal(res.dataError.comment);
+            }
+        })
+}
+
+/* -------------------------------- SEND PDF -------------------------------- */
+function sendPdf(blob) {
+    let formData = new FormData();
+    formData.append('file', blob, "palanquee.pdf");
+    console.log(formData);
+    fetch('/auth/dp/palanquee/upload', {
+            method: 'POST',
+            body: formData,
+        }).then(res => res.json())
+        .then(res => {
+            console.log(res);
+            if (res.success) window.location.href = "/auth/planning";
+            else openErrorModal(res.comment);
+        })
+}
+
 
 /* -------------------------------------------------------------------------- */
 /*                                    CODE                                    */
@@ -146,6 +235,16 @@ function setPage(data) {
     document.querySelector(".plongeeInfos .location .adress_title").innerText = data.event.Location.Site_Name
     document.querySelector(".plongeeInfos .location .adress").innerText = data.event.Location.Track_Number + " " + data.event.Location.Track_Type + " " + data.event.Location.Track_Name + " " + data.event.Location.City_Name + " " + data.event.Location.Zip_Code + " " + data.event.Location.Country_Name;
     document.querySelector(".plongeeInfos .type p").innerText = data.event.Dive_Type;
+
+    document.querySelector("#surface").value = data.dive.Surface_Security;
+    if (data.dive.Last_Modif != "") {
+        console.log(data.dive.Last_Modif);
+        let date = new Date(data.dive.Last_Modif);
+        console.log(date);
+        document.querySelector(".last_modif").innerText = "Dernière modification le " + date.toLocaleDateString() + " à " + date.toLocaleTimeString();
+    } else {
+        document.querySelector(".last_modif").style.display = "none";
+    }
 
     let divers = data.event.allDivers;
     document.querySelector(".allDivers").innerHTML = "";
@@ -198,7 +297,7 @@ function setPage(data) {
         })
     })
     createAllPalanquee(data);
-    numberpalanquee = data.palanquee.length - 1;
+    numberpalanquee = data.palanquee.length != 0 ? data.palanquee.length - 1 : 0;
     addPalanquee(data);
 
     loadingClose();
@@ -356,14 +455,14 @@ let scroll_dot_value = 0;
 let dots = document.querySelectorAll(".dot");
 document.querySelector(".button_next").addEventListener("click", function () {
     scroll_value += $(window).width();
-    document.querySelector(".scroll").scrollTo(scroll_value, 0);
+    document.querySelector(".scroll_container").scrollTo(scroll_value, 0);
     if (scroll_dot_value < dots.length - 1) scroll_dot_value += 1;
     updateDot();
 })
 
 document.querySelector(".button_prec").addEventListener("click", function () {
     scroll_value -= $(window).width();
-    document.querySelector(".scroll").scrollTo(scroll_value, 0);
+    document.querySelector(".scroll_container").scrollTo(scroll_value, 0);
     if (scroll_dot_value > 0) scroll_dot_value -= 1;
     updateDot();
 })
@@ -391,6 +490,10 @@ function updateDot() {
 }
 
 document.querySelector(".save_change_level").addEventListener("click", function () {
+    document.querySelector(".save_change_level").disabled = true;
+    setTimeout(function () {
+        document.querySelector(".save_change_level").disabled = false;
+    }, 1000);
     let data = [];
     document.querySelectorAll(".divers .diver_item").forEach(function (element) {
         let tmp = {
@@ -400,7 +503,11 @@ document.querySelector(".save_change_level").addEventListener("click", function 
         data.push(tmp);
     })
     console.log("Change Level");
-    savePalanqueeUserQualif(data);
+    let to_send = {
+        data: data,
+        surface: document.querySelector("#surface").value,
+    }
+    savePalanqueeUserQualif(to_send);
 })
 
 let numberpalanquee = 1
@@ -414,6 +521,9 @@ function createAllPalanquee(data) {
         html_tag += '<h2>Palanquée ' + i + '</h2>'
         html_tag += '</div>'
         html_tag += '<div class="palanquee_infos">'
+        html_tag += '<div class="button_auto">'
+        html_tag += 'Générer les palanquées automatiquement'
+        html_tag += '</div>'
         html_tag += '<select required data-role="select" name="" id="" class="palanquee_type">'
         html_tag += '<option value="">Sélectionnez un type de palanquée</option>'
         html_tag += '<option value="Pe">Palanquée encadrée</option>'
@@ -510,7 +620,13 @@ function createAllPalanquee(data) {
         final += html_tag;
     }
     document.querySelector(".palanquee_table").innerHTML = final;
-
+    if (data.event.Dive_Type == "Exploration") {
+        document.querySelector(".button_auto").style.display = "flex";
+    } else {
+        document.querySelector(".button_auto").style.display = "none";
+        document.querySelector(".palanquee_type").value = "Pe";
+        document.querySelector(".palanquee_type").disabled = true;
+    }
     setPalanqueeReceived(data.palanquee);
 
     setupSelect(data);
@@ -519,7 +635,7 @@ function createAllPalanquee(data) {
             document.querySelector(".palanquee_" + i).style.display = "none";
         } catch (error) {}
     }
-    numberpalanquee = data.palanquee.length;
+    numberpalanquee = data.palanquee.length != 0 ? data.palanquee.length : 1;
     add_buttons(data);
 
 
@@ -541,6 +657,9 @@ function add_buttons(data) {
     html_tag += '<button id="pdfButton">Sauvegarder définitivement et générer le PDF</button>'
 
     try {
+        document.querySelectorAll(".button_auto").forEach(function (element) {
+            element.removeEventListener("click", function () {});
+        })
         document.querySelector(".add_palanquee").removeEventListener("click", function () {});
         document.querySelector(".palanquee_table").removeChild(document.querySelector(".button_save_container_palanquee"));
         document.querySelector(".palanquee_table").removeChild(document.querySelector(".checkbox_container"));
@@ -556,19 +675,36 @@ function add_buttons(data) {
             document.querySelector("#pdfButton").style.display = "none";
         }
     })
+    document.querySelectorAll(".button_auto").forEach(function (element) {
+        element.addEventListener("click", function () {
+            document.querySelector(".button_auto").disabled = true;
+            generateDiveTeam();
+            setTimeout(function () {
+                document.querySelector(".button_auto").disabled = false;
+            }, 1000);
+        })
+    })
     document.querySelector("#pdfButton").addEventListener("click", function () {
-        generatePDF();
+        generatePDF(data);
     })
 
     document.querySelector(".add_palanquee").addEventListener("click", function () {
+        document.querySelector(".add_palanquee").disabled = true;
         addPalanquee(data);
+        setTimeout(function () {
+            document.querySelector(".add_palanquee").disabled = false;
+        }, 1000);
     })
     document.querySelector(".save_change_palanquee").addEventListener("click", function () {
-        savePalanquee(data);
+        document.querySelector(".save_change_palanquee").disabled = true;
+        savePalanquee(data, true);
+        setTimeout(function () {
+            document.querySelector(".save_change_palanquee").disabled = false;
+        }, 1000);
     })
 }
 
-function savePalanquee(d) {
+async function savePalanquee(d, bool) {
     let data = {};
     let palanquees = document.querySelectorAll(".palanquee_item");
     for (let i = 0; i < palanquees.length; i++) {
@@ -651,18 +787,29 @@ function savePalanquee(d) {
         }
     }
     console.log(data);
-    saveDiveTeam(data);
+    if (bool) saveDiveTeam(data);
+    else {
+        let ok = await saveDiveTeamPDF(data);
+        return ok;
+    }
 }
 
 function setPalanqueeReceived(data) {
     console.log("Data à set :")
     console.log(data);
     let palanquees = document.querySelectorAll(".palanquee_item");
+    palanquees.forEach(function (element) {
+        element.style.display = "none";
+    })
     for (let i = 0; i < data.length; i++) {
         let palanquee = palanquees[i];
+        palanquee.style.display = "flex";
         let palanquee_ = data[i];
+        console.log("data i")
+        console.log(palanquee_);
+
         // Palanquee Type
-        palanquee.querySelector(".palanquee_type").value = palanquee_.Params.Palanquee_Type == "Palanquée encadrée" ? "Pe" : "Pa";
+        palanquee.querySelector(".palanquee_type").value = palanquee_.Params.Palanquee_Type == "Pe" ? "Pe" : "Pa";
 
         console.log(palanquee.querySelector(".palanquee_type"));
         // Start and end date
@@ -686,7 +833,9 @@ function setPalanqueeReceived(data) {
     }
 }
 
-function generatePDF() {
+function generatePDF(data) {
+    let date = new Date();
+    document.querySelector(".last_modif").innerText = "Dernière modification le " + date.toLocaleDateString() + " à " + date.toLocaleTimeString();
     // open loading animation
     document.querySelector(".loading_animation").style.display = "flex";
     setTimeout(function () {
@@ -706,33 +855,50 @@ function generatePDF() {
         div.scrollTo(0, 0);
         div.style.overflow = "visible";
         document.querySelector(".button_save_container_palanquee").style.display = "none";
-        let pdf = new jsPDF('p', 'mm', 'a4');
         document.querySelector("#pdfButton").style.display = "none";
+        document.querySelector(".save_change_level").style.display = "none";
+        document.querySelector(".scrollDots").style.display = "none";
+
+        let pdf;
         html2canvas(document.querySelector(".diveInfos")).then(function (canvas) {
             // set to pdf and scale to A4 without changing ratio
             let imgData = canvas.toDataURL('image/png');
+            pdf = new jsPDF('l', 'pt', [canvas.width, canvas.height + 20]);
             const pdfWidth = pdf.internal.pageSize.width;
             const pdfHeight = canvas.height * pdfWidth / canvas.width;
             pdf.setFontSize(10);
             pdf.setFont('helvetica');
             pdf.setTextColor(0, 0, 0);
-
-            pdf.text(pdfWidth / 2 - 20, pdf.internal.pageSize.height / 2 - 20, "Résumé de la plongée");
-
-
-            pdf.addImage(imgData, 'PNG', 0, pdf.internal.pageSize.height - canvas.height / 2, pdfWidth, pdfHeight);
-
-        })
-        html2canvas(div).then(function (canvas) {
-            // set to pdf and scale to A4 without changing ratio
-            let imgData = canvas.toDataURL('image/png');
-            const pdfWidth = pdf.internal.pageSize.width;
-            const pdfHeight = canvas.height * pdfWidth / canvas.width;
-            pdf.addPage(pdfWidth, pdfHeight + 20);
-
+            // pdf.text(pdfWidth / 2 - 30, pdf.internal.pageSize.height / 2 - 20, "Résumé de la plongée");
             pdf.addImage(imgData, 'PNG', 0, 10, pdfWidth, pdfHeight);
-            pdf.save("test.pdf");
-            document.location.reload();
+
+            html2canvas(document.querySelector(".divers")).then(function (canvas) {
+                let imgData = canvas.toDataURL('image/png');
+                const pdfWidth = pdf.internal.pageSize.width;
+                const pdfHeight = canvas.height * pdfWidth / canvas.width;
+                pdf.addPage(pdfWidth, pdfHeight + 20);
+                pdf.addImage(imgData, 'PNG', 0, 10, pdfWidth, pdfHeight);
+                html2canvas(div).then(async function (canvas) {
+                    // set to pdf and scale to A4 without changing ratio
+                    let imgData = canvas.toDataURL('image/png');
+                    const pdfWidth = pdf.internal.pageSize.width;
+                    const pdfHeight = canvas.height * pdfWidth / canvas.width;
+                    pdf.addPage(pdfWidth, pdfHeight + 25);
+
+                    pdf.addImage(imgData, 'PNG', 0, 10, pdfWidth, pdfHeight);
+                    let name = "PAL_"
+                    let ok = await savePalanquee(data, false)
+                    if (ok) {
+                        name += ".pdf"
+                        // console.log(pdf.save(name));
+                        let pdf_ = pdf.output('blob');
+                        // console.log(JSON.stringify(pdf_));
+                        sendPdf(pdf_);
+                    }
+                })
+            })
         })
+
+
     }, 1000);
 }

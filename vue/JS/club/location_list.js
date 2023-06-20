@@ -11,16 +11,57 @@ import {
 /* -------------------------------------------------------------------------- */
 let locations = [];
 function openErrorModal(e) {
-    modals.show("error_occured");
-    document.querySelector("#error_occured p").innerText = e;
+    modals.closeCurrent();
     setTimeout(function () {
-        modals.closeCurrent();
-    }, 3000);
+        modals.show("error_occured");
+        document.querySelector("#error_occured p").innerText = e;
+        setTimeout(function () {
+            modals.closeCurrent();
+        }, 3000);
+    }, 500);
 }
 
 /* -------------------------------------------------------------------------- */
 /*                                   REQUEST                                  */
 /* -------------------------------------------------------------------------- */
+
+/* -------------------------------- USERTYPE -------------------------------- */
+fetch('/auth/club/locations')
+    .then(response => {
+        const userType = response.headers.get('userType');
+        my_role = userType;
+        // user, dp, club
+        if (my_role != "club") {
+            document.querySelectorAll(".club_only").forEach(function (element) {
+                element.style.display = "none";
+            })
+        }
+        if (my_role != "dp") {
+            document.querySelectorAll(".dp_only").forEach(function (element) {
+                element.style.display = "none";
+            })
+        }
+        if (my_role != "user") {
+            document.querySelectorAll(".user_only").forEach(function (element) {
+                element.style.display = "none";
+            })
+        }
+        if (my_role == "user") {
+            document.querySelector(".my_profile_menu").style.display = "flex";
+            document.querySelector(".locations_menu").style.display = "none";
+            document.querySelector(".club_members_menu").style.display = "none";
+        }
+        if (my_role == "dp") {
+            document.querySelector(".my_profile_menu").style.display = "flex";
+            document.querySelector(".locations_menu").style.display = "none";
+            document.querySelector(".club_members_menu").style.display = "none";
+        }
+        if (my_role == "club") {
+            document.querySelector(".my_profile_menu").style.display = "none";
+            document.querySelector(".locations_menu").style.display = "flex";
+            document.querySelector(".club_members_menu").style.display = "flex";
+        }
+    });
 
 /* ------------------------------ GET SITE LIST ----------------------------- */
 fetch('/auth/club/get_locations', {

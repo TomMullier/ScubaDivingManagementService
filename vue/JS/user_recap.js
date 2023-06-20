@@ -26,12 +26,15 @@ let events = [];
 /* -------------------------------------------------------------------------- */
 
 /* -------------------------------- USERTYPE -------------------------------- */
-function openErrorModal(e){
-    modals.show("error_occured");
-    document.querySelector("#error_occured p").innerText = e;
-    setTimeout(function(){
-        modals.closeCurrent();
-    }   , 3000);
+function openErrorModal(e) {
+    modals.closeCurrent();
+    setTimeout(function () {
+        modals.show("error_occured");
+        document.querySelector("#error_occured p").innerText = e;
+        setTimeout(function () {
+            modals.closeCurrent();
+        }, 3000);
+    }, 500);
 }
 fetch('/auth/dashboard')
     .then(response => {
@@ -53,6 +56,21 @@ fetch('/auth/dashboard')
             document.querySelectorAll(".user_only").forEach(function (element) {
                 element.style.display = "none";
             })
+        }
+        if (my_role == "user") {
+            document.querySelector(".my_profile_menu").style.display = "flex";
+            document.querySelector(".locations_menu").style.display = "none";
+            document.querySelector(".club_members_menu").style.display = "none";
+        }
+        if (my_role == "dp") {
+            document.querySelector(".my_profile_menu").style.display = "flex";
+            document.querySelector(".locations_menu").style.display = "none";
+            document.querySelector(".club_members_menu").style.display = "none";
+        }
+        if (my_role == "club") {
+            document.querySelector(".my_profile_menu").style.display = "none";
+            document.querySelector(".locations_menu").style.display = "flex";
+            document.querySelector(".club_members_menu").style.display = "flex";
         }
         getInfo();
     });
@@ -87,19 +105,38 @@ function getInfo() {
             startCalendar();
         })
 }
-function getUserPP(user){
+
+function getUserPP(user) {
     fetch('/auth/user_pp', {
             method: 'POST',
             headers: {
-                    'Content-Type': 'application/json'
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(user)
-    }).then((res) => res.blob())
-    .then((imgBlob) => {
+        }).then((res) => res.blob())
+        .then((imgBlob) => {
             let res = URL.createObjectURL(imgBlob);
             console.log(res);
             document.querySelector("#my_profile_picture").src = res;
-    } );
+        });
+}
+
+function addMessage(message) {
+    console.log(message);
+    const data = { "Message": message };
+    fetch('/auth/dashboard', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then((res) => {
+            console.log(res);
+            return res.json()
+        })
+        .then((res) => {
+            console.log(res);
+        });
 }
 
 
@@ -257,6 +294,7 @@ addImportantMessageButton.addEventListener("click", function () {
             document.querySelector(".message").style.display = "none";
             document.querySelector("#important_text").innerText = "";
         }
+        addMessage(message);
         modals.closeCurrent();
     })
 });
@@ -274,6 +312,7 @@ function getTitle(event) {
 }
 
 function setUserInfos() {
+    let club
     if (my_role == "club") {
         document.querySelector(".right .name").innerText = me.split("@")[0];
         document.querySelector(".name").innerHTML = "<b>Nom du club : </b>" + me.split("@")[0];
@@ -283,8 +322,12 @@ function setUserInfos() {
         document.querySelector(".level").style.display = "none";
         document.querySelector(".level_text").style.display = "none";
 
-        document.querySelector(".photo_container").style.display = "none";
-        document.querySelector("#my_profile_picture").style.display = "none";
+        // document.querySelector(".photo_container").style.display = "none";
+        // document.querySelector("#my_profile_picture").style.display = "none";
+        club = {
+            mail: me
+        }
+        getUserPP(club);
         return;
     }
     getUserPP(me);
@@ -296,7 +339,7 @@ function setUserInfos() {
     let level = me.diverQualification;
     let HTMLlevel = document.querySelectorAll(".level p");
     document.querySelector(".right .name").innerText = me.firstname;
-    
+
     HTMLlevel.forEach(function (element) {
         if (parseInt(element.innerText.split("P")[1]) <= parseInt(level.split("P")[1])) {
             element.classList.add("active");

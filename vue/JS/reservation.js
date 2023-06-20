@@ -26,11 +26,15 @@ let locations = [];
 let allDivers = [];
 
 function openErrorModal(e) {
-    modals.show("error_occured");
-    document.querySelector("#error_occured p").innerText = e;
+    modals.closeCurrent();
     setTimeout(function () {
-        modals.closeCurrent();
-    }, 3000);
+        modals.show("error_occured");
+        document.querySelector("#error_occured p").innerText = e;
+        setTimeout(function () {
+            modals.closeCurrent();
+            document.location.reload();
+        }, 3000);
+    }, 500);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -57,6 +61,21 @@ fetch('/auth/planning')
             document.querySelectorAll(".user_only").forEach(function (element) {
                 element.style.display = "none";
             })
+        }
+        if (my_role == "user") {
+            document.querySelector(".my_profile_menu").style.display = "flex";
+            document.querySelector(".locations_menu").style.display = "none";
+            document.querySelector(".club_members_menu").style.display = "none";
+        }
+        if (my_role == "dp") {
+            document.querySelector(".my_profile_menu").style.display = "flex";
+            document.querySelector(".locations_menu").style.display = "none";
+            document.querySelector(".club_members_menu").style.display = "none";
+        }
+        if (my_role == "club") {
+            document.querySelector(".my_profile_menu").style.display = "none";
+            document.querySelector(".locations_menu").style.display = "flex";
+            document.querySelector(".club_members_menu").style.display = "flex";
         }
     });
 
@@ -123,6 +142,8 @@ function getPlanning() {
 /* ------------------------------ CREATE EVENT ------------------------------ */
 
 function addEvent(event, usersToRegister) {
+    usersToRegister = usersToRegister.filter(user => user != event.dp);
+    event.lengthUsersToRegister = usersToRegister.length
     fetch('/auth/planning', {
             method: 'POST',
             headers: {
@@ -142,13 +163,14 @@ function addEvent(event, usersToRegister) {
                     Car_Pooling_Seat_Request: "n",
                     Diver_Role: "DP"
                 }
-                register(event, registrationInfo, event.dp) // dp = mail
+                register(event, registrationInfo, event.dp, false) // dp = mail
                 if (usersToRegister.length > 0) {
                     registrationInfo.Diver_Role = "Diver";
                     usersToRegister.forEach(user => {
-                        register(event, registrationInfo, user); // user = mail
+                        if (user !== event.dp) register(event, registrationInfo, user, false); // user = mail
                     });
                 }
+                window.location.reload();
             }
         })
 }
@@ -156,6 +178,8 @@ function addEvent(event, usersToRegister) {
 /* ------------------------------ MODIFY EVENT ------------------------------ */
 function updateEvent(oldEvent, event, usersToRegister) {
     event.oldEvent = oldEvent;
+    usersToRegister = usersToRegister.filter(user => user != event.dp);
+    event.lengthUsersToRegister = usersToRegister.length
     fetch('/auth/planning', {
             method: 'PUT',
             headers: {
@@ -178,16 +202,17 @@ function updateEvent(oldEvent, event, usersToRegister) {
                         Car_Pooling_Seat_Request: "n",
                         Diver_Role: "DP"
                     }
-                    register(event, registrationInfo, event.dp) // dp = mail
+                    register(event, registrationInfo, event.dp, false) // dp = mail
                     if (usersToRegister.length > 0) {
                         registrationInfo.Diver_Role = "Diver";
+                        console.log(usersToRegister);
                         usersToRegister.forEach(user => {
-                            register(event, registrationInfo, user); // user = mail
+                            if (user !== event.dp) register(event, registrationInfo, user, false); // user = mail
                         });
                     }
+                    document.location.reload();
                 }
             }
-            document.location.reload();
         })
 }
 
@@ -205,8 +230,7 @@ function deleteEvent(event) {
             if (!res.deleted) {
                 // L'event n'a pas été supprimé
                 openErrorModal(res.comment);
-            }
-
+            } else window.location.reload()
         })
 }
 
@@ -219,7 +243,7 @@ function register(
         Car_Pooling_Seat_Request: "n",
         Diver_Role: "Diver"
     },
-    userInfo = "") {
+    userInfo = "", reload = true) {
 
     let data = {
         ...event,
@@ -239,7 +263,7 @@ function register(
                 document.querySelector("#reserveButton").innerHTML = "Se désinscrire";
                 document.querySelector("#reserveButton").classList.add("unreserveButton");
                 document.querySelector("#reserveButton").classList.remove("reserveButton");
-                document.location.reload();
+                if (reload) document.location.reload();
                 // eventClicked.setProp("backgroundColor", "#f2574a");
             } else {
                 // Impossible de s'inscrire
@@ -783,7 +807,8 @@ function setEvents(ev_) {
 
 //! RESERVATION 
 let button = document.querySelector("#reserveButton");
-button.addEventListener("click", function () {
+button.addEventListener("click", function (e) {
+    e.stopPropagation();
     let data = {
         Start_Date: eventClicked.start,
         End_Date: eventClicked.end,
@@ -803,7 +828,6 @@ button.addEventListener("click", function () {
         // Se désinscrire
         unregister(data);
     }
-    // document.location.reload();
 });
 
 function loadingClose() {
@@ -835,7 +859,8 @@ var eventsFilteredPrice = [];
 
 
 let list_checkbox = document.querySelector("#checkbox_list");
-list_checkbox.addEventListener("click", function () {
+list_checkbox.addEventListener("click", function (e) {
+    e.stopPropagation();
     if (list_checkbox.checked) {
         calendar.initialView = 'listWeek';
         calendar.changeView('listWeek');
@@ -865,7 +890,8 @@ menutoggle.onclick = function () {
 var emergencyButton = document.getElementById("emergencyButton");
 var emergencyModal = document.getElementById("emergencyModal");
 
-emergencyButton.addEventListener("click", function () {
+emergencyButton.addEventListener("click", function (e) {
+    e.stopPropagation();
     modals.show("emergencyModal", function () {
         menutoggle.classList.remove('active');
     });
@@ -882,7 +908,8 @@ emergencyButton.addEventListener("click", function () {
 
 
 let rapport_button = document.querySelector(".edit_rapport");
-rapport_button.addEventListener("click", function () {
+rapport_button.addEventListener("click", function (e) {
+    e.stopPropagation();
     let event = {
         Start_Date: eventClicked.start,
         End_Date: eventClicked.end,
@@ -988,6 +1015,7 @@ let dp_mail;
 
 let validate_event = document.querySelector("#createEventModal .create_event_button");
 validate_event.addEventListener("click", function (e) {
+    e.stopPropagation();
     // Prevent default action
     e.preventDefault();
     let beginDate = document.querySelector("#eventDateInput").value;
@@ -1058,9 +1086,6 @@ validate_event.addEventListener("click", function (e) {
         validate_event.style.height = "40px";
         console.log("Event created");
         console.log(data)
-        setTimeout(function () {
-            // document.location.reload();
-        }, 1000);
     } else {
         validate_event.innerHTML = "Tous les champs ne sont pas remplis";
         document.querySelector("#createEventModal .container_create_event").querySelectorAll('input').forEach(function (input) {
@@ -1186,7 +1211,9 @@ function edit_event(info) {
 
 
     //! SUPPRESSION EVENT
-    document.querySelector(".delete_event_button").addEventListener("click", function () {
+    document.querySelector(".delete_event_button").addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
         console.log("Suppression de l'événement :");
         console.log(info.event);
         let data = {
@@ -1204,13 +1231,13 @@ function edit_event(info) {
         }
         console.log(data);
         deleteEvent(data);
-        document.location.reload();
     });
 
     // Create new event with new values
     let validate_event = document.querySelector("#modifyEventModal .create_event_button");
     validate_event.addEventListener("click", function (e) {
         // Prevent default action
+        e.stopPropagation();
         e.preventDefault();
         let beginDate = document.querySelector("#eventDateInput_modify").value;
         let beginTime = document.querySelector("#eventStartInput_modify").value;
@@ -1262,7 +1289,6 @@ function edit_event(info) {
             Site_Name: location,
             dp: dp_mail, // MAIL
         }
-        // document.location.reload();
         let validate_autho = true
         for (const [key, value] of Object.entries(data)) {
             if (value == "" && key != "Comments" && key != "Special_Needs" && key != "users" && key != "Status") {

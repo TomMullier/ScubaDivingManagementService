@@ -15,6 +15,9 @@ import {
 import {
     Location
 } from "./class/Location.js";
+// import {
+//     check
+// } from 'express-validator';
 
 /* -------------------------------------------------------------------------- */
 /*                              GLOBAL VARIABLES                              */
@@ -384,6 +387,25 @@ function editPalanquee(event) {
         })
 }
 
+async function check_PDF(event) {
+    return new Promise((resolve, reject) => {
+        fetch('/auth/planning/pdf_event', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(event)
+            }).then(res => res.json())
+            .then(res => {
+                console.log(res)
+                if (res.pdf) resolve(true);
+                else {
+                    resolve(false);
+                }
+            })
+    })
+}
+
 
 
 /* -------------------------------------------------------------------------- */
@@ -506,7 +528,7 @@ function setEvents(ev_) {
                 // }, 100);
             }
         },
-        eventClick: function (info) {
+        eventClick: async function (info) {
             // Element HTML -> info.el
             // Evénement -> info.event
             if (my_role == "club" && new Date(info.event.end) > new Date()) {
@@ -558,20 +580,31 @@ function setEvents(ev_) {
                 button.style.display = "flex";
                 document.querySelector(".rating").style.display = "none";
             }
-            //! ATTENTION CONDITION A REFAIRE
             let midnight_before = new Date(eventClicked.start);
             midnight_before.setHours(0, 0, 0, 0);
             let midnight_after = new Date(eventClicked.start);
             midnight_after.setHours(23, 59, 59, 999);
-            if (my_role == "dp" && new Date() > midnight_before && new Date() < midnight_after) {
+            let event = {
+                Start_Date: eventClicked.start,
+                End_Date: eventClicked.end,
+                Diver_Price: eventClicked.extendedProps.divePrice,
+                Instructor_Price: eventClicked.extendedProps.InstructorPrice,
+                Special_Needs: eventClicked.extendedProps.needs,
+                Status: eventClicked.extendedProps.open,
+                Max_Divers: eventClicked.extendedProps.max,
+                Dive_Type: eventClicked.extendedProps.diveType,
+                Comments: eventClicked.extendedProps.comment,
+                Site_Name: eventClicked.extendedProps.location.Site_Name,
+            }
+            let pdf_created = await check_PDF(event);
+            if (my_role == "dp" && new Date() > midnight_before && new Date() < midnight_after && !pdf_created) {
                 document.querySelector(".edit_rapport").querySelector("i").classList = "fa-solid fa-file-circle-plus edit_rapport";
                 document.querySelector(".edit_rapport").style.display = "flex";
             } else {
-                if (my_role == "dp" && new Date() > midnight_after) {
+                if ((my_role == "dp" && new Date() > midnight_after) || pdf_created) {
                     document.querySelector(".edit_rapport").querySelector("i").classList = "fa-solid fa-floppy-disk edit_rapport";
                     document.querySelector(".edit_rapport").style.display = "flex";
                 } else {
-
                     document.querySelector(".edit_rapport").style.display = "none";
                 }
             }
@@ -908,7 +941,8 @@ emergencyButton.addEventListener("click", function (e) {
 
 
 let rapport_button = document.querySelector(".edit_rapport");
-rapport_button.addEventListener("click", function (e) {
+rapport_button.addEventListener("click", async function (e) {
+    e.preventDefault();
     e.stopPropagation();
     let event = {
         Start_Date: eventClicked.start,
@@ -922,7 +956,12 @@ rapport_button.addEventListener("click", function (e) {
         Comments: eventClicked.extendedProps.comment,
         Site_Name: eventClicked.extendedProps.location.Site_Name,
     }
-    editPalanquee(event);
+    let pdf_created = await check_PDF(event);
+    if (pdf_created) {
+        document.location.href = "/auth/planning/download_pdf"
+    } else {
+        editPalanquee(event);
+    }
 });
 
 //! EVENT CREATION

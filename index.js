@@ -718,6 +718,89 @@ app.get('/auth/planning/get_planning', keycloak.protect(), function (req, res) {
     });
 })
 
+app.post("/auth/planning/pdf_event", keycloak.protect(), body("Start_Date").trim().escape(),
+    body("End_Date").trim().escape(),
+    body("Diver_Price").trim().escape(),
+    body("Instructor_Price").trim().escape(),
+    body("Site_Name").trim(),
+    body("Comments").trim(),
+    body("Special_Needs").trim(),
+    body("Status").trim().escape(),
+    body("Max_Divers").trim().escape(),
+    body("Dive_Type").trim().escape(),
+    function (req, res) {
+        console.log("---- Check PDF exists")
+        req.body.Start_Date = getDateFormat(new Date(req.body.Start_Date).toLocaleString());
+        req.body.End_Date = getDateFormat(new Date(req.body.End_Date).toLocaleString());
+
+        Database.getDiveSite({
+            Site_Name: req.body.Site_Name
+        }, (diveSiteInfo) => {
+            if (diveSiteInfo === undefined) {
+                console.log("\t ->Can't get dive site")
+                return res.json({
+                    pdf: false,
+                    comment: "Impossible de trouver le lieu"
+                })
+            }
+            delete req.body.Site_Name
+            req.body.Dive_Site_Id_Dive_Site = diveSiteInfo.Id_Dive_Site;
+            Database.getEvent(req.body, eventInfo => {
+                if (eventInfo === undefined) {
+                    console.log("\t ->Can't get event")
+                    return res.json({
+                        pdf: false,
+                        comment: "Impossible de trouver l'évènement"
+                    })
+                }
+                Database.getDive({
+                    Planned_Dive_Id_Planned_Dive: eventInfo.Id_Planned_Dive
+                }, diveInfo => {
+                    if (diveInfo === undefined) {
+                        console.log("\t ->Can't get dive")
+                        return res.json({
+                            pdf: false,
+                            comment: "Impossible de trouver la plongée"
+                        })
+                    }
+                    if (fs.existsSync(__dirname + "/model/pdf/" + diveInfo.Id_Dive + ".pdf")) {
+                        req.session.idDive = diveInfo.Id_Dive;
+                        return res.json({
+                            pdf: true,
+                            comment: "Le PDF existe"
+                        })
+                    } else {
+                        console.log("\t ->Can't get PDF")
+                        return res.json({
+                            pdf: false,
+                            comment: "Le PDF n'existe pas"
+                        })
+                    }
+                })
+            })
+        })
+    })
+
+app.get("/auth/planning/download_pdf", keycloak.protect(),
+    function (req, res) {
+        console.log("---- Download PDF")
+        if (checkUser(req, "CLUB") || checkUser(req, "DP")) {
+            Database.getDive({
+                Id_Dive: req.session.idDive
+            }, (diveInfo) => {
+                Database.getEventById(diveInfo.Planned_Dive_Id_Planned_Dive, (eventInfo) => {
+                    let date = eventInfo.Start_Date.split("-")[0] + "_" + eventInfo.Start_Date.split("-")[1] + "_" + eventInfo.Start_Date.split("-")[2].split(" ")[0];
+                    Database.getDiveSite({
+                        Id_Dive_Site: eventInfo.Dive_Site_Id_Dive_Site
+                    }, (diveSiteInfo) => {
+                        return res.download(__dirname + "/model/pdf/" + req.session.idDive + ".pdf", "PAL_" + eventInfo.Dive_Type + "_" + diveSiteInfo.Site_Name + "_" + date + ".pdf");
+                    })
+                })
+            })
+        } else res.redirect("/auth/planning")
+    })
+
+
 app.post('/auth/planning/has_voted', keycloak.protect(),
     body("Start_Date").trim().escape(),
     body("End_Date").trim().escape(),
@@ -729,7 +812,6 @@ app.post('/auth/planning/has_voted', keycloak.protect(),
     body("Status").trim().escape(),
     body("Max_Divers").trim().escape(),
     body("Dive_Type").trim().escape(),
-
     function (req, res) {
         let mail = req.kauth.grant.access_token.content.preferred_username;
         req.body.Start_Date = getDateFormat(new Date(req.body.Start_Date).toLocaleString());
@@ -2627,13 +2709,18 @@ app.post('/auth/dp/palanquee/upload', keycloak.protect(), function (req, res) {
         if (err) {
             console.log("Error while uploading PDF ");
             console.log(err);
+            return res.json({
+                success: false,
+                comment: "Impossible de générer le PDF"
+            });
         } else {
             console.log("PDF uploaded ");
+            return res.json({
+                success: true,
+                comment: "PDF généré avec succès"
+            });
         }
-        return res.json({
-            success: true,
-            comment: "PDF généré avec succès"
-        });
+
     });
 
 })
@@ -3288,4 +3375,4 @@ app.use((err, req, res, next) => {
 http.listen(port, hostname, (err) => {
     if (err) console.error(err);
     else console.log(`Server running at http://${process.env.IP_PERSO}:${port}`);
-});
+})

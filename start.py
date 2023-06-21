@@ -84,6 +84,11 @@ def launchDocker():
         for line in result.stdout:
                 print(line)
                 
+
+        # command = "docker logs -f ck-theme_keycloak" 
+        # result = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # result.wait(); 
+        
         print("----- Waiting for Keycloak to be ready")
         for i in range(0, 15):
                 time.sleep(1)

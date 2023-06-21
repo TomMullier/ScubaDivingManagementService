@@ -272,14 +272,10 @@ body {
   font-family: 'Montserrat', sans-serif;
   font-size: 100px;
   text-transform: uppercase;
-  cursor: pointer;
+  cursor: auto;
   margin-top: 40px;
   transition: 0.2s;
   animation: Blink 1s both infinite;
-}
-#emergencyModal .modal-wrapper #txt_descr #callButton:hover {
-  background-color: white;
-  color: #f2574a;
 }
 @keyframes Blink {
   0% {
@@ -338,7 +334,7 @@ body {
   flex-direction: column;
   justify-content: left;
   align-items: left;
-  border-radius: 10px;
+  border-radius: 0px;
   animation: SlideLeft 0.4s both;
 }
 #menuModal .logout_button {
@@ -433,6 +429,86 @@ body {
 }
 .toggle.active span:nth-child(3) {
   transform: rotate(-45deg);
+}
+#error_occured .modal-wrapper {
+  animation: slideFromTop 0.4s both;
+  top: 0;
+  width: 80%;
+  height: fit-content;
+  position: fixed;
+  background-color: #f2574a;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+#error_occured .modal-wrapper #txt_title {
+  color: white;
+  font-size: 20px;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0;
+}
+#error_occured .modal-wrapper p {
+  color: white;
+  font-size: 15px;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0;
+}
+#success .modal-wrapper {
+  animation: slideFromTop 0.4s both;
+  top: 0;
+  width: 80%;
+  height: fit-content;
+  position: fixed;
+  background-color: green;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+#success .modal-wrapper #txt_title {
+  color: white;
+  font-size: 20px;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0;
+}
+#success .modal-wrapper p {
+  color: white;
+  font-size: 15px;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0;
+}
+@keyframes slideFromTop {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(0%);
+  }
+}
+@keyframes goTop {
+  0% {
+    transform: translateY(0%);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
 }
 .title_container {
   display: flex;
@@ -906,7 +982,7 @@ body {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   width: 100%;
   height: auto;
   margin-top: 20px;
@@ -919,7 +995,6 @@ body {
   width: auto;
   height: auto;
   margin: 0;
-  margin-right: 20px;
 }
 #eventModal .modal-wrapper .displayRating_container div p {
   margin: 0;
@@ -2365,6 +2440,10 @@ body {
   .title_container h1 {
     transform: scale(0.8);
   }
+  #eventModal .modal-wrapper .displayRating_container {
+    flex: 1 1 80px;
+    flex-wrap: wrap;
+  }
   #eventModal .modal-wrapper .global {
     width: 100%;
     height: 100%;
@@ -2406,8 +2485,13 @@ body {
     margin: 0 auto;
     margin-top: 20px;
   }
+  #createEventModal .modal-wrapper h1 {
+    margin-top: 25px;
+    transform: scale(0.8);
+  }
   #createEventModal .modal-wrapper .container_create_event {
     flex-direction: column;
+    margin-top: 10px;
   }
   #createEventModal .modal-wrapper .container_create_event .left,
   #createEventModal .modal-wrapper .container_create_event .right {
@@ -2422,11 +2506,18 @@ body {
   #createEventModal .modal-wrapper {
     height: 100vh;
     overflow-y: scroll;
+    border-radius: 0px;
     justify-content: flex-start;
   }
   #createEventModal .comment,
   #createEventModal .needs {
     width: calc(100% - 20px);
+  }
+  #createEventModal .comment h3,
+  #createEventModal .needs h3 {
+    margin: 0;
+    text-align: center;
+    margin-top: 10px;
   }
   #modifyEventModal .modal-wrapper .container_create_event {
     flex-direction: column;
@@ -2444,19 +2535,76 @@ body {
   #modifyEventModal .modal-wrapper {
     height: 100vh;
     overflow-y: scroll;
+    border-radius: 0px;
     justify-content: flex-start;
   }
   #modifyEventModal .comment,
   #modifyEventModal .needs {
     width: calc(100% - 20px);
   }
+  #createEventModal .modal-wrapper .left div h3,
+  #createEventModal .modal-wrapper .right div h3 {
+    margin: 0;
+  }
+  #createEventModal .modal-wrapper .left div,
+  #createEventModal .modal-wrapper .right div {
+    padding: 5px 0;
+  }
   #createEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown {
-    width: calc(47% - 32px);
+    width: 100%;
   }
   #createEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown {
-    width: calc(47% - 32px);
+    width: 100%;
   }
   #createEventModal .modal-wrapper .left div .search_location .location_list_dropdown {
-    width: calc(47% - 32px);
+    width: 100%;
+  }
+  #createEventModal .modal-wrapper .left div.select-input {
+    padding: 0;
+  }
+  #createEventModal .modal-wrapper .left div.select-input i {
+    margin-left: 5px;
+  }
+  #modifyEventModal .modal-wrapper .left div.select-input {
+    padding: 0;
+  }
+  #modifyEventModal .modal-wrapper .left div.select-input i {
+    margin-left: 5px;
+  }
+  #modifyEventModal .modal-wrapper .left div h3,
+  #modifyEventModal .modal-wrapper .right div h3 {
+    margin: 0;
+  }
+  #modifyEventModal .modal-wrapper .left div,
+  #modifyEventModal .modal-wrapper .right div {
+    padding: 5px 0;
+  }
+  #modifyEventModal .modal-wrapper .right div .search_location_diver .diver_list_dropdown {
+    width: 100%;
+  }
+  #modifyEventModal .modal-wrapper .right div .search_location_DP .DP_list_dropdown {
+    width: 100%;
+  }
+  #modifyEventModal .modal-wrapper .left div .search_location .location_list_dropdown {
+    width: 100%;
+  }
+  #modifyEventModal .comment,
+  #modifyEventModal .needs {
+    width: calc(100% - 20px);
+  }
+  #modifyEventModal .comment h3,
+  #modifyEventModal .needs h3 {
+    margin: 0;
+    text-align: center;
+    margin-top: 10px;
+  }
+  #modifyEventModal .modal-wrapper h1 {
+    margin-top: 25px;
+    transform: scale(0.8);
+  }
+}
+@media screen and (max-width: 381px) {
+  #calendar .fc-button.fc-today-button {
+    margin-top: 10px;
   }
 }

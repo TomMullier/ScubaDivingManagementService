@@ -272,14 +272,10 @@ body {
   font-family: 'Montserrat', sans-serif;
   font-size: 100px;
   text-transform: uppercase;
-  cursor: pointer;
+  cursor: auto;
   margin-top: 40px;
   transition: 0.2s;
   animation: Blink 1s both infinite;
-}
-#emergencyModal .modal-wrapper #txt_descr #callButton:hover {
-  background-color: white;
-  color: #f2574a;
 }
 @keyframes Blink {
   0% {
@@ -338,7 +334,7 @@ body {
   flex-direction: column;
   justify-content: left;
   align-items: left;
-  border-radius: 10px;
+  border-radius: 0px;
   animation: SlideLeft 0.4s both;
 }
 #menuModal .logout_button {
@@ -434,7 +430,8 @@ body {
 .toggle.active span:nth-child(3) {
   transform: rotate(-45deg);
 }
-#error_occured .modal-wrapper {
+#error_occured .modal-wrapper,
+#forcePaysage .modal-wrapper {
   animation: slideFromTop 0.4s both;
   top: 0;
   width: 80%;
@@ -450,7 +447,8 @@ body {
   margin-top: 20px;
   margin-bottom: 20px;
 }
-#error_occured .modal-wrapper #txt_title {
+#error_occured .modal-wrapper #txt_title,
+#forcePaysage .modal-wrapper #txt_title {
   color: white;
   font-size: 20px;
   font-family: 'Montserrat', sans-serif;
@@ -458,13 +456,17 @@ body {
   text-align: center;
   margin: 0;
 }
-#error_occured .modal-wrapper p {
+#error_occured .modal-wrapper p,
+#forcePaysage .modal-wrapper p {
   color: white;
   font-size: 15px;
   font-family: 'Montserrat', sans-serif;
   text-transform: uppercase;
   text-align: center;
   margin: 0;
+}
+#forcePaysage {
+  z-index: 9999999;
 }
 #success .modal-wrapper {
   animation: slideFromTop 0.4s both;
@@ -534,15 +536,15 @@ body {
   font-family: 'Montserrat', sans-serif;
   text-align: center;
   text-transform: uppercase;
+  font-weight: bold;
+  margin-top: 10px;
 }
 .scroll_container {
   width: 100%;
   height: auto;
-  overflow-x: scroll;
+  overflow-x: hidden;
   overflow-y: hidden;
-  scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -826,7 +828,6 @@ body {
   color: #120B8F;
 }
 .divers .allDivers .diver_item div select {
-  width: 100%;
   height: 30px;
   font-size: 15px;
   font-family: 'Montserrat', sans-serif;
@@ -860,7 +861,7 @@ body {
   align-items: center;
   justify-content: flex-start;
   margin: 50px auto;
-  max-height: 75vh;
+  max-height: 80vh;
   overflow-y: scroll;
   overflow-x: hidden;
   box-sizing: content-box;
@@ -1229,6 +1230,7 @@ body {
   transition: all 0.2s ease-in-out;
   border: 2px solid #f2574a;
   margin-bottom: 10px;
+  text-align: center;
 }
 .button_auto:hover {
   background-color: white;

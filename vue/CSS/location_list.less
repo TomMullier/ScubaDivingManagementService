@@ -189,7 +189,7 @@
         .list_item {
                 display: flex;
                 flex-direction: column;
-                justify-content: center;
+                justify-content: space-between;
                 align-items: center;
                 width: 24%;
                 height: auto;
@@ -198,6 +198,7 @@
                 margin-top: 10px;
                 box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
                 transition: all 0.2s;
+                align-self: stretch;
 
                 h1 {
                         font-size: 20px;
@@ -348,8 +349,6 @@
                 background-color: white;
                 flex-direction: row;
                 border-radius: 10px;
-                max-height: 80vh;
-                max-width: 80vw;
 
 
                 .top {
@@ -363,6 +362,8 @@
                                 margin: 0;
                                 padding: 10px 0;
                                 text-transform: uppercase;
+                                margin-top:10px;
+                                margin-bottom: 10px;
                         }
 
                         h3 {
@@ -450,14 +451,15 @@
                                 }
 
                                 select#country {
-                                        width: 200px;
                                         height: 30px;
+                                        width: calc(50% + 20px);
                                         border-radius: 0;
-                                        border: 1px solid #ccc;
+                                        border: 1px solid @dark_blue;
                                         font-size: 14px;
                                         font-family: @body_font;
                                         padding: 5px;
-                                        background-color: #fff;
+                                        border-radius: 5px;
+                                        background-color: white;
                                 }
 
 
@@ -677,19 +679,76 @@
 
 }
 
+
+
+@media screen and (max-width: 1500px) {
+        #create_location {
+                width: 100%;
+
+                .modal-wrapper {
+                        width: 100%;
+                        overflow: scroll;
+                        height: 100%;
+                }
+        }
+
+        #create_location .modal-wrapper .fields-container {
+                flex-wrap: wrap;
+        }
+
+        #create_location .modal-wrapper .fields-container .adress_container h3 label,
+        #create_location .modal-wrapper .fields-container .emergency_plan h3 label,
+        #create_location .modal-wrapper .fields-container .infos-location h3 label {
+                text-align: left;
+        }
+}
+
 @media screen and (max-width: 900px) {
         .list_container .list_item {
                 width: 45%;
         }
+
+        #create_location .modal-wrapper .fields-container {
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 20px;
+        }
+
+        #create_location .modal-wrapper {
+                align-items: flex-start;
+        }
+
+        #create_location .modal-wrapper .fields-container .infos-location,
+        #create_location .modal-wrapper .fields-container .adress_container,
+        #create_location .modal-wrapper .fields-container .emergency_plan {
+                width: 80%;
+                margin-right: 0;
+                margin-left: 0;
+
+
+                h3 input {
+                        width: 50%;
+                }
+        }
+
+        #create_location .modal-wrapper .fields-container .adress_container:not(:last-child),
+        #create_location .modal-wrapper .fields-container .infos-location:not(:last-child) {
+                margin-right: 0px;
+        }
+
+
 }
 
 @media screen and (max-width: 700px) {
         .list_container .list_item {
                 width: 100%;
         }
+
         .list_container {
                 flex-direction: column;
         }
+
         .top_bar {
                 flex-direction: column;
                 justify-content: center;
@@ -699,21 +758,18 @@
                 margin-left: 0%;
                 margin-top: 0px;
                 margin-bottom: 0px;
-                margin : 0 auto;
+                margin: 0 auto;
 
                 .search_bar_container {
-                        margin-top : 20px;
+                        margin-top: 20px;
                         margin-right: 0px;
                         margin-bottom: 20px;
-                        
+
                 }
-                
+
                 .create_button {
                         width: calc(100% - 40px);
                         margin-bottom: 20px;
                 }
         }
 }
-
-
-

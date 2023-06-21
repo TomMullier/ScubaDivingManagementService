@@ -272,14 +272,10 @@ body {
   font-family: 'Montserrat', sans-serif;
   font-size: 100px;
   text-transform: uppercase;
-  cursor: pointer;
+  cursor: auto;
   margin-top: 40px;
   transition: 0.2s;
   animation: Blink 1s both infinite;
-}
-#emergencyModal .modal-wrapper #txt_descr #callButton:hover {
-  background-color: white;
-  color: #f2574a;
 }
 @keyframes Blink {
   0% {
@@ -338,7 +334,7 @@ body {
   flex-direction: column;
   justify-content: left;
   align-items: left;
-  border-radius: 10px;
+  border-radius: 0px;
   animation: SlideLeft 0.4s both;
 }
 #menuModal .logout_button {
@@ -1285,8 +1281,24 @@ body {
   }
 }
 @media screen and (max-width: 900px) {
+  #create_user .modal-wrapper {
+    height: 100%;
+    overflow: scroll;
+    justify-content: flex-start;
+    border-radius: 0%;
+  }
+  #create_user .modal-wrapper h1 {
+    transform: scale(0.8);
+    margin-top: 15px;
+  }
   .global_container .list_container .user_item .infos {
     flex-wrap: wrap;
+  }
+  .global_container .list_container .user_item .infos .name,
+  .global_container .list_container .user_item .infos .phone,
+  .global_container .list_container .user_item .infos .mail {
+    width: fit-content;
+    margin: 5px 0;
   }
   .form_container form .container {
     flex-wrap: wrap;
@@ -1337,11 +1349,11 @@ body {
   position: relative;
   appearance: none;
   outline: none;
-  width: 50px!important;
+  width: 50px !important;
   height: 30px;
   background-color: #ffffff;
   border: 1px solid #D9DADC !important;
-  border-radius: 50px!important;
+  border-radius: 50px !important;
   box-shadow: inset -20px 0 0 0 #ffffff;
   transition-duration: 200ms;
 }

@@ -342,7 +342,7 @@ body {
         flex-direction: column;
         justify-content: left;
         align-items: left;
-        border-radius: 10px;
+        border-radius: 0px;
         animation: SlideLeft 0.4s both;
 
     }
@@ -462,7 +462,7 @@ body {
     transform: rotate(-45deg);
 }
 
-#error_occured {
+#error_occured, #forcePaysage {
 
     .modal-wrapper {
         animation: slideFromTop 0.4s both;
@@ -498,6 +498,9 @@ body {
             margin: 0;
         }
     }
+}
+#forcePaysage{
+    z-index: 9999999;
 }
 
 #success {

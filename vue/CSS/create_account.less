@@ -581,7 +581,8 @@
                 height: auto;
                 margin-bottom: 20px;
 
-                select,input {
+                select,
+                input {
                         width: 200px;
                         height: 30px;
                         border-radius: 0px;
@@ -885,16 +886,34 @@
 }
 
 @media screen and (max-width: 900px) {
+        #create_user .modal-wrapper{
+                height:100%;
+                overflow: scroll;
+                justify-content: flex-start;
+                border-radius: 0%;
+                h1{
+                        transform: scale(0.8);
+                        margin-top:15px;
+                }
+        }
         .global_container .list_container .user_item .infos {
                 flex-wrap: wrap;
         }
-        .form_container form .container{
+
+        .global_container .list_container .user_item .infos .name,.global_container .list_container .user_item .infos .phone,.global_container .list_container .user_item .infos .mail {
+                width: fit-content;
+                margin: 5px 0;
+        }
+
+        .form_container form .container {
                 flex-wrap: wrap;
         }
-        .name_container, .qualifications_container{
+
+        .name_container,
+        .qualifications_container {
                 margin-left: 0px;
                 width: 100%;
-                
+
         }
 
 }
@@ -943,20 +962,21 @@
                 }
         }
 }
+
 .apple-switch {
         position: relative;
         appearance: none;
         outline: none;
-        width: 50px!important;
+        width: 50px !important;
         height: 30px;
         background-color: #ffffff;
-        border: 1px solid #D9DADC!important;
-        border-radius: 50px!important;
+        border: 1px solid #D9DADC !important;
+        border-radius: 50px !important;
         box-shadow: inset -20px 0 0 0 #ffffff;
         transition-duration: 200ms;
-    }
-    
-    .apple-switch:after {
+}
+
+.apple-switch:after {
         content: "";
         position: absolute;
         top: 1px;
@@ -966,15 +986,14 @@
         background-color: transparent;
         border-radius: 50%;
         box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.2);
-    }
-    
-    .apple-switch:checked {
+}
+
+.apple-switch:checked {
         border-color: @orange;
         box-shadow: inset 20px 0 0 0 @orange;
-    }
-    
-    .apple-switch:checked:after {
+}
+
+.apple-switch:checked:after {
         left: 20px;
         box-shadow: -2px 4px 3px rgba(0, 0, 0, 0.05);
-    }
-    
+}

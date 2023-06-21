@@ -9,7 +9,7 @@ function showTemplateModal(id){
     // document.querySelector("body").style.overflow = "hidden"
 
     // Auto focus
-    $('input:first').focus()
+    // $('input:first').focus()
 
     window.cmodal = modal
     window.cmodal.addEventListener('click', closeTemplateModal)

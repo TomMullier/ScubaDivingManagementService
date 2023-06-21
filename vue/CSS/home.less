@@ -449,11 +449,16 @@ html{
         } 
         .underlife_container .img_container .img2{
                 margin: 0px;
-                width: 40%;
+                width: 45%;
+                flex: 1 1 80px;
+                margin: 0px 12px 0 0px;
+
+
         } 
         .underlife_container .img_container .img3{
-                margin: 0px;
-                width: 40%;
+                margin: 0px 0px 0 12px;
+                width: 45%;
+                flex: 1 1 80px;
         } 
         .footer_container .footer_top {
                 width: 80%;
@@ -488,13 +493,32 @@ html{
         .desc_container .desc {
                 transform: translateY(-40%) scale(0.8);
         }
+        .underlife_container .img_container   {
+                flex-wrap: wrap;
+                justify-content: space-between;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                margin:auto
+                
+        }
+        .underlife_container .img_container .img1{
+                margin: 0px;
+                width: calc(100% - 40px);
+                flex:auto;
+                margin-bottom: 25px;
+        } 
         .underlife_container .img_container .img2{
                 margin: 0px;
-                width: 35%;
+                width: calc(100% - 40px);
+                flex:auto;
+                margin-bottom: 25px;
         } 
         .underlife_container .img_container .img3{
                 margin: 0px;
-                width: 35%;
+                width: calc(100% - 40px);
+                flex:auto;
+                
         } 
         .fonctionnalites_container .card {
                 height: auto;
@@ -512,5 +536,9 @@ html{
         }
         .fonctionnalites_container h1,.underlife_container h1 {
                 transform: scale(0.8);
+                hyphens:auto;
+                word-break: break-all;
+                text-align: center      ;
+                
         }
 }

@@ -917,7 +917,13 @@ emergencyButton.addEventListener("click", function (e) {
     e.stopPropagation();
     modals.show("emergencyModal", function () {
         menutoggle.classList.remove('active');
+        document.querySelectorAll(".toggle span").forEach(function (element) {
+            element.style.backgroundColor = "#f2574a"
+        }  );
     });
+    document.querySelectorAll(".toggle span").forEach(function (element) {
+        element.style.backgroundColor = "white"
+    }  );
     menutoggle.classList.toggle('active');
     menutoggle.classList.toggle('close-modal');
     document.querySelector("#emergencyModal .download_button").addEventListener("click", function () {
@@ -1324,8 +1330,9 @@ function edit_event(info) {
             let usersToRegister = event_to_create.users;
             validate_event.disabled = true;
             validate_event.innerHTML = "<img src='../img/loading_animation.svg' alt='loading' class='loading'>";
-            validate_event.style.height = "20px";
+            validate_event.style.height = "40px";
             updateEvent(oldEvent, data, event_to_create.users);
+            
 
         } else {
             validate_event.innerHTML = "Les champs ne sont pas correctement remplis";

@@ -281,6 +281,12 @@ var emergencyModal = document.getElementById("emergencyModal");
 emergencyButton.addEventListener("click", function () {
     modals.show("emergencyModal", function () {
         menutoggle.classList.remove('active');
+        document.querySelectorAll(".toggle span").forEach(function (element) {
+            element.style.backgroundColor = "#f2574a"
+        });
+    });
+    document.querySelectorAll(".toggle span").forEach(function (element) {
+        element.style.backgroundColor = "white"
     });
     menutoggle.classList.toggle('active');
     menutoggle.classList.toggle('close-modal');

@@ -334,7 +334,7 @@ body {
   flex-direction: column;
   justify-content: left;
   align-items: left;
-  border-radius: 10px;
+  border-radius: 0px;
   animation: SlideLeft 0.4s both;
 }
 #menuModal .logout_button {
@@ -955,9 +955,11 @@ body {
 @media screen and (max-width: 900px) {
   .profil_container {
     flex-direction: column-reverse;
+    align-items: flex-end;
   }
   .profil_container .left {
-    width: calc(80%);
+    width: calc(100% - 40px);
+    padding: 10px 20px;
   }
   .event_list {
     display: none;

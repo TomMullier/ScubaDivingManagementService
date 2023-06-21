@@ -5,9 +5,11 @@ html{
         width:100%;
         margin:0;
         padding:0;
-        background-color: @dark_blue;
+        background-color: darken(@dark_blue, 10%);
+        overflow: hidden;
 }
 body{
+        overflow: hidden;
         margin:0;
         padding:0;
         width: 100%;
@@ -125,5 +127,14 @@ body{
                 &:hover{
                         background-color: @dark_orange;
                 }
+        }
+}
+
+//! RESPONSIVE
+
+@media screen and (max-width: 768px) {
+        body{
+        transform: scale(0.8);
+        
         }
 }

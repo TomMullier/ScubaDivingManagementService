@@ -189,8 +189,78 @@ body {
   align-self: center;
   margin: 0;
 }
+#emergencyModal .modal-wrapper .useful_numbers {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  width: fit-content;
+}
+#emergencyModal .modal-wrapper .useful_numbers div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  margin-bottom: 10px;
+}
+#emergencyModal .modal-wrapper .useful_numbers div a {
+  color: #120B8F;
+  font-size: 15px;
+  text-transform: uppercase;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  align-self: center;
+  margin: 0;
+  margin-right: 10px;
+  text-decoration: none;
+  transition: 0.2s;
+  margin: auto 0;
+}
+#emergencyModal .modal-wrapper .useful_numbers div a:hover {
+  color: white;
+}
+#emergencyModal .modal-wrapper .useful_numbers div i {
+  font-size: 15px;
+  margin: auto 0;
+  margin-right: 5px;
+}
+#emergencyModal .modal-wrapper .useful_numbers div h3 {
+  color: #120B8F;
+  font-size: 15px;
+  text-transform: uppercase;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  align-self: center;
+  margin: 0;
+  margin-right: 10px;
+}
+#emergencyModal .modal-wrapper .useful_numbers .download_button {
+  background-color: #f2574a;
+  border: white 2px solid;
+  outline: none;
+  padding: 20px 20px;
+  border-radius: 25px;
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 20px;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: 0.2s;
+}
+#emergencyModal .modal-wrapper .useful_numbers .download_button h3 {
+  margin: 0;
+  color: white;
+  font-weight: bold;
+}
+#emergencyModal .modal-wrapper .useful_numbers .download_button:hover {
+  background-color: #f2574a;
+  color: #f2574a;
+}
 #emergencyModal .modal-wrapper #txt_descr {
-  margin-top: 50px;
+  margin-top: 70px;
 }
 #emergencyModal .modal-wrapper #txt_descr #callButton {
   background-color: #f2574a;
@@ -202,14 +272,10 @@ body {
   font-family: 'Montserrat', sans-serif;
   font-size: 100px;
   text-transform: uppercase;
-  cursor: pointer;
-  margin-top: 20px;
+  cursor: auto;
+  margin-top: 40px;
   transition: 0.2s;
   animation: Blink 1s both infinite;
-}
-#emergencyModal .modal-wrapper #txt_descr #callButton:hover {
-  background-color: white;
-  color: #f2574a;
 }
 @keyframes Blink {
   0% {
@@ -268,7 +334,7 @@ body {
   flex-direction: column;
   justify-content: left;
   align-items: left;
-  border-radius: 10px;
+  border-radius: 0px;
   animation: SlideLeft 0.4s both;
 }
 #menuModal .logout_button {
@@ -363,6 +429,92 @@ body {
 }
 .toggle.active span:nth-child(3) {
   transform: rotate(-45deg);
+}
+#error_occured .modal-wrapper,
+#forcePaysage .modal-wrapper {
+  animation: slideFromTop 0.4s both;
+  top: 0;
+  width: 80%;
+  height: fit-content;
+  position: fixed;
+  background-color: #f2574a;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+#error_occured .modal-wrapper #txt_title,
+#forcePaysage .modal-wrapper #txt_title {
+  color: white;
+  font-size: 20px;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0;
+}
+#error_occured .modal-wrapper p,
+#forcePaysage .modal-wrapper p {
+  color: white;
+  font-size: 15px;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0;
+}
+#forcePaysage {
+  z-index: 9999999;
+}
+#success .modal-wrapper {
+  animation: slideFromTop 0.4s both;
+  top: 0;
+  width: 80%;
+  height: fit-content;
+  position: fixed;
+  background-color: green;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+#success .modal-wrapper #txt_title {
+  color: white;
+  font-size: 20px;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0;
+}
+#success .modal-wrapper p {
+  color: white;
+  font-size: 15px;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0;
+}
+@keyframes slideFromTop {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(0%);
+  }
+}
+@keyframes goTop {
+  0% {
+    transform: translateY(0%);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
 }
 .menu_button_container {
   display: flex;
@@ -518,7 +670,7 @@ body {
 .list_container .list_item {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   width: 24%;
   height: auto;
@@ -527,6 +679,7 @@ body {
   margin-top: 10px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
   transition: all 0.2s;
+  align-self: stretch;
 }
 .list_container .list_item h1 {
   font-size: 20px;
@@ -658,8 +811,6 @@ body {
   background-color: white;
   flex-direction: row;
   border-radius: 10px;
-  max-height: 80vh;
-  max-width: 80vw;
 }
 #create_location .modal-wrapper .top h1 {
   font-size: 20px;
@@ -669,6 +820,8 @@ body {
   margin: 0;
   padding: 10px 0;
   text-transform: uppercase;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 #create_location .modal-wrapper .top h3 {
   font-size: 15px;
@@ -755,14 +908,15 @@ body {
 #create_location .modal-wrapper .fields-container .infos-location select#country,
 #create_location .modal-wrapper .fields-container .emergency_plan select#country,
 #create_location .modal-wrapper .fields-container .adress_container select#country {
-  width: 200px;
   height: 30px;
+  width: calc(50% + 20px);
   border-radius: 0;
-  border: 1px solid #ccc;
+  border: 1px solid #120B8F;
   font-size: 14px;
   font-family: 'Montserrat', sans-serif;
   padding: 5px;
-  background-color: #fff;
+  border-radius: 5px;
+  background-color: white;
 }
 #create_location .modal-wrapper .fields-container .infos-location select#country option,
 #create_location .modal-wrapper .fields-container .emergency_plan select#country option,
@@ -950,9 +1104,52 @@ body {
   width: 20px;
   height: 20px;
 }
+@media screen and (max-width: 1500px) {
+  #create_location {
+    width: 100%;
+  }
+  #create_location .modal-wrapper {
+    width: 100%;
+    overflow: scroll;
+    height: 100%;
+  }
+  #create_location .modal-wrapper .fields-container {
+    flex-wrap: wrap;
+  }
+  #create_location .modal-wrapper .fields-container .adress_container h3 label,
+  #create_location .modal-wrapper .fields-container .emergency_plan h3 label,
+  #create_location .modal-wrapper .fields-container .infos-location h3 label {
+    text-align: left;
+  }
+}
 @media screen and (max-width: 900px) {
   .list_container .list_item {
     width: 45%;
+  }
+  #create_location .modal-wrapper .fields-container {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+  }
+  #create_location .modal-wrapper {
+    align-items: flex-start;
+  }
+  #create_location .modal-wrapper .fields-container .infos-location,
+  #create_location .modal-wrapper .fields-container .adress_container,
+  #create_location .modal-wrapper .fields-container .emergency_plan {
+    width: 80%;
+    margin-right: 0;
+    margin-left: 0;
+  }
+  #create_location .modal-wrapper .fields-container .infos-location h3 input,
+  #create_location .modal-wrapper .fields-container .adress_container h3 input,
+  #create_location .modal-wrapper .fields-container .emergency_plan h3 input {
+    width: 50%;
+  }
+  #create_location .modal-wrapper .fields-container .adress_container:not(:last-child),
+  #create_location .modal-wrapper .fields-container .infos-location:not(:last-child) {
+    margin-right: 0px;
   }
 }
 @media screen and (max-width: 700px) {

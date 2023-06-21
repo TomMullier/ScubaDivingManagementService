@@ -24,6 +24,8 @@ body {
                 font-family: @body_font;
                 text-align: center;
                 text-transform: uppercase;
+                font-weight: bold;
+                margin-top: 10px;
 
         }
 }
@@ -32,11 +34,11 @@ body {
         // Horizontal scroll
         width: 100%;
         height: auto;
-        overflow-x: scroll;
+        overflow-x: hidden;
         overflow-y: hidden;
-        scroll-snap-type: x mandatory;
+        // scroll-snap-type: x mandatory;
         scroll-behavior: smooth;
-        -webkit-overflow-scrolling: touch;
+        // -webkit-overflow-scrolling: touch;
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -340,7 +342,7 @@ body {
                         }
 
                         div select {
-                                width: 100%;
+                                // width: 100%;
                                 height: 30px;
                                 font-size: 15px;
                                 font-family: @body_font;
@@ -382,7 +384,7 @@ body {
         align-items: center;
         justify-content: flex-start;
         margin: 50px auto;
-        max-height: 75vh;
+        max-height: 80vh;
         overflow-y: scroll;
         overflow-x: hidden;
         box-sizing: content-box;
@@ -791,6 +793,7 @@ body {
         transition: all 0.2s ease-in-out;
         border: 2px solid @orange;
         margin-bottom: 10px;
+        text-align: center;
         
         &:hover{
                 background-color: white;

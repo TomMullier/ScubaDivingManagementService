@@ -200,7 +200,7 @@ function generateDiveTeam() {
                     event: ev_
                 }
                 createAllPalanquee(data);
-                add_buttons(data)   ;
+                add_buttons(data);
             } else {
                 // open error modal
                 openErrorModal(res.dataError.comment);
@@ -297,9 +297,28 @@ function setPage(data) {
     createAllPalanquee(data);
     numberpalanquee = data.palanquee.length != 0 ? data.palanquee.length - 1 : 0;
     addPalanquee(data);
-
-    loadingClose();
+    // Si portrait on affiche la modsale forcvePaysage
+    if (window.innerHeight > window.innerWidth) {
+        modals.show("forcePaysage");
+    } else {
+        loadingClose();
+    }
 };
+
+// Event listener to detect orientation change
+screen.orientation.addEventListener('change', function () {
+    if (screen.orientation.type == "portrait-primary" || screen.orientation.type == "portrait-secondary") {
+        document.querySelector(".loading_animation").style.display = "flex";
+        setTimeout(function () {
+            document.querySelector(".loading_animation").style.opacity = "1";
+        }, 500);
+        modals.show("forcePaysage");
+
+    } else {
+        modals.closeCurrent();
+        loadingClose();
+    }
+});
 
 function addPalanquee(data) {
     numberpalanquee += 1;
@@ -338,7 +357,7 @@ function setupSelect(data) {
             select.removeEventListener("change", function () {});
         })
     })
-    
+
     document.querySelectorAll(".diver_item_container").forEach(function (element_) {
         // get last select child in element_ and display none
         element_.children[element_.children.length - 1].style.display = "none";
@@ -361,7 +380,7 @@ function setupSelect(data) {
                         if (element.querySelector(".select-input").innerText != "Sélectionnez un plongeur") {
                             active.push(element.querySelector(".select-input").innerText.split("\n")[0]);
                         }
-                        
+
                     })
                 })
                 changeSelectToDIV(active, data);
@@ -431,6 +450,12 @@ var emergencyModal = document.getElementById("emergencyModal");
 emergencyButton.addEventListener("click", function () {
     modals.show("emergencyModal", function () {
         menutoggle.classList.remove('active');
+        document.querySelectorAll(".toggle span").forEach(function (element) {
+            element.style.backgroundColor = "#f2574a"
+        });
+    });
+    document.querySelectorAll(".toggle span").forEach(function (element) {
+        element.style.backgroundColor = "white"
     });
     menutoggle.classList.toggle('active');
     menutoggle.classList.toggle('close-modal');
@@ -629,7 +654,7 @@ function createAllPalanquee(data) {
         document.querySelector(".palanquee_type").value = "Pe";
         document.querySelector(".palanquee_type").disabled = true;
     }
-    
+
     setupSelect(data);
     setDiversImported(data);
     setPalanqueeReceived(data.palanquee);
@@ -682,7 +707,7 @@ function add_buttons(data) {
         element.removeEventListener("click", function removeee() {});
     })
     document.querySelectorAll(".button_auto").forEach(function (element) {
-        element.addEventListener("click", function clickAuto (e) {
+        element.addEventListener("click", function clickAuto(e) {
             document.querySelector(".button_auto").disabled = true;
             e.preventDefault();
             e.stopPropagation();
@@ -753,7 +778,7 @@ async function savePalanquee(d, bool) {
             }
         }
         palanquee_.Params.Palanquee_Type = palanquees[i].querySelector(".palanquee_type").querySelector(".select-input").innerText == "Palanquée encadrée" ? "Pe" : "Pa";
-        if(palanquees[i].querySelector(".palanquee_type").querySelector(".select-input").innerText == "Sélectionnez un type de palanquée") palanquee_.Params.Palanquee_Type = "";
+        if (palanquees[i].querySelector(".palanquee_type").querySelector(".select-input").innerText == "Sélectionnez un type de palanquée") palanquee_.Params.Palanquee_Type = "";
         palanquee_.Params.Start_Date = palanquees[i].querySelector(".time_container").children[0].querySelector("input").value;
         palanquee_.Params.Start_Date = new Date(d.event.Start_Date.split(" ")[0] + " " + palanquee_.Params.Start_Date);
         palanquee_.Params.End_Date = palanquees[i].querySelector(".time_container").children[1].querySelector("input").value;

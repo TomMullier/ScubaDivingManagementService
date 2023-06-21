@@ -334,7 +334,7 @@ body {
   flex-direction: column;
   justify-content: left;
   align-items: left;
-  border-radius: 10px;
+  border-radius: 0px;
   animation: SlideLeft 0.4s both;
 }
 #menuModal .logout_button {
@@ -1017,5 +1017,42 @@ body {
   }
   100% {
     transform: translateY(-100%);
+  }
+}
+@media screen and (max-width: 900px) {
+  .container_global {
+    flex-direction: column;
+  }
+  .container_global .profile_container_card {
+    width: 80%;
+    margin: 0px auto;
+    margin-bottom: 20px;
+    margin-top: 20px;
+  }
+  .container_global .info-container {
+    width: 80%;
+    margin: 0px auto;
+    margin-bottom: 20px;
+    margin-top: 20px;
+  }
+  .container_global .info-container .info-section .name_container div {
+    flex-direction: column;
+  }
+  .container_global .info-container .info-section .name_container {
+    width: 80%;
+    margin: 0px auto;
+    margin-bottom: 20px;
+  }
+  .container_global .info-container {
+    width: 100%;
+  }
+  .container_global .info-container .info-section .qualif_doc_container {
+    flex-direction: column;
+  }
+  .container_global .info-container .info-section .qualif_doc_container .qualif_niveau,
+  .container_global .info-container .info-section .qualif_doc_container .documents_container {
+    width: 80%;
+    margin: 0px auto;
+    margin-bottom: 20px;
   }
 }

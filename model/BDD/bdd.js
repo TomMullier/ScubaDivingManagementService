@@ -658,12 +658,6 @@ class BDD {
     /* -------------------------------------------------------------------------- */
     /*                              IMPORTANT MESSAGE                             */
     /* -------------------------------------------------------------------------- */
-    // let data = {
-    //      Id_Message: uuidv4(),
-    //     Club: "club@club.fr",
-    //     Message: "",
-    //     Date_Modif: getDateFormat(new Date().toLocaleString())
-    // }
     async createMessageClub(data) {
         data.Club = escapeHtml(data.Club);
         data.Message = escapeHtml(data.Message);
@@ -756,7 +750,6 @@ function desEscapeHtml(text) {
             .replace("&#039;", /'/g);
     } catch (error) {
         console.log(error);
-        console.log(text);
     }
     return newText;
 }

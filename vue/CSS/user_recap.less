@@ -360,8 +360,11 @@
         margin-bottom: 20px;
         font-family: @body_font;
         text-align: center;
+        hyphens: auto;
+        word-break: break-all;
+        word-break: break-word;
     }
-}
+}   
 
 .message_add {
     width: 80%;
@@ -506,7 +509,7 @@
     }
 }
 
-.date_message{
+.date_message {
     color: @dark_blue;
     font-size: 13px;
     font-family: @body_font;
@@ -521,19 +524,25 @@
 @media screen and (max-width:900px) {
     .profil_container {
         flex-direction: column-reverse;
+
         .left {
-            width: calc(80%);;
+            width: calc(80%);
+            ;
         }
     }
-    .event_list{
-        display:none;
+
+    .event_list {
+        display: none;
     }
-    #calendar{
+
+    #calendar {
         width: 100%;
     }
-    .profil_container .right h1{
+
+    .profil_container .right h1 {
         font-size: 30px;
     }
+
     #calendar .fc-button.fc-today-button {
         margin-top: 10px;
     }
@@ -542,8 +551,9 @@
 @media screen and (max-width:700px) {
     .profil_container {
         flex-direction: column-reverse;
+
         .left {
-            display:none;
+            display: none;
         }
     }
 }

@@ -28,7 +28,6 @@ function openErrorModal(e) {
 fetch('/auth/club/club_members')
     .then(response => {
         const userType = response.headers.get('userType');
-        console.log("User Role :" + userType);
         my_role = userType;
         // user, dp, club
         if (my_role != "club") {
@@ -90,7 +89,6 @@ function createUser(data) {
             body: JSON.stringify(data)
         }).then((res) => res.json())
         .then((res) => {
-
             openModalConfirmCreate(res.created)
         });
 }
@@ -251,7 +249,6 @@ function displayUsers() {
                 document.querySelector("#mail_show").innerText = mail_clicked;
                 document.querySelector("#phone_show").innerText = phone_clicked;
                 let get_user = all_user.find(user => user.mail == mail_clicked && user.phone == phone_clicked);
-                console.log(get_user)
                 document.querySelector("#name_show").innerText = get_user.firstname + " " + get_user.lastname;
                 document.querySelector("#birthdate_show").innerText = get_user.birthdate.split(" ")[0];
                 document.querySelector("#licence_show").value = get_user.licenceNumber;

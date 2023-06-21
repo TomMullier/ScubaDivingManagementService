@@ -272,14 +272,10 @@ body {
   font-family: 'Montserrat', sans-serif;
   font-size: 100px;
   text-transform: uppercase;
-  cursor: pointer;
+  cursor: auto;
   margin-top: 40px;
   transition: 0.2s;
   animation: Blink 1s both infinite;
-}
-#emergencyModal .modal-wrapper #txt_descr #callButton:hover {
-  background-color: white;
-  color: #f2574a;
 }
 @keyframes Blink {
   0% {
@@ -434,46 +430,85 @@ body {
 .toggle.active span:nth-child(3) {
   transform: rotate(-45deg);
 }
-.toggle {
-  position: absolute;
-  width: 70px;
-  height: 70px;
-  background: transparent;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0);
-  border-radius: 1px;
+#error_occured .modal-wrapper {
+  animation: slideFromTop 0.4s both;
+  top: 0;
+  width: 80%;
+  height: fit-content;
+  position: fixed;
+  background-color: #f2574a;
+  border-radius: 10px;
+  padding: 20px;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  cursor: pointer;
-  overflow: hidden;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
-.toggle span {
-  position: absolute;
-  width: 40px;
-  height: 4px;
-  background: #f2574a;
-  border-radius: 4px;
-  transition: 0.5s;
+#error_occured .modal-wrapper #txt_title {
+  color: white;
+  font-size: 20px;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0;
 }
-.toggle span:nth-child(1) {
-  transform: translateY(-15px);
-  width: 25px;
-  left: 15px;
+#error_occured .modal-wrapper p {
+  color: white;
+  font-size: 15px;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0;
 }
-.toggle.active span:nth-child(1) {
-  width: 40px;
-  transform: translateY(0px) rotate(45deg);
+#success .modal-wrapper {
+  animation: slideFromTop 0.4s both;
+  top: 0;
+  width: 80%;
+  height: fit-content;
+  position: fixed;
+  background-color: green;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
-.toggle span:nth-child(2) {
-  transform: translateY(15px);
-  width: 15px;
-  left: 15px;
+#success .modal-wrapper #txt_title {
+  color: white;
+  font-size: 20px;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0;
 }
-.toggle.active span:nth-child(2) {
-  transform: translateX(60px);
+#success .modal-wrapper p {
+  color: white;
+  font-size: 15px;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0;
 }
-.toggle.active span:nth-child(3) {
-  transform: rotate(-45deg);
+@keyframes slideFromTop {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(0%);
+  }
+}
+@keyframes goTop {
+  0% {
+    transform: translateY(0%);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
 }
 .menu_button_container {
   display: flex;
@@ -612,22 +647,7 @@ body {
 .container_global .profile_container_card .profile-info .profile-details .phone-contain input,
 .container_global .profile_container_card .profile-info .profile-details .email-contain input {
   width: 200px;
-  height: 30px;
-  padding: 0 10px;
-  font-family: 'Montserrat', sans-serif;
-  text-transform: none;
-  outline: none;
-  border: transparent 1px solid;
-  border-bottom: 1px solid #120B8F;
-  background-color: transparent;
-  transition: 0.2s;
-}
-.container_global .profile_container_card .profile-info .profile-details .phone-contain input:hover,
-.container_global .profile_container_card .profile-info .profile-details .email-contain input:hover {
-  border: 1px solid #120B8F;
-  border-radius: 10px;
-  cursor: text;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  cursor: not-allowed;
 }
 .container_global .info-container {
   display: flex;

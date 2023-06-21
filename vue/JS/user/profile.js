@@ -30,7 +30,6 @@ function openErrorModal(e) {
 fetch('/auth/user/account')
     .then(response => {
         const userType = response.headers.get('userType');
-        console.log("User Role :" + userType);
         my_role = userType;
         // user, dp, club
         if (my_role != "club") {
@@ -77,7 +76,6 @@ fetch('/auth/user/account/get_info', {
         let userInfo = res
         if (res) {
             me = new User(userInfo.Lastname, userInfo.Firstname, userInfo.Mail, userInfo.Phone, userInfo.Diver_Qualification, userInfo.Instructor_Qualification, userInfo.Nox_Level, userInfo.Additional_Qualifications, userInfo.License_Number, userInfo.License_Expiration_Date, userInfo.Medical_Certificate_Expiration_Date, userInfo.Birthdate);
-            console.log(me)
             setUserInfos();
         }
 
@@ -105,9 +103,9 @@ function getUserPP(user) {
             body: JSON.stringify(user)
         }).then((res) => res.blob())
         .then((imgBlob) => {
-            let res = URL.createObjectURL(imgBlob);
-            console.log(res);
-            document.querySelector("#profile_picture").src = res;
+                let res = URL.createObjectURL(imgBlob);
+                console.log(res);
+                document.querySelector("#profile_picture").src = res;
         });
 }
 
@@ -167,15 +165,6 @@ save_buttons.forEach(function (button) {
 });
 
 function setUserInfos() {
-    // document.querySelector('#profile_picture').src = "../img/profile_pictures/" + me.firstname + me.lastname + me.licenceNumber + ".jpg";
-    // document.querySelector("#save_button_pp").addEventListener("click", function (e) {
-    //     e.preventDefault();
-    //     let file = document.querySelector("#profile_picture_upload").files[0];
-    //     // document.querySelector("#profile_picture_upload").files[0] = "";
-    //     if (file) {
-    //         upload_pp(file);
-    //     }
-    // });
     getUserPP(me);
     document.querySelector(".name").innerHTML = me.firstname + " " + me.lastname;
     document.querySelector(".licence_number").innerHTML = me.licenceNumber;
@@ -198,34 +187,3 @@ function setUserInfos() {
         document.querySelector("#qualif_add").value = me.additionnalQualification;
     }
 };
-
-document.querySelector(".phone").addEventListener("input", function () {
-    if (document.querySelector(".phone").value != me.phone || document.querySelector(".email").value != me.mail) {
-        document.querySelector(".save_button_infos").style.display = "flex";
-    } else {
-        document.querySelector(".save_button_infos").style.display = "none";
-    }
-});
-
-document.querySelector(".email").addEventListener("input", function () {
-    if (document.querySelector(".email").value != me.mail || document.querySelector(".phone").value != me.phone) {
-        document.querySelector(".save_button_infos").style.display = "flex";
-    } else {
-        document.querySelector(".save_button_infos").style.display = "none";
-    }
-});
-
-
-
-
-//! Profile picture
-
-// let profile_picture_name = me.firstname + me.lastname + me.licenceNumber;
-
-function checkForPP() {
-    // try {
-    //   document.querySelector('#profile_picture').src = "../../Model/user-data/" + me.firstname+me.lastname+"/"+ profile_picture_name + ".jpg";
-    // } catch (error) {
-    //   document.querySelector('#profile_picture').src = "../../Model/user-data/default.jpg";
-    // }
-}

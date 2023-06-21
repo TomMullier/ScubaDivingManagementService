@@ -1,52 +1,5 @@
 @import "global";
 
-.toggle {
-  position: absolute;
-  width: 70px;
-  height: 70px;
-  background: transparent;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0, 08);
-  border-radius: 1px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  overflow: hidden;
-}
-
-.toggle span {
-  position: absolute;
-  width: 40px;
-  height: 4px;
-  background: @orange;
-  border-radius: 4px;
-  transition: 0.5s;
-}
-
-.toggle span:nth-child(1) {
-  transform: translateY(-15px);
-  width: 25px;
-  left: 15px;
-}
-
-.toggle.active span:nth-child(1) {
-  width: 40px;
-  transform: translateY(0px) rotate(45deg);
-}
-
-.toggle span:nth-child(2) {
-  transform: translateY(15px);
-  width: 15px;
-  left: 15px;
-}
-
-.toggle.active span:nth-child(2) {
-  transform: translateX(60px);
-}
-
-.toggle.active span:nth-child(3) {
-  transform: rotate(-45deg);
-}
 
 
 
@@ -201,22 +154,23 @@
 
           input {
             width: 200px;
-            height: 30px;
-            padding: 0 10px;
-            font-family: @body_font;
-            text-transform: none;
-            outline: none;
-            border: transparent 1px solid;
-            border-bottom: 1px solid @dark_blue;
-            background-color: transparent;
-            transition: 0.2s;
+            cursor : not-allowed;
+            // height: 30px;
+            // padding: 0 10px;
+            // font-family: @body_font;
+            // text-transform: none;
+            // outline: none;
+            // border: transparent 1px solid;
+            // border-bottom: 1px solid @dark_blue;
+            // background-color: transparent;
+            // transition: 0.2s;
 
-            &:hover {
-              border: 1px solid @dark_blue;
-              border-radius: 10px;
-              cursor: text;
-              box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
-            }
+            // &:hover {
+            //   border: 1px solid @dark_blue;
+            //   border-radius: 10px;
+            //   cursor: text;
+            //   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            // }
           }
         }
       }

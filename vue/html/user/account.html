@@ -63,7 +63,7 @@
                             <i class="fa-solid fa-envelope"></i>
                             <p>Adresse Mail : </p>
                         </div>
-                        <input type="email" class=email value="" title="Cliquer pour modifier">
+                        <input disabled type="email" class=email value="" title="Cliquer pour modifier">
                     </div>
 
                     <div class="phone-contain">
@@ -71,12 +71,9 @@
                             <i class="fa-solid fa-phone"></i>
                             <p>Numéro de téléphone :</p>
                         </div>
-                        <input type="tel" value="" class="phone" title="Cliquer pour modifier">
+                        <input disabled type="tel" value="" class="phone" title="Cliquer pour modifier">
                     </div>
                 </div>
-            </div>
-            <div class="save_button_infos" style="display:none">
-                Sauvegarder
             </div>
         </div>
 
@@ -96,34 +93,7 @@
                         </div>
                     </div>
                 </div>
-
-                <div style="display:none" class="modify_password">
-                    <h1>Mot de passe</h1>
-                    <div class="modify_password_container">
-                        <div class="info-item">
-                            <h2 class="info-title">Ancien mot de passe</h2>
-                            <input type="password" id="password" placeholder="Mot de passe" class="info-input">
-                        </div>
-
-                        <div class="new_pass">
-                            <div class="info-item">
-                                <h2 class="info-title">Nouveau mot de passe</h2>
-                                <input type="password" id="password" placeholder="Nouveau mot de passe"
-                                    class="info-input">
-                            </div>
-                            <div class="info-item">
-                                <h2 class="info-title">Confirmation</h2>
-                                <input type="password" id="password" placeholder="Confirmation" class="info-input">
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="save_button_infos">
-                        Sauvegarder
-                    </div>
-                </div>
                 <div class="qualif_doc_container">
-
                     <div class="qualif_niveau">
                         <h1>Qualifications</h1>
                         <div>
@@ -156,9 +126,9 @@
                         <div class="info-item">
                           <form action="/auth/upload_pp" method="POST" enctype="multipart/form-data">
 
-                            <h2 class="info-title">Photo de profil</h2>
-                            <input type="file" name="image" id="profile_picture_upload" class="info-input">
-                            <button id="save_button_pp" type="submit">Upload</button>
+                            <h2 class="info-title">Photo de Profil</h2>
+                            <input type="file" name="image" id="profile_picture_upload" accept="image/jpg, image/jpeg, image/png" class="info-input" readonly>
+                            <button id="save_button_pp" type="submit">Importe la photo</button>
                           </form>
                           
                         </div>

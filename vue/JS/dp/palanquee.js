@@ -200,6 +200,7 @@ function generateDiveTeam() {
                     event: ev_
                 }
                 createAllPalanquee(data);
+                add_buttons(data)   ;
             } else {
                 // open error modal
                 openErrorModal(res.dataError.comment);
@@ -211,7 +212,6 @@ function generateDiveTeam() {
 function sendPdf(blob) {
     let formData = new FormData();
     formData.append('file', blob, "palanquee.pdf");
-    console.log(formData);
     fetch('/auth/dp/palanquee/upload', {
             method: 'POST',
             body: formData,
@@ -238,9 +238,7 @@ function setPage(data) {
 
     document.querySelector("#surface").value = data.dive.Surface_Security;
     if (data.dive.Last_Modif != "") {
-        console.log(data.dive.Last_Modif);
         let date = new Date(data.dive.Last_Modif);
-        console.log(date);
         document.querySelector(".last_modif").innerText = "Dernière modification le " + date.toLocaleDateString() + " à " + date.toLocaleTimeString();
     } else {
         document.querySelector(".last_modif").style.display = "none";
@@ -306,7 +304,7 @@ function setPage(data) {
 function addPalanquee(data) {
     numberpalanquee += 1;
     document.querySelector(".palanquee_" + numberpalanquee).style.display = "flex";
-    if (numberpalanquee < Math.floor(data.event.allDivers.length / 2)) {
+    if (numberpalanquee < Math.ceil(data.event.allDivers.length / 2)) {
         add_buttons(data);
     } else {
         add_buttons(data);
@@ -335,17 +333,23 @@ function setupSelect(data) {
             })
         })
     })
-
     document.querySelectorAll(".diver_item_container").forEach(function (element_) {
         element_.querySelectorAll("select").forEach(function (select) {
             select.removeEventListener("change", function () {});
         })
     })
-    let active = [];
+    
     document.querySelectorAll(".diver_item_container").forEach(function (element_) {
         // get last select child in element_ and display none
         element_.children[element_.children.length - 1].style.display = "none";
         element_.children[element_.children.length - 1].style.opacity = "0";
+    })
+
+    let active = [];
+    data.palanquee.forEach(function (palanquee) {
+        palanquee.Diver.forEach(function (diver) {
+            active.push(diver.Firstname + " " + diver.Lastname);
+        })
     })
     document.querySelectorAll(".diver_item_container").forEach(function (element_) {
         element_.querySelectorAll(".diver_item").forEach(function (select) {
@@ -357,10 +361,10 @@ function setupSelect(data) {
                         if (element.querySelector(".select-input").innerText != "Sélectionnez un plongeur") {
                             active.push(element.querySelector(".select-input").innerText.split("\n")[0]);
                         }
-
+                        
                     })
-                    changeSelectToDIV(active, data);
                 })
+                changeSelectToDIV(active, data);
             })
         })
     })
@@ -379,13 +383,13 @@ function changeSelectToDIV(active, data) {
         list.children[list.children.length - 1].style.opacity = "0";
         for (let select of list.children) {
             if (select.tagName == "LABEL") {
-                try {
-                    let s = select.querySelectorAll("li")
-                    s.forEach(function (element) {
-                        select.removeChild(element);
-                    })
-                    select.removeChild(s);
-                } catch (error) {}
+                active.forEach(function (diver) {
+                    // get diver from all divers
+                    let diver_ = data.event.allDivers.find(diver_ => diver_.Firstname + " " + diver_.Lastname == diver);
+                    if (select.querySelector(".select-input").innerText == diver) {
+                        select.querySelector(".select-input").innerHTML = "<div class=option_container><div class=name_item><h2>" + diver_.Firstname + " " + diver_.Lastname + "</h2><span>" + diver_.Mail + "</span></div><div class=level>" + (diver_.Temporary_Qualification != "" ? diver_.Temporary_Qualification : diver_.Diver_Qualification) + "</div></div>";
+                    }
+                })
                 let list_ = select.querySelector(".option-list");
                 let html_tag = "<li data-text='Sélectionnez un plongeur'><a>Sélectionnez un plongeur</a></li>";
                 list_.innerHTML = html_tag;
@@ -393,8 +397,6 @@ function changeSelectToDIV(active, data) {
                     html_tag = "<li data-value='" + diver.Mail + "' class=option><a><div class=option_container><div class=name_item><h2>" + diver.Firstname + " " + diver.Lastname + "</h2><span>" + diver.Mail + "</span></div><div class=level>" + (diver.Temporary_Qualification != "" ? diver.Temporary_Qualification : diver.Diver_Qualification) + "</div></div></a></li>";
                     list_.innerHTML += html_tag;
                 })
-
-                setDiversImported(data);
             }
         }
     })
@@ -408,10 +410,9 @@ function setDiversImported(data) {
         let container = document.querySelectorAll(".diver_item_container")[i];
         for (let j = 0; j < divers.length; j++) {
             let diver = divers[j];
-            let select = container.querySelectorAll(".select")[j];
-            try {
-                select.querySelector(".select-input").innerHTML = '<div class="option_container"><div class="name_item"><h2>' + diver.Firstname + ' ' + diver.Lastname + '</h2><span>' + diver.Mail + '</span></div><div class="level">' + diver.Qualification + '</div></div>';
-            } catch (error) {}
+            let select = container.querySelectorAll("select")[j];
+            console.log(select)
+            select.value = diver.Mail;
         }
     }
 }
@@ -502,7 +503,6 @@ document.querySelector(".save_change_level").addEventListener("click", function 
         }
         data.push(tmp);
     })
-    console.log("Change Level");
     let to_send = {
         data: data,
         surface: document.querySelector("#surface").value,
@@ -514,7 +514,7 @@ let numberpalanquee = 1
 
 function createAllPalanquee(data) {
     let final = "";
-    for (let i = 1; i <= Math.floor(data.event.allDivers.length / 2); i++) {
+    for (let i = 1; i <= Math.ceil(data.event.allDivers.length / 2); i++) {
 
         let html_tag = '<div class="palanquee_item palanquee_' + i + '">'
         html_tag += '<div class="palanquee_title">'
@@ -579,6 +579,8 @@ function createAllPalanquee(data) {
         html_tag += '<option value="GP">GP</option>'
         html_tag += '</select>'
         html_tag += '<select data-role="select" name="" id="" class="diver_item">'
+        html_tag += '<option value="">Sélectionnez une fonction</option>'
+        html_tag += '<option value="Plongeur">Plongeur</option>'
         html_tag += '<option value="GP">GP</option>'
         html_tag += '</select>'
         html_tag += '</div>'
@@ -627,18 +629,19 @@ function createAllPalanquee(data) {
         document.querySelector(".palanquee_type").value = "Pe";
         document.querySelector(".palanquee_type").disabled = true;
     }
+    
+    setupSelect(data);
+    setDiversImported(data);
     setPalanqueeReceived(data.palanquee);
 
-    setupSelect(data);
-    for (let i = data.palanquee.length + 1; i <= Math.floor(data.event.allDivers.length / 2); i++) {
+    for (let i = data.palanquee.length + 1; i <= Math.ceil(data.event.allDivers.length / 2); i++) {
         try {
             document.querySelector(".palanquee_" + i).style.display = "none";
+            document.querySelector(".palanquee_" + i).querySelector(".button_auto").style.display = "none";
         } catch (error) {}
     }
     numberpalanquee = data.palanquee.length != 0 ? data.palanquee.length : 1;
     add_buttons(data);
-
-
 }
 
 function add_buttons(data) {
@@ -658,7 +661,7 @@ function add_buttons(data) {
 
     try {
         document.querySelectorAll(".button_auto").forEach(function (element) {
-            element.removeEventListener("click", function () {});
+            element.removeEventListener("click", function Remov() {});
         })
         document.querySelector(".add_palanquee").removeEventListener("click", function () {});
         document.querySelector(".palanquee_table").removeChild(document.querySelector(".button_save_container_palanquee"));
@@ -676,8 +679,13 @@ function add_buttons(data) {
         }
     })
     document.querySelectorAll(".button_auto").forEach(function (element) {
-        element.addEventListener("click", function () {
+        element.removeEventListener("click", function removeee() {});
+    })
+    document.querySelectorAll(".button_auto").forEach(function (element) {
+        element.addEventListener("click", function clickAuto (e) {
             document.querySelector(".button_auto").disabled = true;
+            e.preventDefault();
+            e.stopPropagation();
             generateDiveTeam();
             setTimeout(function () {
                 document.querySelector(".button_auto").disabled = false;
@@ -688,7 +696,7 @@ function add_buttons(data) {
         generatePDF(data);
     })
 
-    document.querySelector(".add_palanquee").addEventListener("click", function () {
+    document.querySelector(".add_palanquee").addEventListener("click", function addPal() {
         document.querySelector(".add_palanquee").disabled = true;
         addPalanquee(data);
         setTimeout(function () {
@@ -744,7 +752,8 @@ async function savePalanquee(d, bool) {
                 palanquee_.Divers.push(diver);
             }
         }
-        palanquee_.Params.Palanquee_Type = palanquees[i].querySelector(".palanquee_type").querySelector(".select-input").innerText;
+        palanquee_.Params.Palanquee_Type = palanquees[i].querySelector(".palanquee_type").querySelector(".select-input").innerText == "Palanquée encadrée" ? "Pe" : "Pa";
+        if(palanquees[i].querySelector(".palanquee_type").querySelector(".select-input").innerText == "Sélectionnez un type de palanquée") palanquee_.Params.Palanquee_Type = "";
         palanquee_.Params.Start_Date = palanquees[i].querySelector(".time_container").children[0].querySelector("input").value;
         palanquee_.Params.Start_Date = new Date(d.event.Start_Date.split(" ")[0] + " " + palanquee_.Params.Start_Date);
         palanquee_.Params.End_Date = palanquees[i].querySelector(".time_container").children[1].querySelector("input").value;
@@ -786,7 +795,6 @@ async function savePalanquee(d, bool) {
             }
         }
     }
-    console.log(data);
     if (bool) saveDiveTeam(data);
     else {
         let ok = await saveDiveTeamPDF(data);
@@ -795,8 +803,6 @@ async function savePalanquee(d, bool) {
 }
 
 function setPalanqueeReceived(data) {
-    console.log("Data à set :")
-    console.log(data);
     let palanquees = document.querySelectorAll(".palanquee_item");
     palanquees.forEach(function (element) {
         element.style.display = "none";
@@ -805,13 +811,10 @@ function setPalanqueeReceived(data) {
         let palanquee = palanquees[i];
         palanquee.style.display = "flex";
         let palanquee_ = data[i];
-        console.log("data i")
-        console.log(palanquee_);
 
         // Palanquee Type
         palanquee.querySelector(".palanquee_type").value = palanquee_.Params.Palanquee_Type == "Pe" ? "Pe" : "Pa";
 
-        console.log(palanquee.querySelector(".palanquee_type"));
         // Start and end date
         palanquee.querySelector(".time_container").children[0].querySelector("input").value = new Date(palanquee_.Params.Start_Date).toLocaleTimeString();
         palanquee.querySelector(".time_container").children[1].querySelector("input").value = new Date(palanquee_.Params.End_Date).toLocaleTimeString();
@@ -890,9 +893,7 @@ function generatePDF(data) {
                     let ok = await savePalanquee(data, false)
                     if (ok) {
                         name += ".pdf"
-                        // console.log(pdf.save(name));
                         let pdf_ = pdf.output('blob');
-                        // console.log(JSON.stringify(pdf_));
                         sendPdf(pdf_);
                     }
                 })

@@ -272,14 +272,10 @@ body {
   font-family: 'Montserrat', sans-serif;
   font-size: 100px;
   text-transform: uppercase;
-  cursor: pointer;
+  cursor: auto;
   margin-top: 40px;
   transition: 0.2s;
   animation: Blink 1s both infinite;
-}
-#emergencyModal .modal-wrapper #txt_descr #callButton:hover {
-  background-color: white;
-  color: #f2574a;
 }
 @keyframes Blink {
   0% {

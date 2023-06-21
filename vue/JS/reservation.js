@@ -117,7 +117,7 @@ function getPlanning() {
         .then(res => {
             console.log(res)
             res.allLocations.forEach(function (location) {
-                locations.push(new Location(location.Site_Name, location.Latitude, location.Longitude, location.Track_Type, location.Track_Number, location.Track_Name, location.Zip_Code, location.City_Name, location.Country_Name, location.Additional_Address, location.Tel_Number, location.Information_URL, [location.General_Rate, location.Location_Rate, location.Organisation_Rate, location.Conditions_Rate, location.Rate_Number], location.SOS_Tel_Number, location.Emergency_Plan, location.Post_Accident_Procedure));
+                locations.push(new Location(location.Site_Name, location.Gps_Latitude, location.Gps_Longitude, location.Track_Type, location.Track_Number, location.Track_Name, location.Zip_Code, location.City_Name, location.Country_Name, location.Additional_Address, location.Tel_Number, location.Information_URL, [location.General_Rate, location.Location_Rate, location.Organisation_Rate, location.Conditions_Rate, location.Rate_Number], location.SOS_Tel_Number, location.Emergency_Plan, location.Post_Accident_Procedure));
             });
             if (res.allUsers && my_role == "club") {
                 allDivers = res.allUsers;
@@ -208,7 +208,6 @@ function updateEvent(oldEvent, event, usersToRegister) {
                     register(event, registrationInfo, event.dp, false) // dp = mail
                     if (usersToRegister.length > 0) {
                         registrationInfo.Diver_Role = "Diver";
-                        console.log(usersToRegister);
                         usersToRegister.forEach(user => {
                             if (user !== event.dp) register(event, registrationInfo, user, false); // user = mail
                         });
@@ -340,34 +339,27 @@ function rateLocation(data) {
         .then(res => {
             console.log(res)
             if (!res.rated) {
-                // L'event n'a pas été créé
                 openErrorModal(res.comment);
             } else {
-
+                document.location.reload();
             }
-            document.location.reload();
         })
 }
 
-function hasVoted(event) {
-    fetch('/auth/planning/has_voted', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(event)
-        }).then(res => res.json())
-        .then(res => {
-            console.log(res)
-            if (my_role == "user") {
-                console.log(res.hasVoted);
-                if (res.hasVoted == 1) {
-                    document.querySelector(".rating").style.display = "none";
-                } else {
-                    document.querySelector(".rating").style.display = "flex";
-                }
-            }
-        })
+async function hasVoted(event) {
+    return new Promise((resolve, reject) => {
+        fetch('/auth/planning/has_voted', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(event)
+            }).then(res => res.json())
+            .then(res => {
+                console.log(res)
+                resolve(res.hasVoted)
+            })
+    })
 }
 
 function editPalanquee(event) {
@@ -559,27 +551,33 @@ function setEvents(ev_) {
                     dp_in_event = true;
                 }
             });
-
-            if (new Date(eventClicked.start) < new Date()) {
+            let event__ = {
+                Start_Date: eventClicked.start,
+                End_Date: eventClicked.end,
+                Diver_Price: eventClicked.extendedProps.divePrice,
+                Instructor_Price: eventClicked.extendedProps.InstructorPrice,
+                Special_Needs: eventClicked.extendedProps.needs,
+                Status: eventClicked.extendedProps.open,
+                Max_Divers: eventClicked.extendedProps.max,
+                Dive_Type: eventClicked.extendedProps.diveType,
+                Comments: eventClicked.extendedProps.comment,
+                Site_Name: eventClicked.extendedProps.location.Site_Name,
+            }
+            let voted = await hasVoted(event__);
+            if (voted) {
+                document.querySelector(".rating").style.display = "none";
+            } else {
+                document.querySelector(".rating").style.display = "flex";
+            }
+            if (new Date(eventClicked.start) < new Date() && my_role == "user") {
                 button.style.display = "none";
-                let event = {
-                    Start_Date: eventClicked.start,
-                    End_Date: eventClicked.end,
-                    Diver_Price: eventClicked.extendedProps.divePrice,
-                    Instructor_Price: eventClicked.extendedProps.InstructorPrice,
-                    Special_Needs: eventClicked.extendedProps.needs,
-                    Status: eventClicked.extendedProps.open,
-                    Max_Divers: eventClicked.extendedProps.max,
-                    Dive_Type: eventClicked.extendedProps.diveType,
-                    Comments: eventClicked.extendedProps.comment,
-                    Site_Name: eventClicked.extendedProps.location.Site_Name,
-                }
-                hasVoted(event);
 
             } else {
                 button.style.display = "flex";
                 document.querySelector(".rating").style.display = "none";
             }
+
+            if (my_role == "club") button.style.display = "none";
             let midnight_before = new Date(eventClicked.start);
             midnight_before.setHours(0, 0, 0, 0);
             let midnight_after = new Date(eventClicked.start);
@@ -601,19 +599,12 @@ function setEvents(ev_) {
                 document.querySelector(".edit_rapport").querySelector("i").classList = "fa-solid fa-file-circle-plus edit_rapport";
                 document.querySelector(".edit_rapport").style.display = "flex";
             } else {
-                if ((my_role == "dp" && new Date() > midnight_after) || pdf_created) {
+                if ((my_role == "dp" || my_role == "club") && (new Date() > midnight_after || pdf_created)) {
                     document.querySelector(".edit_rapport").querySelector("i").classList = "fa-solid fa-floppy-disk edit_rapport";
                     document.querySelector(".edit_rapport").style.display = "flex";
                 } else {
                     document.querySelector(".edit_rapport").style.display = "none";
                 }
-            }
-
-            // Si la date de fin est passée, alors on affiche l'icone pour voter
-            if (new Date(eventClicked.end) < new Date() && my_role == "user") {
-                document.querySelector(".rating").style.display = "flex";
-            } else {
-                document.querySelector(".rating").style.display = "none";
             }
 
             if (dp_in_event) {
@@ -700,7 +691,6 @@ function setEvents(ev_) {
 
             let user_list = document.querySelector("#display_users");
             user_list.innerHTML = "";
-            console.log(eventClicked.extendedProps);
             eventClicked.extendedProps.users.forEach(function (user) {
                 let li_ = document.createElement("li");
                 if (user.Diver_Role === "DP") {
@@ -995,7 +985,6 @@ create_event_button.addEventListener("click", function () {
     let select_diver = document.querySelector("#createEventModal .diver_list_dropdown");
     select_diver.querySelector(".option-list").innerHTML = "";
     allDivers.forEach(function (diver) {
-        console.log(diver);
         if (diver.Diver_Qualification == "P5") {
             let option = "<li data-value='" + diver.Mail + "'><a><i class='fa-solid fa-user'></i><div class=user-info-list><span class=name>" + diver.Firstname + " " + diver.Lastname + "</span><span class=mail>" + diver.Mail + "</span></div></a></li>";
             select_dp.querySelector(".option-list").innerHTML += option;
@@ -1110,23 +1099,19 @@ validate_event.addEventListener("click", function (e) {
             validate_autho = false;
         }
     }
+
+    if (data.Start_Date > data.End_Date) validate_autho = false;
+
     if (validate_autho) {
         let event_to_create = new Event(begin, end, divePrice, instructorPrice, location, comment, needs, private_, max, 0, type);
         event_to_create.addUser(diverListMail);
         let usersToRegister = event_to_create.users;
-        console.log("Event to create :");
-        console.log(event_to_create);
-        console.log("Users to register :");
-        console.log(usersToRegister);
-        console.log(data)
         addEvent(data, usersToRegister);
         validate_event.disabled = true;
         validate_event.innerHTML = "<img src='../img/loading_animation.svg' alt='loading' class='loading'>";
         validate_event.style.height = "40px";
-        console.log("Event created");
-        console.log(data)
     } else {
-        validate_event.innerHTML = "Tous les champs ne sont pas remplis";
+        validate_event.innerHTML = "Les champs ne sont pas correctement remplis";
         document.querySelector("#createEventModal .container_create_event").querySelectorAll('input').forEach(function (input) {
             if (input.getAttribute("required")) {
                 input.style.border = "1px solid #120B8F";
@@ -1253,8 +1238,6 @@ function edit_event(info) {
     document.querySelector(".delete_event_button").addEventListener("click", function (e) {
         e.preventDefault();
         e.stopPropagation();
-        console.log("Suppression de l'événement :");
-        console.log(info.event);
         let data = {
             Start_Date: info.event.start,
             End_Date: info.event.end,
@@ -1268,7 +1251,6 @@ function edit_event(info) {
             users: info.event._def.extendedProps.users,
             Dive_Site_Id_Dive_Site: info.event._def.extendedProps.location.Dive_Site_Id_Dive_Site,
         }
-        console.log(data);
         deleteEvent(data);
     });
 
@@ -1334,23 +1316,19 @@ function edit_event(info) {
                 validate_autho = false;
             }
         }
+
+        if (data.Start_Date > data.End_Date) validate_autho = false;
         if (validate_autho) {
             let event_to_create = new Event(begin, end, divePrice, instructorPrice, location, comment, needs, private_, max, 0, type);
             event_to_create.addUser(diverListMail);
             let usersToRegister = event_to_create.users;
-            console.log("Event to modify :");
-            console.log("Users to register :");
-            console.log(usersToRegister);
-            console.log(data)
-            console.log(oldEvent)
-
             validate_event.disabled = true;
             validate_event.innerHTML = "<img src='../img/loading_animation.svg' alt='loading' class='loading'>";
             validate_event.style.height = "20px";
             updateEvent(oldEvent, data, event_to_create.users);
 
         } else {
-            validate_event.innerHTML = "Tous les champs ne sont pas remplis";
+            validate_event.innerHTML = "Les champs ne sont pas correctement remplis";
             document.querySelector("#modifyEventModal .container_create_event").querySelectorAll('input').forEach(function (input) {
                 if (input.getAttribute("required")) {
                     input.style.border = "1px solid #120B8F";
@@ -1404,8 +1382,6 @@ avis.addEventListener("click", function () {
             document.querySelector(".validate_rating").setAttribute('listener', 'true');
             document.querySelector(".validate_rating").addEventListener("click", function () {
                 modals.closeCurrent();
-                console.log("FINAL RATE:")
-                console.log(finalRate())
                 let final = finalRate();
                 // Get location of event clicked
                 let location = eventClicked.extendedProps.location;
@@ -1423,8 +1399,6 @@ avis.addEventListener("click", function () {
                     Comments: eventClicked.extendedProps.comment,
                 }
                 locations.forEach(function (location_) {
-                    console.log(location_)
-
                     if (location_.name == location.Site_Name) {
                         data = {
                             "General_Rate": (location_.rate[0] * location_.rate[4] + final.generalRate) / (location_.rate[4] + 1),
@@ -1434,8 +1408,6 @@ avis.addEventListener("click", function () {
                             "Site_Name": location_.name,
                             "Event": event
                         }
-                        console.log("Avis Envoyé :")
-                        console.log(data)
                         rateLocation(data);
                     }
                 });
@@ -1517,11 +1489,9 @@ function finalRate() {
 function displayRatings(event) {
     // Get location of event clicked
     let location = event.extendedProps.location;
-    console.log(location)
     // in location array, find the event clicked location and check if one note is at 0
     locations.forEach(function (location_) {
         if (location_.name == location.Site_Name) {
-            console.log(location_)
             if (location_.rate[4] == 0) {
                 document.querySelector(".displayRating_container").style.display = "none";
                 document.querySelector(".numberOfRatings").style.display = "none";

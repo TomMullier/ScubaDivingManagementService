@@ -5,8 +5,6 @@ const session = require("express-session");
 const Keycloak = require("keycloak-connect");
 const fileUpload = require('express-fileupload');
 const Sharp = require('sharp');
-const multer = require('multer');
-const PDFDocument = require('pdfkit');
 const {
     v4: uuidv4
 } = require('uuid');
@@ -30,9 +28,6 @@ const memoryStore = new session.MemoryStore();
 const keycloak = new Keycloak({
     store: memoryStore
 });
-const upload = multer({
-    dest: 'uploads/'
-}); // Spécifie le dossier de destination pour enregistrer les fichiers PDF
 
 const hostname = process.env.IP_HOSTNAME;
 const port = 3000;
@@ -147,6 +142,17 @@ app.post('/auth/upload_pp', keycloak.protect(), function (req, res) {
         console.log("No profile picture in the request");
         return res.redirect('/auth/user/account');
     }
+    // vérifie si l'image est bien un jpg, jpeg ou png
+    ;
+    const {
+        image
+    } = req.files;
+    if (!image) return res.redirect('/auth/user/account');
+    if (image.mimetype !== 'image/jpeg' && image.mimetype !== 'image/png' && image.mimetype !== 'image/jpg') {
+        console.log("Profile picture is not a jpg, jpeg or png");
+        return res.redirect('/auth/user/account');
+    }
+
 
     // on recoit un jpg, stocke le dans le dossier img/userMail/userMail.jpg
     let userMail = new String(req.kauth.grant.access_token.content.preferred_username);
@@ -157,10 +163,6 @@ app.post('/auth/upload_pp', keycloak.protect(), function (req, res) {
     if (!fs.existsSync(__dirname + "/model/img/" + userMail)) {
         fs.mkdirSync(__dirname + "/model/img/" + userMail);
     }
-    const {
-        image
-    } = req.files;
-    if (!image) return res.sendStatus(400);
 
     // Move the uploaded image to our upload folder
     image.mv(__dirname + '/model/img/' + userMail + '/TOCROP' + userMail + '.jpg', function (err) {
@@ -243,10 +245,11 @@ app.get('/auth/dashboard/get_info', keycloak.protect(), function (req, res) {
                 allEvents.forEach(event => {
                     event.Location = allLocations.filter(location => location.Id_Dive_Site === event.Dive_Site_Id_Dive_Site)[0];
                 });
-                const message = await Database.getMessage({
+                let message = await Database.getMessage({
                     Club: username
                 });
                 if (message === undefined) {
+                    message = {};
                     message.Message = "";
                     message.Date_Modif = getDateFormat(new Date().toLocaleDateString())
                 }
@@ -264,19 +267,20 @@ app.get('/auth/dashboard/get_info', keycloak.protect(), function (req, res) {
             });
 
             Database.getRegistrationList(userInfo.Id_Diver, (registrationList) => {
-                if (registrationList === undefined) {
-                    return res.json({
-                        userInfo: userInfo
-                    });
-                }
+                if (registrationList === undefined) registrationList = [];
+
                 Database.getDiveSiteList(async (allLocations) => {
                     registrationList.forEach(event => {
                         event.Location = allLocations.filter(location => location.Id_Dive_Site === event.Dive_Site_Id_Dive_Site)[0];
                     });
-                    const message = await Database.getMessage({
+                    let message = await Database.getMessage({
                         Club: userInfo.Club
                     });
-                    if (message === undefined) message = "";
+                    if (message === undefined) {
+                        message = {};
+                        message.Message = "";
+                        message.Date_Modif = getDateFormat(new Date().toLocaleDateString())
+                    }
                     return res.json({
                         userInfo: userInfo,
                         registrationList: registrationList,
@@ -367,8 +371,15 @@ app.post('/auth/planning', keycloak.protect(),
         if (!checkUser(req, "CLUB")) return res.sendStatus(401);
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(422).json({
-            errors: errors.array()
+            errors: errors.array(),
+            comment: "Un champs n'est pas valide"
         });
+        if(new Date(req.body.End_Date) < new Date(req.body.Start_Date)){
+            return res.json({
+                modified: false,
+                comment: "La date de fin est antérieure à la date de début"
+            })
+        }
         console.log("--- Trying to create event --'");
         if (req.body.Max_Divers < req.body.lengthUsersToRegister) {
             return res.json({
@@ -383,19 +394,26 @@ app.post('/auth/planning', keycloak.protect(),
             })
         }
         delete req.body.lengthUsersToRegister;
+        if (new Date(req.body.Start_Date) < new Date()) {
+            console.log("\t->Error, date is in the past");
+            return res.json({
+                created: false,
+                comment: "Impossible de créer un événement dans le passé"
+            });
+        }
 
         Database.getUserInfoByMail(req.body.dp, infoDp => {
             if (req.body.Dive_Type === "Exploration" && infoDp.Diver_Qualification !== "P5") {
                 console.log("\t->Error, DP is not P5");
                 return res.json({
                     created: false,
-                    comment: "DP is not P5"
+                    comment: "Le DP n'est pas P5"
                 })
             } else if (req.body.Dive_Type === "Technique" && infoDp.Instructor_Qualification !== ("E3" && "E4")) {
                 console.log("\t->Error, DP is not E3 or E4");
                 return res.json({
                     created: false,
-                    comment: "DP is not E3 or E4"
+                    comment: "Le DP n'est pas E3 ou E4"
                 })
             }
             delete req.body.dp;
@@ -411,7 +429,7 @@ app.post('/auth/planning', keycloak.protect(),
                     console.log("\t->Error, Dive Site doesn't exist");
                     return res.json({
                         created: false,
-                        comment: "Dive Site doesn't exist"
+                        comment: "Le site de plongée n'existe pas"
                     })
                 }
                 req.body.Dive_Site_Id_Dive_Site = siteInfo.Id_Dive_Site;
@@ -420,7 +438,7 @@ app.post('/auth/planning', keycloak.protect(),
                         console.log("\t->Error, Event already exist");
                         return res.json({
                             created: false,
-                            comment: "Event already exist"
+                            comment: "L'événement existe déjà"
                         });
                     }
                     Database.createEvent(req.body, (isInserted) => {
@@ -428,13 +446,13 @@ app.post('/auth/planning', keycloak.protect(),
                             console.log("\t->Error, impossible to add Event");
                             return res.json({
                                 created: false,
-                                comment: "Impossible to add Event"
+                                comment: "Impossible d'ajouter l'événement"
                             });
                         } else {
                             console.log("\t->Event added");
                             return res.json({
                                 created: true,
-                                comment: "Event added"
+                                comment: "Evénement ajouté"
                             });
                         }
                     });
@@ -452,7 +470,8 @@ app.post('/auth/planning/set_rate', keycloak.protect(),
     function (req, res) {
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(422).json({
-            errors: errors.array()
+            errors: errors.array(),
+            comment: "Un champs n'est pas valide"
         });
         console.log("--- Trying to rate location ---");
         Database.getUserInfoByMail(req.kauth.grant.access_token.content.preferred_username, infoDiver => {
@@ -460,7 +479,7 @@ app.post('/auth/planning/set_rate', keycloak.protect(),
                 console.log("\t->Error, User doesn't exist");
                 return res.json({
                     rated: false,
-                    comment: "User doesn't exist"
+                    comment: "L'utilisateur n'existe pas"
                 })
             }
             req.body.Event.Start_Date = getDateFormat(new Date(req.body.Event.Start_Date).toLocaleString());
@@ -473,7 +492,7 @@ app.post('/auth/planning/set_rate', keycloak.protect(),
                     console.log("\t->Error, Location doesn't exist");
                     return res.json({
                         rated: false,
-                        comment: "Location doesn't exist"
+                        comment: "Le lieu de plongée n'existe pas"
                     })
                 }
                 req.body.Event.Dive_Site_Id_Dive_Site = locationInfo.Id_Dive_Site;
@@ -482,7 +501,7 @@ app.post('/auth/planning/set_rate', keycloak.protect(),
                         console.log("\t->Error, Event doesn't exist");
                         return res.json({
                             rated: false,
-                            comment: "Event doesn't exist"
+                            comment: "L'événement n'existe pas"
                         })
                     }
                     Database.getRegistration({
@@ -493,14 +512,14 @@ app.post('/auth/planning/set_rate', keycloak.protect(),
                             console.log("\t->Error, User is not register");
                             return res.json({
                                 rated: false,
-                                comment: "User is not register"
+                                comment: "Utilisateur non inscrit"
                             })
                         }
                         if (registration.Has_Voted == "1") {
                             console.log("\t->Error, User has already voted");
                             return res.json({
                                 rated: false,
-                                comment: "User has already voted"
+                                comment: "Vote déjà effectué"
                             })
                         }
                         Database.modifRegistration({
@@ -512,7 +531,7 @@ app.post('/auth/planning/set_rate', keycloak.protect(),
                                 console.log("\t->Error, impossible to modify registration");
                                 return res.json({
                                     rated: false,
-                                    comment: "Impossible to modify registration"
+                                    comment: "Impossible de modifier l'inscription"
                                 })
                             }
                             locationInfo.Rate_Number++;
@@ -528,7 +547,13 @@ app.post('/auth/planning/set_rate', keycloak.protect(),
                                     console.log("\t->Error, impossible to rate location");
                                     return res.json({
                                         rated: false,
-                                        comment: "Impossible to rate location"
+                                        comment: "Impossible de noter le lieu de plongée"
+                                    })
+                                }else{
+                                    console.log("\t->Location rated");
+                                    return res.json({
+                                        rated: true,
+                                        comment: "Lieu de plongée noté"
                                     })
                                 }
                             });
@@ -536,7 +561,6 @@ app.post('/auth/planning/set_rate', keycloak.protect(),
                     });
                 });
             });
-
         });
     });
 
@@ -555,7 +579,8 @@ app.post('/auth/planning/edit_palanquee', keycloak.protect(),
         if (!checkUser(req, "DP")) return res.sendStatus(401);
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(422).json({
-            errors: errors.array()
+            errors: errors.array(),
+            comment: "Un champs n'est pas valide"
         });
         const username = req.kauth.grant.access_token.content.preferred_username;
         req.body.Start_Date = getDateFormat(new Date(req.body.Start_Date).toLocaleString());
@@ -569,7 +594,7 @@ app.post('/auth/planning/edit_palanquee', keycloak.protect(),
             console.log("\t->Error, date is not today");
             return res.json({
                 edited: false,
-                comment: "Impossible because date is not today"
+                comment: "Impossible de créer une plongée à une date différente de celle d'aujourd'hui"
             });
         }
         Database.getUserInfoByMail(username, infoDp => {
@@ -577,14 +602,14 @@ app.post('/auth/planning/edit_palanquee', keycloak.protect(),
                 console.log("\t->Error, DP doesn't exist");
                 return res.json({
                     created: false,
-                    comment: "DP doesn't exist"
+                    comment: "Impossible de trouver le DP"
                 });
             }
             if ((req.body.Dive_Type === "Exploration" && infoDp.Diver_Qualification !== "P5") || (req.body.Dive_Type === "Technique" && infoDp.Instructor_Qualification !== ("E3" && "E4"))) {
                 console.log("\t->Error, DP is not P5 or E3/E4");
                 return res.json({
                     created: false,
-                    comment: "DP is not P5 or E3/E4"
+                    comment: "Le DP n'est pas P5 ou E3/E4"
                 });
             }
 
@@ -595,7 +620,7 @@ app.post('/auth/planning/edit_palanquee', keycloak.protect(),
                     console.log("\t->Error, Dive Site doesn't exist");
                     return res.json({
                         created: false,
-                        comment: "Dive Site doesn't exist"
+                        comment: "Lieu de plongée inexistant"
                     });
                 }
                 req.body.Dive_Site_Id_Dive_Site = locationInfo.Id_Dive_Site;
@@ -605,7 +630,7 @@ app.post('/auth/planning/edit_palanquee', keycloak.protect(),
                         console.log("\t->Error, Event doesn't exist");
                         return res.json({
                             created: false,
-                            comment: "Event doesn't exist"
+                            comment: "L'événement n'existe pas"
                         });
                     }
                     Database.getDiversRegistered(diverList => {
@@ -615,7 +640,7 @@ app.post('/auth/planning/edit_palanquee', keycloak.protect(),
                             console.log("\t->Error, not enough divers");
                             return res.json({
                                 created: false,
-                                comment: "Not enough divers"
+                                comment: "Pas assez de plongeurs inscrits"
                             });
                         }
 
@@ -627,7 +652,7 @@ app.post('/auth/planning/edit_palanquee', keycloak.protect(),
                                 console.log("\t----->Dive already exist, redirection");
                                 return res.json({
                                     created: true,
-                                    comment: "Dive already exist, but it's ok"
+                                    comment: "Plongée déjà créée, redirection"
                                 });
                             }
                             let data = {
@@ -647,7 +672,7 @@ app.post('/auth/planning/edit_palanquee', keycloak.protect(),
                                     console.log("\t->Error, impossible to add Dive");
                                     return res.json({
                                         created: false,
-                                        comment: "Impossible to add Dive"
+                                        comment: "Impossible d'ajouter la plongée"
                                     });
                                 } else {
                                     console.log("\t->Dive added");
@@ -658,13 +683,13 @@ app.post('/auth/planning/edit_palanquee', keycloak.protect(),
                                             console.log("\t->Error, Dive doesn't exist");
                                             return res.json({
                                                 created: false,
-                                                comment: "Dive doesn't exist"
+                                                comment: "La plongée n'existe pas"
                                             });
                                         }
                                         req.session.idDive = newDive.Id_Dive;
                                         return res.json({
                                             created: true,
-                                            comment: "Dive added"
+                                            comment: "Plongée créée"
                                         });
                                     });
                                 }
@@ -718,7 +743,8 @@ app.get('/auth/planning/get_planning', keycloak.protect(), function (req, res) {
     });
 })
 
-app.post("/auth/planning/pdf_event", keycloak.protect(), body("Start_Date").trim().escape(),
+app.post("/auth/planning/pdf_event", keycloak.protect(),
+    body("Start_Date").trim().escape(),
     body("End_Date").trim().escape(),
     body("Diver_Price").trim().escape(),
     body("Instructor_Price").trim().escape(),
@@ -729,7 +755,13 @@ app.post("/auth/planning/pdf_event", keycloak.protect(), body("Start_Date").trim
     body("Max_Divers").trim().escape(),
     body("Dive_Type").trim().escape(),
     function (req, res) {
-        console.log("---- Check PDF exists")
+        if (!checkUser(req, "CLUB") && !checkUser(req, "DP")) {
+            return res.json({
+                pdf: false,
+                comment: "Vous n'êtes pas autorisé"
+            })
+        }
+        console.log("--- Check PDF exists")
         req.body.Start_Date = getDateFormat(new Date(req.body.Start_Date).toLocaleString());
         req.body.End_Date = getDateFormat(new Date(req.body.End_Date).toLocaleString());
 
@@ -767,7 +799,7 @@ app.post("/auth/planning/pdf_event", keycloak.protect(), body("Start_Date").trim
                         req.session.idDive = diveInfo.Id_Dive;
                         return res.json({
                             pdf: true,
-                            comment: "Le PDF existe"
+                            comment: "Le PDF existe déjà"
                         })
                     } else {
                         console.log("\t ->Can't get PDF")
@@ -783,7 +815,7 @@ app.post("/auth/planning/pdf_event", keycloak.protect(), body("Start_Date").trim
 
 app.get("/auth/planning/download_pdf", keycloak.protect(),
     function (req, res) {
-        console.log("---- Download PDF")
+        console.log("--- Download PDF")
         if (checkUser(req, "CLUB") || checkUser(req, "DP")) {
             Database.getDive({
                 Id_Dive: req.session.idDive
@@ -818,43 +850,44 @@ app.post('/auth/planning/has_voted', keycloak.protect(),
         req.body.End_Date = getDateFormat(new Date(req.body.End_Date).toLocaleString());
         Database.getUserInfoByMail(mail, (userInfo) => {
             if (userInfo === undefined) return res.json({
-                hasVoted: false,
-                comment: "User doesn't exist"
+                hasVoted: true, // true because we don't want to display the button
+                comment: "L'utilisateur n'existe pas"
             });
             Database.getDiveSite({
                 Site_Name: req.body.Site_Name
             }, (locationInfo) => {
                 if (locationInfo === undefined) return res.json({
-                    hasVoted: false,
-                    comment: "Location doesn't exist"
+                    hasVoted: true,
+                    comment: "Le lieu de plongée n'existe pas"
                 });
                 req.body.Dive_Site_Id_Dive_Site = locationInfo.Id_Dive_Site;
                 delete req.body.Site_Name;
                 Database.getEvent(req.body, (eventInfo) => {
                     if (eventInfo === undefined) return res.json({
-                        hasVoted: false,
-                        comment: "Event doesn't exist"
+                        hasVoted: true,
+                        comment: "L'événement n'existe pas"
                     });
                     Database.getRegistration({
                         Diver_Id_Diver: userInfo.Id_Diver,
                         Planned_Dive_Id_Planned_Dive: eventInfo.Id_Planned_Dive
                     }, (registration) => {
                         if (registration === undefined) return res.json({
-                            hasVoted: false,
-                            comment: "User is not register"
+                            hasVoted: true,
+                            comment: "L'utilisateur n'est pas inscrit"
                         });
-                        return res.json({
-                            hasVoted: registration.Has_Voted
+                        if (registration.Has_Voted == "1") return res.json({
+                            hasVoted: true,
+                            comment: "L'utilisateur a déjà voté"
+                        });
+                        else return res.json({
+                            hasVoted: false,
+                            comment: "L'utilisateur n'a pas voté"
                         });
                     });
                 });
-
             });
         });
     });
-
-
-
 
 /* --------------------------------- UPDATE --------------------------------- */
 app.put('/auth/planning', keycloak.protect(),
@@ -874,18 +907,19 @@ app.put('/auth/planning', keycloak.protect(),
         if (!checkUser(req, "CLUB")) return res.sendStatus(401);
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(422).json({
-            errors: errors.array()
+            errors: errors.array(),
+            comment: "Un champs n'est pas valide"
         });
-        if (req.body.Max_Divers < req.body.lengthUsersToRegister) {
-            return res.json({
-                created: false,
-                comment: "Trop de plongeurs inscrits par rapport au nombre maximum de plongeurs prévu"
-            })
-        }
         if (req.body.Max_Divers < 2) {
             return res.json({
                 created: false,
                 comment: "Nombre de plongeurs trop faible, un événement peut être créé à partir de 2 plongeurs"
+            })
+        }
+        if(new Date(req.body.End_Date) < new Date(req.body.Start_Date)){
+            return res.json({
+                modified: false,
+                comment: "La date de fin est antérieure à la date de début"
             })
         }
         delete req.body.lengthUsersToRegister;
@@ -903,13 +937,13 @@ app.put('/auth/planning', keycloak.protect(),
                 console.log("\t->Error, DP is not P5");
                 return res.json({
                     created: false,
-                    comment: "DP is not P5"
+                    comment: "Le DP n'est pas P5"
                 })
             } else if (req.body.Dive_Type === "Technique" && infoDp.Instructor_Qualification !== ("E3" && "E4")) {
                 console.log("\t->Error, DP is not E3 or E4");
                 return res.json({
                     created: false,
-                    comment: "DP is not E3 or E4"
+                    comment: "Le DP n'est pas E3 ou E4"
                 })
             }
             delete req.body.dp;
@@ -923,7 +957,7 @@ app.put('/auth/planning', keycloak.protect(),
                     console.log("\t->Error, Dive Site doesn't exist");
                     return res.json({
                         modified: false,
-                        comment: "Dive Site doesn't exist"
+                        comment: "Le site de plongée n'existe pas"
                     })
                 }
                 oldEvent.Dive_Site_Id_Dive_Site = siteInfo.Id_Dive_Site;
@@ -932,36 +966,56 @@ app.put('/auth/planning', keycloak.protect(),
                         console.log("\t->Error, Event doesn't exist");
                         return res.json({
                             modified: false,
-                            comment: "Event doesn't exist"
+                            comment: "L'événement n'existe pas"
                         })
                     }
-                    Database.getDive({
-                        Planned_Dive_Id_Planned_Dive: event.Id_Planned_Dive
-                    }, dive => {
-                        if (dive) {
-                            console.log("\t->Error, Dive already exist");
+                    /* ---------------------- VERIFICATION DES INFORMATIONS --------------------- */
+                    if (new Date(req.body.Start_Date) < new Date()) {
+                        console.log("\t->Error, Event has already happened");
+                        return res.json({
+                            modified: false,
+                            comment: "Impossible de modifier un événement déjà passé"
+                        })
+                    }
+                    Database.getDiversRegistered(diverList => {
+                        if (diverList === undefined) diverList = [];
+                        diverList = diverList.filter(diver => diver.Planned_Dive_Id_Planned_Dive == event.Id_Planned_Dive);
+                        if (Object.keys(diverList).length > req.body.Max_Divers) {
+                            console.log("\t->Error, too many divers");
                             return res.json({
                                 modified: false,
-                                comment: "Dive already exist"
-                            })
+                                comment: "Trop de plongeurs inscrits par rapport au nombre maximum de plongeurs entré"
+                            });
                         }
-                        req.body.Id_Planned_Dive = event.Id_Planned_Dive;
-                        Database.modifEvent(req.body, (modified) => {
-                            if (modified) {
-                                console.log("\t->Event modified");
-                                return res.json({
-                                    modified: true,
-                                    comment: "Event modified"
-                                });
-                            } else {
-                                console.log("\t->Error, impossible to modify Event");
+
+                        Database.getDive({
+                            Planned_Dive_Id_Planned_Dive: event.Id_Planned_Dive
+                        }, dive => {
+                            if (dive) {
+                                console.log("\t->Error, Dive already exist");
                                 return res.json({
                                     modified: false,
-                                    comment: "Impossible to modify Event"
-                                });
+                                    comment: "La plongée existe déjà"
+                                })
                             }
+                            req.body.Id_Planned_Dive = event.Id_Planned_Dive;
+                            Database.modifEvent(req.body, (modified) => {
+                                if (modified) {
+                                    console.log("\t->Event modified");
+                                    return res.json({
+                                        modified: true,
+                                        comment: "Evénement modifié"
+                                    });
+                                } else {
+                                    console.log("\t->Error, impossible to modify Event");
+                                    return res.json({
+                                        modified: false,
+                                        comment: "Impossible de modifier l'événement"
+                                    });
+                                }
+                            });
                         });
-                    })
+                    });
                 });
             });
         });
@@ -982,7 +1036,7 @@ app.delete('/auth/planning', keycloak.protect(), function (req, res) {
         console.log("\t->Error, event has already happened");
         return res.json({
             deleted: false,
-            comment: "Impossible because event has already happened"
+            comment: "L'événement a déjà eu lieu"
         });
     }
     Database.getEvent(req.body, (event) => {
@@ -990,7 +1044,7 @@ app.delete('/auth/planning', keycloak.protect(), function (req, res) {
             console.log("\t->Error, Event doesn't exist");
             return res.json({
                 deleted: false,
-                comment: "Event doesn't exist"
+                comment: "L'événement n'existe pas"
             })
         }
         Database.getDive({
@@ -1000,7 +1054,7 @@ app.delete('/auth/planning', keycloak.protect(), function (req, res) {
                 console.log("\t->Error, A dive is linked to this event");
                 return res.json({
                     deleted: false,
-                    comment: "A dive is linked to this event"
+                    comment: "Une plongée est liée à cet événement"
                 })
             }
             Database.deleteAllRegistration(event.Id_Planned_Dive, deleted => {
@@ -1008,7 +1062,7 @@ app.delete('/auth/planning', keycloak.protect(), function (req, res) {
                     console.log("\t->Error, impossible to delete all registrations");
                     return res.json({
                         deleted: false,
-                        comment: "Impossible to delete users"
+                        comment: "Impossible de supprimer toutes les inscriptions"
                     })
                 }
                 Database.deleteEvent(event, (deleted) => {
@@ -1016,13 +1070,13 @@ app.delete('/auth/planning', keycloak.protect(), function (req, res) {
                         console.log("\t->Event deleted");
                         return res.json({
                             deleted: true,
-                            comment: "Event deleted"
+                            comment: "Evénement supprimé"
                         });
                     } else {
                         console.log("\t->Error, impossible to delete Event");
                         return res.json({
                             deleted: false,
-                            comment: "Impossible to delete Event"
+                            comment: "Impossible de supprimer l'événement"
                         });
                     }
                 });
@@ -1078,7 +1132,7 @@ app.post('/auth/planning/registration', keycloak.protect(),
                 console.log("\t->Error, User doesn't exist");
                 return res.json({
                     registered: false,
-                    comment: "User doesn't exist"
+                    comment: "L'utilisateur n'existe pas"
                 })
             }
             data.Diver_Id_Diver = userInfo.Id_Diver;
@@ -1089,7 +1143,7 @@ app.post('/auth/planning/registration', keycloak.protect(),
                     console.log("\t->Error, Location doesn't exist");
                     return res.json({
                         registered: false,
-                        comment: "Location doesn't exist"
+                        comment: "Le lieu de plongée n'existe pas"
                     })
                 }
                 req.body.Dive_Site_Id_Dive_Site = locationInfo.Id_Dive_Site;
@@ -1099,7 +1153,7 @@ app.post('/auth/planning/registration', keycloak.protect(),
                         console.log("\t->Error, Event doesn't exist");
                         return res.json({
                             registered: false,
-                            comment: "Event doesn't exist"
+                            comment: "L'événement n'existe pas"
                         })
                     }
                     Database.getDive({
@@ -1109,7 +1163,7 @@ app.post('/auth/planning/registration', keycloak.protect(),
                             console.log("\t->Error, Dive already exist, impossible to register");
                             return res.json({
                                 registered: false,
-                                comment: "Dive already exist"
+                                comment: "La plongée existe déjà, impossible de s'inscrire"
                             })
                         }
                         data.Planned_Dive_Id_Planned_Dive = eventInfo.Id_Planned_Dive;
@@ -1121,7 +1175,7 @@ app.post('/auth/planning/registration', keycloak.protect(),
                                 console.log(`\t->Error, ${userInfo.Mail} is already register`);
                                 return res.json({
                                     registered: false,
-                                    comment: "Registration already exist"
+                                    comment: "L'utilisateur est déjà inscrit"
                                 })
                             }
 
@@ -1132,7 +1186,7 @@ app.post('/auth/planning/registration', keycloak.protect(),
                                     console.log("\t->Error, Max divers reached");
                                     return res.json({
                                         registered: false,
-                                        comment: "Max divers reached"
+                                        comment: "Nombre maximum de plongeurs atteint"
                                     })
                                 }
 
@@ -1141,13 +1195,13 @@ app.post('/auth/planning/registration', keycloak.protect(),
                                         console.log(`\t->${userInfo.Firstname} ${userInfo.Lastname} registered`);
                                         return res.json({
                                             registered: true,
-                                            comment: "Registration added"
+                                            comment: "Inscription enregistrée"
                                         })
                                     } else {
                                         console.log("\t->Error, impossible to register user");
                                         return res.json({
                                             registered: false,
-                                            comment: "Impossible to add Registration"
+                                            comment: "Impossible de s'inscrire"
                                         });
                                     }
                                 });
@@ -1172,7 +1226,7 @@ app.delete('/auth/planning/registration', keycloak.protect(), function (req, res
             console.log("\t->Error, User doesn't exist");
             return res.json({
                 deleted: false,
-                comment: "User doesn't exist"
+                comment: "L'utilisateur n'existe pas"
             })
         }
         Database.getDiveSite({
@@ -1182,7 +1236,7 @@ app.delete('/auth/planning/registration', keycloak.protect(), function (req, res
                 console.log("\t->Error, Location doesn't exist");
                 return res.json({
                     registered: false,
-                    comment: "Location doesn't exist"
+                    comment: "Le lieu de plongée n'existe pas"
                 })
             }
             req.body.Dive_Site_Id_Dive_Site = locationInfo.Id_Dive_Site;
@@ -1193,7 +1247,7 @@ app.delete('/auth/planning/registration', keycloak.protect(), function (req, res
                     console.log("\t->Error, Event doesn't exist");
                     return res.json({
                         deleted: false,
-                        comment: "Event doesn't exist"
+                        comment: "L'événement n'existe pas"
                     })
                 }
                 Database.getDive({
@@ -1203,7 +1257,7 @@ app.delete('/auth/planning/registration', keycloak.protect(), function (req, res
                         console.log("\t->Error, Dive already exist, impossible to unregister");
                         return res.json({
                             deleted: false,
-                            comment: "Dive already exist"
+                            comment: "La plongée existe déjà, impossible de se désinscrire"
                         })
                     }
                     Database.getRegistration({
@@ -1214,14 +1268,14 @@ app.delete('/auth/planning/registration', keycloak.protect(), function (req, res
                             console.log("\t->Error, User is not register");
                             return res.json({
                                 deleted: false,
-                                comment: "User is not register"
+                                comment: "L'utilisateur n'est pas inscrit"
                             })
                         }
                         if (registration.Diver_Role === "DP") {
                             console.log("\t->Error, DP can't unregister");
                             return res.json({
                                 deleted: false,
-                                comment: "DP can't unregister"
+                                comment: "Le DP ne peut pas se désinscrire"
                             })
                         }
                         Database.deleteRegistration({
@@ -1232,13 +1286,13 @@ app.delete('/auth/planning/registration', keycloak.protect(), function (req, res
                                 console.log(`\t->${userInfo.Firstname} ${userInfo.Lastname} unregistered`);
                                 return res.json({
                                     deleted: true,
-                                    comment: "Registration deleted"
+                                    comment: "Désinscription enregistrée"
                                 })
                             } else {
                                 console.log("\t->Error, impossible to delete registration");
                                 return res.json({
                                     deleted: false,
-                                    comment: "Impossible to delete Registration"
+                                    comment: "Impossible de se désinscrire"
                                 });
                             }
                         });
@@ -1261,7 +1315,7 @@ app.delete('/auth/planning/registration/all', keycloak.protect(), function (req,
             console.log("\t->Error, Location doesn't exist");
             return res.json({
                 deleted: false,
-                comment: "Location doesn't exist"
+                comment: "Le lieu de plongée n'existe pas"
             })
         }
         req.body.Dive_Site_Id_Dive_Site = locationInfo.Id_Dive_Site;
@@ -1273,7 +1327,7 @@ app.delete('/auth/planning/registration/all', keycloak.protect(), function (req,
                 console.log("\t->Error, Event doesn't exist");
                 return res.json({
                     deleted: false,
-                    comment: "Event doesn't exist"
+                    comment: "L'événement n'existe pas"
                 })
             }
             Database.deleteAllRegistration(event.Id_Planned_Dive, deleted => {
@@ -1281,13 +1335,13 @@ app.delete('/auth/planning/registration/all', keycloak.protect(), function (req,
                     console.log("\t->All registrations deleted");
                     return res.json({
                         deleted: true,
-                        comment: "All registrations deleted"
+                        comment: "Toutes les inscriptions ont été supprimées"
                     });
                 } else {
                     console.log("\t->Error, impossible to delete all registrations");
                     return res.json({
                         deleted: false,
-                        comment: "Impossible to delete all registrations"
+                        comment: "Impossible de supprimer toutes les inscriptions"
                     });
                 }
             });
@@ -1324,7 +1378,7 @@ app.get('/auth/user/account/get_info', keycloak.protect(), function (req, res) {
     Database.getUserInfoByMail(username, (userInfo) => {
         if (userInfo === undefined) return res.json({
             data: undefined,
-            comment: "User doesn't exist"
+            comment: "L'utilisateur n'existe pas"
         });
         return res.json(userInfo);
     })
@@ -1350,7 +1404,7 @@ app.get('/auth/dp/palanquee/get_palanquee', keycloak.protect(), function (req, r
     if (!req.session.idDive) {
         return res.json({
             data: undefined,
-            comment: "Id dive is not stored in session",
+            comment: "L'id de la plongée n'est pas défini",
             redirect: true
         });
     };
@@ -1359,26 +1413,26 @@ app.get('/auth/dp/palanquee/get_palanquee', keycloak.protect(), function (req, r
     }, (dive) => {
         if (dive === undefined) return res.json({
             data: undefined,
-            comment: "Dive doesn't exist"
+            comment: "La plongée n'existe pas"
         });
         Database.getEventById(dive.Planned_Dive_Id_Planned_Dive, (event) => {
             if (event === undefined) return res.json({
                 data: undefined,
-                comment: "Event doesn't exist"
+                comment: "L'événement n'existe pas"
             });
             Database.getDiveSite({
                 Id_Dive_Site: event.Dive_Site_Id_Dive_Site
             }, (location) => {
                 if (location === undefined) return res.json({
                     data: undefined,
-                    comment: "Location doesn't exist"
+                    comment: "Le lieu de plongée n'existe pas"
                 });
                 Database.getEmergencyPlan({
                     Id_Emergency_Plan: location.Id_Dive_Site
                 }, (emergencyPlan) => {
                     if (emergencyPlan === undefined) return res.json({
                         data: undefined,
-                        comment: "Emergency plan doesn't exist"
+                        comment: "Le plan d'urgence n'existe pas"
                     });
                     Database.getDiversRegistered((allDivers) => {
                         if (allDivers === undefined) allDivers = [];
@@ -1429,7 +1483,7 @@ app.get('/auth/dp/palanquee/get_palanquee', keycloak.protect(), function (req, r
                                 Database.getMaxDepth(listMaxDepth => {
                                     if (listMaxDepth == undefined) return res.json({
                                         data: undefined,
-                                        comment: "Can't get list max depth"
+                                        comment: "La liste des profondeurs maximales n'existe pas"
                                     });
 
                                     let data = {
@@ -1440,7 +1494,7 @@ app.get('/auth/dp/palanquee/get_palanquee', keycloak.protect(), function (req, r
                                     }
                                     return res.json({
                                         data,
-                                        comment: "Dive found"
+                                        comment: "Palanquée récupérée"
                                     });
                                 });
                             });
@@ -1460,7 +1514,8 @@ app.post('/auth/dp/palanquee', keycloak.protect(),
         if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(422).json({
-            errors: errors.array()
+            errors: errors.array(),
+            comment: "Un champs n'est pas valide"
         });
         let idDive = req.session.idDive;
 
@@ -1498,7 +1553,7 @@ app.post('/auth/dp/palanquee', keycloak.protect(),
             }, (dive) => {
                 if (dive === undefined) return res.json({
                     created: false,
-                    comment: "Dive doesn't exist"
+                    comment: "La plongée n'existe pas"
                 });
                 DiveTeamMember.forEach(member => {
                     if (member.Paid_Amount === "E") member.Paid_Amount = dive.Instructor_Price;
@@ -1522,20 +1577,20 @@ app.post('/auth/dp/palanquee', keycloak.protect(),
                     }
                     if (DiveTeamMember.length == 0) return res.json({
                         created: true,
-                        comment: "All Dive Team Member already exist"
+                        comment: "Tous les plongeurs sont déjà inscrits"
                     });
                     Database.createDiveTeamMember(DiveTeamMember, (created) => {
                         if (!created) {
                             console.log("\t->Error, impossible to create all Dive Team Member");
                             return res.json({
                                 created: false,
-                                comment: "Impossible to create all Dive Team Member"
+                                comment: "Impossible de créer tous les membres de la palanquée"
                             });
                         } else {
                             console.log("\t->All Dive Team Member created");
                             return res.json({
                                 created: true,
-                                comment: "All Dive Team Member created"
+                                comment: "Tous les membres de la palanquée ont été créés"
                             });
                         }
                     });
@@ -1545,24 +1600,25 @@ app.post('/auth/dp/palanquee', keycloak.protect(),
     });
 
 app.post('/auth/dp/palanquee/dive_team', keycloak.protect(),
-    body("*.Divers.*.Mail").trim().toLowerCase(),
-    body("*.Divers.*.Fonction").trim().escape(),
-    body("*.Params.Max_Depth").trim().escape(),
+    body("*.Divers.*.Mail").trim().toLowerCase().exists(),
+    body("*.Divers.*.Fonction").trim().escape().exists(),
+    body("*.Params.Max_Depth").trim().escape().exists(),
     body("*.Params.Actual_Depth").trim().escape(),
-    body("*.Params.Max_Duration").trim().escape(),
+    body("*.Params.Max_Duration").trim().escape().exists(),
     body("*.Params.Actual_Duration").trim().escape(),
-    body("*.Params.Dive_Type").trim().escape(),
-    body("*.Params.Floor_3").trim().escape(),
-    body("*.Params.Floor_6").trim().escape(),
-    body("*.Params.Floor_9").trim().escape(),
-    body("*.Params.Start_Date").trim().escape(),
-    body("*.Params.End_Date").trim().escape(),
-    body("*.Params.Palanquee_Type").trim().escape(),
+    body("*.Params.Dive_Type").trim().escape().exists(),
+    body("*.Params.Floor_3").trim().escape().exists(),
+    body("*.Params.Floor_6").trim().escape().exists(),
+    body("*.Params.Floor_9").trim().escape().exists(),
+    body("*.Params.Start_Date").trim().escape().exists(),
+    body("*.Params.End_Date").trim().escape().exists(),
+    body("*.Params.Palanquee_Type").trim().escape().exists(),
     function (req, res) {
         if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(422).json({
-            errors: errors.array()
+            errors: errors.array(),
+            comment: "Un champs n'est pas valide"
         });
         let idDive = req.session.idDive;
 
@@ -1641,21 +1697,23 @@ app.post('/auth/dp/palanquee/dive_team', keycloak.protect(),
 
 
 
-                    } else if (params.Palanquee_TypeId_Dive_Team === "Pe") {
+                    } else if (params.Palanquee_Type === "Pe") {
                         /* ---------------------------- PLONGEE ENCADREE ---------------------------- */
                         let nbGp = 0;
                         for (const diver of divers) {
                             // Comptage du nombre de GP
                             if (diver.Fonction === "GP") {
+                                console.log("GP", diver.Mail);
                                 let gpInfo = await Database.getUserInfoSync({
                                     Mail: diver.Mail
                                 });
+                                
                                 if (gpInfo === undefined) {
                                     dataError.success = false;
                                     dataError.comment = `Palanquée n°${key} : le guide de palanquée n'existe pas`;
                                     break
                                 }
-                                if (gpInfo.Diver_Qualification !== ("P4" && "P5")) {
+                                if (gpInfo.Diver_Qualification !== "P4" && gpInfo.Diver_Qualification !== "P5") {
                                     dataError.success = false;
                                     dataError.comment = `Palanquée n°${key} : le guide de palanquée n'est pas qualifié P4 ou P5`;
                                     break
@@ -1728,13 +1786,13 @@ app.post('/auth/dp/palanquee/dive_team', keycloak.protect(),
                                 Mail: diver.Mail
                             });
                             if (gpInfo === undefined) {
-                                console.log("GP undefined");
+                                console.log("GP does not exist for Technique");
                                 dataError.success = false;
                                 dataError.comment = `Palanquée n°${key} : le guide de palanquée n'existe pas`;
                                 break
                             }
                             if (gpInfo.Instructor_Qualification === "E0") {
-                                console.log("GP E0");
+                                console.log("GP does not have qualification E");
                                 dataError.success = false;
                                 dataError.comment = `Palanquée n°${key} : le guide de palanquée n'a pas les qualifications nécessaires`;
                                 break
@@ -1804,7 +1862,7 @@ app.post('/auth/dp/palanquee/dive_team', keycloak.protect(),
                 // Supprimer toutes les palanquées existantes (s'il y en a) pour les recréer avec les nouvelles données
                 // Créer les palanquées
                 // Update info dive team member
-                console.log("--- Deleting old version of palanquee");
+                console.log("--- Deleting old version of palanquee ---");
                 let resDelete = await Database.DeleteDiveTeam({
                     Dive_Id_Dive: idDive
                 });
@@ -1823,7 +1881,7 @@ app.post('/auth/dp/palanquee/dive_team', keycloak.protect(),
                     req.body[key].Params.Id_Dive_Team = Id_Dive_Team;
                     toCreate.push([Id_Dive_Team, key, palanquee.Palanquee_Type, palanquee.Max_Depth, palanquee.Actual_Depth, palanquee.Max_Duration, palanquee.Actual_Duration, palanquee.Dive_Type, palanquee.Floor_3, palanquee.Floor_6, palanquee.Floor_9, getDateFormat(new Date(palanquee.Start_Date).toLocaleString()), getDateFormat(new Date(palanquee.End_Date).toLocaleString()), "", idDive]);
                 }
-                console.log("--- Inserting new palanquees")
+                console.log("--- Inserting new palanquees ---")
                 let resCreateTeam = await Database.createDiveTeam(toCreate);
                 if (!resCreateTeam) {
                     console.log("\t->Can't insert palanquees")
@@ -1835,7 +1893,7 @@ app.post('/auth/dp/palanquee/dive_team', keycloak.protect(),
                 }
                 console.log("\t->Palanquees inserted")
 
-                console.log("--- Updating diver role");
+                console.log("--- Updating diver role ---");
                 for (const key in req.body) {
                     const palanquee = req.body[key];
                     const divers = palanquee.Divers;
@@ -1879,14 +1937,24 @@ app.post('/auth/dp/palanquee/dive_team', keycloak.protect(),
                 }, async (diveInfo) => {
                     if (diveInfo === undefined) return res.json({
                         created: false,
-                        comment: "Dive doesn't exist"
+                        comment: "La plongée n'existe pas"
                     });
-                    diveInfo.Surface_Security = req.body.surface ? req.body.surface : "";
+                    console.log();
+                    if (diveInfo.Surface_Security === ""){
+                        let dpInfo = await Database.getUserInfoSync({
+                            Id_Diver: diveInfo.Diver_Id_Diver
+                        });
+                        if (dpInfo === undefined) return res.json({
+                            created: false,
+                            comment: "Le directeur de plongée n'existe pas"
+                        }); 
+                        diveInfo.Surface_Security = dpInfo.Firstname + " " + dpInfo.Lastname;
+                    }
                     diveInfo.Last_Modif = getDateFormat(new Date());
                     let ismodif = await Database.modifDive(diveInfo);
                     if (!ismodif) return res.json({
                         created: false,
-                        comment: "Impossible to update dive"
+                        comment: "Impossible de modifier la plongée"
                     });
                 });
             } else {
@@ -1897,7 +1965,7 @@ app.post('/auth/dp/palanquee/dive_team', keycloak.protect(),
     });
 
 app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (req, res) {
-    console.log("Automatic dive team");
+    console.log("--- Automatic Dive Team ---");
     if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
     if (!req.session.idDive) res.redirect('/auth/planning');
 
@@ -1966,9 +2034,7 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                         let diverP2 = allDiveTeamMember.filter(member => member.Current_Diver_Qualification == "P2" && member.Temporary_Diver_Qualification === "");
                         let diverP3 = allDiveTeamMember.filter(member => member.Current_Diver_Qualification == "P3" && member.Temporary_Diver_Qualification === "");
 
-                        let allGp = allDiveTeamMember.filter(member => member.Current_Diver_Qualification == "P4" || member.Current_Diver_Qualification == "P5" && member.Temporary_Diver_Qualification === "");
-
-
+                        let allGp = allDiveTeamMember.filter(member => (member.Current_Diver_Qualification == "P4" || member.Current_Diver_Qualification == "P5") && member.Temporary_Diver_Qualification === "");
                         /* ------------------------------- BAPTEMES P0 ------------------------------ */
                         if (diverP0.length > 0) {
                             while (diverP0.length > 0 && allGp.length > 0) {
@@ -2031,7 +2097,8 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                         /* ------------------------------- PLONGEURS Pe ------------------------------ */
                         let pe40 = diverPe.filter(member => member.Temporary_Diver_Qualification === "Pe40");
                         let pe60 = diverPe.filter(member => member.Temporary_Diver_Qualification === "Pe60");
-                        while (diverPe.length > 0 && allGp.length > 0) {
+
+                        while ((pe40.length > 0 || pe60.length > 0) && allGp.length > 0) {
                             /* ---------------------------------- PE40 ---------------------------------- */
                             if (pe40.length > 0 && allGp.length > 0) {
                                 let ratio = pe40.length / allGp.length;
@@ -2129,7 +2196,7 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                             Fonction: "Plongeur",
                                             Qualification: userInfo.Diver_Qualification
                                         })
-                                        pe40.splice(0, 1);
+                                        pe60.splice(0, 1);
                                         i++;
                                     }
                                     let tmpParam = Object.assign({}, Params);;
@@ -2359,7 +2426,7 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                         }
 
                         /* ---------------------------- P4 OU P5 RESTANTS --------------------------- */
-                        if (allGp.length > 0) {
+                        if (allGp.length > 1) {
                             let palanquee60 = PALANQUEES.filter(palanquee => palanquee.Params.Max_Depth === 60);
                             let ratio = (allGp.length + palanquee60.length) / allGp.length;
                             if (ratio > 4) ratio = 4;
@@ -2577,7 +2644,8 @@ app.put('/auth/dp/palanquee', keycloak.protect(),
         if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(422).json({
-            errors: errors.array()
+            errors: errors.array(),
+            comment: "Un champs n'est pas valide"
         });
         let idDive = req.session.idDive;
 
@@ -2616,12 +2684,12 @@ app.put('/auth/dp/palanquee', keycloak.protect(),
                         if (req.body.data[i].tmpQualif.split("Pe")[0] == "") {
                             if (req.body.data[i].tmpQualif !== ("Pe" + maxDepth.Guided_Diver_Depth)) return res.json({
                                 created: false,
-                                comment: "Guided diver depth is not correct for the current qualification"
+                                comment: "La profondeur maximale pour le plongeur encadré n'est pas correcte pour la qualification actuelle"
                             });
                         } else if (req.body.data[i].tmpQualif.split("Pa")[0] == "") {
                             if (req.body.data[i].tmpQualif !== ("Pa" + maxDepth.Autonomous_Diver_Depth)) return res.json({
                                 created: false,
-                                comment: "Autonomous diver depth is not correct for the current qualification"
+                                comment: "La profondeur maximale pour le plongeur autonome n'est pas correcte pour la qualification actuelle"
                             });
                         }
                         tmpData.Temporary_Diver_Qualification = req.body.data[i].tmpQualif
@@ -2638,14 +2706,14 @@ app.put('/auth/dp/palanquee', keycloak.protect(),
             }, async (diveInfo) => {
                 if (diveInfo === undefined) return res.json({
                     created: false,
-                    comment: "Dive doesn't exist"
+                    comment: "La plongée n'existe pas"
                 });
                 diveInfo.Surface_Security = req.body.surface;
                 diveInfo.Last_Modif = getDateFormat(new Date());
                 let ismodif = await Database.modifDive(diveInfo);
                 if (!ismodif) return res.json({
                     created: false,
-                    comment: "Impossible to update dive"
+                    comment: "Impossible de modifier la plongée"
                 });
 
                 DiveTeamMember.forEach(member => {
@@ -2669,13 +2737,13 @@ app.put('/auth/dp/palanquee', keycloak.protect(),
                     console.log("\t->All Dive Team Member updated");
                     return res.json({
                         created: true,
-                        comment: "All Dive Team Member updated"
+                        comment: "Tous les membres de la palanquée ont été modifiés avec succès"
                     });
                 } else {
                     console.log("\t->Error, impossible to update all Dive Team Member");
                     return res.json({
                         created: false,
-                        comment: "Impossible to update all Dive Team Member"
+                        comment: "Impossible de modifier tous les membres de la palanquée"
                     });
                 }
 
@@ -2685,9 +2753,9 @@ app.put('/auth/dp/palanquee', keycloak.protect(),
 
 app.post('/auth/dp/palanquee/upload', keycloak.protect(), function (req, res) {
     if (!checkUser(req, "DP")) return res.redirect('/auth/dashboard');
-    console.log("Upload pdf");
+    console.log("--- Trying to upload PDF ---");
     if (!req.files || Object.keys(req.files).length === 0) {
-        console.log("No PDF in the request");
+        console.log("\t->No PDF in the request");
         return res.redirect('/auth/planning');
     }
 
@@ -2707,14 +2775,14 @@ app.post('/auth/dp/palanquee/upload', keycloak.protect(), function (req, res) {
     // Move the uploaded image to our upload folder
     file.mv(__dirname + '/model/pdf/' + req.session.idDive + '.pdf', function (err) {
         if (err) {
-            console.log("Error while uploading PDF ");
+            console.log("\t->Error while uploading PDF ");
             console.log(err);
             return res.json({
                 success: false,
                 comment: "Impossible de générer le PDF"
             });
         } else {
-            console.log("PDF uploaded ");
+            console.log("\t->PDF uploaded ");
             return res.json({
                 success: true,
                 comment: "PDF généré avec succès"
@@ -2743,13 +2811,18 @@ app.post('/auth/club/club_members', keycloak.protect(),
     body("Lastname").trim(),
     body("Firstname").trim().escape(),
     body("Mail").trim().escape().toLowerCase(),
-    body("Phone").trim().escape().isLength({
+    body("Phone").trim().escape().optional({
+        checkFalsy: true
+    }).isLength({
         min: 10,
         max: 10
     }).isNumeric(),
     body("Diver_Qualification").trim().escape(),
     body("Instructor_Qualification").trim().escape(),
-    body("Nox_Level").trim().escape(),
+    body("Nox_Level").trim().escape().isLength({
+        min: 0,
+        max: 1
+    }),
     body("Additional_Qualifications").trim().escape(),
     body("License_Number").trim().escape(),
     body("License_Expiration_Date").trim().escape(),
@@ -2759,9 +2832,11 @@ app.post('/auth/club/club_members', keycloak.protect(),
     async function (req, res) {
         const pass = req.body.password;
         if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
+        console.log(req.body.Nox_Level);
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(422).json({
-            errors: errors.array()
+            errors: errors.array(),
+            comment: "Un champs n'est pas valide"
         });
         req.body.Club = req.kauth.grant.access_token.content.preferred_username;
         req.body.Birthdate = getDateFormat(new Date(req.body.Birthdate));
@@ -2769,13 +2844,12 @@ app.post('/auth/club/club_members', keycloak.protect(),
         req.body.Medical_Certificate_Expiration_Date = getDateFormat(new Date(req.body.Medical_Certificate_Expiration_Date));
 
         console.log("--- Trying to create user ---");
-        console.log(req.body);
         if (req.body.Diver_Qualification === ("P0" || "P1")) {
             if (req.body.Instructor_Qualification !== "E0") {
                 console.log("\t->Error, Instructor qualification is not E0");
                 return res.json({
                     created: false,
-                    comment: "Instructor qualification is not E0"
+                    comment: "Un niveau P0 ou P1 doit avoir un niveau technique E0"
                 });
             }
         } else if (req.body.Diver_Qualification === ("P2" || "P3")) {
@@ -2783,7 +2857,7 @@ app.post('/auth/club/club_members', keycloak.protect(),
                 console.log("\t->Error, Instructor qualification is not E1");
                 return res.json({
                     created: false,
-                    comment: "Instructor qualification is not E1"
+                    comment: "Un niveau P2 ou P3 doit avoir un niveau technique E0 ou E1"
                 });
             }
         }
@@ -2795,12 +2869,6 @@ app.post('/auth/club/club_members', keycloak.protect(),
                 if (created) {
                     console.log("\t->User created in DB");
                     console.log("\t->User correctly created");
-                    //? Créer le dossier
-                    //? tom_mullier_gmail_com.jpg/jpeg/png
-                    //? Creer le dossier
-                    //? Copier Blank.jpg dans le dossier
-                    //? Renommer Blank
-                    // avec fs, créer le dossier avec le mail de lutilisateur 
                     try {
                         let filename = req.body.Mail.replace(/@/g, "_").replace(/\./g, "_").replace(/-/g, "_");
                         fs.mkdirSync(__dirname + "/model/img/" + filename);
@@ -2847,13 +2915,18 @@ app.put('/auth/club/club_members', keycloak.protect(),
     body("Firstname").trim().escape(),
     body("Lastname").trim(),
     body("Mail").trim().escape().toLowerCase(),
-    body("Phone").trim().escape().isLength({
+    body("Phone").trim().escape().optional({
+        checkFalsy: true
+    }).isLength({
         min: 10,
         max: 10
     }).isNumeric(),
     body("Diver_Qualification").trim().escape(),
     body("Instructor_Qualification").trim().escape(),
-    body("Nox_Level").trim().escape(),
+    body("Nox_Level").trim().escape().isLength({
+        min: 0,
+        max: 1
+    }),
     body("Additional_Qualifications").trim().escape(),
     body("License_Number").trim().escape(),
     body("License_Expiration_Date").trim().escape(),
@@ -2864,7 +2937,8 @@ app.put('/auth/club/club_members', keycloak.protect(),
         if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(422).json({
-            errors: errors.array()
+            errors: errors.array(),
+            comment: "Un champs n'est pas valide"
         });
         req.body.Birthdate = getDateFormat(new Date(req.body.Birthdate));
         req.body.License_Expiration_Date = getDateFormat(new Date(req.body.License_Expiration_Date));
@@ -2879,12 +2953,12 @@ app.put('/auth/club/club_members', keycloak.protect(),
         if (req.body.Diver_Qualification === ("P0" || "P1")) {
             if (req.body.Instructor_Qualification !== "E0") return res.json({
                 created: false,
-                comment: "Instructor qualification is not E0"
+                comment: "Un niveau P0 ou P1 doit avoir un niveau technique E0"
             });
         } else if (req.body.Diver_Qualification === ("P2" || "P3")) {
             if (req.body.Instructor_Qualification !== ("E0" && "E1")) return res.json({
                 created: false,
-                comment: "Instructor qualification is not E1"
+                comment: "Un niveau P2 ou P3 doit avoir un niveau technique E0 ou E1"
             });
         }
 
@@ -2893,7 +2967,7 @@ app.put('/auth/club/club_members', keycloak.protect(),
                 console.log("\t->Error, User doesn't exist");
                 return res.json({
                     modified: false,
-                    comment: "User doesn't exist"
+                    comment: "L'utilisateur n'existe pas"
                 })
             }
             req.body.Id_Diver = userInfo.Id_Diver;
@@ -2904,7 +2978,7 @@ app.put('/auth/club/club_members', keycloak.protect(),
                     console.log("\t->Error, impossible to update user in DB");
                     return res.json({
                         modified: false,
-                        comment: "Impossible to update user in DB"
+                        comment: "Impossible de modifier l'utilisateur"
                     })
                 }
                 let modifPassword = "";
@@ -2935,7 +3009,7 @@ app.put('/auth/club/club_members', keycloak.protect(),
                                 }
                                 return res.json({
                                     modified: true,
-                                    comment: "User modified"
+                                    comment: "Utilisateur modifié avec succès"
                                 })
                             });
                         }
@@ -2948,14 +3022,14 @@ app.put('/auth/club/club_members', keycloak.protect(),
                             console.log("\t->Error, impossible to update user in KC, success to cancel all modifications");
                             return res.json({
                                 modified: false,
-                                comment: "Error while modifying, success to cancel all modifications"
+                                comment: "Erreur lors de la modification, succès de l'annulation des modifications"
                             });
                         } else {
                             console.log("\t->Error, impossible to update user in DB");
                             console.log("\t->Error, impossible to update user in KC, impossible to cancel all modifications");
                             return res.json({
                                 modified: false,
-                                comment: "Error while modifying, impossible to cancel all modifications"
+                                comment: "Erreur lors de la modification, impossible d'annuler les modifications"
                             });
                         }
                     })
@@ -2977,7 +3051,7 @@ app.delete('/auth/club/club_members', keycloak.protect(), // USE
                 console.log("\t->Error, User doesn't exist");
                 return res.json({
                     deleted: false,
-                    comment: "User doesn't exist"
+                    comment: "L'utilisateur n'existe pas"
                 })
             }
             // vérification si Id_Diver présent dans :
@@ -2992,7 +3066,7 @@ app.delete('/auth/club/club_members', keycloak.protect(), // USE
                     console.log("\t->Error, User is registered to an event");
                     return res.json({
                         deleted: false,
-                        comment: "User is registered to an event"
+                        comment: "L'utilisateur est inscrit à un évènement"
                     })
                 }
                 Database.getDive({
@@ -3002,7 +3076,7 @@ app.delete('/auth/club/club_members', keycloak.protect(), // USE
                         console.log("\t->Error, User is linked to a dive");
                         return res.json({
                             deleted: false,
-                            comment: "User is linked to a dive"
+                            comment: "L'utilisateur est lié à une plongée"
                         })
                     }
                     Database.getAllDiveTeamMember({
@@ -3012,70 +3086,59 @@ app.delete('/auth/club/club_members', keycloak.protect(), // USE
                             console.log("\t->Error, User is linked to a dive team member");
                             return res.json({
                                 deleted: false,
-                                comment: "User is linked to a dive team member"
+                                comment: "L'utilisateur est lié à une palanquée"
                             })
                         }
-                        Database.getDiveTeam({
-                            Diver_Id_Diver: userInfo.Id_Diver
-                        }, diveTeam => {
-                            if (diveTeam) {
-                                console.log("\t->Error, User is linked to a dive team");
+                        Database.deleteUser(req.body.Mail, async (isDelDb) => {
+                            if (!isDelDb) {
+                                console.log("\t->Error, impossible to delete user in DB");
                                 return res.json({
                                     deleted: false,
-                                    comment: "User is linked to a dive team"
+                                    comment: "Impossible de supprimer l'utilisateur"
                                 })
                             }
-                            Database.deleteUser(req.body.Mail, async (isDelDb) => {
-                                if (!isDelDb) {
-                                    console.log("\t->Error, impossible to delete user in DB");
+
+                            const isDelKc = await Keycloak_module.deleteUser(req.body.Mail, getUserName(req), req.body.password);
+                            if (isDelKc) {
+                                console.log("\t->User deleted in KC");
+                                console.log("\t->User correctly deleted");
+
+                                // Supprimer le dossier
+                                // avec fs, supprimer le dossier avec le mail de lutilisateur
+                                let filename = req.body.Mail.replace(/@/g, "_").replace(/\./g, "_").replace(/-/g, "_");
+
+                                fs.rm(__dirname + "/model/img/" + filename, {
+                                    recursive: true,
+                                    force: true
+                                }, (err) => {
+                                    if (err) {
+                                        console.log("\tL'image de profil n'a pas pu être supprimée")
+                                        console.log(err);
+                                    } else {
+                                        console.log("\t->User folder deleted");
+                                    }
                                     return res.json({
-                                        deleted: false,
-                                        comment: "Impossible to delete user in DB"
+                                        deleted: true,
+                                        comment: "Utilisateur supprimé avec succès"
                                     })
-                                }
-
-                                const isDelKc = await Keycloak_module.deleteUser(req.body.Mail, getUserName(req), req.body.password);
-                                if (isDelKc) {
-                                    console.log("\t->User deleted in KC");
-                                    console.log("\t->User correctly deleted");
-
-                                    // Supprimer le dossier
-                                    // avec fs, supprimer le dossier avec le mail de lutilisateur
-                                    let filename = req.body.Mail.replace(/@/g, "_").replace(/\./g, "_").replace(/-/g, "_");
-
-                                    fs.rm(__dirname + "/model/img/" + filename, {
-                                        recursive: true,
-                                        force: true
-                                    }, (err) => {
-                                        if (err) {
-                                            console.log("\tL'image de profil n'a pas pu être supprimée")
-                                            console.log(err);
-                                        } else {
-                                            console.log("\t->User folder deleted");
-                                        }
+                                });
+                            } else {
+                                Database.createUser(userInfo, false, (isInser) => {
+                                    if (isInser) {
+                                        console.log("\t->Error, impossible to delete user in KC, success to cancel all modifications");
                                         return res.json({
-                                            deleted: true,
-                                            comment: "User deleted"
-                                        })
-                                    });
-                                } else {
-                                    Database.createUser(userInfo, false, (isInser) => {
-                                        if (isInser) {
-                                            console.log("\t->Error, impossible to delete user in KC, success to cancel all modifications");
-                                            return res.json({
-                                                deleted: false,
-                                                comment: "Error while deleting, success to cancel all modifications"
-                                            });
-                                        } else {
-                                            console.log("\t->Error, impossible to delete user in KC, impossible to cancel all modifications");
-                                            return res.json({
-                                                deleted: false,
-                                                comment: "Error while deleting, impossible to cancel all modifications"
-                                            });
-                                        }
-                                    })
-                                }
-                            })
+                                            deleted: false,
+                                            comment: "Erreur lors de la suppression, succès de l'annulation des modifications"
+                                        });
+                                    } else {
+                                        console.log("\t->Error, impossible to delete user in KC, impossible to cancel all modifications");
+                                        return res.json({
+                                            deleted: false,
+                                            comment: "Erreur lors de la suppression, impossible d'annuler les modifications"
+                                        });
+                                    }
+                                })
+                            }
                         })
                     })
                 })
@@ -3125,7 +3188,8 @@ app.post("/auth/club/locations", keycloak.protect(),
         if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(422).json({
-            errors: errors.array()
+            errors: errors.array(),
+            comment: "Un champs n'est pas valide"
         });
 
         const dataEmergency = {
@@ -3146,7 +3210,7 @@ app.post("/auth/club/locations", keycloak.protect(),
                 console.log("\t->Error, Location already exist");
                 return res.json({
                     created: false,
-                    comment: "Location already exist"
+                    comment: "Le lieu existe déjà"
                 });
             }
             req.body.General_Rate = 0;
@@ -3159,7 +3223,7 @@ app.post("/auth/club/locations", keycloak.protect(),
                     console.log("\t->Error, impossible to add Location");
                     return res.json({
                         created: false,
-                        comment: "Impossible to add Location"
+                        comment: "Impossible d'ajouter le lieu"
                     })
                 }
                 dataEmergency.Id_Emergency_Plan = idLoc;
@@ -3169,7 +3233,7 @@ app.post("/auth/club/locations", keycloak.protect(),
                         console.log("\t->Location and Emergency Plan added");
                         return res.json({
                             created: true,
-                            comment: "Location and Emergency Plan added"
+                            comment: "Lieu et plan d'urgence ajoutés avec succès"
                         })
                     } else {
                         Database.deleteDiveSite({
@@ -3179,13 +3243,13 @@ app.post("/auth/club/locations", keycloak.protect(),
                                 console.log("\t->Error, impossible to add Emergency Plan, Location deleted");
                                 return res.json({
                                     created: false,
-                                    comment: "Impossible to add Emergency Plan"
+                                    comment: "Impossible d'ajouter le plan d'urgence"
                                 })
                             } else {
                                 console.log("\t->Error, impossible to add Emergency Plan and Location, impossible to cancel all modifications");
                                 return res.json({
                                     created: false,
-                                    comment: "Impossible to add Emergency Plan and Location"
+                                    comment: "Impossible d'ajouter le plan d'urgence et le lieu"
                                 })
                             }
                         })
@@ -3207,7 +3271,7 @@ app.get("/auth/club/get_locations", keycloak.protect(), function (req, res) {
 
 /* --------------------------------- UPDATE --------------------------------- */
 app.put("/auth/club/locations", keycloak.protect(),
-    body("Site_Name").trim(),
+    body("Site_Name").trim().exists(),
     body("Gps_Latitude").trim().escape().isNumeric(),
     body("Gps_Longitude").trim().escape().isNumeric(),
     body("Track_Type").trim().escape(),
@@ -3217,10 +3281,12 @@ app.put("/auth/club/locations", keycloak.protect(),
     body("City_Name").trim(),
     body("Country_Name").trim(),
     body("Additional_Address").trim(),
-    body("Tel_Number").trim().escape().isLength({
+    body("Tel_Number").optional({
+        checkFalsy: true
+    }).isLength({
         min: 10,
         max: 10
-    }),
+    }).trim().escape(),
     body("Information_URL").trim(),
     body("SOS_Tel_Number").trim().escape().isLength({
         min: 10,
@@ -3232,7 +3298,8 @@ app.put("/auth/club/locations", keycloak.protect(),
         if (!checkUser(req, "CLUB")) return res.redirect('/auth/dashboard');
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(422).json({
-            errors: errors.array()
+            errors: errors.array(),
+            comment: "Un champs n'est pas valide"
         });
         const dataEmergency = {
             Id_Emergency_Plan: "",
@@ -3256,7 +3323,7 @@ app.put("/auth/club/locations", keycloak.protect(),
                 console.log("\t->Error, Location doesn't exist");
                 return res.json({
                     modified: false,
-                    comment: "Location doesn't exist"
+                    comment: "Le lieu n'existe pas"
                 });
             }
             req.body.Id_Dive_Site = siteInfo.Id_Dive_Site;
@@ -3267,7 +3334,7 @@ app.put("/auth/club/locations", keycloak.protect(),
                     console.log("\t->Error, impossible to update Location");
                     return res.json({
                         modified: false,
-                        comment: "Impossible to update Location"
+                        comment: "Impossible de modifier le lieu"
                     });
                 }
                 Database.modifEmergencyPlan(dataEmergency, (isUpdateEm) => {
@@ -3275,7 +3342,7 @@ app.put("/auth/club/locations", keycloak.protect(),
                         console.log("\t->Location and Emergency Plan updated");
                         return res.json({
                             modified: true,
-                            comment: "Location and Emergency Plan updated"
+                            comment: "Lieu et plan d'urgence modifiés avec succès"
                         });
                     } else {
                         Database.modifDiveSite(siteInfo, (isUpdateSite) => {
@@ -3283,13 +3350,13 @@ app.put("/auth/club/locations", keycloak.protect(),
                                 console.log("\t->Error, impossible to cancel update of Location, failed to cancel all modifications");
                                 return res.json({
                                     modified: false,
-                                    comment: "Impossible to cancel update of Location"
+                                    comment: "Impossible d'annuler la modification du lieu"
                                 });
                             } else {
                                 console.log("\t->Error, impossible to update Emergency Plan, success to cancel all modifications");
                                 return res.json({
                                     modified: false,
-                                    comment: "Impossible to update Emergency Plan"
+                                    comment: "Impossible de modifier le plan d'urgence"
                                 });
                             }
                         })
@@ -3309,7 +3376,7 @@ app.delete("/auth/club/locations", keycloak.protect(), function (req, res) {
             console.log("\t->Error, Location doesn't exist");
             return res.json({
                 deleted: false,
-                comment: "Location doesn't exist"
+                comment: "Le lieu n'existe pas"
             });
         }
         Database.getPlanning(allEvents => {
@@ -3319,7 +3386,7 @@ app.delete("/auth/club/locations", keycloak.protect(), function (req, res) {
                 console.log("\t->Error, Location is linked in an event");
                 return res.json({
                     deleted: false,
-                    comment: "Location is linked in an event"
+                    comment: "Le lieu est lié à un évènement"
                 });
             }
             Database.deleteEmergencyPlan({
@@ -3329,7 +3396,7 @@ app.delete("/auth/club/locations", keycloak.protect(), function (req, res) {
                     console.log("\t->Error, impossible to delete Emergency Plan");
                     return res.json({
                         deleted: false,
-                        comment: "Impossible to delete Emergency Plan"
+                        comment: "Impossible de supprimer le plan d'urgence"
                     });
                 }
                 Database.deleteDiveSite(req.body, (isDelete) => {
@@ -3337,7 +3404,7 @@ app.delete("/auth/club/locations", keycloak.protect(), function (req, res) {
                         console.log("\t->Location and Emergency Plan deleted");
                         return res.json({
                             deleted: true,
-                            comment: "Location and Emergency Plan deleted"
+                            comment: "Lieu et plan d'urgence supprimés avec succès"
                         });
                     } else {
                         Database.createEmergencyPlan(siteInfo, (isCreate) => {
@@ -3345,13 +3412,13 @@ app.delete("/auth/club/locations", keycloak.protect(), function (req, res) {
                                 console.log("\t->Error, impossible to recreate Emergency Plan, failed to cancel all modifications");
                                 return res.json({
                                     deleted: false,
-                                    comment: "Impossible to recreate Emergency Plan"
+                                    comment: "Impossible de recréer le plan d'urgence"
                                 });
                             } else {
                                 console.log("\t->Error, impossible to delete Location, success to cancel all modifications");
                                 return res.json({
                                     deleted: false,
-                                    comment: "Impossible to delete Location"
+                                    comment: "Impossible de supprimer le lieu"
                                 });
                             }
                         })

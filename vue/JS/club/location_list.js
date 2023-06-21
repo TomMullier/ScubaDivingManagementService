@@ -10,6 +10,7 @@ import {
 /*                              GLOBAL VARIABLES                              */
 /* -------------------------------------------------------------------------- */
 let locations = [];
+
 function openErrorModal(e) {
     modals.closeCurrent();
     setTimeout(function () {
@@ -17,6 +18,7 @@ function openErrorModal(e) {
         document.querySelector("#error_occured p").innerText = e;
         setTimeout(function () {
             modals.closeCurrent();
+            document.location.reload();
         }, 3000);
     }, 500);
 }
@@ -24,7 +26,7 @@ function openErrorModal(e) {
 /* -------------------------------------------------------------------------- */
 /*                                   REQUEST                                  */
 /* -------------------------------------------------------------------------- */
-
+let my_role;
 /* -------------------------------- USERTYPE -------------------------------- */
 fetch('/auth/club/locations')
     .then(response => {
@@ -74,8 +76,6 @@ fetch('/auth/club/get_locations', {
         sites.forEach(function (site) {
             locations.push(new Location(site.Site_Name, site.Gps_Latitude, site.Gps_Longitude, site.Track_Type, site.Track_Number, site.Track_Name, site.Zip_Code, site.City_Name, site.Country_Name, site.Additional_Address, site.Tel_Number, site.Information_URL, [], site.SOS_Tel_Number, site.Emergency_Plan, site.Post_Accident_Procedure));
         });
-        console.log("Locations :");
-        console.log(locations);
         updateDisplayLocations();
     })
 
@@ -90,9 +90,9 @@ function createLocation(loc) {
         }).then((res) => res.json())
         .then((res) => {
             console.log(res);
-            if(!res.created){
+            if (!res.created) {
                 openErrorModal(res.comment);
-            }
+            } else 
             document.location.reload();
         });
 }
@@ -108,16 +108,15 @@ function modifyLocation(data) {
         }).then(res => res.json())
         .then(res => {
             console.log(res);
-            if(!res.modified){
+            if (!res.modified) {
                 openErrorModal(res.comment);
-            }
+            } else 
             document.location.reload();
         });
 }
 
 /* ----------------------------- DELETE LOCATION ---------------------------- */
 function deleteLocation(target) {
-    console.log(target);
     fetch('/auth/club/locations', {
             method: 'DELETE',
             headers: {
@@ -129,9 +128,9 @@ function deleteLocation(target) {
         }).then((res) => res.json())
         .then((res) => {
             console.log(res);
-            if(!res.deleted){
+            if (!res.deleted) {
                 openErrorModal(res.comment);
-            }
+            } else 
             document.location.reload();
         });
 }
@@ -209,11 +208,8 @@ create_button.addEventListener("click", function () {
         let SOS_Tel_Number = document.querySelector("#sos_phone").value;
         let Emergency_Plan = document.querySelector("#plan_urgent").value;
         let Post_Accident_Procedure = document.querySelector("#post_accident_procedure").value;
-        console.log("URL LIEU CREE : " + url_);
         let location = new Location(name, lat, lng, trackType, trackNumber, trackName, zipCode, cityName, country, complement, phone, url_, [], SOS_Tel_Number, Emergency_Plan, Post_Accident_Procedure);
         locations.push(location);
-        console.log("Lieu créé :")
-        console.log(location);
         let data = {
             Site_Name: name,
             Gps_Latitude: lat,
@@ -241,16 +237,8 @@ create_button.addEventListener("click", function () {
         document.querySelector("#create_location").querySelectorAll("input").forEach(function (input) {
             if (input.value == "" && input.getAttribute("required")) {
                 auth = false;
-                console.log("Champ vide");
-                console.log(input);
             }
         });
-
-        // if (!validatePhoneNumber(data.Tel_Number)) {
-        //     console.log("Numéro de téléphone invalide");
-        //     auth = false;
-        //     document.querySelector("#phone").style.border = "1px solid #f2574a";
-        // }
 
         if (auth) {
             createLocation(data);
@@ -258,9 +246,7 @@ create_button.addEventListener("click", function () {
             document.querySelector("#validate_creation").disabled = true;
             document.querySelector("#validate_creation").innerHTML = "<img src='../img/loading_animation.svg' alt='loading' class='loading'>";
             document.querySelector("#validate_creation").style.height = "40px";
-            setTimeout(function () {
-                // document.location.reload();
-            }, 1000);
+            
         } else {
             document.querySelector("#create_location").innerHTML = "Certains champs ne sont pas remplis";
             document.querySelector("#create_location").querySelectorAll('input').forEach(function (input) {
@@ -331,9 +317,7 @@ fetch('https://restcountries.com/v3.1/all')
             countrySelect.appendChild(option);
         });
     })
-    .catch(error => {
-        console.log('Une erreur s\'est produite :', error);
-    });
+    .catch(error => {});
 
 function updateDisplayLocations() {
     let container_location = document.querySelector(".list_container");
@@ -389,12 +373,9 @@ function updateDisplayLocations() {
                 });
 
                 // locations.splice(index, 1);
-                console.log("Lieu supprimé :")
-                console.log(name);
                 deleteLocation(name);
                 // updateDisplayLocations();
                 // actualiser la page 
-                document.location.reload();
                 modals.closeCurrent();
             });
 
@@ -424,8 +405,6 @@ function updateDisplayLocations() {
             let data = locations.find(function (location) {
                 return location.name == loc.querySelector(".list_title").innerHTML;
             });
-            console.log("oqerhygfbqosjkdfhlbqefoivkqjdfh")
-            console.log(data);
             document.querySelector("#latitude").value = data.lat;
             document.querySelector("#longitude").value = data.lng;
             document.querySelector("#street").value = data.trackType + " " + data.trackName;
@@ -459,8 +438,6 @@ function updateDisplayLocations() {
                 let Post_Accident_Procedure = document.querySelector("#post_accident_procedure").value;
 
                 let location = new Location(name, lat, lng, trackType, trackNumber, trackName, zipCode, cityName, country, complement, phone, url_, [], SOS_Tel_Number, Emergency_Plan, Post_Accident_Procedure);
-                console.log("Lieu modifié :")
-                console.log(location);
                 let data = {
                     Site_Name: name,
                     Gps_Latitude: lat,
@@ -496,9 +473,6 @@ function updateDisplayLocations() {
                     document.querySelector("#validate_creation").disabled = true;
                     document.querySelector("#validate_creation").innerHTML = "<img src='../img/loading_animation.svg' alt='loading' class='loading'>";
                     document.querySelector("#validate_creation").style.height = "40px";
-                    setTimeout(function () {
-                        document.location.reload();
-                    }, 1000);
                 } else {
                     document.querySelector("#create_location").innerHTML = "Certains champs ne sont pas remplis";
                     document.querySelector("#create_location").querySelectorAll('input').forEach(function (input) {

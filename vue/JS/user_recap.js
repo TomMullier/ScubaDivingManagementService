@@ -39,7 +39,6 @@ function openErrorModal(e) {
 fetch('/auth/dashboard')
     .then(response => {
         const userType = response.headers.get('userType');
-        console.log("User Role :" + userType);
         my_role = userType;
         // user, dp, club
         if (my_role != "club") {
@@ -125,7 +124,6 @@ function getUserPP(user) {
 }
 
 function addMessage(message) {
-    console.log(message);
     const data = {
         "Message": message
     };

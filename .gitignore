@@ -3,6 +3,8 @@ keycloak.json
 .env
 model/img/*/
 model/palanquee/*
+tmp/*
+
 # Logs
 logs
 *.log

@@ -234,6 +234,8 @@ async function deleteUser(mail, clientUsername = "", clientPassword = "") {
             console.log("\t->", error.response.data['errorMessage']);
             return false
         });
+    
+        
     return deleteUser;
 }
 

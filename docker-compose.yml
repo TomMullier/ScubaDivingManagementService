@@ -15,7 +15,6 @@ services:
       context: ./model/BDD
     volumes:
       - mysql_data:/var/lib/mysql
-      # - ./model/BDD:/docker-entrypoint-initdb.d
     networks:
       - sdms_net
     environment:

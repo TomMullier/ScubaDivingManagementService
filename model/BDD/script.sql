@@ -189,6 +189,7 @@ CREATE TABLE Dive(
 CREATE TABLE Dive_Team(
    Id_Dive_Team CHAR(36)  NOT NULL,
    Sequence_number SMALLINT NOT NULL,
+   Palanquee_Type VARCHAR(100) NOT NULL,
    Max_Depth INT NOT NULL,
    Actual_Depth DECIMAL(5,2),
    Max_Duration TIME NOT NULL,
@@ -206,12 +207,13 @@ CREATE TABLE Dive_Team(
 );
 #COMMENT ON TABLE Dive_team IS 'Team of divers who dive all together. At least one team per dive.';
 #COMMENT ON COLUMN Dive_team.Id_Dive_Team IS 'of type GUID stored as char(36). Like 363d5a64-22c2-4b45-a29b-2d2d358e340c';
+#COMMENT ON COLUMN Dive_team.Sequence_number IS 'Sequence number of team in the dive. First is 1, second is 2 ....';
+#COMMENT ON COLUMN Dive_team.Palanquee_Type IS 'Type of palanquee (Pe or Pa)';
 #COMMENT ON COLUMN Dive_team.Max_Depth IS 'Maximum of depth allowed for this team';
 #COMMENT ON COLUMN Dive_team.Max_Duration IS 'Maximum duration in minutes of dive allowed for team';
 #COMMENT ON COLUMN Dive_team.Actual_Depth IS 'Max depth reached by team during the dive';
 #COMMENT ON COLUMN Dive_team.Actual_Duration IS 'Actual duration of dive';
 #COMMENT ON COLUMN Dive_team.Dive_Type IS 'Dive type for this team: Exploration, Education';
-#COMMENT ON COLUMN Dive_team.Sequence_number IS 'Sequence number of team in the dive. First is 1, second is 2 ....';
 #COMMENT ON COLUMN Dive_team.Floor_3 IS 'Decompression stop at 3m';
 #COMMENT ON COLUMN Dive_team.Floor_6 IS 'Decompression stop at 6m';
 #COMMENT ON COLUMN Dive_team.Floor_9 IS 'Decompression stop at 9m';

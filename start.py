@@ -5,6 +5,7 @@ import json
 import subprocess
 import webbrowser
 import requests
+import time
 
 
 def get_ip_address():
@@ -82,9 +83,11 @@ def launchDocker():
         result.wait();  
         for line in result.stdout:
                 print(line)
-
+                
+        print("----- Waiting for Keycloak to be ready")
+        for i in range(0, 15):
+                time.sleep(1)
         
-
         url = f"http://{ip}:8080/realms/SDMS/protocol/openid-connect/token"
 
         payload = 'client_id=SDMS_connect&client_secret=uanSPPp2dE7Q3VFx4nkqeFJEA8DvzXua&grant_type=client_credentials'
@@ -92,8 +95,7 @@ def launchDocker():
                 'Content-Type': 'application/x-www-form-urlencoded'
         }
 
-        response = requests.request("POST", url, headers=headers, data=payload)
-        print(response)
+        response = requests.request("POST", url, headers=headers, data=payload, timeout=5)
         if(response.status_code == 200):
                 print("----- Getting token")
                 print("---------- Token retrieved")
@@ -101,7 +103,6 @@ def launchDocker():
 
 
                 url3 = f"http://{ip}:8080/admin/realms/SDMS/clients/c346816f-76c8-4e05-8a24-bb1ee736e479"
-                print(url3)
                 payload3 = json.dumps({
                         "id": "c346816f-76c8-4e05-8a24-bb1ee736e479",
                         "clientId": "SDMS_connect",
@@ -223,9 +224,8 @@ def launchDocker():
                 'Authorization': f'Bearer {token}'
                 }
 
-                response3 = requests.request("PUT", url3, headers=headers3, data=payload3)
+                response3 = requests.request("PUT", url3, headers=headers3, data=payload3, timeout=5)
                 print("----- Change IP Keycloak Admin Panel for : ", ip)
-                print(response3)
                 if(response3.status_code == 204):
                         print("---------- IP changed in Keycloak Admin Panel")
                 else:
@@ -249,7 +249,7 @@ def launchDocker():
                 'Authorization': f'Bearer {token}'
                 }
 
-                response2 = requests.request("POST", url2, headers=headers2, data=payload2)
+                response2 = requests.request("POST", url2, headers=headers2, data=payload2, timeout=5)
                 print("----- Adding club")
                 if(response2.status_code == 201):
                         print("---------- Club added")
@@ -262,9 +262,8 @@ def launchDocker():
                                 'Authorization': f'Bearer {token}'
                         }
 
-                        response = requests.request("GET", url4, headers=headers4, data=payload4)
+                        response = requests.request("GET", url4, headers=headers4, data=payload4, timeout=5)
 
-                        print(response)
                         clubId = response.json()[0]["id"]
 
                         # AJOUTER ROLE CLUB
@@ -281,8 +280,7 @@ def launchDocker():
                                 'Content-Type': 'application/json',
                                 'Authorization': f'Bearer {token}'
                         }
-                        response5 = requests.request("POST", url5, headers=headers5, data=payload5)
-                        print(response5)
+                        response5 = requests.request("POST", url5, headers=headers5, data=payload5, timeout=5)
 
 
                 else:
@@ -306,7 +304,7 @@ def launchDocker():
 ip = get_ip_address()
 print("IP address:", ip)
 
-clubMail = "club@club.fr"
+clubMail = "club.wattignies@gmail.com"
 clubId = ""
 
 newURL="http://" + ip + ":3000/"

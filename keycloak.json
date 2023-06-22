@@ -1,6 +1,6 @@
 {
     "realm": "SDMS",
-    "auth-server-url": "http://10.224.1.186:8080",
+    "auth-server-url": "http://10.224.3.149:8080",
     "ssl-required": "external",
     "resource": "SDMS_connect",
     "verify-token-audience": true,

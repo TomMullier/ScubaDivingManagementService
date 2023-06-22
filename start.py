@@ -12,34 +12,48 @@ def is_platform_windows():
 def launch_windows():
         print ("----- Installing dotenv...")
         command = "pip3 install python-dotenv requests" 
-        result______ = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        for line in result______.stdout:
+        result1 = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        for line in result1.stdout:
                 if(line!="\n" and line!="\r\n" and line!="\r"):
                         print(line, end='')
-        result______.wait();
-
+        result1.wait();
         
+        # Open docker file
+        with open('./model/BDD/Dockerfile', 'w') as file:
+                file.write("FROM mysql:5.7-debian\n")
+                file.write("ENV TZ=Europe/Paris\n")
+                file.write("ENV DEBIAN_FRONTEND=noninteractive\n")
+                file.write("RUN apt-get update && apt-get install -y --no-install-recommends tzdata && apt-get clean\n")
+                file.write("COPY ./*.sql /docker-entrypoint-initdb.d\n")
+                file.close()
         return
 
+def launch_linux():
+        with open('./model/BDD/Dockerfile', 'w') as file:
+                file.write("FROM mysql:latest\n")
+                file.write("ENV TZ=Europe/Paris\n")
+                file.write("ENV DEBIAN_FRONTEND=noninteractive\n")
+                file.write("RUN apt-get update && apt-get install -y --no-install-recommends tzdata && apt-get clean\n")
+                file.write("COPY ./*.sql /docker-entrypoint-initdb.d\n")
+                file.close()
+        return
 
 def npmI():
-        if (is_platform_windows()):
-                print("ouiiiiiiiii")
         print ("----- Installing packages...")
         command = "npm i" 
-        result_____ = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        for line in result_____.stdout:
+        result2 = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        for line in result2.stdout:
                 if(line!="\n" and line!="\r\n" and line!="\r"):
                         print(line, end='')
-        result_____.wait();
+        result2.wait();
 
         print ("----- Docker build for packages (may take a moment, please wait...)")
         command = "docker compose build" 
-        result____ = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        for line in result____.stdout:
+        result3 = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        for line in result3.stdout:
                 if(line!="\n" and line!="\r\n" and line!="\r"):
                         print(line, end='')
-        result____.wait();
+        result3.wait();
         
         
 def get_ip_address():
@@ -121,8 +135,8 @@ def launchDocker():
 
         print("----- Waiting for Keycloak to be ready")
         command = "docker logs -f ck-theme_keycloak" 
-        result_ = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        for line in result_.stdout:
+        result6 = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        for line in result6.stdout:
                 # print(line)
                 if(line.find("DO NOT use this configuration in production") != -1):
                         print("---------- Keycloak is ready")
@@ -339,8 +353,8 @@ def launchDocker():
                 
         print("----- Log server")
         command = "docker logs -f scubadivingmanagementservice_junia-app-1" 
-        result__ = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        for line in result__.stdout:
+        result5 = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        for line in result5.stdout:
                 print(line, end='')
                 #if detect ctrl+c: break
                 signal.signal(signal.SIGINT, signal_handler)
@@ -356,11 +370,11 @@ clubId = ""
 newURL="http://" + ip + ":3000/"
 
 def signal_handler(sig, frame):
-        print('Exiting gracefully...')
+        print('\nExiting gracefully...')
         print("----- Docker compose down")
         command = "docker compose down"
-        result___ = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        for line in result___.stdout:
+        result4 = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        for line in result4.stdout:
                 print(line)
         print("----- Thanks for using SDMS")
         sys.exit(0)
@@ -368,6 +382,7 @@ def signal_handler(sig, frame):
 distrib = is_platform_windows()
 if distrib:
         launch_windows()
+else: launch_linux()
 npmI()   
 from dotenv import dotenv_values, set_key 
 import requests 

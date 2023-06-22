@@ -5,7 +5,8 @@ import json
 import subprocess
 import webbrowser
 import requests
-import time
+import signal
+import sys
 
 
 def get_ip_address():
@@ -80,18 +81,19 @@ def launchDocker():
         print ("----- Launching docker compose")
         command = "docker compose up -d" 
         result = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        result.wait();  
         for line in result.stdout:
                 print(line)
+        result.wait();  
                 
 
-        # command = "docker logs -f ck-theme_keycloak" 
-        # result = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        # result.wait(); 
-        
         print("----- Waiting for Keycloak to be ready")
-        for i in range(0, 15):
-                time.sleep(1)
+        command = "docker logs -f ck-theme_keycloak" 
+        result_ = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        for line in result_.stdout:
+                # print(line)
+                if(line.find("DO NOT use this configuration in production") != -1):
+                        print("---------- Keycloak is ready")
+                        break
         
         url = f"http://{ip}:8080/realms/SDMS/protocol/openid-connect/token"
 
@@ -289,11 +291,9 @@ def launchDocker():
 
 
                 else:
-                        print("---------- Error while adding club")
+                        print("---------- Error while adding club (Already existing)")
         else:
                 print("---------- Error while retrieving token")
-        
-        
         
         
         # Check the output
@@ -304,6 +304,14 @@ def launchDocker():
         else:
                 print("--------- An error occurred:", result.stderr)
                 
+        print("----- Log server")
+        command = "docker logs -f scubadivingmanagementservice_junia-app-1" 
+        result__ = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        for line in result__.stdout:
+                print(line, end='')
+                #if detect ctrl+c: break
+                signal.signal(signal.SIGINT, signal_handler)
+                
 
 
 ip = get_ip_address()
@@ -313,7 +321,20 @@ clubMail = "club.wattignies@gmail.com"
 clubId = ""
 
 newURL="http://" + ip + ":3000/"
+
+def signal_handler(sig, frame):
+        print('Exiting gracefully...')
+        print("----- Docker compose down")
+        command = "docker compose down"
+        result___ = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        for line in result___.stdout:
+                print(line)
+        print("----- Thanks for using SDMS")
+        sys.exit(0)
+        
 writeEnv();
 changeRealm();
 changeKeycloak();
 launchDocker();
+
+

@@ -4,8 +4,27 @@ import subprocess
 import webbrowser
 import signal
 import sys
+import platform
+
+def is_platform_windows():
+        return platform.system() == "Windows"
+
+def launch_windows():
+        print ("----- Installing dotenv...")
+        command = "pip3 install python-dotenv requests" 
+        result______ = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        for line in result______.stdout:
+                if(line!="\n" and line!="\r\n" and line!="\r"):
+                        print(line, end='')
+        result______.wait();
+
+        
+        return
+
 
 def npmI():
+        if (is_platform_windows()):
+                print("ouiiiiiiiii")
         print ("----- Installing packages...")
         command = "npm i" 
         result_____ = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -346,6 +365,9 @@ def signal_handler(sig, frame):
         print("----- Thanks for using SDMS")
         sys.exit(0)
 
+distrib = is_platform_windows()
+if distrib:
+        launch_windows()
 npmI()   
 from dotenv import dotenv_values, set_key 
 import requests 

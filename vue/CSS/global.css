@@ -359,7 +359,8 @@ body {
   color: #f2574a;
 }
 #menuModal .logout_button a:hover:before {
-  content: "> ";
+  content: ">";
+  margin: 0 10px;
 }
 #menuModal .menu_content {
   display: flex;

@@ -78,6 +78,13 @@ def changeKeycloak():
                 print("Clients attribute not found in the JSON file.")
                 
 def launchDocker():
+        print ("----- Docker build for packages")
+        command = "docker compose up build" 
+        result____ = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        for line in result____.stdout:
+                print(line)
+        result____.wait();
+        
         print ("----- Launching docker compose")
         command = "docker compose up -d" 
         result = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)

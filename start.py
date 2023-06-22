@@ -6,6 +6,14 @@ import signal
 import sys
 
 def npmI():
+        print ("----- Installing packages...")
+        command = "npm i" 
+        result_____ = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        for line in result_____.stdout:
+                if(line!="\n" and line!="\r\n" and line!="\r"):
+                        print(line, end='')
+        result_____.wait();
+
         print ("----- Docker build for packages (may take a moment, please wait...)")
         command = "docker compose build" 
         result____ = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)

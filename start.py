@@ -1,6 +1,5 @@
 import socket
 
-from dotenv import dotenv_values, set_key
 import json
 import subprocess
 import webbrowser
@@ -8,7 +7,15 @@ import requests
 import signal
 import sys
 
-
+def npmI():
+        print ("----- Docker build for packages")
+        command = "docker compose up build" 
+        result____ = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        for line in result____.stdout:
+                print(line)
+        result____.wait();
+        
+        
 def get_ip_address():
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:
@@ -77,14 +84,7 @@ def changeKeycloak():
         else:
                 print("Clients attribute not found in the JSON file.")
                 
-def launchDocker():
-        print ("----- Docker build for packages")
-        command = "docker compose up build" 
-        result____ = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        for line in result____.stdout:
-                print(line)
-        result____.wait();
-        
+def launchDocker():        
         print ("----- Launching docker compose")
         command = "docker compose up -d" 
         result = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -338,7 +338,9 @@ def signal_handler(sig, frame):
                 print(line)
         print("----- Thanks for using SDMS")
         sys.exit(0)
-        
+
+npmI()   
+from dotenv import dotenv_values, set_key  
 writeEnv();
 changeRealm();
 changeKeycloak();

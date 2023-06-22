@@ -98,23 +98,6 @@ CREATE TABLE Planned_Dive(
 #COMMENT ON COLUMN Planned_Dive.Diver_Price IS 'Price for diver';
 #COMMENT ON COLUMN Planned_Dive.Instructor_Price IS 'Price for instructor. Some dive sites have pricing based on role: diver or instructor.';
 
-CREATE TABLE Dive_Team_Composition(
-   Id_Dive_Team_Composition CHAR(36)  NOT NULL,
-   Dive_Type VARCHAR(50)  NOT NULL,
-   Diver_Age SMALLINT NOT NULL,
-   Dive_Guide_Qualification VARCHAR(50) ,
-   Max_Diver VARCHAR(50)  NOT NULL,
-   Additional_Diver SMALLINT,
-   CONSTRAINT PK_Dive_Team_Composition PRIMARY KEY(Id_Dive_Team_Composition)
-);
-#COMMENT ON TABLE Dive_Team_Composition IS 'How many diver in each team depinding on qualification of dive guide, age of teamate, type of dive like education/exploration etc.';
-#COMMENT ON COLUMN Dive_Team_Composition.Id_Dive_Team_Composition IS 'of type GUID stored as char(36). Like 363d5a64-22c2-4b45-a29b-2d2d358e340c';
-#COMMENT ON COLUMN Dive_Team_Composition.Dive_Type IS 'Exploration or Education';
-#COMMENT ON COLUMN Dive_Team_Composition.Diver_Age IS 'Age of diver';
-#COMMENT ON COLUMN Dive_Team_Composition.Dive_Guide_Qualification IS 'Qualification of dive guide: N4, N5, E2, E3, E4';
-#COMMENT ON COLUMN Dive_Team_Composition.Max_Diver IS 'Maximum number of diver in team';
-#COMMENT ON COLUMN Dive_Team_Composition.Additional_Diver IS 'Additionnal diver with specific role of dive guide assistant. Max 1';
-
 CREATE TABLE Max_Depth_for_Qualification(
    Diver_Qualification CHAR(50)  NOT NULL,
    Guided_Diver_Depth SMALLINT NOT NULL,
@@ -142,21 +125,6 @@ CREATE TABLE Emergency_Plan(
 #COMMENT ON COLUMN Emergency_Plan.Emergency_Plan IS 'Detailed description of emergency plan.';
 #COMMENT ON COLUMN Emergency_Plan.Post_Accident_Procedure IS 'Mandatory rules to follow once an accident tok place.';
 #COMMENT ON COLUMN Emergency_Plan.Version IS 'Backup plan version. Multiple versions';
-
-
-CREATE TABLE SDMS_Meta_Data(
-   Id_SDMS_Meta_Data CHAR(36)  NOT NULL,
-   VRM_Schema VARCHAR(50) ,
-   VRM_Schema_Start DATETIME,
-   VRM_Schema_End DATETIME,
-   VRM_Schema_Comment VARCHAR(50) ,
-   CONSTRAINT PK_SDMS_Meta_Data PRIMARY KEY(Id_SDMS_Meta_Data)
-);
-#COMMENT ON TABLE SDMS_Meta_Data IS 'Information about Version.Release.Modification level of SDMS database schema, minimum version of SDMS applicaiton compatible wtith current schema';
-#COMMENT ON COLUMN SDMS_Meta_Data.Id_SDMS_Meta_Data IS 'of type GUID stored as char(36). Like 363d5a64-22c2-4b45-a29b-2d2d358e340c';
-#COMMENT ON COLUMN SDMS_Meta_Data.VRM_Schema IS 'V.R.M level of database schema';
-#COMMENT ON COLUMN SDMS_Meta_Data.VRM_Schema_Start IS 'Activation TS of activation of this VRM schema';
-#COMMENT ON COLUMN SDMS_Meta_Data.VRM_Schema_End IS 'Deactivation TS of this VRM schema';
 
 CREATE TABLE Dive(
    Id_Dive CHAR(36)  NOT NULL,

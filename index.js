@@ -4,7 +4,8 @@ const bodyParser = require("body-parser");
 const session = require("express-session");
 const Keycloak = require("keycloak-connect");
 const fileUpload = require('express-fileupload');
-const Sharp = require('sharp');
+let Sharp = require('sharp');
+
 const {
     v4: uuidv4
 } = require('uuid');
@@ -374,13 +375,15 @@ app.post('/auth/planning', keycloak.protect(),
             errors: errors.array(),
             comment: "Un champs n'est pas valide"
         });
-        if(new Date(req.body.End_Date) < new Date(req.body.Start_Date)){
+        if(new Date(req.body.End_Date) <= new Date(req.body.Start_Date)){
             return res.json({
                 modified: false,
                 comment: "La date de fin est antérieure à la date de début"
             })
         }
         console.log("--- Trying to create event --'");
+        req.body.Max_Divers = parseInt(req.body.Max_Divers);
+        req.body.lengthUsersToRegister = parseInt(req.body.lengthUsersToRegister);
         if (req.body.Max_Divers < req.body.lengthUsersToRegister) {
             return res.json({
                 created: false,
@@ -904,19 +907,23 @@ app.put('/auth/planning', keycloak.protect(),
     body("dp").trim().escape(), //mail
     body("lengthUsersToRegister").trim().escape().exists().isNumeric(),
     function (req, res) {
+        console.log(req.body);
         if (!checkUser(req, "CLUB")) return res.sendStatus(401);
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(422).json({
             errors: errors.array(),
             comment: "Un champs n'est pas valide"
         });
+        req.body.Max_Divers = parseInt(req.body.Max_Divers);
+        req.body.lengthUsersToRegister = parseInt(req.body.lengthUsersToRegister);
+
         if (req.body.Max_Divers < 2) {
             return res.json({
                 created: false,
                 comment: "Nombre de plongeurs trop faible, un événement peut être créé à partir de 2 plongeurs"
             })
         }
-        if(new Date(req.body.End_Date) < new Date(req.body.Start_Date)){
+        if(new Date(req.body.End_Date) <= new Date(req.body.Start_Date)){
             return res.json({
                 modified: false,
                 comment: "La date de fin est antérieure à la date de début"
@@ -2236,7 +2243,7 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                     Qualification: gpInfo.Diver_Qualification
                                 })
                                 allGp.splice(0, 1);
-                                while (i < ratio && diverP1.length > 0 && allGp.length > 0) {
+                                while (i < ratio && diverP1.length > 0) {
                                     let diver = diverP1[0];
                                     let userInfo = await Database.getUserInfoSync({
                                         Id_Diver: diver.Diver_Id_Diver
@@ -2506,7 +2513,7 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
 
                         /* ---------------------------- PLONGEE AUTONOME ---------------------------- */
                         if (diverP1.length > 1) {
-                            while (diverP1.length > 0) {
+                            while (diverP1.length > 1) {
                                 let Divers = [];
                                 let i = 0;
                                 while (i < 3 && diverP1.length > 0) {
@@ -2543,7 +2550,7 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                         if (diverP2.length > 1 || diverPa20.length > 1) {
                             // ajoute les plongeurs en Pa40 dans le tableau de diverP2
                             diverP2 = diverP2.concat(diverPa20);
-                            while (diverP2.length > 0) {
+                            while (diverP2.length > 1) {
                                 let Divers = [];
                                 let i = 0;
                                 while (i < 3 && diverP2.length > 0) {
@@ -2576,12 +2583,17 @@ app.get("/auth/dp/palanquee/automatic_dive_team", keycloak.protect(), function (
                                 PALANQUEES.push(palanquee);
                             }
                         }
-                        let diverPa60 = diverPa.filter(member => member.Temporary_Diver_Qualification === "Pa60");
-                        if (diverP3.length > 1 || allGp.length > 1 || diverPa60.length > 1) {
-                            diverP3 = diverP3.concat(diverPa60);
-                            diverP3 = diverP3.concat(allGp);
 
-                            while (diverP3.length > 0) {
+                        console.log("diverP3 : ", diverP3);
+                        console.log("allGp : ", allGp);
+                        let diverPa60 = diverPa.filter(member => member.Temporary_Diver_Qualification === "Pa60");
+                        console.log("diverPa60 : ", diverPa60);
+                        diverP3 = diverP3.concat(diverPa60);
+                        diverP3 = diverP3.concat(allGp);
+                        console.log("diverP3 : ", diverP3);
+                        if (diverP3.length > 1 ) {
+
+                            while (diverP3.length > 1) {
                                 let Divers = [];
                                 let i = 0;
                                 while (i < 3 && diverP3.length > 0) {

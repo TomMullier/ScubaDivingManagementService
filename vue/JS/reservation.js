@@ -154,7 +154,7 @@ function addEvent(event, usersToRegister) {
             },
             body: JSON.stringify(event)
         }).then(res => res.json())
-        .then(res => {
+        .then(async res => {
             console.log(res)
             if (!res.created) {
                 // L'event n'a pas été créé
@@ -166,20 +166,29 @@ function addEvent(event, usersToRegister) {
                     Car_Pooling_Seat_Request: "n",
                     Diver_Role: "DP"
                 }
-                register(event, registrationInfo, event.dp, false) // dp = mail
+                let isRegistered = await register(event, registrationInfo, event.dp, false) // dp = mail  
+                if (!isRegistered) {
+                    openErrorModal("L'event a été créé mais le DP n'a pas été inscrit");
+                    return;
+                }
                 if (usersToRegister.length > 0) {
                     registrationInfo.Diver_Role = "Diver";
-                    usersToRegister.forEach(user => {
-                        if (user !== event.dp) register(event, registrationInfo, user, false); // user = mail
-                    });
+                    for (const user of usersToRegister) {
+                        if (user !== event.dp) isRegistered = await register(event, registrationInfo, user, false); // user = mail
+                        if (!isRegistered) break;
+                    }
                 }
-                window.location.reload();
+                if (isRegistered) window.location.reload();
+                else openErrorModal("L'event a été créé mais les inscriptions n'ont pas pu être effectuées");
             }
         })
 }
 
 /* ------------------------------ MODIFY EVENT ------------------------------ */
 function updateEvent(oldEvent, event, usersToRegister) {
+    console.log(oldEvent)
+    console.log(event)
+    console.log(usersToRegister)
     event.oldEvent = oldEvent;
     usersToRegister = usersToRegister.filter(user => user != event.dp);
     event.lengthUsersToRegister = usersToRegister.length
@@ -205,14 +214,22 @@ function updateEvent(oldEvent, event, usersToRegister) {
                         Car_Pooling_Seat_Request: "n",
                         Diver_Role: "DP"
                     }
-                    register(event, registrationInfo, event.dp, false) // dp = mail
+                    let registered = await register(event, registrationInfo, event.dp, false) // dp = mail
+                    if (!registered) {
+                        openErrorModal("L'event a été modifié mais le DP n'a pas été inscrit");
+                        return;
+                    }
                     if (usersToRegister.length > 0) {
                         registrationInfo.Diver_Role = "Diver";
-                        usersToRegister.forEach(user => {
-                            if (user !== event.dp) register(event, registrationInfo, user, false); // user = mail
-                        });
+                        for (const user of usersToRegister) {
+                                if (user !== event.dp) {
+                                    registered = await register(event, registrationInfo, user, false); // user = mail
+                                    if (!registered) break;
+                                }
+                        }
                     }
-                    document.location.reload();
+                    if (registered) window.location.reload();
+                    else openErrorModal("L'event a été modifié mais les inscriptions n'ont pas pu être effectuées");
                 }
             }
         })
@@ -237,7 +254,7 @@ function deleteEvent(event) {
 }
 
 /* -------------------------------- REGISTER -------------------------------- */
-function register(
+async function register(
     event,
     registrationInfo = {
         Personnal_Comment: "",
@@ -246,32 +263,35 @@ function register(
         Diver_Role: "Diver"
     },
     userInfo = "", reload = true) {
-
-    let data = {
-        ...event,
-        ...registrationInfo,
-    };
-    data.Mail = userInfo;
-    fetch('/auth/planning/registration', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        }).then(res => res.json())
-        .then(res => {
-            console.log(res)
-            if (res.registered) {
-                document.querySelector("#reserveButton").innerHTML = "Se désinscrire";
-                document.querySelector("#reserveButton").classList.add("unreserveButton");
-                document.querySelector("#reserveButton").classList.remove("reserveButton");
-                if (reload) document.location.reload();
-                // eventClicked.setProp("backgroundColor", "#f2574a");
-            } else {
-                // Impossible de s'inscrire
-                openErrorModal(res.comment);
-            }
-        })
+    return new Promise((resolve, reject) => {
+        let data = {
+            ...event,
+            ...registrationInfo,
+        };
+        data.Mail = userInfo;
+        fetch('/auth/planning/registration', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            }).then(res => res.json())
+            .then(res => {
+                console.log(res)
+                if (res.registered) {
+                    document.querySelector("#reserveButton").innerHTML = "Se désinscrire";
+                    document.querySelector("#reserveButton").classList.add("unreserveButton");
+                    document.querySelector("#reserveButton").classList.remove("reserveButton");
+                    if (reload) document.location.reload();
+                    resolve(res.registered);
+                    // eventClicked.setProp("backgroundColor", "#f2574a");
+                } else {
+                    // Impossible de s'inscrire
+                    openErrorModal(res.comment);
+                    resolve(res.registered)
+                }
+            })
+    })
 }
 
 /* ------------------------------- UNREGISTER ------------------------------- */
@@ -830,7 +850,7 @@ function setEvents(ev_) {
 
 //! RESERVATION 
 let button = document.querySelector("#reserveButton");
-button.addEventListener("click", function (e) {
+button.addEventListener("click", async function (e) {
     e.stopPropagation();
     let data = {
         Start_Date: eventClicked.start,
@@ -846,7 +866,8 @@ button.addEventListener("click", function (e) {
     }
     if (document.querySelector("#reserveButton").classList.contains("reserveButton")) {
         // Reserver
-        register(data);
+        const reg = await register(data);
+        
     } else {
         // Se désinscrire
         unregister(data);
@@ -919,11 +940,11 @@ emergencyButton.addEventListener("click", function (e) {
         menutoggle.classList.remove('active');
         document.querySelectorAll(".toggle span").forEach(function (element) {
             element.style.backgroundColor = "#f2574a"
-        }  );
+        });
     });
     document.querySelectorAll(".toggle span").forEach(function (element) {
         element.style.backgroundColor = "white"
-    }  );
+    });
     menutoggle.classList.toggle('active');
     menutoggle.classList.toggle('close-modal');
     document.querySelector("#emergencyModal .download_button").addEventListener("click", function () {
@@ -1332,7 +1353,7 @@ function edit_event(info) {
             validate_event.innerHTML = "<img src='../img/loading_animation.svg' alt='loading' class='loading'>";
             validate_event.style.height = "40px";
             updateEvent(oldEvent, data, event_to_create.users);
-            
+
 
         } else {
             validate_event.innerHTML = "Les champs ne sont pas correctement remplis";

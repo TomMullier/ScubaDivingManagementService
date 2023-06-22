@@ -430,7 +430,6 @@ function setDiversImported(data) {
         for (let j = 0; j < divers.length; j++) {
             let diver = divers[j];
             let select = container.querySelectorAll("select")[j];
-            console.log(select)
             select.value = diver.Mail;
         }
     }
@@ -665,6 +664,7 @@ function createAllPalanquee(data) {
             document.querySelector(".palanquee_" + i).querySelector(".button_auto").style.display = "none";
         } catch (error) {}
     }
+    if(data.palanquee.length==0) document.querySelector(".palanquee_" +"1").querySelector(".button_auto").style.display = "flex";
     numberpalanquee = data.palanquee.length != 0 ? data.palanquee.length : 1;
     add_buttons(data);
 }

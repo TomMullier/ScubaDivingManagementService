@@ -26,7 +26,13 @@ SDMS est votre passeport vers une gestion sans souci de vos plongées. Rejoignez
 
 ## Installation
 
-⚠️ 
+Pour lancer le projet, il faut préalablement avoir installé :
+ - Docker
+ - Python
+ - NodeJS
+
+Ensuite il faut lancer Docker.
+Vous pouvez enfin exécuter le programme en ouvrant un terminal dans le dossier du projet et écrire la commande ```python ./start.py```
 
 ## Remerciements
 
